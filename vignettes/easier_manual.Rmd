@@ -128,3 +128,10 @@ library(easier)
 #
 
 ```
+
+# Session info {-}
+
+```{r}
+sessionInfo()
+```
+
