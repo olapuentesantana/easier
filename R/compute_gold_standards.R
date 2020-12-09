@@ -11,6 +11,8 @@
 #'
 #' @return List with the scores of all the gold standards specified.
 #'
+#' @€xamples
+#' # TODOTODO
 compute_gold_standards <- function(RNA.tpm,
                                    list_gold_standards,
                                    cancertype,

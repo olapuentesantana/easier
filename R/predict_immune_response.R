@@ -22,6 +22,8 @@
 #'
 #' @return Predictions for each model building.
 #'
+#' @€xamples
+#' # TODOTODO
 predict_immune_response <- function(pathways=NULL, immunecells=NULL, tfs=NULL, lrpairs=NULL, ccpairs=NULL, cancertype){
 
   try(if(missing(cancertype)) stop("cancer type needs to be specified"))

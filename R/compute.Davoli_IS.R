@@ -10,6 +10,9 @@
 #' @return numeric matrix with rows=samples and columns=Davoli immune signature
 #'
 #' @export
+#'
+#' @€xamples
+#' # TODOTODO
 compute.Davoli_IS <- function(RNA.tpm){
 
   # Literature genes

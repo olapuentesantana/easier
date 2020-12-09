@@ -16,6 +16,9 @@
 #'               \item{CYTOKINEpairs}{Cytokine-Cytokine pairs weights matrix in log2(tpm + 1) with rows=samples and columns = CYTOKINE pairs}
 #'         }
 #' @export
+#'
+#' @€xamples
+#' # TODOTODO
 compute_LR_pairs <- function(RNA.tpm,
                              remove.genes.ICB_proxies=F,
                              compute.cytokines.pairs=F,

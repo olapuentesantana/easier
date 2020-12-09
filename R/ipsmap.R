@@ -6,6 +6,8 @@
 #'
 #' @return IPS per sample
 #'
+#' @€xamples
+#' # TODOTODO
 ipsmap <- function (x) {
   if (x <= 0) {
     ips <- 0

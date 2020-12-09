@@ -17,6 +17,8 @@
 #'               the null hypothesis}
 #'         }
 #'
+#' @€xamples
+#' # TODOTODO
 compute_CC_pairs_grouped <- function(lrpairs, cancertype){
 
   # remove ligand receptor pairs that are always NA

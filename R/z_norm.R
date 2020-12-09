@@ -11,7 +11,8 @@
 #' @param sd numeric vector with data
 #'
 #' @return numeric matrix with scaled data
-#'
+#' @€xamples
+#' # TODOTODO
 standarization <- function(X, mean, sd){
 
   X.scale <- matrix(0, nrow(X), ncol(X), dimnames = list(rownames(X),colnames(X)))

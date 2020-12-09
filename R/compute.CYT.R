@@ -10,6 +10,9 @@
 #' @return numeric matrix with rows=samples and columns=cytolytic activity score
 #'
 #' @export
+#'
+#' @€xamples
+#' # TODOTODO
 compute.CYT <- function(RNA.tpm){
 
   # Literature genes

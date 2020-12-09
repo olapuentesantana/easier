@@ -16,6 +16,9 @@
 #'               \item{transcripts_left}{vector with missing gene names}
 #'         }
 #' @export
+#'
+#' @€xamples
+#' # TODOTODO
 compute_pathways_scores <- function(RNA.counts,
                                     remove.genes.ICB_proxies=TRUE){
 

@@ -27,6 +27,8 @@
 #'
 #' @return boxplot with features distribution
 #'
+#' @€xamples
+#' # TODOTODO
 explore_biomarkers <- function(pathways,
                                immunecells,
                                lrpairs,

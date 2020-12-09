@@ -28,6 +28,8 @@
 #'
 #' @return ROC curves plots and barplots showing AUC values.
 #'
+#' @€xamples
+#' # TODOTODO
 compare_immune_response <- function(predictions_immune_response = NULL,
                                     real_patient_response,
                                     RNA.tpm,

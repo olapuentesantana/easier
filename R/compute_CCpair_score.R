@@ -14,6 +14,8 @@
 #'
 #' @return numeric vector with weighted scores
 #'
+#' @€xamples
+#' # TODOTODO
 compute_CCpair_score <- function(celltype1, celltype2, intercell.network, lrpairs.binary, lr.frequency, compute.log=T, cancertype) {
 
   # consider the LR interactions between the two cell types
