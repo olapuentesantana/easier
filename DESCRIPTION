@@ -11,8 +11,7 @@ Description: This package allows researchers to assess patients' likelihood to r
              A machine learning model integrates patient transcriptomics data to gain insights into the 
              effect of ICBs on the patient immune response. 
 Depends: R (>= 4.0), progeny, viper, DESeq2, ROCR, ggplot2, dorothea, preprocessCore, pdist, arules
-License: `use_mit_license()`, `use_gpl3_license()` or friends to
-    pick a license
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
