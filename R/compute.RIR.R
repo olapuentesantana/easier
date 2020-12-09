@@ -17,7 +17,7 @@ compute.RIR <- function(RNA.tpm){
   match_RIR.read <- match(RIR.read, rownames(RNA.tpm))
 
   if (anyNA(match_RIR.read)){
-    warning(c("differenty named or missing signature genes : \n", paste(RIR.read[!RIR.read %in% rownames(RNA.tpm)], collapse = "\n")))
+    warning(c("differently named or missing signature genes : \n", paste(RIR.read[!RIR.read %in% rownames(RNA.tpm)], collapse = "\n")))
     match_RIR.read <- stats::na.omit(match_RIR.read)
   }
 
