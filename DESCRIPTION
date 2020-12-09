@@ -10,7 +10,7 @@ Authors@R:
 Description: This package allows researchers to assess patients' likelihood to respond to ICB therapies. 
              A machine learning model integrates patient transcriptomics data to gain insights into the 
              effect of ICBs on the patient immune response. 
-Depends: R (>= 4.0), progeny, viper, DESeq2, ROCR, ggplot2, dorothea, preprocessCore, pdist, arules
+Depends: R (>= 4.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -31,4 +31,5 @@ Imports:
     viper,
     dplyr,
     matrixStats,
-    preprocessCore
+    preprocessCore,
+    arules
