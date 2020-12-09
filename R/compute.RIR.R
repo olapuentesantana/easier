@@ -30,7 +30,7 @@ compute.RIR <- function(RNA.tpm){
   r$genes <- rownames(log2.RNA.tpm)
 
   # Apply function to calculate OE:
-  res.scores <- get_OE_bulk(r, gene.sig = res.sig)
+  res.scores <- get_OE_bulk(r, gene.sign = res.sig)
 
   # Merge as recommend by authors
   res <- cbind.data.frame(excF.up = rowMeans(res.scores[, c("exc.up", "exc.seed.up")]),
