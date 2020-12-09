@@ -4,6 +4,9 @@
 #' the dataset (separating responders and non-responders if known) together with information on the
 #' feature contribution to the model building.
 #'
+#' Plot original features distribution together with the
+#' feature importance in the model
+#'
 #' @importFrom grDevices pdf dev.off
 #' @importFrom stats aggregate
 #' @import ggplot2
@@ -24,11 +27,6 @@
 #'
 #' @return boxplot with features distribution
 #'
-#--------------------------------------------------------------------
-# Plot original features distribution together with the
-# feature importance in the model
-#--------------------------------------------------------------------
-
 explore_biomarkers <- function(pathways,
                                immunecells,
                                lrpairs,

@@ -10,8 +10,6 @@
 #' @return numeric matrix with rows=samples and columns=IRP
 #'
 #' @export
-#-------------------------------------------------------------------------------------------------------------
-
 compute.RIR <- function(RNA.tpm){
 
   # Literature genes

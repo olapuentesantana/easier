@@ -10,8 +10,6 @@
 #' @return numeric matrix with rows=samples and columns=IMPRES score
 #'
 #' @export
-#---------------------------------------------------------------------------------------------------------------#
-
 compute.IMPRES <- function(RNA.tpm){
 
   # Literature genes

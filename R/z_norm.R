@@ -12,7 +12,6 @@
 #'
 #' @return numeric matrix with scaled data
 #'
-#-----------------------------------------------------------------------------------------------------
 standarization <- function(X, mean, sd){
 
   X.scale <- matrix(0, nrow(X), ncol(X), dimnames = list(rownames(X),colnames(X)))

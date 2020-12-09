@@ -16,8 +16,6 @@
 #'               \item{transcripts_left}{vector with missing gene names}
 #'         }
 #' @export
-#--------------------------------------------------------------------
-
 compute_TF_activity <- function(RNA.tpm,
                                 remove.genes.ICB_proxies=F){
 

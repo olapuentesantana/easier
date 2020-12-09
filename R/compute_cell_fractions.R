@@ -2,6 +2,10 @@
 #'
 #' \code{compute_cell_fractions} estimates cell fractions from bulk RNAseq data.
 #'
+#' Compute cell fractions from transcriptomics data.
+#' This function computes cell fractions from tpm RNAseq data using
+#' quanTIseq method
+#'
 #' @importFrom remotes install_github
 #'
 #' @export
@@ -10,12 +14,6 @@
 #'
 #' @return Cell fractions matrix: matrix of normalized enrichment scores with rows=samples and columns=TFs
 #'
-#--------------------------------------------------------------------
-# Compute cell fractions from transcriptomics data.
-#--------------------------------------------------------------------
-
-# This function computes cell fractions from tpm RNAseq data using qaunTIseq method
-
 compute_cell_fractions <- function(RNA.tpm,....){
 
   # ****************

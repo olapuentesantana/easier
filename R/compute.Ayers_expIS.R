@@ -10,8 +10,6 @@
 #' @return numeric matrix with rows=samples and columns=Expanded Immune signature score
 #'
 #' @export
-#-------------------------------------------------------------------------------------------------------------
-
 compute.Ayers_expIS <- function(RNA.tpm){
 
   # Literature genes

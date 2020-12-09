@@ -10,8 +10,6 @@
 #' @return numeric matrix with rows=samples and columns=Roh immune score
 #'
 #' @export
-#-------------------------------------------------------------------------------------------------------------
-
 compute.Roh_IS <- function(RNA.tpm){
 
   # Literature genes

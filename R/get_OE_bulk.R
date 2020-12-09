@@ -10,9 +10,6 @@
 #' @param full.flag boolean
 #'
 #' @return Random score
-#'
-#-------------------------------------------------------------------------------------------------------------
-# function: calculate overall expression (OE)
 get_OE_bulk <- function(r,gene.sign = NULL,num.rounds = 1000,full.flag = F){
   set.seed(1234)
   r$genes.mean <- rowMeans(r$tpm)

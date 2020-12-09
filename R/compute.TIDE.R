@@ -12,8 +12,6 @@
 #' @return numeric matrix with rows=samples and columns=TIDE score
 #'
 #' @export
-#-------------------------------------------------------------------------------------------------------------
-
 compute.TIDE <- function(RNA.tpm, cancertype, output_file_path){
 
   # Pre-process #

@@ -9,8 +9,6 @@
 #'
 #' @return numeric matrix with rows=samples and columns=Immunophenoscore
 #' @export
-#-------------------------------------------------------------------------------------------------------
-
 compute.IPS <- function(RNA.tpm){
 
   # Log2 transformation:

@@ -10,8 +10,6 @@
 #' @return numeric matrix with rows=samples and columns=IFNy signature score
 #'
 #' @export
-#-------------------------------------------------------------------------------------------------------------
-
 compute.IFNy <- function(RNA.tpm){
 
   # Literature genes

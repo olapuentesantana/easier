@@ -10,8 +10,6 @@
 #' @return numeric matrix with rows=samples and columns=MSI score
 #'
 #' @export
-#-------------------------------------------------------------------------------------------------------------
-
 compute.MSI <- function(RNA.tpm){
 
   # Literature genes: * (CCRN4L in tcga, NOCT approved symbol)

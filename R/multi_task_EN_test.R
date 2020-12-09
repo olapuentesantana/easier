@@ -12,8 +12,6 @@
 #'
 #' @return A matrix with predictions for each sample and task.
 #'
-#------------------------------------------------------------------------------------------------
-
 multi_task_EN_test <- function(x.test, coef.matrix){
 
   # Keep intercept

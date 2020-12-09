@@ -4,17 +4,12 @@
 #'
 #' @export
 #'
-#' @param RNA.tpm numeric matrix with data
+#' @param RNA.tpm numeric matrix with data, as tpm values
 #' @param list_gold_standards string with gold standards names
 #' @param cancertype string character
 #'
 #' @return List with the scores of all the gold standards specified.
 #'
-#-------------------------------------------------------------------------------------------------------
-# Input: Transcriptomics data as tpm values
-# A list with the names of the scores to be computed has to be provided
-# Output: Gold standards scores
-#-------------------------------------------------------------------------------------------------------
 compute_gold_standards <- function(RNA.tpm,
                                    list_gold_standards,
                                    cancertype,

@@ -9,8 +9,6 @@
 #'
 #' @return p-value for each cell-cell pair
 #'
-#-------------------------------------------------------------------------------------------------------------
-
 compute_CCpair_pval <- function(value, null.hypothesis){
 
   sum(null.hypothesis >= value)/length(null.hypothesis)

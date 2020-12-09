@@ -9,8 +9,6 @@
 #'
 #' @return numeric vector with the predictions
 #'
-#------------------------------------------------------------------------------------------------
-
 bemkl_supervised_multioutput_regression_variational_test <- function(Km, state) {
 
   N <- dim(Km)[2]

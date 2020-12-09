@@ -10,8 +10,6 @@
 #' @return numeric matrix with rows=samples and columns=chemokine score
 #'
 #' @export
-#-------------------------------------------------------------------------------------------------------------
-
 compute.chemokines <- function(RNA.tpm){
 
   # Literature genes

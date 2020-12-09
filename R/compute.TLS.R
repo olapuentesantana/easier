@@ -10,8 +10,6 @@
 #' @return numeric matrix with rows=samples and columns=TLS signature
 #'
 #' @export
-#-------------------------------------------------------------------------------------------------------------
-
 compute.TLS <- function(RNA.tpm){
 
   # Literature genes
