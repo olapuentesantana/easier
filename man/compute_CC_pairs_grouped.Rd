@@ -20,6 +20,9 @@ the null hypothesis}
 }
 }
 \description{
+Compute CC pairs grouped from transcriptomics data.
+}
+\details{
 \code{compute_CC_pairs_grouped} computes CC pairs (considering cell groups instead of individual cell types) from tpm,
 using the null model for CC interaction computed on TCGA data.
 }

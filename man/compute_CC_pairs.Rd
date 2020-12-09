@@ -4,12 +4,13 @@
 \alias{compute_CC_pairs}
 \title{compute_CC_pairs}
 \usage{
-compute_CC_pairs(lrpairs, cancertpe)
+compute_CC_pairs(lrpairs, cancertype)
 }
 \arguments{
 \item{lrpairs}{Ligand-leceptor pairs weights matrix}
 
-\item{cancertype}{string character}
+\item{cancertype}{string character
+TODOTODO: this is not used in the function body?}
 }
 \value{
 A list with the following elements:

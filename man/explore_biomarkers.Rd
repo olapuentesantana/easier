@@ -46,3 +46,7 @@ boxplot with features distribution
 the dataset (separating responders and non-responders if known) together with information on the
 feature contribution to the model building.
 }
+\details{
+Plot original features distribution together with the
+feature importance in the model
+}

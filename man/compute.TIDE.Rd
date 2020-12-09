@@ -10,6 +10,8 @@ compute.TIDE(RNA.tpm, cancertype, output_file_path)
 \item{RNA.tpm}{numeric matrix with rows=genes and columns=samples}
 
 \item{cancertype}{string character}
+
+\item{output_file_path}{TODOTODO to define}
 }
 \value{
 numeric matrix with rows=samples and columns=TIDE score

@@ -18,7 +18,7 @@ compute_LR_pairs(
 
 \item{compute.cytokines.pairs}{boolean variable to compute cytokine pairs as well}
 
-\item{cancerype}{string character}
+\item{cancertype}{string character}
 }
 \value{
 A list with the following elements:

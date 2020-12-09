@@ -12,11 +12,13 @@ compute_gold_standards(
 )
 }
 \arguments{
-\item{RNA.tpm}{numeric matrix with data}
+\item{RNA.tpm}{numeric matrix with data, as tpm values}
 
 \item{list_gold_standards}{string with gold standards names}
 
 \item{cancertype}{string character}
+
+\item{output_file_path}{TODOTODO to define - maybe name it more specifically to the function it absolves?}
 }
 \value{
 List with the scores of all the gold standards specified.
