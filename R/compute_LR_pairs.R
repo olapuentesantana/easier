@@ -8,7 +8,7 @@
 #' @param RNA.tpm numeric matrix of tpm values with rows=genes and columns=samples
 #' @param remove.genes.ICB_proxies boolean variable to reomove all those genes involved in the computation of ICB proxy's of response
 #' @param compute.cytokines.pairs boolean variable to compute cytokine pairs as well
-#' @param cancerype string character
+#' @param cancertype string character
 #'
 #' @return A list with the following elements:
 #'         \describe{

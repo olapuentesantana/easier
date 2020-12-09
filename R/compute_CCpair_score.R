@@ -6,7 +6,7 @@
 #'
 #' @param celltype1 string character with first cell type involved in the interaction
 #' @param celltype2 string character with second cell type involved in the interaction
-#' @param intracell.network matrix with data on cell types interaction network
+#' @param intercell.network matrix with data on cell types interaction network
 #' @param lrpairs.binary binary vector displaying LR pairs with non-zero frequency
 #' @param lr.frequency numeric vector with LR pairs frequency across the whole TCGA database
 #' @param compute.log boolean variable in order to take the log of the weighted score
@@ -14,7 +14,7 @@
 #'
 #' @return numeric vector with weighted scores
 #'
-compute_CCpair_score <- function(celltype1, celltype2, intercell.network, lrpairs.binary, lr.frequency, compute.log=T) {
+compute_CCpair_score <- function(celltype1, celltype2, intercell.network, lrpairs.binary, lr.frequency, compute.log=T, cancertype) {
 
   # consider the LR interactions between the two cell types
   CC.network <- intercell.network[intersect(which(intercell.network$cell1==celltype1), which(intercell.network$cell2==celltype2)),]

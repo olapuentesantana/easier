@@ -6,6 +6,7 @@
 #'
 #' @param lrpairs Ligand-leceptor pairs weights matrix
 #' @param cancertype string character
+#' TODOTODO: this is not used in the function body?
 #'
 #' @return A list with the following elements:
 #'         \describe{
@@ -15,7 +16,7 @@
 #'         }
 #'
 compute_CC_pairs <- function(lrpairs,
-                             cancertpe){
+                             cancertype){
 
   # remove ligand receptor pairs that are always NA
   na.lrpairs <- apply(lrpairs, 2, function(x){all(is.na(x))})

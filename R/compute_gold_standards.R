@@ -7,6 +7,7 @@
 #' @param RNA.tpm numeric matrix with data, as tpm values
 #' @param list_gold_standards string with gold standards names
 #' @param cancertype string character
+#' @param output_file_path TODOTODO to define - maybe name it more specifically to the function it absolves?
 #'
 #' @return List with the scores of all the gold standards specified.
 #'

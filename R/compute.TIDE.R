@@ -8,6 +8,7 @@
 #'
 #' @param RNA.tpm numeric matrix with rows=genes and columns=samples
 #' @param cancertype string character
+#' @param output_file_path TODOTODO to define
 #'
 #' @return numeric matrix with rows=samples and columns=TIDE score
 #'

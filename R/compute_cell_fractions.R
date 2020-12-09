@@ -14,7 +14,9 @@
 #'
 #' @return Cell fractions matrix: matrix of normalized enrichment scores with rows=samples and columns=TFs
 #'
-compute_cell_fractions <- function(RNA.tpm,....){
+compute_cell_fractions <- function(RNA.tpm
+                                   # TODOTODO; do we need an ellipsis here?
+                                   ){
 
   # ****************
   # packages
