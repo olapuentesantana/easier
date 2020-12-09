@@ -20,12 +20,14 @@ compute_cell_fractions <- function(RNA.tpm
 
   # ****************
   # packages
-  if(!("BiocManager" %in% installed.packages()[,"Package"])) install.packages("BiocManager", quiet = TRUE)
-  list.of.packages <- c("remotes")
-  new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
-  if(length(new.packages)) BiocManager::install(new.packages, ask = FALSE)
 
-  suppressMessages(remotes::install_github("icbi-lab/immunedeconv"))
+  # TODOTODO: we should handle this part outside the function call, i.e. in the dependencies - might require we go fully fledged with immunedeconv
+  # if(!("BiocManager" %in% installed.packages()[,"Package"])) install.packages("BiocManager", quiet = TRUE)
+  # list.of.packages <- c("remotes")
+  # new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+  # if(length(new.packages)) BiocManager::install(new.packages, ask = FALSE)
+  #
+  # suppressMessages(remotes::install_github("icbi-lab/immunedeconv"))
 
   # HGNC symbols are required
   try(if (any(grep("ENSG00000", rownames(RNA.tpm)))) stop("hgnc gene symbols are required", call. = FALSE))
