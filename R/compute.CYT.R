@@ -11,7 +11,7 @@
 #'
 #' @export
 #'
-#' @€xamples
+#' @examples
 #' # TODOTODO
 compute.CYT <- function(RNA.tpm){
 

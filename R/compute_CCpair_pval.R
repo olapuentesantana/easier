@@ -9,7 +9,7 @@
 #'
 #' @return p-value for each cell-cell pair
 #'
-#' @€xamples
+#' @examples
 #' # TODOTODO
 compute_CCpair_pval <- function(value, null.hypothesis){
 

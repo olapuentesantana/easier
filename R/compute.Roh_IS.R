@@ -11,7 +11,7 @@
 #'
 #' @export
 #'
-#' @€xamples
+#' @examples
 #' # TODOTODO
 compute.Roh_IS <- function(RNA.tpm){
 

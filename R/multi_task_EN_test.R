@@ -12,7 +12,7 @@
 #'
 #' @return A matrix with predictions for each sample and task.
 #'
-#' @€xamples
+#' @examples
 #' # TODOTODO
 multi_task_EN_test <- function(x.test, coef.matrix){
 

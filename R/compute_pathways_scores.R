@@ -17,7 +17,7 @@
 #'         }
 #' @export
 #'
-#' @€xamples
+#' @examples
 #' # TODOTODO
 compute_pathways_scores <- function(RNA.counts,
                                     remove.genes.ICB_proxies=TRUE){

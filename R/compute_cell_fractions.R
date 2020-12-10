@@ -14,7 +14,7 @@
 #'
 #' @return Cell fractions matrix: matrix of normalized enrichment scores with rows=samples and columns=TFs
 #'
-#' @€xamples
+#' @examples
 #' # TODOTODO
 compute_cell_fractions <- function(RNA.tpm
                                    # TODOTODO; do we need an ellipsis here?

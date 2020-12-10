@@ -11,7 +11,7 @@
 #'
 #' @export
 #'
-#' @€xamples
+#' @examples
 #' # TODOTODO
 compute.MSI <- function(RNA.tpm){
 

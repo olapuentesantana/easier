@@ -17,7 +17,7 @@
 #'         }
 #' @export
 #'
-#' @€xamples
+#' @examples
 #' # TODOTODO
 compute_TF_activity <- function(RNA.tpm,
                                 remove.genes.ICB_proxies=F){

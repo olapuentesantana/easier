@@ -11,7 +11,7 @@
 #' @param sd numeric vector with data
 #'
 #' @return numeric matrix with scaled data
-#' @€xamples
+#' @examples
 #' # TODOTODO
 standarization <- function(X, mean, sd){
 

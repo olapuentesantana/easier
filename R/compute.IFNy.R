@@ -11,7 +11,7 @@
 #'
 #' @export
 #'
-#' @€xamples
+#' @examples
 #' # TODOTODO
 compute.IFNy <- function(RNA.tpm){
 

@@ -11,7 +11,7 @@
 #'
 #' @export
 #'
-#' @€xamples
+#' @examples
 #' # TODOTODO
 compute.Ayers_expIS <- function(RNA.tpm){
 

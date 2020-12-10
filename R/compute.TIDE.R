@@ -14,7 +14,7 @@
 #'
 #' @export
 #'
-#' @€xamples
+#' @examples
 #' # TODOTODO
 compute.TIDE <- function(RNA.tpm, cancertype, output_file_path){
 

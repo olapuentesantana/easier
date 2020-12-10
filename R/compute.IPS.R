@@ -10,7 +10,7 @@
 #' @return numeric matrix with rows=samples and columns=Immunophenoscore
 #' @export
 #'
-#' @€xamples
+#' @examples
 #' # TODOTODO
 compute.IPS <- function(RNA.tpm){
 

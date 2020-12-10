@@ -17,7 +17,7 @@
 #'         }
 #' @export
 #'
-#' @€xamples
+#' @examples
 #' # TODOTODO
 compute_LR_pairs <- function(RNA.tpm,
                              remove.genes.ICB_proxies=F,

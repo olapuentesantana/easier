@@ -17,7 +17,7 @@
 #'               the null hypothesis}
 #'         }
 #'
-#' @€xamples
+#' @examples
 #' # TODOTODO
 compute_CC_pairs_grouped <- function(lrpairs, cancertype){
 

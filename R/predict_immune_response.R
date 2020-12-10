@@ -22,7 +22,7 @@
 #'
 #' @return Predictions for each model building.
 #'
-#' @€xamples
+#' @examples
 #' # TODOTODO
 predict_immune_response <- function(pathways=NULL, immunecells=NULL, tfs=NULL, lrpairs=NULL, ccpairs=NULL, cancertype){
 

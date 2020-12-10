@@ -8,7 +8,7 @@
 #' @param state numeric matrix with data
 #'
 #' @return numeric vector with the predictions
-#' @€xamples
+#' @examples
 #' # TODOTODO
 bemkl_supervised_multioutput_regression_variational_test <- function(Km, state) {
 

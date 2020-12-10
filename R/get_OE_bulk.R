@@ -11,7 +11,7 @@
 #'
 #' @return Random score
 #'
-#' @€xamples
+#' @examples
 #' # TODOTODO
 get_OE_bulk <- function(r,gene.sign = NULL,num.rounds = 1000,full.flag = F){
   set.seed(1234)

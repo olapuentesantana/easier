@@ -10,7 +10,7 @@
 #'
 #' @return Random score
 #'
-#' @€xamples
+#' @examples
 #' # TODOTODO
 get_semi_random_OE <- function(r,genes.dist.q,b.sign,num.rounds = 1000,full.flag = F){
   # Previous name: get.random.sig.scores
