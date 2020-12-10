@@ -20,3 +20,6 @@ Compute cell fractions from transcriptomics data.
 This function computes cell fractions from tpm RNAseq data using
 quanTIseq method
 }
+\examples{
+# TODOTODO
+}

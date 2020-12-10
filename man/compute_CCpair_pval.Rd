@@ -17,3 +17,6 @@ p-value for each cell-cell pair
 \description{
 \code{compute_CCpair_pval} compute corresponding p-values by comparing the score with the null hypothesis computed for each cell-cell pair.
 }
+\examples{
+# TODOTODO
+}

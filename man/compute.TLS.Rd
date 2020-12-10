@@ -16,3 +16,6 @@ numeric matrix with rows=samples and columns=TLS signature
 \code{compute_TLS} computes TLS signature as the geometric-mean of TLS signature genes
 (Cabrita et al., 2020).
 }
+\examples{
+# TODOTODO
+}

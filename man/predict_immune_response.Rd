@@ -39,3 +39,6 @@ the case for the other algorithm.
 These algorithms use model parameters learned during training on different types of data in
 order to compute the immune response.
 }
+\examples{
+# TODOTODO
+}

@@ -42,3 +42,6 @@ transcriptomics data in different formats is provided. An output file path shoul
 to save the plots as pdfs. An additional input must be a list with the gold standards the
 user wish to compare the prediction results.
 }
+\examples{
+# TODOTODO
+}

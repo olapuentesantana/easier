@@ -16,3 +16,6 @@ numeric matrix with rows=samples and columns=T cell-inflamed signature score
 \code{compute_ayersTcellInfl} computes T cell-inflamed signature score by taking a weighted sum of
 the housekeeping normalized values of the T cell-inflamed signature genes
 }
+\examples{
+# TODOTODO
+}

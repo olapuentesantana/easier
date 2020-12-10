@@ -50,3 +50,6 @@ feature contribution to the model building.
 Plot original features distribution together with the
 feature importance in the model
 }
+\examples{
+# TODOTODO
+}

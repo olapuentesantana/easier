@@ -22,3 +22,6 @@ A list with the following elements:
 \description{
 \code{compute_TF_activity} infers transription factor activity from tpm RNAseq data.
 }
+\examples{
+# TODOTODO
+}

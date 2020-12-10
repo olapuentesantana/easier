@@ -23,3 +23,6 @@ the null hypothesis}
 \description{
 \code{compute_CC_pairs} compute CC pairs from tpm, using the null model for CC interaction computed on TCGA data
 }
+\examples{
+# TODOTODO
+}

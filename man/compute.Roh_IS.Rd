@@ -16,3 +16,6 @@ numeric matrix with rows=samples and columns=Roh immune score
 \code{compute_rohIS} computes Roh immune score as the geometric-mean of immune score genes
 (Roh et al., 2017).
 }
+\examples{
+# TODOTODO
+}

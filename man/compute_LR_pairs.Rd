@@ -30,3 +30,6 @@ A list with the following elements:
 \description{
 \code{compute_LR_pairs} obtain ligand-receptor pairs weights from tpm RNAseq data.
 }
+\examples{
+# TODOTODO
+}

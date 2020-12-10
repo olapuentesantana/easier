@@ -20,3 +20,6 @@ numeric matrix with rows=samples and columns=TIDE score
 \code{compute_TIDE} computes TIDE score using tidepy python module. Input data is processed as recommended
 by the authors: log2 transformation, quantile normalization and mean centralization (Jiang et al., 2018).
 }
+\examples{
+# TODOTODO
+}
