@@ -21,3 +21,6 @@ Random score
 \description{
 \code{get_OE_bulk} obtained from literature to calculate Immune resistance program  (Jerby-Arnon et al., 2018)
 }
+\examples{
+# TODOTODO
+}

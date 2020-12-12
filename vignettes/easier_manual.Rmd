@@ -1,7 +1,28 @@
+---
+title: "easier_manual"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{easier_manual}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(easier)
+```
+
+```{r eval = FALSE}
 # ---------------------------------------------------------------------------
 # Install Estimate Systems Immune Response (easier) package
 # ---------------------------------------------------------------------------
-install.packages("~/ownCloud/SystemsImmunoOncology/Mechanistic_signatures_project/easier_1.0.3.tar.gz", repos = NULL, type="source")
+# install.packages("~/ownCloud/SystemsImmunoOncology/Mechanistic_signatures_project/easier_1.0.3.tar.gz", repos = NULL, type="source")
 library(easier)
 
 # ******************
@@ -115,4 +136,13 @@ tasks_values <- compute_gold_standards(RNA.tpm = tpm,
 
 
 
+
+
+```
+
+# Session info {-}
+
+```{r}
+sessionInfo()
+```
 

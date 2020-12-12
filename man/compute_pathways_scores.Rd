@@ -22,3 +22,6 @@ A list with the following elements:
 \description{
 \code{compute_pathways_scores} infers pathway activity from raw counts RNAseq data.
 }
+\examples{
+# TODOTODO
+}

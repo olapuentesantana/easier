@@ -1,5 +1,8 @@
 #' Comparison of the actual predictions based on different metrics with real patient response.
 #'
+#' Plot ROC curve and barplot with the area under the ROC curve.
+#' If list of gold standards is not provided, the function used a default one.
+#'
 #' \code{compare_response} plots ROC curves and barplots showing the accuracy of the predictions
 #'  on the real patient response data. It receives as input the predicted immune response as well
 #'  as the real patient response (they should be provided with the same order of samples). Gold
@@ -25,11 +28,8 @@
 #'
 #' @return ROC curves plots and barplots showing AUC values.
 #'
-#--------------------------------------------------------------------
-#  Plot ROC curve and barplot with the area under the ROC curve.
-#--------------------------------------------------------------------
-# If list of gold standards is not provided, the function used a default one.
-
+#' @examples
+#' # TODOTODO
 compare_immune_response <- function(predictions_immune_response = NULL,
                                     real_patient_response,
                                     RNA.tpm,
@@ -94,7 +94,6 @@ compare_immune_response <- function(predictions_immune_response = NULL,
   labels <- matrix(real_patient_response, nrow = length(real_patient_response), ncol = 100,
                    dimnames = list(colnames(RNA.tpm), seq(1, 100, 1)))
 
-  # ----------------
   # AUC predictions (when response available)
 
   if (missing(real_patient_response) == F){

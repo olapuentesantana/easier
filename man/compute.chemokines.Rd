@@ -16,3 +16,6 @@ numeric matrix with rows=samples and columns=chemokine score
 \code{compute_chemokine} computes chemoine score as the PC1 score that results from applying PCA
 to z-score expression of 12 chemokine genes (Messina et al., 2012).
 }
+\examples{
+# TODOTODO
+}

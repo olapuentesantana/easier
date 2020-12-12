@@ -16,8 +16,8 @@
 #'
 #' @return A matrix with the predictions obtained by applying the model on the view input data
 #'
-#------------------------------------------------------------------------------------------------
-
+#' @examples
+#' # TODOTODO
 predict_with_bemkl <- function(view_name, view_info, view_data, learned_model){
 
   # Initialize variables

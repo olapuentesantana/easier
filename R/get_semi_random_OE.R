@@ -10,8 +10,8 @@
 #'
 #' @return Random score
 #'
-#-------------------------------------------------------------------------------------------------------------
-# function: calculate random scores
+#' @examples
+#' # TODOTODO
 get_semi_random_OE <- function(r,genes.dist.q,b.sign,num.rounds = 1000,full.flag = F){
   # Previous name: get.random.sig.scores
   sign.q <- as.matrix(table(genes.dist.q[b.sign]))

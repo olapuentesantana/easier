@@ -10,7 +10,8 @@ compute_CCpair_score(
   intercell.network,
   lrpairs.binary,
   lr.frequency,
-  compute.log = T
+  compute.log = T,
+  cancertype
 )
 }
 \arguments{
@@ -18,13 +19,13 @@ compute_CCpair_score(
 
 \item{celltype2}{string character with second cell type involved in the interaction}
 
+\item{intercell.network}{matrix with data on cell types interaction network}
+
 \item{lrpairs.binary}{binary vector displaying LR pairs with non-zero frequency}
 
 \item{lr.frequency}{numeric vector with LR pairs frequency across the whole TCGA database}
 
 \item{compute.log}{boolean variable in order to take the log of the weighted score}
-
-\item{intracell.network}{matrix with data on cell types interaction network}
 
 \item{cancertype}{string character}
 }
@@ -33,4 +34,7 @@ numeric vector with weighted scores
 }
 \description{
 \code{compute_CCpair_score} computes the score for each cell - cell pair for all the patients.
+}
+\examples{
+# TODOTODO
 }

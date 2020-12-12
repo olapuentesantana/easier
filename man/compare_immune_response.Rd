@@ -30,6 +30,10 @@ compare_immune_response(
 ROC curves plots and barplots showing AUC values.
 }
 \description{
+Plot ROC curve and barplot with the area under the ROC curve.
+If list of gold standards is not provided, the function used a default one.
+}
+\details{
 \code{compare_response} plots ROC curves and barplots showing the accuracy of the predictions
 on the real patient response data. It receives as input the predicted immune response as well
 as the real patient response (they should be provided with the same order of samples). Gold
@@ -37,4 +41,7 @@ standards are also plotted to consider them as reference. To compute these gold 
 transcriptomics data in different formats is provided. An output file path should be given
 to save the plots as pdfs. An additional input must be a list with the gold standards the
 user wish to compare the prediction results.
+}
+\examples{
+# TODOTODO
 }

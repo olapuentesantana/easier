@@ -23,3 +23,6 @@ Random score
 \description{
 \code{get_semi_random_OE} obtained from literature to calculate Immune resistance program  (Jerby-Arnon et al., 2018)
 }
+\examples{
+# TODOTODO
+}

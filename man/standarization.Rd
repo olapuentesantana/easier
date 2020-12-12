@@ -19,3 +19,6 @@ numeric matrix with scaled data
 \description{
 \code{standarization} implements the z-score normalization.
 }
+\examples{
+# TODOTODO
+}

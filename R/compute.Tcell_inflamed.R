@@ -10,8 +10,9 @@
 #' @return numeric matrix with rows=samples and columns=T cell-inflamed signature score
 #'
 #' @export
-#-------------------------------------------------------------------------------------------------------------
-
+#'
+#' @examples
+#' # TODOTODO
 compute.Tcell_inflamed <- function(RNA.tpm){
 
   # Literature genes

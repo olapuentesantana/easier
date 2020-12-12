@@ -15,3 +15,6 @@ IPS per sample
 \description{
 \code{ipsmap} obtained from literature to calculate immunophenoscore.  (Charoentong et al., 2017)
 }
+\examples{
+# TODOTODO
+}

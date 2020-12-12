@@ -1,5 +1,7 @@
 #' compute_CC_pairs_grouped
 #'
+#' Compute CC pairs grouped from transcriptomics data.
+#'
 #' \code{compute_CC_pairs_grouped} computes CC pairs (considering cell groups instead of individual cell types) from tpm,
 #'  using the null model for CC interaction computed on TCGA data.
 #'
@@ -15,10 +17,8 @@
 #'               the null hypothesis}
 #'         }
 #'
-#--------------------------------------------------------------------
-# Compute CC pairs grouped from transcriptomics data.
-#--------------------------------------------------------------------
-
+#' @examples
+#' # TODOTODO
 compute_CC_pairs_grouped <- function(lrpairs, cancertype){
 
   # remove ligand receptor pairs that are always NA
