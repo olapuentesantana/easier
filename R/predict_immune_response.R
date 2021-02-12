@@ -57,7 +57,7 @@ predict_immune_response <- function(pathways=NULL, immunecells=NULL, tfs=NULL, l
 
   # Remove combinations with are not feasible due to missing views
   if(anyNA(miss_views)){
-    possible_combo <- possible_combo[,!is.na(colSums(possible_combo)), drop=F]
+    possible_combo <- possible_combo[,!is.na(colSums(possible_combo)), drop=FALSE]
   }
 
   # Views single
@@ -79,8 +79,8 @@ predict_immune_response <- function(pathways=NULL, immunecells=NULL, tfs=NULL, l
   })
 
   # Immune cells features curation:
-  if (missing(immunecells) == F){
-    colnames(immunecells) <-  gsub(".","_", colnames(immunecells), fixed = T)
+  if (missing(immunecells) == FALSE){
+    colnames(immunecells) <-  gsub(".","_", colnames(immunecells), fixed = TRUE)
   }
 
   all_predictions <- lapply(1:length(view_combinations), function(X){

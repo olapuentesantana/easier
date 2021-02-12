@@ -13,7 +13,7 @@
 #'
 #' @examples
 #' # TODOTODO
-get_OE_bulk <- function(r,gene.sign = NULL,num.rounds = 1000,full.flag = F){
+get_OE_bulk <- function(r,gene.sign = NULL,num.rounds = 1000,full.flag = FALSE){
   set.seed(1234)
   r$genes.mean <- rowMeans(r$tpm)
   r$zscores <- sweep(r$tpm,1,r$genes.mean,FUN = '-')

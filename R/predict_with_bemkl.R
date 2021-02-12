@@ -45,7 +45,7 @@ predict_with_bemkl <- function(view_name, view_info, view_data, learned_model){
 
     message("Iteration ", i,"\n")
     # standardize
-    if (standardize_any==T){
+    if (standardize_any==TRUE){
       for (m in 1:P){
 
         if (view_info[m] != "jaccard"){

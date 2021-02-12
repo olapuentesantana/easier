@@ -20,8 +20,8 @@
 #' @examples
 #' # TODOTODO
 compute_LR_pairs <- function(RNA.tpm,
-                             remove.genes.ICB_proxies=F,
-                             compute.cytokines.pairs=F,
+                             remove.genes.ICB_proxies=FALSE,
+                             compute.cytokines.pairs=FALSE,
                              cancertype){
 
   # Gene expression data (log2 transformed)
@@ -79,7 +79,7 @@ compute_LR_pairs <- function(RNA.tpm,
       pos_remove <- match(remove, colnames(CYTOKINE.pairs.computed))
       pos_keep <- match(keep, colnames(CYTOKINE.pairs.computed))
 
-      if(all(is.na(pos_remove) == F) & all(is.na(pos_keep) == F)){
+      if(all(is.na(pos_remove) == FALSE) & all(is.na(pos_keep) == FALSE)){
         colnames(CYTOKINE.pairs.computed)[pos_keep] <- combo_name
         CYTOKINE.pairs.computed <- CYTOKINE.pairs.computed[, -pos_remove]
       }

@@ -41,10 +41,10 @@ compare_immune_response <- function(predictions_immune_response = NULL,
   try(if(is.null(predictions_immune_response)) stop("none predictions found"))
 
   # Check that folder exists, create folder otherwise
-  if(dir.exists(output_file_path) == F) {
+  if(dir.exists(output_file_path) == FALSE) {
     dir.create(file.path(output_file_path), showWarnings = FALSE)
-    warning(paste0(sapply(strsplit(output_file_path, "/", fixed = T), tail , 1),
-                   " folder does not exist, creating ", sapply(strsplit(output_file_path, "/", fixed = T), tail , 1), " folder"))
+    warning(paste0(sapply(strsplit(output_file_path, "/", fixed = TRUE), tail , 1),
+                   " folder does not exist, creating ", sapply(strsplit(output_file_path, "/", fixed = TRUE), tail , 1), " folder"))
   }
 
   # Initialize variables
@@ -96,9 +96,9 @@ compare_immune_response <- function(predictions_immune_response = NULL,
 
   # AUC predictions (when response available)
 
-  if (missing(real_patient_response) == F){
+  if (missing(real_patient_response) == FALSE){
 
-    try(if(all(levels(as.factor(real_patient_response)) %in% c("NR", "R")) == F) {
+    try(if(all(levels(as.factor(real_patient_response)) %in% c("NR", "R")) == FALSE) {
       stop("real_patient_response factor levels are not NR and R") })
 
     # Compute gold standards
@@ -163,8 +163,8 @@ compare_immune_response <- function(predictions_immune_response = NULL,
     #
     # # Read tcga model
     # file <- dir(path = paste0("output/PanCancer_draft_v1/", cancertype, "/group_cor_tasks"),
-    #             pattern = "all_cv_res_", full.names = T, recursive = F)
-    # which_file <- grep(pattern = paste0("_with_cor_tasks_Transcript",".RData"), file, fixed = T)
+    #             pattern = "all_cv_res_", full.names = TRUE, recursive = FALSE)
+    # which_file <- grep(pattern = paste0("_with_cor_tasks_Transcript",".RData"), file, fixed = TRUE)
     # load(file[which_file])
     #
     # # Predict immune response using model parameters
@@ -469,7 +469,7 @@ compare_immune_response <- function(predictions_immune_response = NULL,
     # Gold standards #
     AUC.mean.sd_GS <-  do.call(rbind, lapply(names(ROC_info.GS), function(view){
 
-      View <- rep(sapply(strsplit(view, split = ".", fixed = T), head, 1), times = 100)
+      View <- rep(sapply(strsplit(view, split = ".", fixed = TRUE), head, 1), times = 100)
       Alg <- rep("any", times = 100)
       Model <- rep("1se.mse", times = 100)
       Task <- rep("Gold_Standard", times = 100)
@@ -529,7 +529,7 @@ compare_immune_response <- function(predictions_immune_response = NULL,
     ggplot2::ggplot(AUC.mean.sd_reg_final_sub, aes(x=View, y=round(AUC.median, 4), fill=View)) + # alpha = Task
       ggplot2::geom_bar(stat="identity", position = position_dodge(), color = "white") +
       ggplot2::scale_fill_manual(values = c(as.vector(color_overalls)[2], as.vector(color_consensus)[2],
-                                            as.vector(all_color_views)), guide = F) +
+                                            as.vector(all_color_views)), guide = FALSE) +
       #ggplot2::scale_alpha_manual(values = c(1,1,0.6,0.8)) +
       ggplot2::scale_x_discrete(labels = c("overall_mean" = "Overall\n(mean) views", "overall_median" = "Overall\n(median) views",
                                            "consensus_median" = "Overall\n(median) tasks", "consensus_mean" = "Overall\n(mean) tasks",

@@ -12,12 +12,12 @@
 #'
 #' @examples
 #' # TODOTODO
-get_semi_random_OE <- function(r,genes.dist.q,b.sign,num.rounds = 1000,full.flag = F){
+get_semi_random_OE <- function(r,genes.dist.q,b.sign,num.rounds = 1000,full.flag = FALSE){
   # Previous name: get.random.sig.scores
   sign.q <- as.matrix(table(genes.dist.q[b.sign]))
   q <- rownames(sign.q)
   idx.all <- c()
-  B <- matrix(data = F,nrow = length(genes.dist.q),ncol = num.rounds)
+  B <- matrix(data = FALSE,nrow = length(genes.dist.q),ncol = num.rounds)
   Q <- matrix(data = 0,nrow = length(genes.dist.q),ncol = num.rounds)
   for (i in 1:nrow(sign.q)){
     num.genes <- sign.q[i]
@@ -25,8 +25,8 @@ get_semi_random_OE <- function(r,genes.dist.q,b.sign,num.rounds = 1000,full.flag
       idx <- which(is.element(genes.dist.q,q[i]))
       for (j in 1:num.rounds){
         idxj <- sample(idx,num.genes)
-        Q[i,j] <- sum(B[idxj,j]==T)
-        B[idxj,j] <- T
+        Q[i,j] <- sum(B[idxj,j]==TRUE)
+        B[idxj,j] <- TRUE
       }
     }
   }
