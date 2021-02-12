@@ -37,7 +37,7 @@ compute_TF_activity <- function(RNA.tpm,
   }
 
   # Log transformed expression matrix (log2[tpm+1]): expression matrix scaled and recentered.
-  gene_expr <- standarization(t(tpm) , mean = TCGA.mean.pancancer, sd = TCGA.sd.pancancer)
+  gene_expr <- standardization(t(tpm) , mean = TCGA.mean.pancancer, sd = TCGA.sd.pancancer)
 
   # redefine gene names to match transcripts for viper
   E <- t(gene_expr)

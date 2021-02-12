@@ -138,7 +138,7 @@ compare_immune_response <- function(predictions_immune_response = NULL,
     # *******************************
     # Scale tasks (according to our analysis, scaling does not affect prediction)
 
-    # tasks_values_scaled <- data.frame(standarization(tasks_values))
+    # tasks_values_scaled <- data.frame(standardization(tasks_values))
     # rownames(tasks_values_scaled) <- colnames(RNA.tpm)
     # colnames(tasks_values_scaled) <- cor_tasks
 

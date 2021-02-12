@@ -59,7 +59,7 @@ predict_with_bemkl <- function(view_name, view_info, view_data, learned_model){
           learned_model[[i]]$mas.mea.learning.X[[m]] <- learned_model[[i]]$mas.mea.learning.X[[m]][keep_pos]
           learned_model[[i]]$mas.std.learning.X[[m]] <- learned_model[[i]]$mas.std.learning.X[[m]][keep_pos]
 
-          prediction.X[[m]] <- standarization(prediction.X[[m]], learned_model[[i]]$mas.mea.learning.X[[m]],
+          prediction.X[[m]] <- standardization(prediction.X[[m]], learned_model[[i]]$mas.mea.learning.X[[m]],
                                               learned_model[[i]]$mas.std.learning.X[[m]])
 
         }

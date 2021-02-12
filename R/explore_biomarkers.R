@@ -119,7 +119,7 @@ explore_biomarkers <- function(pathways,
       # To improve visualization, data needs to be normalized (z-score)
       mas_mea_view_data <- apply(view_data, 2, FUN = "mean", na.rm = TRUE)
       mas_std_view_data <- apply(view_data, 2, FUN = "sd", na.rm = TRUE)
-      view_data_z <- standarization(view_data, mas_mea_view_data, mas_std_view_data)
+      view_data_z <- standardization(view_data, mas_mea_view_data, mas_std_view_data)
 
       learned_model <- trained_models[[cancertype]][[view_name]]
 
