@@ -13,20 +13,22 @@ Authors@R:
         ),
         person(
             given = "Arsenij", family = "Ustjanzew", role = "aut", 
-            email = "xx@yy.zz", comment = c(ORCID = "xxxxx")
+            email = "xx@yy.zz", comment = c(ORCID = "0000-0002-1014-4521")
         ),
         person(
             given = "Francesca", family = "Finotello", role = "aut", 
-            email = "xx@yy.zz", comment = c(ORCID = "xxxxx")
+            email = "xx@yy.zz", comment = c(ORCID = "0000-0003-0712-4658")
         ),
         person(
             given = "Federica", family = "Eduati", role = "aut", 
-            email = "xx@yy.zz", comment = c(ORCID = "xxxxx")
+            email = "xx@yy.zz", comment = c(ORCID = "0000-0002-7822-3867")
         )
     )
 Description: This package allows researchers to assess patients' likelihood to respond to ICB therapies. 
              A machine learning model integrates patient transcriptomics data to gain insights into the 
              effect of ICBs on the patient immune response. TODO another sentence TODO.
+Depends:
+    R (>= 4.0)
 Imports: 
     progeny,
     remotes,
