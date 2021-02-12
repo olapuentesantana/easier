@@ -121,9 +121,16 @@ explore_biomarkers(pathways = pathways_scores,
                    real_patient_response = patient_labels,
                    output_file_path = "/Users/Oscar/Desktop/Riaz")
 
+# ---------------------------------------------------------------------------
+# Computation of the different tasks (i.e. gold standards)
+# ---------------------------------------------------------------------------
+tasks <- c("CYT", "IPS", "IMPRES", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
+           "Ayers_expIS", "Tcell_inflamed", "TIDE", "MSI")
 
-
-
+tasks_values <- compute_gold_standards(RNA.tpm = tpm,
+                                       list_gold_standards = tasks,
+                                       cancertype,
+                                       output_file_path)
 
 
 
