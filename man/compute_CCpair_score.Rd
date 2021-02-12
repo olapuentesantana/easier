@@ -10,7 +10,7 @@ compute_CCpair_score(
   intercell.network,
   lrpairs.binary,
   lr.frequency,
-  compute.log = T,
+  compute.log = TRUE,
   cancertype
 )
 }

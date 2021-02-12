@@ -4,7 +4,13 @@
 \alias{get_semi_random_OE}
 \title{Calculate random scores}
 \usage{
-get_semi_random_OE(r, genes.dist.q, b.sign, num.rounds = 1000, full.flag = F)
+get_semi_random_OE(
+  r,
+  genes.dist.q,
+  b.sign,
+  num.rounds = 1000,
+  full.flag = FALSE
+)
 }
 \arguments{
 \item{r}{list}

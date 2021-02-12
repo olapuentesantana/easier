@@ -6,8 +6,8 @@
 \usage{
 compute_LR_pairs(
   RNA.tpm,
-  remove.genes.ICB_proxies = F,
-  compute.cytokines.pairs = F,
+  remove.genes.ICB_proxies = FALSE,
+  compute.cytokines.pairs = FALSE,
   cancertype
 )
 }
