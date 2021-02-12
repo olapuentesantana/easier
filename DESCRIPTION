@@ -54,10 +54,10 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat
 VignetteBuilder: knitr
 biocViews:
     GeneExpression, Software, Transcription, Transcriptomics,Pathways, 
     GeneSetEnrichment, ImmunoOncology, Epigenetics, Classification, 
     BiomedicalInformatics,
-    
