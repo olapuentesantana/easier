@@ -67,7 +67,7 @@ predict_with_multitaskelasticnet <- function(view_name, view_info, view_data, le
     else cat(' \r')
 
     # standardize
-    if (standardize_any==T){
+    if (standardize_any==TRUE){
       for (m in 1:P){
 
         # Check features availability
@@ -80,7 +80,7 @@ predict_with_multitaskelasticnet <- function(view_name, view_info, view_data, le
         learned_model[[i]]$mas.std.learning.X[[m]] <- learned_model[[i]]$mas.std.learning.X[[m]][keep_pos]
         names(learned_model[[i]]$mas.std.learning.X[[m]]) <- names(learned_model[[i]]$mas.mea.learning.X[[m]])
 
-        prediction.X[[m]] <- standarization(X = prediction.X[[m]], mean = learned_model[[i]]$mas.mea.learning.X[[m]],
+        prediction.X[[m]] <- standardization(X = prediction.X[[m]], mean = learned_model[[i]]$mas.mea.learning.X[[m]],
                                             sd = learned_model[[i]]$mas.std.learning.X[[m]])
       }
     }

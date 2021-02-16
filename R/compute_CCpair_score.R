@@ -16,7 +16,7 @@
 #'
 #' @examples
 #' # TODOTODO
-compute_CCpair_score <- function(celltype1, celltype2, intercell.network, lrpairs.binary, lr.frequency, compute.log=T, cancertype) {
+compute_CCpair_score <- function(celltype1, celltype2, intercell.network, lrpairs.binary, lr.frequency, compute.log=TRUE, cancertype) {
 
   # consider the LR interactions between the two cell types
   CC.network <- intercell.network[intersect(which(intercell.network$cell1==celltype1), which(intercell.network$cell2==celltype2)),]
@@ -36,7 +36,7 @@ compute_CCpair_score <- function(celltype1, celltype2, intercell.network, lrpair
   CC.score <- apply(CC.LR.data.weighted, 1, sum)
 
   # if we use the weighted score taking the log might be better
-  if (compute.log==T){
+  if (compute.log==TRUE){
     CC.score <- log2(CC.score + 1)
   }
 }

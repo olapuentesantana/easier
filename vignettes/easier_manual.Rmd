@@ -134,10 +134,6 @@ tasks_values <- compute_gold_standards(RNA.tpm = tpm,
 
 
 
-
-
-
-
 ```
 
 # Session info {-}

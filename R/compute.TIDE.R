@@ -42,12 +42,12 @@ compute.TIDE <- function(RNA.tpm, cancertype, output_file_path){
     try(system(paste0("/anaconda3/bin/tidepy ", output_file_path,"/log2mas1TPM_norm_", cancertype,".txt", " -o ",output_file_path,"/output_TIDE_norm_",cancertype,".txt -c Other")))
   }
 
-  TIDE.table.norm <- utils::read.table(file = paste0(output_file_path, "/output_TIDE_norm_", cancertype,".txt"), sep = "\t", header = T, row.names = 1)
+  TIDE.table.norm <- utils::read.table(file = paste0(output_file_path, "/output_TIDE_norm_", cancertype,".txt"), sep = "\t", header = TRUE, row.names = 1)
   score <- TIDE.table.norm[, "TIDE", drop = FALSE]
 
   system(paste0("rm ", output_file_path, "/output_TIDE_norm_", cancertype,".txt"))
   system(paste0("rm ", output_file_path, "/log2mas1TPM_norm_", cancertype,".txt"))
 
   message("TIDE score computed")
-  return(data.frame(TIDE = score, check.names = F))
+  return(data.frame(TIDE = score, check.names = FALSE))
 }

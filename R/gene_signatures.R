@@ -24,7 +24,7 @@ compute_signature <- function(RNA_tpm,
   ### -- ideally one could use the generic function right away, therefore the extra checks
 
   # Log2 transformation:
-  log2.RNA.tpm <- log2(RNA.tpm + 1)
+  log2.RNA.tpm <- log2(RNA_tpm + 1)
 
   # Subset log2.RNA.tpm
   sub_log2.RNA.tpm <- log2.RNA.tpm[selected_signature, ] # here: it was the specific signature

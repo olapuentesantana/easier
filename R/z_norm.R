@@ -1,6 +1,6 @@
 #' Calculation of a matrix z-score from scratch.
 #'
-#' \code{standarization} implements the z-score normalization.
+#' \code{standardization} implements the z-score normalization.
 #'
 #' @importFrom matrixStats colSds
 #'
@@ -13,13 +13,13 @@
 #' @return numeric matrix with scaled data
 #' @examples
 #' # TODOTODO
-standarization <- function(X, mean, sd){
+standardization <- function(X, mean, sd){
 
   X.scale <- matrix(0, nrow(X), ncol(X), dimnames = list(rownames(X),colnames(X)))
 
   if (missing(mean) & missing(sd)) {
-     mean.X <- colMeans(X, na.rm = T)
-     sd.X <- colSds(as.matrix(X), na.rm = T)
+     mean.X <- colMeans(X, na.rm = TRUE)
+     sd.X <- colSds(as.matrix(X), na.rm = TRUE)
      X.scale <- sweep(X, 2, mean.X, FUN = "-")
      X.scale <- sweep(X.scale, 2, sd.X, FUN = "/")
   } else {

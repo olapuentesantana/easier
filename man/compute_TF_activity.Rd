@@ -4,7 +4,7 @@
 \alias{compute_TF_activity}
 \title{Compute transription factors activity}
 \usage{
-compute_TF_activity(RNA.tpm, remove.genes.ICB_proxies = F)
+compute_TF_activity(RNA.tpm, remove.genes.ICB_proxies = FALSE)
 }
 \arguments{
 \item{RNA.tpm}{numeric matrix of tpm values with rows=genes and columns=samples}
