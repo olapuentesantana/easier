@@ -11,9 +11,9 @@
 #'
 #' @return Random score
 #'
-#-------------------------------------------------------------------------------------------------------------
-# function: calculate overall expression (OE)
-get_OE_bulk <- function(r,gene.sign = NULL,num.rounds = 1000,full.flag = F){
+#' @examples
+#' # TODOTODO
+get_OE_bulk <- function(r,gene.sign = NULL,num.rounds = 1000,full.flag = FALSE){
   set.seed(1234)
   r$genes.mean <- rowMeans(r$tpm)
   r$zscores <- sweep(r$tpm,1,r$genes.mean,FUN = '-')
@@ -25,6 +25,8 @@ get_OE_bulk <- function(r,gene.sign = NULL,num.rounds = 1000,full.flag = F){
   r$sig.scores.raw <- r$sig.scores
   rand.flag <- is.null(r$rand.scores)|!all(is.element(names(gene.sign),colnames(r$rand.scores)))
   if(rand.flag){
+    # TODOTODO: maybe use message instead - it is handled in a more gentle way and could be suppressed in practical manners ;)
+    # TODOTODO: could apply to other print commands
     print("Computing also random scores.")
     r$rand.scores <- r$sig.scores
   }

@@ -16,3 +16,6 @@ numeric matrix with rows=samples and columns=IRP
 \code{compute_IRP} computes immune resistance program using the code provided by the authors.
 (Jerby-Arnon et al., 2018).
 }
+\examples{
+# TODOTODO
+}

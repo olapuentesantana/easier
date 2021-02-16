@@ -10,8 +10,9 @@
 #' @return numeric matrix with rows=samples and columns=chemokine score
 #'
 #' @export
-#-------------------------------------------------------------------------------------------------------------
-
+#'
+#' @examples
+#' # TODOTODO
 compute.chemokines <- function(RNA.tpm){
 
   # Literature genes
@@ -31,7 +32,7 @@ compute.chemokines <- function(RNA.tpm){
   sub_log2.RNA.tpm <- log2.RNA.tpm[match_chemokines.genes, ]
 
   # calculation: using PCA (Z-score calculated within prcomp)
-  chemokine.pca <- stats::prcomp(t(sub_log2.RNA.tpm), center = T, scale = T)
+  chemokine.pca <- stats::prcomp(t(sub_log2.RNA.tpm), center = TRUE, scale = TRUE)
   score <- chemokine.pca$x[, 1]
 
   message("Chemokines score computed")

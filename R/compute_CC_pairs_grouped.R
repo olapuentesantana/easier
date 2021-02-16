@@ -1,5 +1,7 @@
 #' compute_CC_pairs_grouped
 #'
+#' Compute CC pairs grouped from transcriptomics data.
+#'
 #' \code{compute_CC_pairs_grouped} computes CC pairs (considering cell groups instead of individual cell types) from tpm,
 #'  using the null model for CC interaction computed on TCGA data.
 #'
@@ -15,15 +17,13 @@
 #'               the null hypothesis}
 #'         }
 #'
-#--------------------------------------------------------------------
-# Compute CC pairs grouped from transcriptomics data.
-#--------------------------------------------------------------------
-
+#' @examples
+#' # TODOTODO
 compute_CC_pairs_grouped <- function(lrpairs, cancertype){
 
   # remove ligand receptor pairs that are always NA
   na.lrpairs <- apply(lrpairs, 2, function(x){all(is.na(x))})
-  lrpairs <- lrpairs[, na.lrpairs == F]
+  lrpairs <- lrpairs[, na.lrpairs == FALSE]
 
   # binarize the data: set a threshold to 10 TPM, only pairs where both ligand and receptor have
   # TPM > 10 are kept
@@ -42,7 +42,7 @@ compute_CC_pairs_grouped <- function(lrpairs, cancertype){
   CC.pairs.score <- do.call(cbind, lapply(celltypes, function(celltype1){
     do.call(cbind, lapply(celltypes, function(celltype2){
       compute_CCpair_score(celltype1, celltype2, intercell.network,
-                           lrpairs.binary, lr.frequency, compute.log=T)
+                           lrpairs.binary, lr.frequency, compute.log=TRUE)
     }))
   }))
 

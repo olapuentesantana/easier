@@ -18,3 +18,6 @@ A matrix with predictions for each sample and task.
 \description{
 \code{multi_task_EN_test} implements mutli-task elastic net regression on the test data
 }
+\examples{
+# TODOTODO
+}

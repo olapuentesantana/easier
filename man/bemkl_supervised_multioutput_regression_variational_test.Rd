@@ -18,3 +18,6 @@ numeric vector with the predictions
 \description{
 \code{bemkl_supervised_multioutput_regression_variational_test} implements bemkl on the test data
 }
+\examples{
+# TODOTODO
+}

@@ -10,8 +10,9 @@
 #' @return numeric matrix with rows=samples and columns=IRP
 #'
 #' @export
-#-------------------------------------------------------------------------------------------------------------
-
+#'
+#' @examples
+#' # TODOTODO
 compute.RIR <- function(RNA.tpm){
 
   # Literature genes
@@ -19,7 +20,7 @@ compute.RIR <- function(RNA.tpm){
   match_RIR.read <- match(RIR.read, rownames(RNA.tpm))
 
   if (anyNA(match_RIR.read)){
-    warning(c("differenty named or missing signature genes : \n", paste(RIR.read[!RIR.read %in% rownames(RNA.tpm)], collapse = "\n")))
+    warning(c("differently named or missing signature genes : \n", paste(RIR.read[!RIR.read %in% rownames(RNA.tpm)], collapse = "\n")))
     match_RIR.read <- stats::na.omit(match_RIR.read)
   }
 
@@ -32,7 +33,7 @@ compute.RIR <- function(RNA.tpm){
   r$genes <- rownames(log2.RNA.tpm)
 
   # Apply function to calculate OE:
-  res.scores <- get_OE_bulk(r, gene.sig = res.sig)
+  res.scores <- get_OE_bulk(r, gene.sign = res.sig)
 
   # Merge as recommend by authors
   res <- cbind.data.frame(excF.up = rowMeans(res.scores[, c("exc.up", "exc.seed.up")]),

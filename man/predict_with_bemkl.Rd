@@ -23,3 +23,6 @@ A matrix with the predictions obtained by applying the model on the view input d
 This algorithm employs model parameters learned during training on different types of data in
 order to compute the immune response.
 }
+\examples{
+# TODOTODO
+}

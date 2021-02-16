@@ -16,3 +16,6 @@ numeric matrix with rows=samples and columns=cytolytic activity score
 \code{compute_CYT} computes cytolytic activity score as the geometric mean of immune cytolytic genes
 (Rooney et al., 2015).
 }
+\examples{
+# TODOTODO
+}

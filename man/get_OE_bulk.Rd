@@ -4,7 +4,7 @@
 \alias{get_OE_bulk}
 \title{Calculate overall expression (OE)}
 \usage{
-get_OE_bulk(r, gene.sign = NULL, num.rounds = 1000, full.flag = F)
+get_OE_bulk(r, gene.sign = NULL, num.rounds = 1000, full.flag = FALSE)
 }
 \arguments{
 \item{r}{list}
@@ -20,4 +20,7 @@ Random score
 }
 \description{
 \code{get_OE_bulk} obtained from literature to calculate Immune resistance program  (Jerby-Arnon et al., 2018)
+}
+\examples{
+# TODOTODO
 }

@@ -4,6 +4,9 @@
 #' the dataset (separating responders and non-responders if known) together with information on the
 #' feature contribution to the model building.
 #'
+#' Plot original features distribution together with the
+#' feature importance in the model
+#'
 #' @importFrom grDevices pdf dev.off
 #' @importFrom stats aggregate
 #' @import ggplot2
@@ -24,11 +27,8 @@
 #'
 #' @return boxplot with features distribution
 #'
-#--------------------------------------------------------------------
-# Plot original features distribution together with the
-# feature importance in the model
-#--------------------------------------------------------------------
-
+#' @examples
+#' # TODOTODO
 explore_biomarkers <- function(pathways,
                                immunecells,
                                lrpairs,
@@ -41,10 +41,10 @@ explore_biomarkers <- function(pathways,
                                output_file_path){
 
   # Check that folder exists, create folder otherwise
-  if(dir.exists(output_file_path) == F) {
+  if(dir.exists(output_file_path) == FALSE) {
     dir.create(file.path(output_file_path), showWarnings = FALSE)
-    warning(paste0(sapply(strsplit(output_file_path, "/", fixed = T), tail , 1),
-            " folder does not exist, creating ", sapply(strsplit(output_file_path, "/", fixed = T), tail , 1), " folder"))
+    warning(paste0(sapply(strsplit(output_file_path, "/", fixed = TRUE), tail , 1),
+            " folder does not exist, creating ", sapply(strsplit(output_file_path, "/", fixed = TRUE), tail , 1), " folder"))
   }
 
   try(if(missing(cancertype)) stop("cancer type needs to be specified"))
@@ -105,8 +105,8 @@ explore_biomarkers <- function(pathways,
   })
 
   # Immune cells features curation:
-  if (missing(immunecells) == F){
-    colnames(immunecells) <-  gsub(".","_", colnames(immunecells), fixed = T)
+  if (missing(immunecells) == FALSE){
+    colnames(immunecells) <-  gsub(".","_", colnames(immunecells), fixed = TRUE)
   }
 
   # We explore biomarkers for each input separately:
@@ -117,9 +117,9 @@ explore_biomarkers <- function(pathways,
       view_data <- do.call(cbind, lapply(tolower(names(view_info)), function(X) as.data.frame(get(X))))
 
       # To improve visualization, data needs to be normalized (z-score)
-      mas_mea_view_data <- apply(view_data, 2, FUN = "mean", na.rm = T)
-      mas_std_view_data <- apply(view_data, 2, FUN = "sd", na.rm = T)
-      view_data_z <- standarization(view_data, mas_mea_view_data, mas_std_view_data)
+      mas_mea_view_data <- apply(view_data, 2, FUN = "mean", na.rm = TRUE)
+      mas_std_view_data <- apply(view_data, 2, FUN = "sd", na.rm = TRUE)
+      view_data_z <- standardization(view_data, mas_mea_view_data, mas_std_view_data)
 
       learned_model <- trained_models[[cancertype]][[view_name]]
 
@@ -158,10 +158,10 @@ explore_biomarkers <- function(pathways,
         # Boxplots
         #1. Calculate median across iteractions
         median.features <- stats::aggregate(Estimate ~ Feature +  DataType + CancerType + Task,
-                                            FUN = "median", na.rm = T, data = summary_iter)
+                                            FUN = "median", na.rm = TRUE, data = summary_iter)
         #2. Calculate median across tasks
         median.features <- stats::aggregate(Estimate ~ Feature + DataType + CancerType,
-                                     FUN = "median", na.rm = T, data = median.features)
+                                     FUN = "median", na.rm = TRUE, data = median.features)
         #3. Sort median values (not necessary)
         median.features <- median.features[order(abs(median.features$Estimate), decreasing = TRUE),]
         median.features$Feature <- factor(median.features$Feature, levels = rev(unique(median.features$Feature)))
@@ -193,8 +193,8 @@ explore_biomarkers <- function(pathways,
 
         # barplot
         median.features$Correlation <- sign(median.features$Estimate)
-        median.features$Correlation <- gsub("-1", "-", median.features$Correlation, fixed = T)
-        median.features$Correlation <- gsub("1", "+", median.features$Correlation, fixed = T)
+        median.features$Correlation <- gsub("-1", "-", median.features$Correlation, fixed = TRUE)
+        median.features$Correlation <- gsub("1", "+", median.features$Correlation, fixed = TRUE)
         median.features$Correlation <- factor(median.features$Correlation, levels = unique(median.features$Correlation))
 
         barplot <- ggplot2::ggplot(median.features, aes(x =  abs(Estimate), y = Feature, fill = Correlation)) +

@@ -8,7 +8,7 @@
 #' @param RNA.tpm numeric matrix of tpm values with rows=genes and columns=samples
 #' @param remove.genes.ICB_proxies boolean variable to reomove all those genes involved in the computation of ICB proxy's of response
 #' @param compute.cytokines.pairs boolean variable to compute cytokine pairs as well
-#' @param cancerype string character
+#' @param cancertype string character
 #'
 #' @return A list with the following elements:
 #'         \describe{
@@ -16,11 +16,12 @@
 #'               \item{CYTOKINEpairs}{Cytokine-Cytokine pairs weights matrix in log2(tpm + 1) with rows=samples and columns = CYTOKINE pairs}
 #'         }
 #' @export
-#-------------------------------------------------------------------------------
-
+#'
+#' @examples
+#' # TODOTODO
 compute_LR_pairs <- function(RNA.tpm,
-                             remove.genes.ICB_proxies=F,
-                             compute.cytokines.pairs=F,
+                             remove.genes.ICB_proxies=FALSE,
+                             compute.cytokines.pairs=FALSE,
                              cancertype){
 
   # Gene expression data (log2 transformed)
@@ -78,7 +79,7 @@ compute_LR_pairs <- function(RNA.tpm,
       pos_remove <- match(remove, colnames(CYTOKINE.pairs.computed))
       pos_keep <- match(keep, colnames(CYTOKINE.pairs.computed))
 
-      if(all(is.na(pos_remove) == F) & all(is.na(pos_keep) == F)){
+      if(all(is.na(pos_remove) == FALSE) & all(is.na(pos_keep) == FALSE)){
         colnames(CYTOKINE.pairs.computed)[pos_keep] <- combo_name
         CYTOKINE.pairs.computed <- CYTOKINE.pairs.computed[, -pos_remove]
       }

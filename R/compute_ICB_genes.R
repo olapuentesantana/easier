@@ -8,8 +8,8 @@
 #'
 #' @return List with the expression of the immune checkpoint genes
 #'
-#-------------------------------------------------------------------------------------------------------
-
+#' @examples
+#' # TODOTODO
 compute_ICB_genes <- function(RNA.tpm){
 
   # Extract position genes for GZMA and PRF1

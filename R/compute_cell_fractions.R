@@ -2,6 +2,10 @@
 #'
 #' \code{compute_cell_fractions} estimates cell fractions from bulk RNAseq data.
 #'
+#' Compute cell fractions from transcriptomics data.
+#' This function computes cell fractions from tpm RNAseq data using
+#' quanTIseq method
+#'
 #' @importFrom remotes install_github
 #'
 #' @export
@@ -10,22 +14,22 @@
 #'
 #' @return Cell fractions matrix: matrix of normalized enrichment scores with rows=samples and columns=TFs
 #'
-#--------------------------------------------------------------------
-# Compute cell fractions from transcriptomics data.
-#--------------------------------------------------------------------
-
-# This function computes cell fractions from tpm RNAseq data using qaunTIseq method
-
-compute_cell_fractions <- function(RNA.tpm,....){
+#' @examples
+#' # TODOTODO
+compute_cell_fractions <- function(RNA.tpm
+                                   # TODOTODO; do we need an ellipsis here?
+                                   ){
 
   # ****************
   # packages
-  if(!("BiocManager" %in% installed.packages()[,"Package"])) install.packages("BiocManager", quiet = TRUE)
-  list.of.packages <- c("remotes")
-  new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
-  if(length(new.packages)) BiocManager::install(new.packages, ask = FALSE)
 
-  suppressMessages(remotes::install_github("icbi-lab/immunedeconv"))
+  # TODOTODO: we should handle this part outside the function call, i.e. in the dependencies - might require we go fully fledged with immunedeconv
+  # if(!("BiocManager" %in% installed.packages()[,"Package"])) install.packages("BiocManager", quiet = TRUE)
+  # list.of.packages <- c("remotes")
+  # new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+  # if(length(new.packages)) BiocManager::install(new.packages, ask = FALSE)
+  #
+  # suppressMessages(remotes::install_github("icbi-lab/immunedeconv"))
 
   # HGNC symbols are required
   try(if (any(grep("ENSG00000", rownames(RNA.tpm)))) stop("hgnc gene symbols are required", call. = FALSE))

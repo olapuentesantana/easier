@@ -15,3 +15,6 @@ List with the expression of the immune checkpoint genes
 \description{
 \code{computation_ICB_genes} computes the scores for the immune checkpoint genes.
 }
+\examples{
+# TODOTODO
+}
