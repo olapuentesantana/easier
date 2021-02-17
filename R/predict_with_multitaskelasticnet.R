@@ -28,10 +28,10 @@ predict_with_multitaskelasticnet <- function(view_name, view_info, view_data, le
   Ndrug <- length(drugs)
   predictions <- predictions.all.tasks <- predictions.all.models <- list()
 
-  # Algorithm do not deal with NA values: here we removed features with NA values
+  # Algorithm do not deal with NA values: here we removed features with NA values, patients with all NA values are not removed
   view_data_new <- lapply(names(view_data), function(x){
     tmp_data <- view_data[[x]]
-    if (anyNA(tmp_data)){
+    if (all(is.na(apply(tmp_data, 1, sum)))){
       NA_sum <- apply(tmp_data, 2, sum)
       tmp_data <- tmp_data[,!is.na(NA_sum)]
     }
