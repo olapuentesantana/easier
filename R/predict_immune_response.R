@@ -26,8 +26,8 @@
 #' # TODOTODO
 predict_immune_response <- function(pathways=NULL, immunecells=NULL, tfs=NULL, lrpairs=NULL, ccpairs=NULL, cancertype){
 
-  try(if(missing(cancertype)) stop("cancer type needs to be specified"))
-  try(if(all(is.null(pathways),is.null(immunecells), is.null(tfs), is.null(lrpairs), is.null(ccpairs))) stop("none signature specified"))
+  if(missing(cancertype)) stop("cancer type needs to be specified")
+  if(all(is.null(pathways),is.null(immunecells), is.null(tfs), is.null(lrpairs), is.null(ccpairs))) stop("none signature specified")
 
   # Simplify efforts: get data in lowercase variables
   pathways.cor <- pathways

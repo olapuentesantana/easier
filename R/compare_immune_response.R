@@ -37,8 +37,8 @@ compare_immune_response <- function(predictions_immune_response = NULL,
                                     list_gold_standards,
                                     cancertype){
 
-  try(if(missing(cancertype)) stop("cancer type needs to be specified"))
-  try(if(is.null(predictions_immune_response)) stop("none predictions found"))
+  if(missing(cancertype)) stop("cancer type needs to be specified")
+  if(is.null(predictions_immune_response)) stop("none predictions found")
 
   # Check that folder exists, create folder otherwise
   if(dir.exists(output_file_path) == FALSE) {
