@@ -6,14 +6,12 @@
 #' @importFrom utils head tail
 #'
 #' @param RNA.tpm numeric matrix of tpm values with rows=genes and columns=samples
-#' @param remove.genes.ICB_proxies boolean variable to reomove all those genes involved in the computation of ICB proxy's of response
-#' @param compute.cytokines.pairs boolean variable to compute cytokine pairs as well
+#' @param remove.genes.ICB_proxies boolean variable to remove all those genes involved in the computation of ICB proxy's of response
 #' @param cancertype string character
 #'
 #' @return A list with the following elements:
 #'         \describe{
 #'               \item{LRpairs}{Ligand-leceptor pairs weights matrix in log2(tpm + 1) with rows=samples and columns = L-R pairs}
-#'               \item{CYTOKINEpairs}{Cytokine-Cytokine pairs weights matrix in log2(tpm + 1) with rows=samples and columns = CYTOKINE pairs}
 #'         }
 #' @export
 #'
@@ -21,7 +19,6 @@
 #' # TODOTODO
 compute_LR_pairs <- function(RNA.tpm,
                              remove.genes.ICB_proxies=FALSE,
-                             compute.cytokines.pairs=FALSE,
                              cancertype){
 
   # Gene expression data (log2 transformed)
@@ -58,53 +55,21 @@ compute_LR_pairs <- function(RNA.tpm,
   }))
   LR.pairs.computed <- t(LR.pairs.computed)
 
-  # Compute cytokine pairs
-  if (compute.cytokines.pairs) {
-    idy <- stats::na.exclude(match(CYTOKINE.pairs_subnetwork, colnames(LR.pairs.computed)))
-    CYTOKINE.pairs.computed <- LR.pairs.computed[,idy]
+  # Apply grouping to LRpairs data
+  for (X in 1:length(grouping_lrpairs_info)){
 
-    # Apply grouping to LRpairs data
-    for (X in 1:length(grouping_lrpairs_info)){
+    keep <- unique(grouping_lrpairs_info[[X]]$main)
+    remove <- unique(grouping_lrpairs_info[[X]]$involved_pairs)
+    combo_name <- unique(grouping_lrpairs_info[[X]]$combo_name)
 
-      keep <- unique(grouping_lrpairs_info[[X]]$main)
-      remove <- unique(grouping_lrpairs_info[[X]]$involved_pairs)
-      combo_name <- unique(grouping_lrpairs_info[[X]]$combo_name)
+    pos_remove <- match(remove, colnames(LR.pairs.computed))
+    pos_keep <- match(keep, colnames(LR.pairs.computed))
 
-      pos_remove <- match(remove, colnames(LR.pairs.computed))
-      pos_keep <- match(keep, colnames(LR.pairs.computed))
-
-      colnames(LR.pairs.computed)[pos_keep] <- combo_name
-      LR.pairs.computed <- LR.pairs.computed[, -pos_remove]
-
-      pos_remove <- match(remove, colnames(CYTOKINE.pairs.computed))
-      pos_keep <- match(keep, colnames(CYTOKINE.pairs.computed))
-
-      if(all(is.na(pos_remove) == FALSE) & all(is.na(pos_keep) == FALSE)){
-        colnames(CYTOKINE.pairs.computed)[pos_keep] <- combo_name
-        CYTOKINE.pairs.computed <- CYTOKINE.pairs.computed[, -pos_remove]
-      }
-    }
-    LR.data <- list(LRpairs = as.data.frame(LR.pairs.computed), CYTOKINEpairs = as.data.frame(CYTOKINE.pairs.computed))
-  }else{
-
-    # Apply grouping to LRpairs data
-    for (X in 1:length(grouping_lrpairs_info)){
-
-      keep <- unique(grouping_lrpairs_info[[X]]$main)
-      remove <- unique(grouping_lrpairs_info[[X]]$involved_pairs)
-      combo_name <- unique(grouping_lrpairs_info[[X]]$combo_name)
-
-      pos_remove <- match(remove, colnames(LR.pairs.computed))
-      pos_keep <- match(keep, colnames(LR.pairs.computed))
-
-      colnames(LR.pairs.computed)[pos_keep] <- combo_name
-      LR.pairs.computed <- LR.pairs.computed[, -pos_remove]
-    }
-    LR.data <- list(LRpairs = as.data.frame(LR.pairs.computed))
+    colnames(LR.pairs.computed)[pos_keep] <- combo_name
+    LR.pairs.computed <- LR.pairs.computed[, -pos_remove]
   }
 
-  message("L-R pairs computed \n")
-  message("Cytokine pairs computed \n")
-  return(LR.data)
+  message("LR pairs computed \n")
+  return(as.data.frame(LR.pairs.computed))
 }
 
