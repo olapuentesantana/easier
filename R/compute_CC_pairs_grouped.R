@@ -13,13 +13,11 @@
 #' @return A list with the following elements:
 #'         \describe{
 #'               \item{score}{cell-cell interaction scores matrix with rows=samples and columns=cells}
-#'               \item{pval}{corresponding p-values for each cell-cell pair, comparing the score with
-#'               the null hypothesis}
 #'         }
 #'
 #' @examples
 #' # TODOTODO
-compute_CC_pairs_grouped <- function(lrpairs, cancertype){
+compute_CC_pairs_grouped <- function(lrpairs, cancertype="pancan"){
 
   # remove ligand receptor pairs that are always NA
   na.lrpairs <- apply(lrpairs, 2, function(x){all(is.na(x))})

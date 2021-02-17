@@ -17,9 +17,7 @@
 #'
 #' @examples
 #' # TODOTODO
-compute_LR_pairs <- function(RNA.tpm,
-                             remove.genes.ICB_proxies=FALSE,
-                             cancertype){
+compute_LR_pairs <- function(RNA.tpm, remove.genes.ICB_proxies=FALSE, cancertype="pancan"){
 
   # Gene expression data (log2 transformed)
   gene_expr <- log2(RNA.tpm + 1)
