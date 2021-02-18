@@ -17,7 +17,7 @@
 #'
 #' @examples
 #' # TODOTODO
-compute.TIDE <- function(RNA_tpm,
+compute_TIDE <- function(RNA_tpm,
                          cancertype,
                          output_file_path) {
 

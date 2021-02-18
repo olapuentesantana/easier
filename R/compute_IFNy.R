@@ -1,6 +1,6 @@
 #' Compute IFNy signature score
 #'
-#' `compute.IFNy` computes IFNy signature score as the arithmetic mean of genes
+#' `compute_IFNy` computes IFNy signature score as the arithmetic mean of genes
 #' included in the IFN-γ signature (Ayers et al., JCI, 2017)
 #'
 #' @importFrom stats na.omit
@@ -13,7 +13,7 @@
 #'
 #' @examples
 #' # TODOTODO
-compute.IFNy <- function(RNA_tpm) {
+compute_IFNy <- function(RNA_tpm) {
 
   # Literature genes
   IFNy.read <- c("IFNG", "STAT1", "CXCL9", "CXCL10", "IDO1", "HLA-DRA")

@@ -13,7 +13,7 @@
 #'
 #' @examples
 #' # TODOTODO
-compute.TLS <- function(RNA_tpm) {
+compute_TLS <- function(RNA_tpm) {
 
   # Literature genes
   TLS.read <- c("CD79B", "CD1D", "CCR6", "LAT", "SKAP1", "CETP", "EIF1AY", "RBP5", "PTGDS")

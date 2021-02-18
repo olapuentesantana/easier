@@ -1,6 +1,6 @@
 #' Compute Davoli immune signature
 #'
-#' `compute.Davoli_IS` computes Davoli immune signature as the arithmetic mean of cytotoxic
+#' `compute_Davoli_IS` computes Davoli immune signature as the arithmetic mean of cytotoxic
 #' immune infiltrate signature genes, after rank normalization (Davoli et al., 2017).
 #'
 #' @importFrom stats na.omit
@@ -13,7 +13,7 @@
 #'
 #' @examples
 #' # TODOTODO
-compute.Davoli_IS <- function(RNA_tpm) {
+compute_Davoli_IS <- function(RNA_tpm) {
 
   # Literature genes
   Davoli_IS.read <- c("CD247", "CD2", "CD3E", "GZMH", "NKG7", "PRF1", "GZMK")

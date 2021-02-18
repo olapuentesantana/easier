@@ -13,7 +13,7 @@
 #'
 #' @examples
 #' # TODOTODO
-compute.CYT <- function(RNA_tpm) {
+compute_CYT <- function(RNA_tpm) {
 
   # Literature genes
   CYT.read <- c("GZMA", "PRF1")

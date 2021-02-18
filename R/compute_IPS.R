@@ -13,7 +13,7 @@
 #'
 #' @examples
 #' # TODOTODO
-compute.IPS <- function(RNA_tpm) {
+compute_IPS <- function(RNA_tpm) {
 
   # Log2 transformation:
   log2.RNA_tpm <- as.data.frame(log2(RNA_tpm + 1))

@@ -1,6 +1,6 @@
 #' Compute Expanded Immune signature
 #'
-#' `compute.Ayers_expIS` computes Expanded Immune signature score as the arithmetic
+#' `compute_Ayers_expIS` computes Expanded Immune signature score as the arithmetic
 #' mean of genes included in the Expanded Immune signature (Ayers et al., JCI, 2017)
 #'
 #' @importFrom stats na.omit
@@ -13,7 +13,7 @@
 #'
 #' @examples
 #' # TODOTODO
-compute.Ayers_expIS <- function(RNA_tpm){
+compute_Ayers_expIS <- function(RNA_tpm){
 
   # Literature genes
   Ayers_expIS.read <- c(

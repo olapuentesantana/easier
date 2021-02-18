@@ -48,7 +48,7 @@ compute_signature <- function(RNA_tpm,
 }
 
 
-compute.Davoli_IS_pimped <- function(RNA.tpm,
+compute_Davoli_IS_pimped <- function(RNA.tpm,
                                      sig_davoli = NULL) {
 
   #### Literature genes

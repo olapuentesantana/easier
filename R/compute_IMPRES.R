@@ -13,7 +13,7 @@
 #'
 #' @examples
 #' # TODOTODO
-compute.IMPRES <- function(RNA_tpm) {
+compute_IMPRES <- function(RNA_tpm) {
 
   # Literature genes
   IMPRES.basis <- data.frame(

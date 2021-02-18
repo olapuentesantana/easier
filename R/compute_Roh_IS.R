@@ -1,6 +1,6 @@
 #' Compute Roh immune score
 #'
-#' `compute.Roh_IS` computes Roh immune score as the geometric-mean of immune
+#' `compute_Roh_IS` computes Roh immune score as the geometric-mean of immune
 #' score genes (Roh et al., 2017).
 #'
 #' @importFrom stats na.omit
@@ -13,7 +13,7 @@
 #'
 #' @examples
 #' # TODOTODO
-compute.Roh_IS <- function(RNA_tpm) {
+compute_Roh_IS <- function(RNA_tpm) {
 
   # Literature genes
   Roh_IS.read <- c(

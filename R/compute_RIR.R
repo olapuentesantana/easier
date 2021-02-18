@@ -14,7 +14,7 @@
 #'
 #' @examples
 #' # TODOTODO
-compute.RIR <- function(RNA_tpm) {
+compute_RIR <- function(RNA_tpm) {
 
   # Literature genes
   RIR.read <- unique(unlist(res.sig))

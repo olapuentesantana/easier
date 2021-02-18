@@ -13,7 +13,7 @@
 #'
 #' @examples
 #' # TODOTODO
-compute.MSI <- function(RNA_tpm) {
+compute_MSI <- function(RNA_tpm) {
 
   # Literature genes: * (CCRN4L in tcga, NOCT approved symbol)
   MSI.basis <- data.frame(

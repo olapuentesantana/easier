@@ -13,7 +13,7 @@
 #'
 #' @examples
 #' # TODOTODO
-compute.chemokines <- function(RNA_tpm){
+compute_chemokines <- function(RNA_tpm){
 
   # Literature genes
   chemokines.read <- c(

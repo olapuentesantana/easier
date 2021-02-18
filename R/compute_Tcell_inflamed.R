@@ -16,7 +16,7 @@
 #'
 #' @examples
 #' # TODOTODO
-compute.Tcell_inflamed <- function(RNA_tpm) {
+compute_Tcell_inflamed <- function(RNA_tpm) {
 
   # Literature genes
   Tcell_inflamed.read <- c(
