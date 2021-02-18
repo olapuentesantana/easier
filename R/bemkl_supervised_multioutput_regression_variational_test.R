@@ -1,6 +1,6 @@
 #' BEMKL algorithm uses the training model parameters on the test set.
 #'
-#' \code{bemkl_supervised_multioutput_regression_variational_test} implements bemkl on the test data
+#' `bemkl_supervised_multioutput_regression_variational_test` implements bemkl on the test data
 #'
 #' @export
 #'
@@ -10,7 +10,8 @@
 #' @return numeric vector with the predictions
 #' @examples
 #' # TODOTODO
-bemkl_supervised_multioutput_regression_variational_test <- function(Km, state) {
+bemkl_supervised_multioutput_regression_variational_test <- function(Km,
+                                                                     state) {
 
   N <- dim(Km)[2]
   P <- dim(Km)[3]

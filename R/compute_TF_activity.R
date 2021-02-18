@@ -1,20 +1,21 @@
 #' Compute transription factors activity
 #'
-#' \code{compute_TF_activity} infers transription factor activity from tpm RNAseq data.
+#' `compute_TF_activity` infers transription factor activity from tpm RNA-seq data.
 #'
 #' @importFrom dorothea run_viper
 #' @importFrom stats na.exclude
 #' @importFrom dplyr filter
 #'
 #' @param RNA.tpm numeric matrix of tpm values with rows=genes and columns=samples
-#' @param remove.genes.ICB_proxies boolean variable to reomove all those genes involved in the computation of ICB proxy's of response
+#' @param remove.genes.ICB_proxies boolean variable to remove all those genes
+#' involved in the computation of ICB proxy's of response
 #'
 #' @return A list with the following elements:
-#'         \describe{
-#'               \item{scores}{TF activity matrix with rows=samples and columns=TFs}
-#'               \item{transcripts_kept}{vector with available gene names}
-#'               \item{transcripts_left}{vector with missing gene names}
-#'         }
+#'   \describe{
+#'     \item{scores}{TF activity matrix with rows=samples and columns=TFs}
+#'     \item{transcripts_kept}{vector with available gene names}
+#'     \item{transcripts_left}{vector with missing gene names}
+#'   }
 #' @export
 #'
 #' @examples

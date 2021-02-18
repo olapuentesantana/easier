@@ -1,7 +1,7 @@
 #' Compute Expanded Immune signature
 #'
-#' \code{compute_ayersEI} computes Expanded Immune signature score as the arithmetic mean of genes included
-#' in the Expanded Immune signature (Ayers et al., JCI, 2017)
+#' `compute.Ayers_expIS` computes Expanded Immune signature score as the arithmetic
+#' mean of genes included in the Expanded Immune signature (Ayers et al., JCI, 2017)
 #'
 #' @importFrom stats na.omit
 #'
@@ -16,8 +16,9 @@
 compute.Ayers_expIS <- function(RNA.tpm){
 
   # Literature genes
-  Ayers_expIS.read <- c("GZMB", "GZMK", "CXCR6", "CXCL10", "CXCL13", "CCL5", "STAT1","CD3D", "CD3E",
-                                 "CD2", "IL2RG" , "NKG7", "HLA-E", "CIITA","HLA-DRA", "LAG3", "IDO1", "TAGAP")
+  Ayers_expIS.read <- c(
+    "GZMB", "GZMK", "CXCR6", "CXCL10", "CXCL13", "CCL5", "STAT1","CD3D", "CD3E",
+    "CD2", "IL2RG" , "NKG7", "HLA-E", "CIITA","HLA-DRA", "LAG3", "IDO1", "TAGAP")
   match_Ayers_expIS.genes <- match(Ayers_expIS.read, rownames(RNA.tpm))
 
   if (anyNA(match_Ayers_expIS.genes)){

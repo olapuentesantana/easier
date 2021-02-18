@@ -1,6 +1,6 @@
 #' Compute the expression of the immune checkpoints genes
 #'
-#' \code{computation_ICB_genes} computes the scores for the immune checkpoint genes.
+#' `computation_ICB_genes` computes the scores for the immune checkpoint genes.
 #'
 #' @export
 #'

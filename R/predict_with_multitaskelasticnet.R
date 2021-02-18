@@ -1,8 +1,9 @@
 #' Make predictions using multi-task elastic net
 #'
-#' \code{predict_with_multitaskelasticnet} predicts immune response using multi-task elastic net algorithm.
-#' This algorithm employs model parameters learned during training on different types of data in
-#' order to compute the immune response.
+#' `predict_with_multitaskelasticnet` predicts immune response using multi-task
+#' elastic net algorithm.
+#' This algorithm employs model parameters learned during training on different
+#' types of data in order to compute the immune response.
 #'
 #' @importFrom stats na.omit
 #'
@@ -10,14 +11,19 @@
 #'
 #' @param view_name input view name
 #' @param view_info input view information of its composition.
-#' @param view_data input view data as a list. Each item of the list correponds to a certain view.
+#' @param view_data input view data as a list. Each item of the list corresponds
+#' to a certain view.
 #' @param learned_model parameters learned during training with cross-validation.
 #'
-#' @return A matrix with the predictions obtained by applying the model on the view input data
+#' @return A matrix with the predictions obtained by applying the model on the
+#' view input data
 #'
 #' @examples
 #' # TODOTODO
-predict_with_multitaskelasticnet <- function(view_name, view_info, view_data, learned_model){
+predict_with_multitaskelasticnet <- function(view_name,
+                                             view_info,
+                                             view_data,
+                                             learned_model) {
 
   # Initialize variables
   P <- length(view_info)

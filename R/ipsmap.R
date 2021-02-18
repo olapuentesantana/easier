@@ -1,6 +1,7 @@
 #' Calculate Immunophenoscore value
 #'
-#' \code{ipsmap} obtained from literature to calculate immunophenoscore.  (Charoentong et al., 2017)
+#' `ipsmap` obtained from literature to calculate immunophenoscore.
+#' (Charoentong et al., 2017)
 #'
 #' @param x numeric value per sample, needed to check more precisely.
 #'

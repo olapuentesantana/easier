@@ -1,6 +1,7 @@
 #' Compute gold standards
 #'
-#' \code{computation_gold_standards} computes the scores for the gold standards required by the user
+#' `computation_gold_standards` computes the scores for the gold standards
+#' required by the user
 #'
 #' @export
 #'

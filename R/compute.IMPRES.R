@@ -1,7 +1,7 @@
 #' Compute Immuno-Predictive Score (IMPRES)
 #'
-#' \code{compute_IMPRES} computes IMPRES score by applying logical comparison of checkpoint gene pairs
-#' (Auslander et al., 2018).
+#' `compute_IMPRES` computes IMPRES score by applying logical comparison of
+#' checkpoint gene pairs (Auslander et al., 2018).
 #'
 #' @importFrom stats na.omit
 #'
@@ -13,13 +13,15 @@
 #'
 #' @examples
 #' # TODOTODO
-compute.IMPRES <- function(RNA.tpm){
+compute.IMPRES <- function(RNA.tpm) {
 
   # Literature genes
-  IMPRES.basis <- data.frame(Gene_1 = c("PDCD1","CD27","CTLA4","CD40","CD86", "CD28", "CD80",
-                                        "CD274","CD86","CD40","CD86","CD40","CD28","CD40","TNFRSF14"),
-                             Gene_2 = c("TNFSF4","PDCD1","TNFSF4","CD28","TNFSF4", "CD86", "TNFSF9",
-                                        "C10orf54","HAVCR2","PDCD1","CD200","CD80","CD276","CD274","CD86"))
+  IMPRES.basis <- data.frame(
+    Gene_1 = c("PDCD1","CD27","CTLA4","CD40","CD86", "CD28", "CD80",
+               "CD274","CD86","CD40","CD86","CD40","CD28","CD40","TNFRSF14"),
+    Gene_2 = c("TNFSF4","PDCD1","TNFSF4","CD28","TNFSF4", "CD86", "TNFSF9",
+               "C10orf54","HAVCR2","PDCD1","CD200","CD80","CD276","CD274","CD86")
+  )
 
   IMPRES.read <- unique(as.vector(as.matrix(IMPRES.basis))) # 15 genes
 

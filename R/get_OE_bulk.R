@@ -1,10 +1,11 @@
 #' Calculate overall expression (OE)
 #'
-#' \code{get_OE_bulk} obtained from literature to calculate Immune resistance program  (Jerby-Arnon et al., 2018)
+#' `get_OE_bulk` obtained from literature to calculate Immune resistance program
+#' (Jerby-Arnon et al., 2018)
 #'
 #' @importFrom arules discretize
 #'
-#' @param r list
+#' @param r list TODOTODO - needs some more info?
 #' @param gene.sign string
 #' @param num.rounds integer
 #' @param full.flag boolean
@@ -13,7 +14,10 @@
 #'
 #' @examples
 #' # TODOTODO
-get_OE_bulk <- function(r,gene.sign = NULL,num.rounds = 1000,full.flag = FALSE){
+get_OE_bulk <- function(r,
+                        gene.sign = NULL,
+                        num.rounds = 1000,
+                        full.flag = FALSE) {
   set.seed(1234)
   r$genes.mean <- rowMeans(r$tpm)
   r$zscores <- sweep(r$tpm,1,r$genes.mean,FUN = '-')

@@ -1,18 +1,19 @@
 #' Compute immunophenoscore
 #'
-#' \code{compute_IPS} computes the immunophenoscore using source code provided by original publication
-#' (Charoentong et al., 2017).
+#' `compute_IPS` computes the immunophenoscore using source code provided by
+#' original publication (Charoentong et al., 2017).
 #'
 #' @importFrom stats sd
 #'
 #' @param RNA.tpm numeric matrix with rows=genes and columns=samples
 #'
 #' @return numeric matrix with rows=samples and columns=Immunophenoscore
+#'
 #' @export
 #'
 #' @examples
 #' # TODOTODO
-compute.IPS <- function(RNA.tpm){
+compute.IPS <- function(RNA.tpm) {
 
   # Log2 transformation:
   log2.RNA.tpm <- as.data.frame(log2(RNA.tpm + 1))

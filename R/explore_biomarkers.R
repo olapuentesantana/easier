@@ -1,11 +1,11 @@
 #' Examination of possible relevant biomarkers in cancer dataset
 #'
-#' \code{explore_biomarkers} provides an overview of the mechanistic signatures features distribution in
-#' the dataset (separating responders and non-responders if known) together with information on the
-#' feature contribution to the model building.
+#' `explore_biomarkers` provides an overview of the mechanistic signatures features
+#' distribution in the dataset (separating responders and non-responders if known)
+#' together with information on the feature contribution to the model building.
 #'
-#' Plot original features distribution together with the
-#' feature importance in the model
+#' Plot original features distribution together with the feature importance in
+#' the model
 #'
 #' @importFrom grDevices pdf dev.off
 #' @importFrom stats aggregate

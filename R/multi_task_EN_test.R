@@ -1,7 +1,7 @@
 #' Multi-task elastic net algorithm implements the model training coefficients and
 #' hyperparameters on the test set.
 #'
-#' \code{multi_task_EN_test} implements mutli-task elastic net regression on the test data
+#' `multi_task_EN_test` implements mutli-task elastic net regression on the test data
 #'
 #' @importFrom stats na.omit
 #'
@@ -14,7 +14,8 @@
 #'
 #' @examples
 #' # TODOTODO
-multi_task_EN_test <- function(x.test, coef.matrix){
+multi_task_EN_test <- function(x.test,
+                               coef.matrix) {
 
   # Keep intercept
   Intercept <- as.matrix(coef.matrix)[1,]

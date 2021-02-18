@@ -1,7 +1,7 @@
 #' Compute cytolytic activity score
 #'
-#' \code{compute_CYT} computes cytolytic activity score as the geometric mean of immune cytolytic genes
-#' (Rooney et al., 2015).
+#' `compute_CYT` computes cytolytic activity score as the geometric mean of immune
+#' cytolytic genes (Rooney et al., 2015).
 #'
 #' @importFrom stats na.omit
 #'

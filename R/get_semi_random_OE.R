@@ -1,8 +1,9 @@
 #' Calculate random scores
 #'
-#' \code{get_semi_random_OE} obtained from literature to calculate Immune resistance program  (Jerby-Arnon et al., 2018)
+#' `get_semi_random_OE` obtained from literature to calculate Immune resistance
+#' program  (Jerby-Arnon et al., 2018) TODOTODO - out of sync?
 #'
-#' @param r list
+#' @param r list TODOTODO - more info here as well
 #' @param genes.dist.q integer
 #' @param b.sign boolean
 #' @param num.rounds integer

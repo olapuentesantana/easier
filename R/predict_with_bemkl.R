@@ -1,8 +1,8 @@
 #' Make predictions using BEMKL
 #'
-#' \code{predict_with_bemkl} predicts immune response using bayesian efficient multi-kernel algorithm.
-#' This algorithm employs model parameters learned during training on different types of data in
-#' order to compute the immune response.
+#' `predict_with_bemkl` predicts immune response using bayesian efficient
+#' multi-kernel algorithm. This algorithm employs model parameters learned
+#' during training on different types of data in order to compute the immune response.
 #'
 #' @importFrom pdist pdist
 #' @importFrom stats na.omit
@@ -11,14 +11,19 @@
 #'
 #' @param view_name input view name
 #' @param view_info input view information of its composition.
-#' @param view_data input view data as a list. Each item of the list correponds to a certain view.
+#' @param view_data input view data as a list. Each item of the list corresponds
+#' to a certain view.
 #' @param learned_model parameters learned during training with cross-validation.
 #'
-#' @return A matrix with the predictions obtained by applying the model on the view input data
+#' @return A matrix with the predictions obtained by applying the model on the
+#' view input data
 #'
 #' @examples
 #' # TODOTODO
-predict_with_bemkl <- function(view_name, view_info, view_data, learned_model){
+predict_with_bemkl <- function(view_name,
+                               view_info,
+                               view_data,
+                               learned_model) {
 
   # Initialize variables
   P <- length(view_info)
@@ -38,7 +43,7 @@ predict_with_bemkl <- function(view_name, view_info, view_data, learned_model){
   }))
 
   # Per iteration
-  for (i in 1:K){
+  for (i in 1:K) {
     state <- learned_model[[i]]$model
     learning.X <- learned_model[[i]]$training_set
     prediction.X <- lapply(names(view_info), function(x){view_data[[x]]})

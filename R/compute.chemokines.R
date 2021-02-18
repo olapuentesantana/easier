@@ -1,7 +1,7 @@
 #' Compute chemokine score
 #'
-#' \code{compute_chemokine} computes chemoine score as the PC1 score that results from applying PCA
-#' to z-score expression of 12 chemokine genes (Messina et al., 2012).
+#' `compute_chemokines` computes chemokine score as the PC1 score that results from
+#' applying PCA to z-score expression of 12 chemokine genes (Messina et al., 2012).
 #'
 #' @importFrom stats na.omit prcomp
 #'
@@ -16,8 +16,10 @@
 compute.chemokines <- function(RNA.tpm){
 
   # Literature genes
-  chemokines.read <- c("CCL2", "CCL3", "CCL4", "CCL5", "CCL8", "CCL18", "CCL19", "CCL21",
-                      "CXCL9", "CXCL10", "CXCL11", "CXCL13")
+  chemokines.read <- c(
+    "CCL2", "CCL3", "CCL4", "CCL5", "CCL8", "CCL18", "CCL19", "CCL21",
+    "CXCL9", "CXCL10", "CXCL11", "CXCL13")
+
   match_chemokines.genes <- match(chemokines.read, rownames(RNA.tpm))
 
   if (anyNA(match_chemokines.genes)){

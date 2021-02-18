@@ -3,13 +3,13 @@
 #' Plot ROC curve and barplot with the area under the ROC curve.
 #' If list of gold standards is not provided, the function used a default one.
 #'
-#' \code{compare_response} plots ROC curves and barplots showing the accuracy of the predictions
-#'  on the real patient response data. It receives as input the predicted immune response as well
-#'  as the real patient response (they should be provided with the same order of samples). Gold
-#'  standards are also plotted to consider them as reference. To compute these gold standards,
-#'  transcriptomics data in different formats is provided. An output file path should be given
-#'  to save the plots as pdfs. An additional input must be a list with the gold standards the
-#'  user wish to compare the prediction results.
+#' `compare_response` plots ROC curves and barplots showing the accuracy of the predictions
+#' on the real patient response data. It receives as input the predicted immune response as well
+#' as the real patient response (they should be provided with the same order of samples). Gold
+#' standards are also plotted to consider them as reference. To compute these gold standards,
+#' transcriptomics data in different formats is provided. An output file path should be given
+#' to save the plots as pdfs. An additional input must be a list with the gold standards the
+#' user wish to compare the prediction results.
 #'
 #' @importFrom ROCR prediction performance plot
 #' @importFrom grDevices gray.colors pdf dev.off
@@ -35,7 +35,7 @@ compare_immune_response <- function(predictions_immune_response = NULL,
                                     RNA.tpm,
                                     output_file_path,
                                     list_gold_standards,
-                                    cancertype){
+                                    cancertype) {
 
   if(missing(cancertype)) stop("cancer type needs to be specified")
   if(is.null(predictions_immune_response)) stop("none predictions found")

@@ -2,22 +2,24 @@
 #'
 #' Compute CC pairs grouped from transcriptomics data.
 #'
-#' \code{compute_CC_pairs_grouped} computes CC pairs (considering cell groups instead of individual cell types) from tpm,
-#'  using the null model for CC interaction computed on TCGA data.
+#' `compute_CC_pairs_grouped` computes CC pairs (considering cell groups instead
+#' of individual cell types) from tpm, using the null model for CC interaction
+#' computed on TCGA data.
 #'
 #' @export
 #'
-#' @param lrpairs Ligand-leceptor pairs weights matrix
+#' @param lrpairs Ligand-receptor pairs weights matrix
 #' @param cancertype string character
 #'
 #' @return A list with the following elements:
-#'         \describe{
-#'               \item{score}{cell-cell interaction scores matrix with rows=samples and columns=cells}
-#'         }
+#'   \describe{
+#'     \item{score}{cell-cell interaction scores matrix with rows=samples and columns=cells}
+#'   }
 #'
 #' @examples
 #' # TODOTODO
-compute_CC_pairs_grouped <- function(lrpairs, cancertype="pancan"){
+compute_CC_pairs_grouped <- function(lrpairs,
+                                     cancertype="pancan"){
 
   # remove ligand receptor pairs that are always NA
   na.lrpairs <- apply(lrpairs, 2, function(x){all(is.na(x))})

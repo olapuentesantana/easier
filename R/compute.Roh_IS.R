@@ -1,7 +1,7 @@
 #' Compute Roh immune score
 #'
-#' \code{compute_rohIS} computes Roh immune score as the geometric-mean of immune score genes
-#' (Roh et al., 2017).
+#' `compute.Roh_IS` computes Roh immune score as the geometric-mean of immune
+#' score genes (Roh et al., 2017).
 #'
 #' @importFrom stats na.omit
 #'
@@ -13,14 +13,17 @@
 #'
 #' @examples
 #' # TODOTODO
-compute.Roh_IS <- function(RNA.tpm){
+compute.Roh_IS <- function(RNA.tpm) {
 
   # Literature genes
-  Roh_IS.read <- c("GZMA", "GZMB", "PRF1", "GNLY", "HLA-A", "HLA-B", "HLA-C", "HLA-E", "HLA-F",
-                   "HLA-G", "HLA-H", "HLA-DMA", "HLA-DMB", "HLA-DOA", "HLA-DOB", "HLA-DPA1",
-                   "HLA-DPB1", "HLA-DQA1", "HLA-DQA2", "HLA-DQB1", "HLA-DRA", "HLA-DRB1",
-                   "IFNG", "IFNGR1", "IFNGR2", "IRF1", "STAT1", "PSMB9", "CCR5", "CCL3", "CCL4",
-                   "CCL5", "CXCL9", "CXCL10", "CXCL11", "ICAM1", "ICAM2", "ICAM3", "ICAM4", "ICAM5", "VCAM1")
+  Roh_IS.read <- c(
+    "GZMA", "GZMB", "PRF1", "GNLY", "HLA-A", "HLA-B", "HLA-C", "HLA-E", "HLA-F",
+    "HLA-G", "HLA-H", "HLA-DMA", "HLA-DMB", "HLA-DOA", "HLA-DOB", "HLA-DPA1",
+    "HLA-DPB1", "HLA-DQA1", "HLA-DQA2", "HLA-DQB1", "HLA-DRA", "HLA-DRB1",
+    "IFNG", "IFNGR1", "IFNGR2", "IRF1", "STAT1", "PSMB9", "CCR5", "CCL3", "CCL4",
+    "CCL5", "CXCL9", "CXCL10", "CXCL11", "ICAM1", "ICAM2", "ICAM3", "ICAM4",
+    "ICAM5", "VCAM1")
+
   match_Roh_IS.genes <- match(Roh_IS.read, rownames(RNA.tpm))
 
   if (anyNA(match_Roh_IS.genes)){

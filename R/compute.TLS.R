@@ -1,7 +1,7 @@
 #' Compute tertiary lymphoid structures signature
 #'
-#' \code{compute_TLS} computes TLS signature as the geometric-mean of TLS signature genes
-#' (Cabrita et al., 2020).
+#' `compute_TLS` computes TLS signature as the geometric-mean of TLS signature
+#' genes (Cabrita et al., 2020).
 #'
 #' @importFrom stats na.omit
 #'
@@ -13,7 +13,7 @@
 #'
 #' @examples
 #' # TODOTODO
-compute.TLS <- function(RNA.tpm){
+compute.TLS <- function(RNA.tpm) {
 
   # Literature genes
   TLS.read <- c("CD79B", "CD1D", "CCR6", "LAT", "SKAP1", "CETP", "EIF1AY", "RBP5", "PTGDS")

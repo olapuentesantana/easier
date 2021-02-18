@@ -1,7 +1,8 @@
 #' Compute Immune resistance program
 #'
-#' \code{compute_IRP} computes immune resistance program using the code provided by the authors.
-#' (Jerby-Arnon et al., 2018).
+#' `compute_IRP` computes immune resistance program using the code provided by
+#' the authors. (Jerby-Arnon et al., 2018).
+#' TODOTODOoscar: out of sync name vs doc
 #'
 #' @importFrom stats na.omit
 #'
@@ -13,7 +14,7 @@
 #'
 #' @examples
 #' # TODOTODO
-compute.RIR <- function(RNA.tpm){
+compute.RIR <- function(RNA.tpm) {
 
   # Literature genes
   RIR.read <- unique(unlist(res.sig))

@@ -1,7 +1,7 @@
 #' Compute MSI score
 #'
-#' \code{compute_MSI} computes MSI score by applying logical comparison of MSI-related gene pairs
-#' (Fu et al., 2019).
+#' `compute_MSI` computes MSI score by applying logical comparison of MSI-related
+#' gene pairs (Fu et al., 2019).
 #'
 #' @importFrom stats na.omit
 #'
@@ -13,13 +13,16 @@
 #'
 #' @examples
 #' # TODOTODO
-compute.MSI <- function(RNA.tpm){
+compute.MSI <- function(RNA.tpm) {
 
   # Literature genes: * (CCRN4L in tcga, NOCT approved symbol)
-  MSI.basis <- data.frame(Gene_1 = c("HNRNPL","MTA2","CALR","RASL11A","LYG1", "STRN3", "HPSE",
-                                     "PRPF39","NOCT","AMFR"),
-                          Gene_2 = c("CDC16","VGF","SEC22B","CAB39L","DHRS12", "TMEM192", "BCAS3",
-                                     "ATF6","GRM8","DUSP18"))
+  MSI.basis <- data.frame(
+    Gene_1 = c("HNRNPL","MTA2","CALR","RASL11A","LYG1", "STRN3", "HPSE",
+               "PRPF39","NOCT","AMFR"),
+    Gene_2 = c("CDC16","VGF","SEC22B","CAB39L","DHRS12", "TMEM192", "BCAS3",
+               "ATF6","GRM8","DUSP18")
+  )
+
   MSI.read <- unique(as.vector(as.matrix(MSI.basis))) # 20 genes
 
   # Some genes might have other name: case for "CCRN4L", it's called "NOCT", be carefull
@@ -33,7 +36,8 @@ compute.MSI <- function(RNA.tpm){
   match_F_2 <- match(as.character(MSI.basis[,2]), rownames(RNA.tpm))
 
   if (anyNA(c(match_F_1,match_F_2))){
-    warning(c("differenty named or missing signature genes : \n", paste(MSI.read[!MSI.read %in% rownames(RNA.tpm)], collapse = "\n")))
+    warning(c("differenty named or missing signature genes : \n",
+              paste(MSI.read[!MSI.read %in% rownames(RNA.tpm)], collapse = "\n")))
   }
 
   # Initialize variables

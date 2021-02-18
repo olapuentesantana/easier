@@ -1,7 +1,8 @@
 #' Compute TIDE score
 #'
-#' \code{compute_TIDE} computes TIDE score using tidepy python module. Input data is processed as recommended
-#' by the authors: log2 transformation, quantile normalization and mean centralization (Jiang et al., 2018).
+#' `compute_TIDE` computes TIDE score using tidepy python module. Input data is
+#' processed as recommended by the authors: log2 transformation, quantile
+#' normalization and mean centralization (Jiang et al., 2018).
 #'
 #' @importFrom preprocessCore normalize.quantiles
 #' @importFrom utils read.table write.table
@@ -16,7 +17,9 @@
 #'
 #' @examples
 #' # TODOTODO
-compute.TIDE <- function(RNA.tpm, cancertype, output_file_path){
+compute.TIDE <- function(RNA.tpm,
+                         cancertype,
+                         output_file_path) {
 
   # Pre-process #
 

@@ -1,18 +1,16 @@
 #' Compute immune cell fractions
 #'
-#' \code{compute_cell_fractions} estimates cell fractions from bulk RNAseq data.
+#' `compute_cell_fractions` estimates cell fractions from bulk RNA-seq data.
 #'
-#' Compute cell fractions from transcriptomics data.
-#' This function computes cell fractions from tpm RNAseq data using
-#' quanTIseq method
-#'
-#' @importFrom remotes install_github
+#' Compute cell fractions from transcriptomics data. This function computes cell
+#' fractions from tpm RNAseq data using quanTIseq method
 #'
 #' @export
 #'
 #' @param RNA.tpm numeric matrix of tpm values with rows=genes and columns=samples
 #'
-#' @return Cell fractions matrix: matrix of normalized enrichment scores with rows=samples and columns=TFs
+#' @return Cell fractions matrix: matrix of normalized enrichment scores with
+#' rows=samples and columns=TFs
 #'
 #' @examples
 #' # TODOTODO
