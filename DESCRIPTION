@@ -62,4 +62,4 @@ VignetteBuilder: knitr
 biocViews:
     GeneExpression, Software, Transcription, Transcriptomics,Pathways, 
     GeneSetEnrichment, ImmunoOncology, Epigenetics, Classification, 
-    BiomedicalInformatics,
+    BiomedicalInformatics, Regression
