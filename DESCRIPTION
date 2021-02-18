@@ -57,6 +57,7 @@ RoxygenNote: 7.1.1
 Suggests: 
     knitr,
     rmarkdown,
+    BiocStyle,
     testthat
 VignetteBuilder: knitr
 biocViews:
