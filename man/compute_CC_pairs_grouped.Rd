@@ -4,7 +4,7 @@
 \alias{compute_CC_pairs_grouped}
 \title{compute_CC_pairs_grouped}
 \usage{
-compute_CC_pairs_grouped(lrpairs, cancertype)
+compute_CC_pairs_grouped(lrpairs, cancertype = "pancan")
 }
 \arguments{
 \item{lrpairs}{Ligand-leceptor pairs weights matrix}
@@ -15,8 +15,6 @@ compute_CC_pairs_grouped(lrpairs, cancertype)
 A list with the following elements:
 \describe{
 \item{score}{cell-cell interaction scores matrix with rows=samples and columns=cells}
-\item{pval}{corresponding p-values for each cell-cell pair, comparing the score with
-the null hypothesis}
 }
 }
 \description{
