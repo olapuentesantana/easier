@@ -5,15 +5,15 @@
 \title{Compute ligand-receptor pairs}
 \usage{
 compute_LR_pairs(
-  RNA.tpm,
-  remove.genes.ICB_proxies = FALSE,
+  RNA_tpm,
+  remove_genes_ICB_proxies = FALSE,
   cancertype = "pancan"
 )
 }
 \arguments{
-\item{RNA.tpm}{numeric matrix of tpm values with rows=genes and columns=samples}
+\item{RNA_tpm}{numeric matrix of tpm values with rows=genes and columns=samples}
 
-\item{remove.genes.ICB_proxies}{boolean variable to remove all those genes
+\item{remove_genes_ICB_proxies}{boolean variable to remove all those genes
 involved in the computation of ICB proxy's of response}
 
 \item{cancertype}{string character}

@@ -39,4 +39,5 @@ bemkl_supervised_multioutput_regression_variational_test <- function(Km,
   }
 
   prediction <- list(G = G, Y = Y)
+  return(prediction)
 }

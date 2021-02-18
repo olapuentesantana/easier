@@ -4,12 +4,12 @@
 \alias{compute_pathways_scores}
 \title{Compute pathways score}
 \usage{
-compute_pathways_scores(RNA.counts, remove.genes.ICB_proxies = TRUE)
+compute_pathways_scores(RNA_counts, remove_genes_ICB_proxies = TRUE)
 }
 \arguments{
-\item{RNA.counts}{numeric matrix of read counts with rows=genes and columns=samples}
+\item{RNA_counts}{numeric matrix of read counts with rows=genes and columns=samples}
 
-\item{remove.genes.ICB_proxies}{boolean variable to remove all those genes involved
+\item{remove_genes_ICB_proxies}{boolean variable to remove all those genes involved
 in the computation of ICB proxy's of response}
 }
 \value{

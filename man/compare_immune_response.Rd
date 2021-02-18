@@ -7,7 +7,7 @@
 compare_immune_response(
   predictions_immune_response = NULL,
   real_patient_response,
-  RNA.tpm,
+  RNA_tpm,
   output_file_path,
   list_gold_standards,
   cancertype
@@ -18,7 +18,7 @@ compare_immune_response(
 
 \item{real_patient_response}{vector with two factors (NR,R)}
 
-\item{RNA.tpm}{numeric matrix with data}
+\item{RNA_tpm}{numeric matrix with data}
 
 \item{output_file_path}{string with a file name}
 

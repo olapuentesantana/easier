@@ -4,12 +4,12 @@
 \alias{compute_TF_activity}
 \title{Compute transription factors activity}
 \usage{
-compute_TF_activity(RNA.tpm, remove.genes.ICB_proxies = FALSE)
+compute_TF_activity(RNA_tpm, remove_genes_ICB_proxies = FALSE)
 }
 \arguments{
-\item{RNA.tpm}{numeric matrix of tpm values with rows=genes and columns=samples}
+\item{RNA_tpm}{numeric matrix of tpm values with rows=genes and columns=samples}
 
-\item{remove.genes.ICB_proxies}{boolean variable to remove all those genes
+\item{remove_genes_ICB_proxies}{boolean variable to remove all those genes
 involved in the computation of ICB proxy's of response}
 }
 \value{

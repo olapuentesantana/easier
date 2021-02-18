@@ -5,14 +5,14 @@
 \title{Compute gold standards}
 \usage{
 compute_gold_standards(
-  RNA.tpm,
+  RNA_tpm,
   list_gold_standards,
   cancertype,
   output_file_path
 )
 }
 \arguments{
-\item{RNA.tpm}{numeric matrix with data, as tpm values}
+\item{RNA_tpm}{numeric matrix with data, as tpm values}
 
 \item{list_gold_standards}{string with gold standards names}
 

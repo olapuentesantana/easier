@@ -4,10 +4,10 @@
 \alias{compute_ICB_genes}
 \title{Compute the expression of the immune checkpoints genes}
 \usage{
-compute_ICB_genes(RNA.tpm)
+compute_ICB_genes(RNA_tpm)
 }
 \arguments{
-\item{RNA.tpm}{numeric matrix with data}
+\item{RNA_tpm}{numeric matrix with data}
 }
 \value{
 List with the expression of the immune checkpoint genes

@@ -4,10 +4,10 @@
 \alias{compute_cell_fractions}
 \title{Compute immune cell fractions}
 \usage{
-compute_cell_fractions(RNA.tpm)
+compute_cell_fractions(RNA_tpm)
 }
 \arguments{
-\item{RNA.tpm}{numeric matrix of tpm values with rows=genes and columns=samples}
+\item{RNA_tpm}{numeric matrix of tpm values with rows=genes and columns=samples}
 }
 \value{
 Cell fractions matrix: matrix of normalized enrichment scores with
@@ -18,7 +18,7 @@ rows=samples and columns=TFs
 }
 \details{
 Compute cell fractions from transcriptomics data. This function computes cell
-fractions from tpm RNAseq data using quanTIseq method
+fractions from tpm RNA-seq data using quanTIseq method
 }
 \examples{
 # TODOTODO

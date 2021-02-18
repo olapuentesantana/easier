@@ -5,18 +5,19 @@
 \title{Multi-task elastic net algorithm implements the model training coefficients and
 hyperparameters on the test set.}
 \usage{
-multi_task_EN_test(x.test, coef.matrix)
+multi_task_EN_test(x_test, coef_matrix)
 }
 \arguments{
-\item{x.test}{A matrix with data required to perform predictions.}
+\item{x_test}{A matrix with data required to perform predictions.}
 
-\item{coef.matrix}{A coefficient matrix obtained during training the model (rows = features and columns = tasks).}
+\item{coef_matrix}{A coefficient matrix obtained during training the model
+(rows = features and columns = tasks).}
 }
 \value{
 A matrix with predictions for each sample and task.
 }
 \description{
-\code{multi_task_EN_test} implements mutli-task elastic net regression on the test data
+\code{multi_task_EN_test} implements multi-task elastic net regression on the test data
 }
 \examples{
 # TODOTODO

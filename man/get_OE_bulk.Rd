@@ -4,16 +4,16 @@
 \alias{get_OE_bulk}
 \title{Calculate overall expression (OE)}
 \usage{
-get_OE_bulk(r, gene.sign = NULL, num.rounds = 1000, full.flag = FALSE)
+get_OE_bulk(r, gene_sign = NULL, num_rounds = 1000, full_flag = FALSE)
 }
 \arguments{
 \item{r}{list TODOTODO - needs some more info?}
 
-\item{gene.sign}{string}
+\item{gene_sign}{string}
 
-\item{num.rounds}{integer}
+\item{num_rounds}{integer}
 
-\item{full.flag}{boolean}
+\item{full_flag}{boolean}
 }
 \value{
 Random score

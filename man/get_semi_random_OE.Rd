@@ -6,22 +6,22 @@
 \usage{
 get_semi_random_OE(
   r,
-  genes.dist.q,
-  b.sign,
-  num.rounds = 1000,
-  full.flag = FALSE
+  genes_dist_q,
+  b_sign,
+  num_rounds = 1000,
+  full_flag = FALSE
 )
 }
 \arguments{
 \item{r}{list TODOTODO - more info here as well}
 
-\item{genes.dist.q}{integer}
+\item{genes_dist_q}{integer}
 
-\item{b.sign}{boolean}
+\item{b_sign}{boolean}
 
-\item{num.rounds}{integer}
+\item{num_rounds}{integer}
 
-\item{full.flag}{boolean}
+\item{full_flag}{boolean}
 }
 \value{
 Random score
