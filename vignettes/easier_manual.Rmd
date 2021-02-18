@@ -18,121 +18,88 @@ knitr::opts_chunk$set(
 library(easier)
 ```
 
+---
+
+# Introduction {#introduction} 
+
+This vignette describes how to use the `r BiocStyle::Biocpkg("easier")` package for the prediction and interpretation of cancer patients' systems immune response.
+
+Users can provide bulk tumor RNA-seq data as input.
+
+This packages includes a Shiny application to allow users to explore patient-specific systems biomarkers of the immune response.
+
+To understand the essentials of `r BiocStyle::Biocpkg("easier")` package, we recommend reading the following preprint [article](https://www.biorxiv.org/content/10.1101/2021.02.05.429977v1).
+
+# Getting started {#gettingstarted}
+
+Easier can be installed as follows:
+
 ```{r eval = FALSE}
-# ---------------------------------------------------------------------------
-# Install Estimate Systems Immune Response (easier) package
-# ---------------------------------------------------------------------------
 # install.packages("~/ownCloud/SystemsImmunoOncology/Mechanistic_signatures_project/easier_1.0.3.tar.gz", repos = NULL, type="source")
 library(easier)
+````
 
-# ******************
-# Example: Riaz
-# ******************
-data("Riaz_data")
+## Computation of system-based signatures of the tumor microenvironment
 
-# ---------------------------------------------------------------------------
+```{r eval = FALSE}
 # Computation of cell fractions
-# ---------------------------------------------------------------------------
 cell_fractions <- compute_cell_fractions(RNA.tpm = Riaz_data$tpm_RNAseq)
 
-# ---------------------------------------------------------------------------
-# Computation of pathways scores
-# ---------------------------------------------------------------------------
-Pathway_activities <- compute_pathways_scores(RNA.counts = Riaz_data$raw_counts_RNAseq,
-                                              remove.genes.ICB_proxies = TRUE)
+# Computation of pathway scores
+pathway_activity <- compute_pathways_scores(RNA.counts = Riaz_data$raw_counts_RNAseq, remove.genes.ICB_proxies = TRUE)
 
-# ---------------------------------------------------------------------------
 # Computation of TF activity
-# ---------------------------------------------------------------------------
-TF_activities <- compute_TF_activity(RNA.tpm = Riaz_data$tpm_RNAseq,
-                                     remove.genes.ICB_proxies = FALSE)
+tf_activity <- compute_TF_activity(RNA.tpm = Riaz_data$tpm_RNAseq, remove.genes.ICB_proxies = FALSE)
 
-# ---------------------------------------------------------------------------
-# Computation of LR pairs weights
-# ---------------------------------------------------------------------------
-LR_data <- compute_LR_pairs(RNA.tpm = Riaz_data$tpm_RNAseq,
-                            remove.genes.ICB_proxies = FALSE,
-                            compute.cytokines.pairs = FALSE,
-                            cancertype = cancertype)
+# Computation of ligand-receptor pair weights
+lrpair_weights <- compute_LR_pairs(RNA.tpm = Riaz_data$tpm_RNAseq, remove.genes.ICB_proxies = FALSE, cancertype = "pancan")
 
-# ---------------------------------------------------------------------------
-# Computation of cell-cell interactions scores
-# ---------------------------------------------------------------------------
-CCpairs_grouped <- compute_CC_pairs_grouped(lrpairs = LR_data$LRpairs,
-                                            cancertype = cancertype)
+# Computation of cell-cell interaction scores
+ccpair_scores <- compute_CC_pairs_grouped(lrpairs = lrpairs_weights$LRpairs, cancertype = "pancan")
+````
 
-# ---------------------------------------------------------------------------
-# Predict immune response
-# ---------------------------------------------------------------------------
+## Computation of different hallmarks of the immune response
 
-# *********************
-# Collect views data
-pathways_scores <- Pathway_activities$scores
-cell_fractions <- cell_fractions
-lrpairs_weights <- LR_data$LRpairs
-tfs_scores <- TF_activities$scores
-ccpairsgrouped_scores <- CCpairs_grouped$score
+```{r eval = FALSE}
+tasks <- c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
+immune_response <- compute_gold_standards(RNA.tpm=tpm, list_gold_standards=tasks, cancertype=cancer_type, output_file_path=tmp_file_path)
+```
 
-# *********************
-# Specify cancer type
-cancertype <- "SKCM"
+## Predict patients' immune response
 
-predictions_immune_response <- predict_immune_response(pathways = pathways_scores,
+```{r eval = FALSE}
+predictions_immune_response <- predict_immune_response(pathways = pathways_activity,
                                                        immunecells = cell_fractions,
                                                        lrpairs = lrpairs_weights,
-                                                       tfs = tfs_scores,
-                                                       ccpairsgroupedscores = ccpairsgrouped_scores,
+                                                       tfs = tf_activity,
+                                                       ccpairs = ccpairs_scores,
                                                        cancertype = cancertype)
+```
 
-# ---------------------------------------------------------------------------
-# Compare predicted immune response with real patient response
-# Assess likelihood of patient response to ICB therapy
-# ---------------------------------------------------------------------------
 
-# *********************
-# Provide tpm data (row: genes ; columns: samples)
-tpm <- Riaz_data$tpm_RNAseq
 
-# *********************
-# Patient labels (factor variable with two levels: NR and R)
-patient_labels <- Riaz_data$patient_response
+## Assess patient-specific likelihood of response to ICB therapy
 
-# *********************
-# Specify output file path
-output_file_path <- "/Users/Oscar/Desktop/Riaz"
-
+```{r eval = FALSE}
 compare_immune_response(predictions_immune_response = predictions_immune_response,
-                        real_patient_response = patient_labels,
-                        RNA.tpm = tpm,
-                        output_file_path = output_file_path,
+                        real_patient_response = Riaz_data$patient_response,
+                        RNA.tpm = Riaz_data$tpm_RNAseq,
+                        output_file_path = "/Users/Oscar/Desktop/Riaz",
                         cancertype = cancertype)
+```
 
+## Analyze systems biomarkers of immune response
 
-# ---------------------------------------------------------------------------
-# Have a look into the biomarkers
-# ---------------------------------------------------------------------------
-
+```{r eval = FALSE}
 explore_biomarkers(pathways = pathways_scores,
                    immunecells = cell_fractions,
                    # lrpairs = lrpairs_weights,
                    # tfs = tfs_scores,
                    # ccpairsgroupedscores = ccpairsgrouped_scores,
                    cancertype = cancertype,
-                   real_patient_response = patient_labels,
+                   real_patient_response = Riaz_data$patient_response,
                    output_file_path = "/Users/Oscar/Desktop/Riaz")
-
-# ---------------------------------------------------------------------------
-# Computation of the different tasks (i.e. gold standards)
-# ---------------------------------------------------------------------------
-tasks <- c("CYT", "IPS", "IMPRES", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
-           "Ayers_expIS", "Tcell_inflamed", "TIDE", "MSI")
-
-tasks_values <- compute_gold_standards(RNA.tpm = tpm,
-                                       list_gold_standards = tasks,
-                                       cancertype,
-                                       output_file_path)
-
-
+````
 
 ```
 
