@@ -5,8 +5,8 @@
 #' @importFrom stats na.exclude
 #' @importFrom utils head tail
 #'
-#' @param RNA.tpm numeric matrix of tpm values with rows=genes and columns=samples
-#' @param remove.genes.ICB_proxies boolean variable to remove all those genes
+#' @param RNA_tpm numeric matrix of tpm values with rows=genes and columns=samples
+#' @param remove_genes_ICB_proxies boolean variable to remove all those genes
 #' involved in the computation of ICB proxy's of response
 #' @param cancertype string character
 #'
@@ -19,19 +19,19 @@
 #'
 #' @examples
 #' # TODOTODO
-compute_LR_pairs <- function(RNA.tpm,
-                             remove.genes.ICB_proxies = FALSE,
+compute_LR_pairs <- function(RNA_tpm,
+                             remove_genes_ICB_proxies = FALSE,
                              cancertype = "pancan") {
 
   # Gene expression data (log2 transformed)
-  gene_expr <- log2(RNA.tpm + 1)
+  gene_expr <- log2(RNA_tpm + 1)
   genes <- rownames(gene_expr)
 
   # HGNC symbols are required
   try(if (any(grep("ENSG00000", genes))) stop("hgnc gene symbols are required", call. = FALSE))
 
   # Genes to remove according to all ICB proxy's
-  if (remove.genes.ICB_proxies) {
+  if (remove_genes_ICB_proxies) {
     message("Removing signatures genes for proxy's of ICB response  \n")
     idy <- stats::na.exclude(match(all_genes_to_remove, rownames(gene_expr)))
     gene_expr <- gene_expr[-idy,]

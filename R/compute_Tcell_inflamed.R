@@ -7,15 +7,16 @@
 #'
 #' @importFrom stats na.omit
 #'
-#' @param RNA.tpm numeric matrix with rows=genes and columns=samples
+#' @param RNA_tpm numeric matrix with rows=genes and columns=samples
 #'
-#' @return numeric matrix with rows=samples and columns=T cell-inflamed signature score
+#' @return numeric matrix with rows=samples and columns=T cell-inflamed signature
+#' score
 #'
 #' @export
 #'
 #' @examples
 #' # TODOTODO
-compute.Tcell_inflamed <- function(RNA.tpm) {
+compute.Tcell_inflamed <- function(RNA_tpm) {
 
   # Literature genes
   Tcell_inflamed.read <- c(
@@ -32,38 +33,38 @@ compute.Tcell_inflamed <- function(RNA.tpm) {
     TIGIT=0.084767, check.names = FALSE)
 
   # Some genes might have other name: case for "C14orf102", it's called "NRDE2", be careful
-  if (any(rownames(RNA.tpm) %in% "C14orf102")){
+  if (any(rownames(RNA_tpm) %in% "C14orf102")){
     cat("Gene name changed: NRDE2 is approved symbol, not C14orf102","\n")
-    rownames(RNA.tpm)[rownames(RNA.tpm) %in% "C14orf102"] <- "NRDE2"
+    rownames(RNA_tpm)[rownames(RNA_tpm) %in% "C14orf102"] <- "NRDE2"
   }
 
-  match_genes.housekeeping <- match(Housekeeping.read, rownames(RNA.tpm))
-  match_genes.predictors <- match(Tcell_inflamed.read, rownames(RNA.tpm))
+  match_genes.housekeeping <- match(Housekeeping.read, rownames(RNA_tpm))
+  match_genes.predictors <- match(Tcell_inflamed.read, rownames(RNA_tpm))
 
   if (anyNA(c(match_genes.housekeeping, match_genes.predictors))){
     tmp <- c(Tcell_inflamed.read, Housekeeping.read)
-    warning(c("differenty named or missing signature genes : \n", paste(tmp[!tmp %in% rownames(RNA.tpm)], collapse = "\n")))
+    warning(c("differenty named or missing signature genes : \n", paste(tmp[!tmp %in% rownames(RNA_tpm)], collapse = "\n")))
     match_genes.housekeeping <- stats::na.omit(match_genes.housekeeping)
     match_genes.predictors <- stats::na.omit(match_genes.predictors)
   }
 
   # Log2 transformation:
-  log2.RNA.tpm <- log2(RNA.tpm + 1)
+  log2.RNA_tpm <- log2(RNA_tpm + 1)
 
-  # Subset log2.RNA.tpm
+  # Subset log2.RNA_tpm
   ## housekeeping
-  log2.RNA.tpm.housekeeping <- log2.RNA.tpm[match_genes.housekeeping, ]
+  log2.RNA_tpm.housekeeping <- log2.RNA_tpm[match_genes.housekeeping, ]
   ## predictors
-  log2.RNA.tpm.predictors <- log2.RNA.tpm[match_genes.predictors, ]
-  weights <- weights[,rownames(log2.RNA.tpm.predictors)]
+  log2.RNA_tpm.predictors <- log2.RNA_tpm[match_genes.predictors, ]
+  weights <- weights[,rownames(log2.RNA_tpm.predictors)]
 
   # Housekeeping normalization
-  average.log2.RNA.tpm.housekeeping <- apply(log2.RNA.tpm.housekeeping, 2, mean)
-  log2.RNA.tpm.predictors.norm <- sweep(log2.RNA.tpm.predictors, 2, average.log2.RNA.tpm.housekeeping, FUN = "-")
+  average.log2.RNA_tpm.housekeeping <- apply(log2.RNA_tpm.housekeeping, 2, mean)
+  log2.RNA_tpm.predictors.norm <- sweep(log2.RNA_tpm.predictors, 2, average.log2.RNA_tpm.housekeeping, FUN = "-")
 
   # Calculation: weighted sum of the normalized predictor gene values
-  tidy <- match(rownames(log2.RNA.tpm.predictors.norm), colnames(as.vector(weights)))
-  score <- t(log2.RNA.tpm.predictors.norm[tidy,]) %*% t(as.vector(weights))
+  tidy <- match(rownames(log2.RNA_tpm.predictors.norm), colnames(as.vector(weights)))
+  score <- t(log2.RNA_tpm.predictors.norm[tidy,]) %*% t(as.vector(weights))
 
   message("Tcell_inflamed score computed")
   return(data.frame( Tcell_inflamed = score, check.names = FALSE))

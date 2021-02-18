@@ -21,7 +21,7 @@
 #'
 #' @param predictions_immune_response list that contains the predictions for each model
 #' @param real_patient_response vector with two factors (NR,R)
-#' @param RNA.tpm numeric matrix with data
+#' @param RNA_tpm numeric matrix with data
 #' @param output_file_path string with a file name
 #' @param list_gold_standards string with gold standards names
 #' @param cancertype specify cancer type
@@ -32,7 +32,7 @@
 #' # TODOTODO
 compare_immune_response <- function(predictions_immune_response = NULL,
                                     real_patient_response,
-                                    RNA.tpm,
+                                    RNA_tpm,
                                     output_file_path,
                                     list_gold_standards,
                                     cancertype) {
@@ -92,7 +92,7 @@ compare_immune_response <- function(predictions_immune_response = NULL,
 
   # Patient response labels
   labels <- matrix(real_patient_response, nrow = length(real_patient_response), ncol = 100,
-                   dimnames = list(colnames(RNA.tpm), seq(1, 100, 1)))
+                   dimnames = list(colnames(RNA_tpm), seq(1, 100, 1)))
 
   # AUC predictions (when response available)
 
@@ -104,7 +104,7 @@ compare_immune_response <- function(predictions_immune_response = NULL,
     # Compute gold standards
     default_list_gold_standards <- c(names(color_tasks), "CTLA4", "PD1", "PDL1")
     if(missing(list_gold_standards)){list_gold_standards = default_list_gold_standards}
-    gold.standards <- compute_gold_standards(RNA.tpm, list_gold_standards, cancertype, output_file_path)
+    gold.standards <- compute_gold_standards(RNA_tpm, list_gold_standards, cancertype, output_file_path)
 
     # *******************************
     # Assess correlation between chemokines and the other correlated tasks
@@ -139,7 +139,7 @@ compare_immune_response <- function(predictions_immune_response = NULL,
     # Scale tasks (according to our analysis, scaling does not affect prediction)
 
     # tasks_values_scaled <- data.frame(standardization(tasks_values))
-    # rownames(tasks_values_scaled) <- colnames(RNA.tpm)
+    # rownames(tasks_values_scaled) <- colnames(RNA_tpm)
     # colnames(tasks_values_scaled) <- cor_tasks
 
     # tasks_values_scaled$consensus_mean <- tasks_values_scaled$consensus_median
@@ -155,7 +155,7 @@ compare_immune_response <- function(predictions_immune_response = NULL,
     # *******************************************
     # Comparison with transcriptomics data (only us)
 
-    # transcript <- t(RNA.tpm)
+    # transcript <- t(RNA_tpm)
     # view_info <- c(transcript = 'gaussian')
     # view_name <- paste(names(view_info), collapse="_")
     # view_data <- lapply(tolower(names(view_info)), function(x) as.data.frame(get(x)))
@@ -631,7 +631,7 @@ compare_immune_response <- function(predictions_immune_response = NULL,
     dev.off()
 
   }else{
-    stop("No patients'response provided")
+    stop("No patients' response provided")
   }
 }
 

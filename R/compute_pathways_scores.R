@@ -7,8 +7,8 @@
 #' @import progeny
 #' @importFrom stats na.exclude
 #'
-#' @param RNA.counts numeric matrix of read counts with rows=genes and columns=samples
-#' @param remove.genes.ICB_proxies boolean variable to remove all those genes involved
+#' @param RNA_counts numeric matrix of read counts with rows=genes and columns=samples
+#' @param remove_genes_ICB_proxies boolean variable to remove all those genes involved
 #' in the computation of ICB proxy's of response
 #'
 #' @return A list with the following elements:
@@ -21,18 +21,18 @@
 #'
 #' @examples
 #' # TODOTODO
-compute_pathways_scores <- function(RNA.counts,
-                                    remove.genes.ICB_proxies = TRUE) {
+compute_pathways_scores <- function(RNA_counts,
+                                    remove_genes_ICB_proxies = TRUE) {
 
   # Gene expression data
-  raw_counts <- RNA.counts
+  raw_counts <- RNA_counts
   genes <- rownames(raw_counts)
 
   # HGNC symbols are required
   try(if (any(grep("ENSG00000", genes))) stop("hgnc gene symbols are required", call. = FALSE))
 
   # Remove list of genes used to build proxy's of ICB response
-  if (remove.genes.ICB_proxies) {
+  if (remove_genes.ICB_proxies) {
     message("Removing signatures genes for proxy's of ICB response  \n")
     idy <- stats::na.exclude(match(cor_genes_to_remove, rownames(raw_counts)))
     raw_counts <- raw_counts[-idy,]

@@ -6,8 +6,8 @@
 #' @importFrom stats na.exclude
 #' @importFrom dplyr filter
 #'
-#' @param RNA.tpm numeric matrix of tpm values with rows=genes and columns=samples
-#' @param remove.genes.ICB_proxies boolean variable to remove all those genes
+#' @param RNA_tpm numeric matrix of tpm values with rows=genes and columns=samples
+#' @param remove_genes_ICB_proxies boolean variable to remove all those genes
 #' involved in the computation of ICB proxy's of response
 #'
 #' @return A list with the following elements:
@@ -20,18 +20,18 @@
 #'
 #' @examples
 #' # TODOTODO
-compute_TF_activity <- function(RNA.tpm,
-                                remove.genes.ICB_proxies=FALSE){
+compute_TF_activity <- function(RNA_tpm,
+                                remove_genes_ICB_proxies = FALSE){
 
   # Gene expression data
-  tpm <- RNA.tpm
+  tpm <- RNA_tpm
   genes <- rownames(tpm)
 
   # HGNC symbols are required
   try(if (any(grep("ENSG00000", genes))) stop("hgnc gene symbols are required", call. = FALSE))
 
   # Genes to remove according to all ICB proxy's
-  if (remove.genes.ICB_proxies) {
+  if (remove_genes_ICB_proxies) {
     message("Removing signatures genes for proxy's of ICB response  \n")
     idy <- stats::na.exclude(match(cor_genes_to_remove, rownames(tpm)))
     tpm <- tpm[-idy,]

@@ -9,7 +9,7 @@
 #'
 #' @examples
 #' # TODOTODO
-ipsmap <- function (x) {
+ipsmap <- function(x) {
   if (x <= 0) {
     ips <- 0
   } else {

@@ -42,7 +42,7 @@ compute_CC_pairs_grouped <- function(lrpairs,
   CC.pairs.score <- do.call(cbind, lapply(celltypes, function(celltype1){
     do.call(cbind, lapply(celltypes, function(celltype2){
       compute_CCpair_score(celltype1, celltype2, intercell.network,
-                           lrpairs.binary, lr.frequency, compute.log=TRUE)
+                           lrpairs.binary, lr.frequency, compute_log = TRUE)
     }))
   }))
 

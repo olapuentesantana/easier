@@ -31,7 +31,7 @@ predict_immune_response <- function(pathways = NULL,
                                     tfs = NULL,
                                     lrpairs = NULL,
                                     ccpairs = NULL,
-                                    cancertype){
+                                    cancertype) {
 
   if(missing(cancertype)) stop("cancer type needs to be specified")
   if(all(is.null(pathways),is.null(immunecells), is.null(tfs), is.null(lrpairs), is.null(ccpairs))) stop("none signature specified")

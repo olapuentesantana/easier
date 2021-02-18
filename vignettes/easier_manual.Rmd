@@ -43,26 +43,34 @@ library(easier)
 
 ```{r eval = FALSE}
 # Computation of cell fractions
-cell_fractions <- compute_cell_fractions(RNA.tpm = Riaz_data$tpm_RNAseq)
+cell_fractions <- compute_cell_fractions(RNA_tpm = Riaz_data$tpm_RNAseq)
 
 # Computation of pathway scores
-pathway_activity <- compute_pathways_scores(RNA.counts = Riaz_data$raw_counts_RNAseq, remove.genes.ICB_proxies = TRUE)
+pathway_activity <- compute_pathways_scores(RNA_counts = Riaz_data$raw_counts_RNAseq,
+                                            remove_genes_ICB_proxies = TRUE)
 
 # Computation of TF activity
-tf_activity <- compute_TF_activity(RNA.tpm = Riaz_data$tpm_RNAseq, remove.genes.ICB_proxies = FALSE)
+tf_activity <- compute_TF_activity(RNA_tpm = Riaz_data$tpm_RNAseq, 
+                                   remove_genes_ICB_proxies = FALSE)
 
 # Computation of ligand-receptor pair weights
-lrpair_weights <- compute_LR_pairs(RNA.tpm = Riaz_data$tpm_RNAseq, remove.genes.ICB_proxies = FALSE, cancertype = "pancan")
+lrpair_weights <- compute_LR_pairs(RNA_tpm = Riaz_data$tpm_RNAseq, 
+                                   remove_genes_ICB_proxies = FALSE, 
+                                   cancertype = "pancan")
 
 # Computation of cell-cell interaction scores
-ccpair_scores <- compute_CC_pairs_grouped(lrpairs = lrpairs_weights$LRpairs, cancertype = "pancan")
+ccpair_scores <- compute_CC_pairs_grouped(lrpairs = lrpairs_weights$LRpairs, 
+                                          cancertype = "pancan")
 ````
 
 ## Computation of different hallmarks of the immune response
 
 ```{r eval = FALSE}
 tasks <- c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
-immune_response <- compute_gold_standards(RNA.tpm=tpm, list_gold_standards=tasks, cancertype=cancer_type, output_file_path=tmp_file_path)
+immune_response <- compute_gold_standards(RNA_tpm = tpm, 
+                                          list_gold_standards = tasks, 
+                                          cancertype = cancer_type,
+                                          output_file_path = tmp_file_path)
 ```
 
 ## Predict patients' immune response
@@ -83,7 +91,7 @@ predictions_immune_response <- predict_immune_response(pathways = pathways_activ
 ```{r eval = FALSE}
 compare_immune_response(predictions_immune_response = predictions_immune_response,
                         real_patient_response = Riaz_data$patient_response,
-                        RNA.tpm = Riaz_data$tpm_RNAseq,
+                        RNA_tpm = Riaz_data$tpm_RNAseq,
                         output_file_path = "/Users/Oscar/Desktop/Riaz",
                         cancertype = cancertype)
 ```
@@ -99,8 +107,6 @@ explore_biomarkers(pathways = pathways_scores,
                    cancertype = cancertype,
                    real_patient_response = Riaz_data$patient_response,
                    output_file_path = "/Users/Oscar/Desktop/Riaz")
-````
-
 ```
 
 # Session info {-}

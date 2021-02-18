@@ -5,7 +5,7 @@
 #'
 #' @importFrom stats na.omit
 #'
-#' @param RNA.tpm numeric matrix with rows=genes and columns=samples
+#' @param RNA_tpm numeric matrix with rows=genes and columns=samples
 #'
 #' @return numeric matrix with rows=samples and columns=Roh immune score
 #'
@@ -13,7 +13,7 @@
 #'
 #' @examples
 #' # TODOTODO
-compute.Roh_IS <- function(RNA.tpm) {
+compute.Roh_IS <- function(RNA_tpm) {
 
   # Literature genes
   Roh_IS.read <- c(
@@ -24,15 +24,15 @@ compute.Roh_IS <- function(RNA.tpm) {
     "CCL5", "CXCL9", "CXCL10", "CXCL11", "ICAM1", "ICAM2", "ICAM3", "ICAM4",
     "ICAM5", "VCAM1")
 
-  match_Roh_IS.genes <- match(Roh_IS.read, rownames(RNA.tpm))
+  match_Roh_IS.genes <- match(Roh_IS.read, rownames(RNA_tpm))
 
   if (anyNA(match_Roh_IS.genes)){
-    warning(c("differenty named or missing signature genes : \n", paste(Roh_IS.read[!Roh_IS.read %in% rownames(RNA.tpm)], collapse = "\n")))
+    warning(c("differenty named or missing signature genes : \n", paste(Roh_IS.read[!Roh_IS.read %in% rownames(RNA_tpm)], collapse = "\n")))
     match_Roh_IS.genes <- stats::na.omit(match_Roh_IS.genes)
   }
 
-  # Subset RNA.tpm
-  sub_gene.tpm <- RNA.tpm[match_Roh_IS.genes, ]
+  # Subset RNA_tpm
+  sub_gene.tpm <- RNA_tpm[match_Roh_IS.genes, ]
 
   # Pseudocount of 0.01 for all genes
   sub_gene.tpm <- sub_gene.tpm + 0.01

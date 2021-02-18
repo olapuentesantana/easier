@@ -7,7 +7,7 @@
 #' @importFrom preprocessCore normalize.quantiles
 #' @importFrom utils read.table write.table
 #'
-#' @param RNA.tpm numeric matrix with rows=genes and columns=samples
+#' @param RNA_tpm numeric matrix with rows=genes and columns=samples
 #' @param cancertype string character
 #' @param output_file_path TODOTODO to define
 #'
@@ -17,24 +17,24 @@
 #'
 #' @examples
 #' # TODOTODO
-compute.TIDE <- function(RNA.tpm,
+compute.TIDE <- function(RNA_tpm,
                          cancertype,
                          output_file_path) {
 
   # Pre-process #
 
   # Log2 transformation:
-  log2.RNA.tpm <- as.data.frame(log2(RNA.tpm + 1))
+  log2.RNA_tpm <- as.data.frame(log2(RNA_tpm + 1))
 
   # Quantile normalization
-  log2.RNA.tpm.norm <- preprocessCore::normalize.quantiles(as.matrix(log2.RNA.tpm))
-  dimnames(log2.RNA.tpm.norm) <- dimnames(log2.RNA.tpm)
+  log2.RNA_tpm.norm <- preprocessCore::normalize.quantiles(as.matrix(log2.RNA_tpm))
+  dimnames(log2.RNA_tpm.norm) <- dimnames(log2.RNA_tpm)
 
   # Mean-centralization: substract gene average across all conditions
-  average.gene <- rowMeans(log2.RNA.tpm.norm)
-  log2.RNA.tpm.norm <- sweep(log2.RNA.tpm.norm, 1, average.gene, FUN = "-")
+  average.gene <- rowMeans(log2.RNA_tpm.norm)
+  log2.RNA_tpm.norm <- sweep(log2.RNA_tpm.norm, 1, average.gene, FUN = "-")
 
-  utils::write.table(log2.RNA.tpm.norm, file = paste0(output_file_path, "/log2mas1TPM_norm_", cancertype,".txt"), sep = "\t")
+  utils::write.table(log2.RNA_tpm.norm, file = paste0(output_file_path, "/log2mas1TPM_norm_", cancertype,".txt"), sep = "\t")
 
   warning("tidepy need to be installed")
 

@@ -5,7 +5,7 @@
 #'
 #' @importFrom stats sd
 #'
-#' @param RNA.tpm numeric matrix with rows=genes and columns=samples
+#' @param RNA_tpm numeric matrix with rows=genes and columns=samples
 #'
 #' @return numeric matrix with rows=samples and columns=Immunophenoscore
 #'
@@ -13,11 +13,11 @@
 #'
 #' @examples
 #' # TODOTODO
-compute.IPS <- function(RNA.tpm) {
+compute.IPS <- function(RNA_tpm) {
 
   # Log2 transformation:
-  log2.RNA.tpm <- as.data.frame(log2(RNA.tpm + 1))
-  sample_names <- colnames(log2.RNA.tpm)
+  log2.RNA_tpm <- as.data.frame(log2(RNA_tpm + 1))
+  sample_names <- colnames(log2.RNA_tpm)
 
   # Literature genes and corresponding weights
   IPSG <- IPSG_read
@@ -31,7 +31,7 @@ compute.IPS <- function(RNA.tpm) {
   AZ <- NULL
 
   # Gene names in expression file
-  GVEC <- row.names(log2.RNA.tpm)
+  GVEC <- row.names(log2.RNA_tpm)
 
   # Genes names in IPS genes file
   VEC <- as.vector(IPSG$GENE)
@@ -51,10 +51,10 @@ compute.IPS <- function(RNA.tpm) {
 
   # calculation
   for (i in 1:length(sample_names)) {
-    GE <- log2.RNA.tpm[[i]]
+    GE <- log2.RNA_tpm[[i]]
     mGE <- mean(GE)
     sGE <- sd(GE)
-    Z1 <- (log2.RNA.tpm[as.vector(IPSG$GENE),i] - mGE) / sGE
+    Z1 <- (log2.RNA_tpm[as.vector(IPSG$GENE),i] - mGE) / sGE
     W1 <- IPSG$WEIGHT
     WEIGHT <- NULL
     MIG <- NULL
