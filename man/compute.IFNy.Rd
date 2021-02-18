@@ -13,8 +13,8 @@ compute.IFNy(RNA.tpm)
 numeric matrix with rows=samples and columns=IFNy signature score
 }
 \description{
-\code{compute_ayersIFNy} computes IFNy signature score as the arithmetic mean of genes included
-in the IFN-γ signature (Ayers et al., JCI, 2017)
+\code{compute.IFNy} computes IFNy signature score as the arithmetic mean of genes
+included in the IFN-γ signature (Ayers et al., JCI, 2017)
 }
 \examples{
 # TODOTODO

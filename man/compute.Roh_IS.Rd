@@ -13,8 +13,8 @@ compute.Roh_IS(RNA.tpm)
 numeric matrix with rows=samples and columns=Roh immune score
 }
 \description{
-\code{compute_rohIS} computes Roh immune score as the geometric-mean of immune score genes
-(Roh et al., 2017).
+\code{compute.Roh_IS} computes Roh immune score as the geometric-mean of immune
+score genes (Roh et al., 2017).
 }
 \examples{
 # TODOTODO

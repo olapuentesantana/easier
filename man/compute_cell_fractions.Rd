@@ -10,15 +10,15 @@ compute_cell_fractions(RNA.tpm)
 \item{RNA.tpm}{numeric matrix of tpm values with rows=genes and columns=samples}
 }
 \value{
-Cell fractions matrix: matrix of normalized enrichment scores with rows=samples and columns=TFs
+Cell fractions matrix: matrix of normalized enrichment scores with
+rows=samples and columns=TFs
 }
 \description{
-\code{compute_cell_fractions} estimates cell fractions from bulk RNAseq data.
+\code{compute_cell_fractions} estimates cell fractions from bulk RNA-seq data.
 }
 \details{
-Compute cell fractions from transcriptomics data.
-This function computes cell fractions from tpm RNAseq data using
-quanTIseq method
+Compute cell fractions from transcriptomics data. This function computes cell
+fractions from tpm RNAseq data using quanTIseq method
 }
 \examples{
 # TODOTODO

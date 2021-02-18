@@ -7,7 +7,7 @@
 get_OE_bulk(r, gene.sign = NULL, num.rounds = 1000, full.flag = FALSE)
 }
 \arguments{
-\item{r}{list}
+\item{r}{list TODOTODO - needs some more info?}
 
 \item{gene.sign}{string}
 
@@ -19,7 +19,8 @@ get_OE_bulk(r, gene.sign = NULL, num.rounds = 1000, full.flag = FALSE)
 Random score
 }
 \description{
-\code{get_OE_bulk} obtained from literature to calculate Immune resistance program  (Jerby-Arnon et al., 2018)
+\code{get_OE_bulk} obtained from literature to calculate Immune resistance program
+(Jerby-Arnon et al., 2018)
 }
 \examples{
 # TODOTODO

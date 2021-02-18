@@ -42,13 +42,13 @@ explore_biomarkers(
 boxplot with features distribution
 }
 \description{
-\code{explore_biomarkers} provides an overview of the mechanistic signatures features distribution in
-the dataset (separating responders and non-responders if known) together with information on the
-feature contribution to the model building.
+\code{explore_biomarkers} provides an overview of the mechanistic signatures features
+distribution in the dataset (separating responders and non-responders if known)
+together with information on the feature contribution to the model building.
 }
 \details{
-Plot original features distribution together with the
-feature importance in the model
+Plot original features distribution together with the feature importance in
+the model
 }
 \examples{
 # TODOTODO

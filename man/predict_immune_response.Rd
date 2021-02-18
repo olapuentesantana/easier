@@ -30,14 +30,16 @@ predict_immune_response(
 Predictions for each model building.
 }
 \description{
-\code{predict_immune_response} predicts immune response using two algorithms: multi-task elastic net
-and bayesian efficient multi-kernel algorithm. While BEMKL can exploit information across different input and output datasets,
-multi-task elastic net can only do so for response variables. Another advantage of BEMKL is missing data handling, which is not
-the case for the other algorithm.
+\code{predict_immune_response} predicts immune response using two algorithms:
+multi-task elastic net and bayesian efficient multi-kernel algorithm. While
+BEMKL can exploit information across different input and output datasets,
+multi-task elastic net can only do so for response variables.
+Another advantage of BEMKL is missing data handling, which is not the case
+for the other algorithm.
 }
 \details{
-These algorithms use model parameters learned during training on different types of data in
-order to compute the immune response.
+These algorithms use model parameters learned during training on different
+types of data in order to compute the immune response.
 }
 \examples{
 # TODOTODO

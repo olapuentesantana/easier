@@ -13,18 +13,20 @@ compute_LR_pairs(
 \arguments{
 \item{RNA.tpm}{numeric matrix of tpm values with rows=genes and columns=samples}
 
-\item{remove.genes.ICB_proxies}{boolean variable to remove all those genes involved in the computation of ICB proxy's of response}
+\item{remove.genes.ICB_proxies}{boolean variable to remove all those genes
+involved in the computation of ICB proxy's of response}
 
 \item{cancertype}{string character}
 }
 \value{
 A list with the following elements:
 \describe{
-\item{LRpairs}{Ligand-leceptor pairs weights matrix in log2(tpm + 1) with rows=samples and columns = L-R pairs}
+\item{LRpairs}{Ligand-receptor pairs weights matrix in log2(tpm + 1) with
+rows=samples and columns = L-R pairs}
 }
 }
 \description{
-\code{compute_LR_pairs} obtain ligand-receptor pairs weights from tpm RNAseq data.
+\code{compute_LR_pairs} obtain ligand-receptor pairs weights from tpm RNA-seq data.
 }
 \examples{
 # TODOTODO

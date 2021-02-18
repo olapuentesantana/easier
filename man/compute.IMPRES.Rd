@@ -13,8 +13,8 @@ compute.IMPRES(RNA.tpm)
 numeric matrix with rows=samples and columns=IMPRES score
 }
 \description{
-\code{compute_IMPRES} computes IMPRES score by applying logical comparison of checkpoint gene pairs
-(Auslander et al., 2018).
+\code{compute_IMPRES} computes IMPRES score by applying logical comparison of
+checkpoint gene pairs (Auslander et al., 2018).
 }
 \examples{
 # TODOTODO

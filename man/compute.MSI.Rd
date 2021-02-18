@@ -13,8 +13,8 @@ compute.MSI(RNA.tpm)
 numeric matrix with rows=samples and columns=MSI score
 }
 \description{
-\code{compute_MSI} computes MSI score by applying logical comparison of MSI-related gene pairs
-(Fu et al., 2019).
+\code{compute_MSI} computes MSI score by applying logical comparison of MSI-related
+gene pairs (Fu et al., 2019).
 }
 \examples{
 # TODOTODO

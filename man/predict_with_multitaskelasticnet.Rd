@@ -16,17 +16,20 @@ predict_with_multitaskelasticnet(
 
 \item{view_info}{input view information of its composition.}
 
-\item{view_data}{input view data as a list. Each item of the list correponds to a certain view.}
+\item{view_data}{input view data as a list. Each item of the list corresponds
+to a certain view.}
 
 \item{learned_model}{parameters learned during training with cross-validation.}
 }
 \value{
-A matrix with the predictions obtained by applying the model on the view input data
+A matrix with the predictions obtained by applying the model on the
+view input data
 }
 \description{
-\code{predict_with_multitaskelasticnet} predicts immune response using multi-task elastic net algorithm.
-This algorithm employs model parameters learned during training on different types of data in
-order to compute the immune response.
+\code{predict_with_multitaskelasticnet} predicts immune response using multi-task
+elastic net algorithm.
+This algorithm employs model parameters learned during training on different
+types of data in order to compute the immune response.
 }
 \examples{
 # TODOTODO

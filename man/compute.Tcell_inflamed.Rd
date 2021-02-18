@@ -13,8 +13,10 @@ compute.Tcell_inflamed(RNA.tpm)
 numeric matrix with rows=samples and columns=T cell-inflamed signature score
 }
 \description{
-\code{compute_ayersTcellInfl} computes T cell-inflamed signature score by taking a weighted sum of
-the housekeeping normalized values of the T cell-inflamed signature genes
+\code{compute_ayersTcellInfl} computes T cell-inflamed signature score by
+taking a weighted sum of the housekeeping normalized values of the T cell-inflamed
+signature genes
+TODOTODOoscar, async name of function vs doc
 }
 \examples{
 # TODOTODO

@@ -24,7 +24,8 @@ compute_gold_standards(
 List with the scores of all the gold standards specified.
 }
 \description{
-\code{computation_gold_standards} computes the scores for the gold standards required by the user
+\code{computation_gold_standards} computes the scores for the gold standards
+required by the user
 }
 \examples{
 # TODOTODO

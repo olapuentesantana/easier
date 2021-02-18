@@ -17,8 +17,9 @@ compute.TIDE(RNA.tpm, cancertype, output_file_path)
 numeric matrix with rows=samples and columns=TIDE score
 }
 \description{
-\code{compute_TIDE} computes TIDE score using tidepy python module. Input data is processed as recommended
-by the authors: log2 transformation, quantile normalization and mean centralization (Jiang et al., 2018).
+\code{compute_TIDE} computes TIDE score using tidepy python module. Input data is
+processed as recommended by the authors: log2 transformation, quantile
+normalization and mean centralization (Jiang et al., 2018).
 }
 \examples{
 # TODOTODO

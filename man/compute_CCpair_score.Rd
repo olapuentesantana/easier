@@ -33,7 +33,7 @@ compute_CCpair_score(
 numeric vector with weighted scores
 }
 \description{
-\code{compute_CCpair_score} computes the score for each cell - cell pair for all the patients.
+\code{compute_CCpair_score} computes the score for each cell-cell pair for all the patients.
 }
 \examples{
 # TODOTODO

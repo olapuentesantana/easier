@@ -13,7 +13,7 @@ compute.Davoli_IS(RNA.tpm)
 numeric matrix with rows=samples and columns=Davoli immune signature
 }
 \description{
-\code{compute_davoliIS} computes Davoli immune signature as the arithmetic mean of cytotoxic
+\code{compute.Davoli_IS} computes Davoli immune signature as the arithmetic mean of cytotoxic
 immune infiltrate signature genes, after rank normalization (Davoli et al., 2017).
 }
 \examples{

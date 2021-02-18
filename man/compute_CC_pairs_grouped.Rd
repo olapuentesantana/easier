@@ -7,7 +7,7 @@
 compute_CC_pairs_grouped(lrpairs, cancertype = "pancan")
 }
 \arguments{
-\item{lrpairs}{Ligand-leceptor pairs weights matrix}
+\item{lrpairs}{Ligand-receptor pairs weights matrix}
 
 \item{cancertype}{string character}
 }
@@ -21,8 +21,9 @@ A list with the following elements:
 Compute CC pairs grouped from transcriptomics data.
 }
 \details{
-\code{compute_CC_pairs_grouped} computes CC pairs (considering cell groups instead of individual cell types) from tpm,
-using the null model for CC interaction computed on TCGA data.
+\code{compute_CC_pairs_grouped} computes CC pairs (considering cell groups instead
+of individual cell types) from tpm, using the null model for CC interaction
+computed on TCGA data.
 }
 \examples{
 # TODOTODO

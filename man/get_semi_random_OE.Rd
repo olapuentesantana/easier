@@ -13,7 +13,7 @@ get_semi_random_OE(
 )
 }
 \arguments{
-\item{r}{list}
+\item{r}{list TODOTODO - more info here as well}
 
 \item{genes.dist.q}{integer}
 
@@ -27,7 +27,8 @@ get_semi_random_OE(
 Random score
 }
 \description{
-\code{get_semi_random_OE} obtained from literature to calculate Immune resistance program  (Jerby-Arnon et al., 2018)
+\code{get_semi_random_OE} obtained from literature to calculate Immune resistance
+program  (Jerby-Arnon et al., 2018) TODOTODO - out of sync?
 }
 \examples{
 # TODOTODO

@@ -9,7 +9,8 @@ compute_TF_activity(RNA.tpm, remove.genes.ICB_proxies = FALSE)
 \arguments{
 \item{RNA.tpm}{numeric matrix of tpm values with rows=genes and columns=samples}
 
-\item{remove.genes.ICB_proxies}{boolean variable to reomove all those genes involved in the computation of ICB proxy's of response}
+\item{remove.genes.ICB_proxies}{boolean variable to remove all those genes
+involved in the computation of ICB proxy's of response}
 }
 \value{
 A list with the following elements:
@@ -20,7 +21,7 @@ A list with the following elements:
 }
 }
 \description{
-\code{compute_TF_activity} infers transription factor activity from tpm RNAseq data.
+\code{compute_TF_activity} infers transription factor activity from tpm RNA-seq data.
 }
 \examples{
 # TODOTODO

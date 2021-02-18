@@ -13,8 +13,8 @@ compute.IPS(RNA.tpm)
 numeric matrix with rows=samples and columns=Immunophenoscore
 }
 \description{
-\code{compute_IPS} computes the immunophenoscore using source code provided by original publication
-(Charoentong et al., 2017).
+\code{compute_IPS} computes the immunophenoscore using source code provided by
+original publication (Charoentong et al., 2017).
 }
 \examples{
 # TODOTODO

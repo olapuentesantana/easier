@@ -13,8 +13,9 @@ compute.RIR(RNA.tpm)
 numeric matrix with rows=samples and columns=IRP
 }
 \description{
-\code{compute_IRP} computes immune resistance program using the code provided by the authors.
-(Jerby-Arnon et al., 2018).
+\code{compute_IRP} computes immune resistance program using the code provided by
+the authors. (Jerby-Arnon et al., 2018).
+TODOTODOoscar: out of sync name vs doc
 }
 \examples{
 # TODOTODO

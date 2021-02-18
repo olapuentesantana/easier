@@ -13,8 +13,8 @@ compute.Ayers_expIS(RNA.tpm)
 numeric matrix with rows=samples and columns=Expanded Immune signature score
 }
 \description{
-\code{compute_ayersEI} computes Expanded Immune signature score as the arithmetic mean of genes included
-in the Expanded Immune signature (Ayers et al., JCI, 2017)
+\code{compute.Ayers_expIS} computes Expanded Immune signature score as the arithmetic
+mean of genes included in the Expanded Immune signature (Ayers et al., JCI, 2017)
 }
 \examples{
 # TODOTODO
