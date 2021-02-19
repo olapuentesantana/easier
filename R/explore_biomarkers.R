@@ -211,7 +211,7 @@ explore_biomarkers <- function(pathways,
     median.features$Correlation <- gsub("1", "+", median.features$Correlation, fixed = TRUE)
     median.features$Correlation <- factor(median.features$Correlation, levels = unique(median.features$Correlation))
 
-    barplot <- ggplot2::ggplot(median.features, aes(x = abs(Estimate), y = Feature, fill = Correlation)) +
+    barplot <- ggplot2::ggplot(median.features, aes(x = abs(.data$Estimate), y = .data$Feature, fill = .data$Correlation)) +
       ggplot2::geom_bar(stat = "identity", color = "white") +
       ggplot2::scale_fill_manual(
         name = "Correlation",
@@ -245,7 +245,7 @@ explore_biomarkers <- function(pathways,
       ) + # set negative value for the left margin)
       ggplot2::labs(x = "Biomarker weight")
 
-    boxplot <- ggplot2::ggplot(view_distribution, aes(x = Feature, y = Value, fill = Label, color = Label)) +
+    boxplot <- ggplot2::ggplot(view_distribution, aes(x = .data$Feature, y = .data$Value, fill = .data$Label, color = .data$Label)) +
       ggplot2::geom_boxplot(alpha = 0.8) +
       ggplot2::geom_point(position = position_jitterdodge()) +
       ggplot2::scale_fill_manual(

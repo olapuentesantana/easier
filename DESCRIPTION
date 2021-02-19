@@ -46,6 +46,7 @@ Imports:
     matrixStats,
     preprocessCore,
     immunedeconv,
+    rlang,
     arules
 Remotes:
     icbi-lab/immunedeconv
