@@ -22,21 +22,23 @@ get_semi_random_OE <- function(r,
   sign.q <- as.matrix(table(genes_dist_q[b_sign]))
   q <- rownames(sign.q)
   idx.all <- c()
-  B <- matrix(data = FALSE,nrow = length(genes_dist_q),ncol = num_rounds)
-  Q <- matrix(data = 0,nrow = length(genes_dist_q),ncol = num_rounds)
-  for (i in 1:nrow(sign.q)){
+  B <- matrix(data = FALSE, nrow = length(genes_dist_q), ncol = num_rounds)
+  Q <- matrix(data = 0, nrow = length(genes_dist_q), ncol = num_rounds)
+  for (i in 1:nrow(sign.q)) {
     num.genes <- sign.q[i]
-    if(num.genes > 0){
-      idx <- which(is.element(genes_dist_q,q[i]))
-      for (j in 1:num_rounds){
-        idxj <- sample(idx,num.genes)
-        Q[i,j] <- sum(B[idxj,j]==TRUE)
-        B[idxj,j] <- TRUE
+    if (num.genes > 0) {
+      idx <- which(is.element(genes_dist_q, q[i]))
+      for (j in 1:num_rounds) {
+        idxj <- sample(idx, num.genes)
+        Q[i, j] <- sum(B[idxj, j] == TRUE)
+        B[idxj, j] <- TRUE
       }
     }
   }
-  rand.scores <- apply(B,2,function(x) colMeans(r$zscores[x,]))
-  if(full_flag){return(rand.scores)}
+  rand.scores <- apply(B, 2, function(x) colMeans(r$zscores[x, ]))
+  if (full_flag) {
+    return(rand.scores)
+  }
   rand.scores <- rowMeans(rand.scores)
   return(rand.scores)
 }

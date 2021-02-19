@@ -21,27 +21,30 @@ compute_Tcell_inflamed <- function(RNA_tpm) {
   # Literature genes
   Tcell_inflamed.read <- c(
     "CCL5", "CD27", "CD274", "CD276", "CD8A", "CMKLR1", "CXCL9", "CXCR6", "HLA-DQA1",
-    "HLA-DRB1", "HLA-E", "IDO1", "LAG3", "NKG7", "PDCD1LG2", "PSMB10", "STAT1", "TIGIT")
+    "HLA-DRB1", "HLA-E", "IDO1", "LAG3", "NKG7", "PDCD1LG2", "PSMB10", "STAT1", "TIGIT"
+  )
   Housekeeping.read <- c(
     "STK11IP", "ZBTB34", "TBC1D10B", "OAZ1", "POLR2A", "G6PD", "ABCF1", "NRDE2",
-    "UBB", "TBP", "SDHA") # C14orf102 = NRDE2
+    "UBB", "TBP", "SDHA"
+  ) # C14orf102 = NRDE2
   weights <- data.frame(
-    CCL5=0.008346, CD27=0.072293, CD274=0.042853, CD276=-0.0239, CD8A=0.031021,
-    CMKLR1=0.151253, CXCL9=0.074135, CXCR6=0.004313, `HLA-DQA1`=0.020091,
-    `HLA-DRB1`=0.058806, `HLA-E`=0.07175, IDO1=0.060679, LAG3=0.123895,
-    NKG7=0.075524, PDCD1LG2=0.003734, PSMB10=0.032999, STAT1=0.250229,
-    TIGIT=0.084767, check.names = FALSE)
+    CCL5 = 0.008346, CD27 = 0.072293, CD274 = 0.042853, CD276 = -0.0239, CD8A = 0.031021,
+    CMKLR1 = 0.151253, CXCL9 = 0.074135, CXCR6 = 0.004313, `HLA-DQA1` = 0.020091,
+    `HLA-DRB1` = 0.058806, `HLA-E` = 0.07175, IDO1 = 0.060679, LAG3 = 0.123895,
+    NKG7 = 0.075524, PDCD1LG2 = 0.003734, PSMB10 = 0.032999, STAT1 = 0.250229,
+    TIGIT = 0.084767, check.names = FALSE
+  )
 
   # Some genes might have other name: case for "C14orf102", it's called "NRDE2", be careful
-  if (any(rownames(RNA_tpm) %in% "C14orf102")){
-    cat("Gene name changed: NRDE2 is approved symbol, not C14orf102","\n")
+  if (any(rownames(RNA_tpm) %in% "C14orf102")) {
+    cat("Gene name changed: NRDE2 is approved symbol, not C14orf102", "\n")
     rownames(RNA_tpm)[rownames(RNA_tpm) %in% "C14orf102"] <- "NRDE2"
   }
 
   match_genes.housekeeping <- match(Housekeeping.read, rownames(RNA_tpm))
   match_genes.predictors <- match(Tcell_inflamed.read, rownames(RNA_tpm))
 
-  if (anyNA(c(match_genes.housekeeping, match_genes.predictors))){
+  if (anyNA(c(match_genes.housekeeping, match_genes.predictors))) {
     tmp <- c(Tcell_inflamed.read, Housekeeping.read)
     warning(c("differenty named or missing signature genes : \n", paste(tmp[!tmp %in% rownames(RNA_tpm)], collapse = "\n")))
     match_genes.housekeeping <- stats::na.omit(match_genes.housekeeping)
@@ -56,7 +59,7 @@ compute_Tcell_inflamed <- function(RNA_tpm) {
   log2.RNA_tpm.housekeeping <- log2.RNA_tpm[match_genes.housekeeping, ]
   ## predictors
   log2.RNA_tpm.predictors <- log2.RNA_tpm[match_genes.predictors, ]
-  weights <- weights[,rownames(log2.RNA_tpm.predictors)]
+  weights <- weights[, rownames(log2.RNA_tpm.predictors)]
 
   # Housekeeping normalization
   average.log2.RNA_tpm.housekeeping <- apply(log2.RNA_tpm.housekeeping, 2, mean)
@@ -64,8 +67,8 @@ compute_Tcell_inflamed <- function(RNA_tpm) {
 
   # Calculation: weighted sum of the normalized predictor gene values
   tidy <- match(rownames(log2.RNA_tpm.predictors.norm), colnames(as.vector(weights)))
-  score <- t(log2.RNA_tpm.predictors.norm[tidy,]) %*% t(as.vector(weights))
+  score <- t(log2.RNA_tpm.predictors.norm[tidy, ]) %*% t(as.vector(weights))
 
   message("Tcell_inflamed score computed")
-  return(data.frame( Tcell_inflamed = score, check.names = FALSE))
+  return(data.frame(Tcell_inflamed = score, check.names = FALSE))
 }

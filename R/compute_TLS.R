@@ -19,9 +19,11 @@ compute_TLS <- function(RNA_tpm) {
   TLS.read <- c("CD79B", "CD1D", "CCR6", "LAT", "SKAP1", "CETP", "EIF1AY", "RBP5", "PTGDS")
   match_TLS.read <- match(TLS.read, rownames(RNA_tpm))
 
-  if (anyNA(match_TLS.read)){
-    warning(c("differenty named or missing signature genes : \n",
-              paste(TLS.read[!TLS.read %in% rownames(RNA_tpm)], collapse = "\n")))
+  if (anyNA(match_TLS.read)) {
+    warning(c(
+      "differenty named or missing signature genes : \n",
+      paste(TLS.read[!TLS.read %in% rownames(RNA_tpm)], collapse = "\n")
+    ))
     match_TLS.read <- stats::na.omit(match_TLS.read)
   }
 

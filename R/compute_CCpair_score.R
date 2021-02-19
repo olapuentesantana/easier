@@ -25,24 +25,24 @@ compute_CCpair_score <- function(celltype1,
                                  cancertype) {
 
   # consider the LR interactions between the two cell types
-  CC.network <- intercell_network[intersect(which(intercell_network$cell1==celltype1), which(intercell_network$cell2==celltype2)),]
+  CC.network <- intercell_network[intersect(which(intercell_network$cell1 == celltype1), which(intercell_network$cell2 == celltype2)), ]
   CC.LRpairs <- paste(CC.network$ligands, CC.network$receptors, sep = "_")
 
   # extract the corresponding data for all patients
   ix <- match(CC.LRpairs, colnames(lrpairs_binary))
-  CC.LR.data <- lrpairs_binary[,ix[!is.na(ix)]]
+  CC.LR.data <- lrpairs_binary[, ix[!is.na(ix)]]
 
   # and the LR frequecies
   CC.lr_frequency <- lr_frequency[colnames(CC.LR.data)]
 
   # multiply each row of the matrix (i.e. each patient data) for the vector with the frequencies
-  CC.LR.data.weighted <- t(t(CC.LR.data) * 1/CC.lr_frequency)
+  CC.LR.data.weighted <- t(t(CC.LR.data) * 1 / CC.lr_frequency)
 
   # compute the cell cell interaction score as the sum of the LR weighted pairs
   CC.score <- apply(CC.LR.data.weighted, 1, sum)
 
   # if we use the weighted score taking the log might be better
-  if (compute_log==TRUE){
+  if (compute_log == TRUE) {
     CC.score <- log2(CC.score + 1)
   }
 }

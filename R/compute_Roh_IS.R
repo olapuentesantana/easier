@@ -22,11 +22,12 @@ compute_Roh_IS <- function(RNA_tpm) {
     "HLA-DPB1", "HLA-DQA1", "HLA-DQA2", "HLA-DQB1", "HLA-DRA", "HLA-DRB1",
     "IFNG", "IFNGR1", "IFNGR2", "IRF1", "STAT1", "PSMB9", "CCR5", "CCL3", "CCL4",
     "CCL5", "CXCL9", "CXCL10", "CXCL11", "ICAM1", "ICAM2", "ICAM3", "ICAM4",
-    "ICAM5", "VCAM1")
+    "ICAM5", "VCAM1"
+  )
 
   match_Roh_IS.genes <- match(Roh_IS.read, rownames(RNA_tpm))
 
-  if (anyNA(match_Roh_IS.genes)){
+  if (anyNA(match_Roh_IS.genes)) {
     warning(c("differenty named or missing signature genes : \n", paste(Roh_IS.read[!Roh_IS.read %in% rownames(RNA_tpm)], collapse = "\n")))
     match_Roh_IS.genes <- stats::na.omit(match_Roh_IS.genes)
   }
@@ -38,7 +39,7 @@ compute_Roh_IS <- function(RNA_tpm) {
   sub_gene.tpm <- sub_gene.tpm + 0.01
 
   # Pseudocount of 1 for genes with 0 expr
-  if(any(sub_gene.tpm == 0)) sub_gene.tpm[sub_gene.tpm == 0] <- sub_gene.tpm[sub_gene.tpm == 0] + 1
+  if (any(sub_gene.tpm == 0)) sub_gene.tpm[sub_gene.tpm == 0] <- sub_gene.tpm[sub_gene.tpm == 0] + 1
 
   # Calculation: geometric mean (so-called log-average) [TPM, 0.01 offset]
   score <- apply(sub_gene.tpm, 2, function(X) exp(mean(log(X))))

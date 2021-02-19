@@ -19,15 +19,17 @@
 #' @examples
 #' # TODOTODO
 compute_CC_pairs_grouped <- function(lrpairs,
-                                     cancertype="pancan"){
+                                     cancertype = "pancan") {
 
   # remove ligand receptor pairs that are always NA
-  na.lrpairs <- apply(lrpairs, 2, function(x){all(is.na(x))})
+  na.lrpairs <- apply(lrpairs, 2, function(x) {
+    all(is.na(x))
+  })
   lrpairs <- lrpairs[, na.lrpairs == FALSE]
 
   # binarize the data: set a threshold to 10 TPM, only pairs where both ligand and receptor have
   # TPM > 10 are kept
-  lrpairs.binary <- ifelse(lrpairs > log2(10+1), 1, 0)
+  lrpairs.binary <- ifelse(lrpairs > log2(10 + 1), 1, 0)
   # sum(LR.pairs.binary)/(ncol(LR.pairs.binary)*nrow(LR.pairs.binary))*100 #percentage of
 
   # keep only the LR.pairs for which I have (non-zero) frequencies in the TCGA
@@ -39,17 +41,21 @@ compute_CC_pairs_grouped <- function(lrpairs,
   # compute the CC score for each patient
   celltypes <- unique(c(as.character(intercell.network$cell1), as.character(intercell.network$cell2)))
 
-  CC.pairs.score <- do.call(cbind, lapply(celltypes, function(celltype1){
-    do.call(cbind, lapply(celltypes, function(celltype2){
+  CC.pairs.score <- do.call(cbind, lapply(celltypes, function(celltype1) {
+    do.call(cbind, lapply(celltypes, function(celltype2) {
       compute_CCpair_score(celltype1, celltype2, intercell.network,
-                           lrpairs.binary, lr.frequency, compute_log = TRUE)
+        lrpairs.binary, lr.frequency,
+        compute_log = TRUE
+      )
     }))
   }))
 
-  metadata.CC.pairs <- do.call(rbind, lapply(celltypes, function(celltype1){
-    do.call(rbind, lapply(celltypes, function(celltype2){
-      data.frame(CCpair = gsub(" ", "", paste(celltype1, celltype2, sep="_")),
-                 celltype1 = celltype1, celltype2 = celltype2)
+  metadata.CC.pairs <- do.call(rbind, lapply(celltypes, function(celltype1) {
+    do.call(rbind, lapply(celltypes, function(celltype2) {
+      data.frame(
+        CCpair = gsub(" ", "", paste(celltype1, celltype2, sep = "_")),
+        celltype1 = celltype1, celltype2 = celltype2
+      )
     }))
   }))
 

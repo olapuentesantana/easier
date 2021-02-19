@@ -19,7 +19,7 @@ compute_Davoli_IS <- function(RNA_tpm) {
   Davoli_IS.read <- c("CD247", "CD2", "CD3E", "GZMH", "NKG7", "PRF1", "GZMK")
   match_Davoli_IS.genes <- match(Davoli_IS.read, rownames(RNA_tpm))
 
-  if (anyNA(match_Davoli_IS.genes)){
+  if (anyNA(match_Davoli_IS.genes)) {
     warning(c("differenty named or missing signature genes : \n", paste(Davoli_IS.read[!Davoli_IS.read %in% rownames(RNA_tpm)], collapse = "\n")))
     match_Davoli_IS.genes <- stats::na.omit(match_Davoli_IS.genes)
   }
@@ -34,7 +34,7 @@ compute_Davoli_IS <- function(RNA_tpm) {
   ranks_sub_log2.RNA_tpm <- apply(sub_log2.RNA_tpm, 1, rank)
 
   # Get normalized rank by divided
-  ranks_sub_log2.RNA_tpm.norm <- (ranks_sub_log2.RNA_tpm - 1)/(nrow(ranks_sub_log2.RNA_tpm) - 1)
+  ranks_sub_log2.RNA_tpm.norm <- (ranks_sub_log2.RNA_tpm - 1) / (nrow(ranks_sub_log2.RNA_tpm) - 1)
 
   # Calculation: average of the expression value of all the genes within-sample
   score <- apply(ranks_sub_log2.RNA_tpm.norm, 1, mean)

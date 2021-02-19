@@ -13,16 +13,17 @@
 #'
 #' @examples
 #' # TODOTODO
-compute_chemokines <- function(RNA_tpm){
+compute_chemokines <- function(RNA_tpm) {
 
   # Literature genes
   chemokines.read <- c(
     "CCL2", "CCL3", "CCL4", "CCL5", "CCL8", "CCL18", "CCL19", "CCL21",
-    "CXCL9", "CXCL10", "CXCL11", "CXCL13")
+    "CXCL9", "CXCL10", "CXCL11", "CXCL13"
+  )
 
   match_chemokines.genes <- match(chemokines.read, rownames(RNA_tpm))
 
-  if (anyNA(match_chemokines.genes)){
+  if (anyNA(match_chemokines.genes)) {
     warning(c("differenty named or missing signature genes : \n", paste(chemokines.read[!chemokines.read %in% rownames(RNA_tpm)], collapse = "\n")))
     match_chemokines.genes <- stats::na.omit(match_chemokines.genes)
   }

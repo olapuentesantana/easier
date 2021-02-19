@@ -17,111 +17,88 @@
 compute_gold_standards <- function(RNA_tpm,
                                    list_gold_standards,
                                    cancertype,
-                                   output_file_path){
+                                   output_file_path) {
 
   # calculate Immune Checkpoint genes expression #
   ICB_genes <- compute_ICB_genes(RNA_tpm)
 
-  gold.standards <- sapply(list_gold_standards, function(X){
-
+  gold.standards <- sapply(list_gold_standards, function(X) {
     if ("CYT" == X) {
 
       # calculate Cytolytic activity #
       CYT <- t(compute_CYT(RNA_tpm))
       return(list(CYT))
-
-    }else if("IPS" == X) {
+    } else if ("IPS" == X) {
 
       # calculate Immunophenoscore #
       IPS <- t(compute_IPS(RNA_tpm))
       return(list(IPS))
-
-    }else if("IMPRES" == X) {
+    } else if ("IMPRES" == X) {
 
       # calculate Impres #
       IMPRES <- t(compute_IMPRES(RNA_tpm))
       return(list(IMPRES))
-
-    }else if("Roh_IS" == X) {
+    } else if ("Roh_IS" == X) {
 
       # calculate roh immune signature #
       Roh_IS <- t(compute_Roh_IS(RNA_tpm))
       return(list(Roh_IS))
-
-    }else if("chemokines" == X) {
+    } else if ("chemokines" == X) {
 
       # calculate chemokine signature #
       chemokines <- t(compute_chemokines(RNA_tpm))
       return(list(chemokines))
-
-    }else if("Davoli_IS" == X) {
+    } else if ("Davoli_IS" == X) {
 
       # calculate davoli cytotoxic immune signature #
       Davoli_IS <- t(compute_Davoli_IS(RNA_tpm))
       return(list(Davoli_IS))
-
-    }else if("IFNy" == X) {
+    } else if ("IFNy" == X) {
 
       # calculate ayers IFNy #
       IFNy <- t(compute_IFNy(RNA_tpm))
       return(list(IFNy))
-
-    }else if("Ayers_expIS" == X) {
+    } else if ("Ayers_expIS" == X) {
 
       # calculate ayers expanded immune signature #
       Ayers_expIS <- t(compute_Ayers_expIS(RNA_tpm))
       return(list(Ayers_expIS))
-
-    }else if("Tcell_inflamed" == X) {
+    } else if ("Tcell_inflamed" == X) {
 
       # calculate ayers T cell inflamed signature #
       Tcell_inflamed <- t(compute_Tcell_inflamed(RNA_tpm))
       return(list(Tcell_inflamed))
-
-    }else if("TIDE" == X) {
+    } else if ("TIDE" == X) {
 
       # calculate TIDE signature #
       TIDE <- t(compute_TIDE(RNA_tpm, cancertype, output_file_path))
       return(list(TIDE))
-
-    }else if("MSI" == X) {
+    } else if ("MSI" == X) {
 
       # calculate MSI signature #
       MSI <- t(compute_MSI(RNA_tpm))
       return(list(MSI))
-
-    }else if("RIR" == X) {
+    } else if ("RIR" == X) {
 
       # calculate MSI signature #
       RIR <- t(compute_RIR(RNA_tpm))
       return(list(RIR))
-
-    }else if("TLS" == X) {
+    } else if ("TLS" == X) {
 
       # calculate MSI signature #
       TLS <- t(compute_TLS(RNA_tpm))
       return(list(TLS))
-
-    }else if("CTLA4" == X) {
-
+    } else if ("CTLA4" == X) {
       CTLA4 <- ICB_genes$CTLA4
       return(list(CTLA4))
-
-    }else if("PD1" == X) {
-
+    } else if ("PD1" == X) {
       PD1 <- ICB_genes$PD1
       return(list(PD1))
-
-    }else if("PDL1" == X) {
-
+    } else if ("PDL1" == X) {
       PDL1 <- ICB_genes$PDL1
       return(list(PDL1))
-
     }
-
   })
 
   return(gold.standards)
-
 }
-

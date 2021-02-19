@@ -34,7 +34,7 @@ compute_LR_pairs <- function(RNA_tpm,
   if (remove_genes_ICB_proxies) {
     message("Removing signatures genes for proxy's of ICB response  \n")
     idy <- stats::na.exclude(match(all_genes_to_remove, rownames(gene_expr)))
-    gene_expr <- gene_expr[-idy,]
+    gene_expr <- gene_expr[-idy, ]
   }
 
   gene_expr <- as.data.frame(gene_expr)
@@ -44,8 +44,7 @@ compute_LR_pairs <- function(RNA_tpm,
   LR_pairs <- unique(paste0(intercell.network$ligands, "_", intercell.network$receptors))
 
   # Compute L-R pairs
-  LR.pairs.computed <- do.call(rbind, lapply(1:length(LR_pairs), function(x){
-
+  LR.pairs.computed <- do.call(rbind, lapply(1:length(LR_pairs), function(x) {
     ligand <- sapply(strsplit(LR_pairs[x], split = "_", fixed = TRUE), head, 1)
     receptor <- sapply(strsplit(LR_pairs[x], split = "_", fixed = TRUE), tail, 1)
 
@@ -58,8 +57,7 @@ compute_LR_pairs <- function(RNA_tpm,
   LR.pairs.computed <- t(LR.pairs.computed)
 
   # Apply grouping to LRpairs data
-  for (X in 1:length(grouping_lrpairs_info)){
-
+  for (X in 1:length(grouping_lrpairs_info)) {
     keep <- unique(grouping_lrpairs_info[[X]]$main)
     remove <- unique(grouping_lrpairs_info[[X]]$involved_pairs)
     combo_name <- unique(grouping_lrpairs_info[[X]]$combo_name)
@@ -74,4 +72,3 @@ compute_LR_pairs <- function(RNA_tpm,
   message("LR pairs computed \n")
   return(as.data.frame(LR.pairs.computed))
 }
-

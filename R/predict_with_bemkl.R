@@ -34,10 +34,12 @@ predict_with_bemkl <- function(view_name,
   predictions <- predictions.all.tasks <- list()
 
   # Per task, per view
-  predictions[[view_name]] <- matrix(NA, nrow = nrow(view_data[[1]]), ncol = K,
-                                     dimnames = list(rownames(view_data[[1]]), seq(1, K, 1)))
+  predictions[[view_name]] <- matrix(NA,
+    nrow = nrow(view_data[[1]]), ncol = K,
+    dimnames = list(rownames(view_data[[1]]), seq(1, K, 1))
+  )
 
-  predictions.all.tasks <- do.call(c, lapply(drugs, function(X){
+  predictions.all.tasks <- do.call(c, lapply(drugs, function(X) {
     predictions.all.tasks[[X]] <- predictions
     return(predictions.all.tasks)
   }))
@@ -46,27 +48,29 @@ predict_with_bemkl <- function(view_name,
   for (i in 1:K) {
     state <- learned_model[[i]]$model
     learning.X <- learned_model[[i]]$training_set
-    prediction.X <- lapply(names(view_info), function(x){view_data[[x]]})
+    prediction.X <- lapply(names(view_info), function(x) {
+      view_data[[x]]
+    })
 
-    message("Iteration ", i,"\n")
+    message("Iteration ", i, "\n")
     # standardize
-    if (standardize_any==TRUE){
-      for (m in 1:P){
-
-        if (view_info[m] != "jaccard"){
+    if (standardize_any == TRUE) {
+      for (m in 1:P) {
+        if (view_info[m] != "jaccard") {
           # Check same features availability
           keep_pos <- na.omit(match(colnames(prediction.X[[m]]), colnames(learning.X[[m]])))
           keep_names <- intersect(colnames(prediction.X[[m]]), colnames(learning.X[[m]]))
-          prediction.X[[m]] <- prediction.X[[m]][,keep_names]
-          learning.X[[m]] <- learning.X[[m]][,keep_names]
+          prediction.X[[m]] <- prediction.X[[m]][, keep_names]
+          learning.X[[m]] <- learning.X[[m]][, keep_names]
 
           # Normalization should be done taking into account the train set. #
           learned_model[[i]]$mas.mea.learning.X[[m]] <- learned_model[[i]]$mas.mea.learning.X[[m]][keep_pos]
           learned_model[[i]]$mas.std.learning.X[[m]] <- learned_model[[i]]$mas.std.learning.X[[m]][keep_pos]
 
-          prediction.X[[m]] <- standardization(prediction.X[[m]], learned_model[[i]]$mas.mea.learning.X[[m]],
-                                              learned_model[[i]]$mas.std.learning.X[[m]])
-
+          prediction.X[[m]] <- standardization(
+            prediction.X[[m]], learned_model[[i]]$mas.mea.learning.X[[m]],
+            learned_model[[i]]$mas.std.learning.X[[m]]
+          )
         }
       }
     }
@@ -74,23 +78,23 @@ predict_with_bemkl <- function(view_name,
     # compute prediction kernel
     Nlearning <- nrow(learning.X[[1]])
     Nprediction <- nrow(prediction.X[[1]])
-    Kx_prediction <- array(rep(0, Nlearning*Nprediction*P), c(Nlearning, Nprediction, P))
+    Kx_prediction <- array(rep(0, Nlearning * Nprediction * P), c(Nlearning, Nprediction, P))
 
-    for (m in 1:P){
-      Kx_prediction[, , m] <- exp(-(as.matrix(pdist(learning.X[[m]], prediction.X[[m]]))) ^ 2 / ncol(learning.X[[m]]) / 2)
+    for (m in 1:P) {
+      Kx_prediction[, , m] <- exp(-(as.matrix(pdist(learning.X[[m]], prediction.X[[m]])))^2 / ncol(learning.X[[m]]) / 2)
     }
 
-    Ktest <- Kx_prediction #should be an Ntra x Ntest x P matrix containing similarity values between training and test samples
+    Ktest <- Kx_prediction # should be an Ntra x Ntest x P matrix containing similarity values between training and test samples
 
-    #perform prediction
+    # perform prediction
     prediction <- bemkl_supervised_multioutput_regression_variational_test(Ktest, state)
     predictions <- t(prediction$Y$mu)
     colnames(predictions) <- drugs
     rownames(predictions) <- rownames(prediction.X[[1]])
 
     # save predictions
-    for (X in drugs){
-      predictions.all.tasks[[X]][[view_name]][,i] <- predictions[,X]
+    for (X in drugs) {
+      predictions.all.tasks[[X]][[view_name]][, i] <- predictions[, X]
     }
   }
 

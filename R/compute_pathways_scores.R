@@ -35,14 +35,14 @@ compute_pathways_scores <- function(RNA_counts,
   if (remove_genes.ICB_proxies) {
     message("Removing signatures genes for proxy's of ICB response  \n")
     idy <- stats::na.exclude(match(cor_genes_to_remove, rownames(raw_counts)))
-    raw_counts <- raw_counts[-idy,]
+    raw_counts <- raw_counts[-idy, ]
   }
 
   # Integers are required for "DESeq2"
   if (is.integer(raw_counts) == FALSE) {
     raw_counts.integer <- apply(raw_counts, 2, as.integer)
     rownames(raw_counts.integer) <- rownames(raw_counts)
-  } else{
+  } else {
     raw_counts.integer <- raw_counts
   }
 
@@ -54,14 +54,16 @@ compute_pathways_scores <- function(RNA_counts,
 
   message("DESeq2 -->  \n")
   # Construction a DESeqDataSet: (Forced all to be data.frames($ operator))
-  dset <- DESeq2::DESeqDataSetFromMatrix(countData = raw_counts.integer,
-                                 colData = colData,
-                                 design = ~ 1)
+  dset <- DESeq2::DESeqDataSetFromMatrix(
+    countData = raw_counts.integer,
+    colData = colData,
+    design = ~1
+  )
 
   # Variance stabilization transformation
   dset <- DESeq2::estimateSizeFactors(dset)
   dset <- DESeq2::estimateDispersions(dset)
-  #gene_expr <- DESeq2::rlog(raw_counts.integer)
+  # gene_expr <- DESeq2::rlog(raw_counts.integer)
   gene_expr <- DESeq2::getVarianceStabilizedData(dset)
   rownames(gene_expr) <- rownames(raw_counts.integer)
 
@@ -74,9 +76,11 @@ compute_pathways_scores <- function(RNA_counts,
   genes_left <- setdiff(all_pathway_responsive_genes, rownames(gene_expr))
 
   # Output list:
-  Pathways <- list(scores = as.data.frame(Pathway_scores),
-                   transcripts_kept = length(genes_kept),
-                   transcripts_left = length(genes_left))
+  Pathways <- list(
+    scores = as.data.frame(Pathway_scores),
+    transcripts_kept = length(genes_kept),
+    transcripts_left = length(genes_left)
+  )
 
   message("\n Pathway scores computed \n")
   return(Pathways)

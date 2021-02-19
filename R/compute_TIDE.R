@@ -34,22 +34,22 @@ compute_TIDE <- function(RNA_tpm,
   average.gene <- rowMeans(log2.RNA_tpm.norm)
   log2.RNA_tpm.norm <- sweep(log2.RNA_tpm.norm, 1, average.gene, FUN = "-")
 
-  utils::write.table(log2.RNA_tpm.norm, file = paste0(output_file_path, "/log2mas1TPM_norm_", cancertype,".txt"), sep = "\t")
+  utils::write.table(log2.RNA_tpm.norm, file = paste0(output_file_path, "/log2mas1TPM_norm_", cancertype, ".txt"), sep = "\t")
 
   warning("tidepy need to be installed")
 
   # Calculation:
   if (cancertype == "SKCM") {
-    try(system(paste0("/anaconda3/bin/tidepy ", output_file_path,"/log2mas1TPM_norm_", cancertype,".txt", " -o ",output_file_path,"/output_TIDE_norm_", cancertype,".txt -c Melanoma")))
-  }else{
-    try(system(paste0("/anaconda3/bin/tidepy ", output_file_path,"/log2mas1TPM_norm_", cancertype,".txt", " -o ",output_file_path,"/output_TIDE_norm_",cancertype,".txt -c Other")))
+    try(system(paste0("/anaconda3/bin/tidepy ", output_file_path, "/log2mas1TPM_norm_", cancertype, ".txt", " -o ", output_file_path, "/output_TIDE_norm_", cancertype, ".txt -c Melanoma")))
+  } else {
+    try(system(paste0("/anaconda3/bin/tidepy ", output_file_path, "/log2mas1TPM_norm_", cancertype, ".txt", " -o ", output_file_path, "/output_TIDE_norm_", cancertype, ".txt -c Other")))
   }
 
-  TIDE.table.norm <- utils::read.table(file = paste0(output_file_path, "/output_TIDE_norm_", cancertype,".txt"), sep = "\t", header = TRUE, row.names = 1)
+  TIDE.table.norm <- utils::read.table(file = paste0(output_file_path, "/output_TIDE_norm_", cancertype, ".txt"), sep = "\t", header = TRUE, row.names = 1)
   score <- TIDE.table.norm[, "TIDE", drop = FALSE]
 
-  system(paste0("rm ", output_file_path, "/output_TIDE_norm_", cancertype,".txt"))
-  system(paste0("rm ", output_file_path, "/log2mas1TPM_norm_", cancertype,".txt"))
+  system(paste0("rm ", output_file_path, "/output_TIDE_norm_", cancertype, ".txt"))
+  system(paste0("rm ", output_file_path, "/log2mas1TPM_norm_", cancertype, ".txt"))
 
   message("TIDE score computed")
   return(data.frame(TIDE = score, check.names = FALSE))

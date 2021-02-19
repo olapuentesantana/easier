@@ -20,7 +20,7 @@ compute_RIR <- function(RNA_tpm) {
   RIR.read <- unique(unlist(res.sig))
   match_RIR.read <- match(RIR.read, rownames(RNA_tpm))
 
-  if (anyNA(match_RIR.read)){
+  if (anyNA(match_RIR.read)) {
     warning(c("differently named or missing signature genes : \n", paste(RIR.read[!RIR.read %in% rownames(RNA_tpm)], collapse = "\n")))
     match_RIR.read <- stats::na.omit(match_RIR.read)
   }
@@ -37,19 +37,24 @@ compute_RIR <- function(RNA_tpm) {
   res.scores <- get_OE_bulk(r, gene_sign = res.sig)
 
   # Merge as recommend by authors
-  res <- cbind.data.frame(excF.up = rowMeans(res.scores[, c("exc.up", "exc.seed.up")]),
-                          excF.down = rowMeans(res.scores[, c("exc.down", "exc.seed.down")]),
-                          res.up = rowMeans(res.scores[, c("trt.up", "exc.up", "exc.seed.up")]),
-                          res.down = rowMeans(res.scores[, c("trt.down", "exc.down", "exc.seed.down")]),
-                          res.scores)
+  res <- cbind.data.frame(
+    excF.up = rowMeans(res.scores[, c("exc.up", "exc.seed.up")]),
+    excF.down = rowMeans(res.scores[, c("exc.down", "exc.seed.down")]),
+    res.up = rowMeans(res.scores[, c("trt.up", "exc.up", "exc.seed.up")]),
+    res.down = rowMeans(res.scores[, c("trt.down", "exc.down", "exc.seed.down")]),
+    res.scores
+  )
 
-  res <- cbind.data.frame(resF.up = res[ , "res.up"] + res[, "fnc.up"],
-                          resF.down = res[, "res.down"] + res[, "fnc.down"],
-                          res)
+  res <- cbind.data.frame(
+    resF.up = res[, "res.up"] + res[, "fnc.up"],
+    resF.down = res[, "res.down"] + res[, "fnc.down"],
+    res
+  )
 
   # Keep that signature considered to be relevant
   keep.sig <- c("resF.down")
-  score <- as.matrix(res[, colnames(res) %in% keep.sig]); rownames(score) <- colnames(RNA_tpm)
+  score <- as.matrix(res[, colnames(res) %in% keep.sig])
+  rownames(score) <- colnames(RNA_tpm)
 
   message("RIR score computed")
   return(data.frame(RIR = score, check.names = FALSE))

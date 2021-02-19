@@ -43,7 +43,7 @@ compute_IPS <- function(RNA_tpm) {
   MISSING_GENES <- VEC[ind]
   dat <- IPSG[ind, ]
   if (length(MISSING_GENES) > 0) {
-    cat("differently named or missing genes: ", MISSING_GENES,"\n")
+    cat("differently named or missing genes: ", MISSING_GENES, "\n")
     for (x in 1:length(ind)) {
       print(IPSG[ind, ])
     }
@@ -54,22 +54,22 @@ compute_IPS <- function(RNA_tpm) {
     GE <- log2.RNA_tpm[[i]]
     mGE <- mean(GE)
     sGE <- sd(GE)
-    Z1 <- (log2.RNA_tpm[as.vector(IPSG$GENE),i] - mGE) / sGE
+    Z1 <- (log2.RNA_tpm[as.vector(IPSG$GENE), i] - mGE) / sGE
     W1 <- IPSG$WEIGHT
     WEIGHT <- NULL
     MIG <- NULL
     k <- 1
     for (gen in unique_ips_genes) {
-      MIG[k] <- mean(Z1[which (as.vector(IPSG$NAME)==gen)], na.rm=TRUE)
-      WEIGHT[k] <- mean(W1[which (as.vector(IPSG$NAME)==gen)])
-      k <- k+1
+      MIG[k] <- mean(Z1[which(as.vector(IPSG$NAME) == gen)], na.rm = TRUE)
+      WEIGHT[k] <- mean(W1[which(as.vector(IPSG$NAME) == gen)])
+      k <- k + 1
     }
-    WG <- MIG*WEIGHT
+    WG <- MIG * WEIGHT
     MHC[i] <- mean(WG[1:10])
     CP[i] <- mean(WG[11:20])
     EC[i] <- mean(WG[21:24])
     SC[i] <- mean(WG[25:26])
-    AZ[i] <- sum(MHC[i],CP[i],EC[i],SC[i])
+    AZ[i] <- sum(MHC[i], CP[i], EC[i], SC[i])
     score[i] <- ipsmap(AZ[i])
   }
   names(score) <- sample_names

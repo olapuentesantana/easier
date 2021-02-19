@@ -16,15 +16,14 @@
 #' # TODOTODO
 standardization <- function(X,
                             mean,
-                            sd){
-
-  X.scale <- matrix(0, nrow(X), ncol(X), dimnames = list(rownames(X),colnames(X)))
+                            sd) {
+  X.scale <- matrix(0, nrow(X), ncol(X), dimnames = list(rownames(X), colnames(X)))
 
   if (missing(mean) & missing(sd)) {
-     mean.X <- colMeans(X, na.rm = TRUE)
-     sd.X <- colSds(as.matrix(X), na.rm = TRUE)
-     X.scale <- sweep(X, 2, mean.X, FUN = "-")
-     X.scale <- sweep(X.scale, 2, sd.X, FUN = "/")
+    mean.X <- colMeans(X, na.rm = TRUE)
+    sd.X <- colSds(as.matrix(X), na.rm = TRUE)
+    X.scale <- sweep(X, 2, mean.X, FUN = "-")
+    X.scale <- sweep(X.scale, 2, sd.X, FUN = "/")
   } else {
     mean <- mean[na.omit(match(colnames(X), names(mean)))]
     sd <- sd[na.omit(match(colnames(X), names(sd)))]
@@ -35,4 +34,3 @@ standardization <- function(X,
   }
   return(as.matrix(X.scale))
 }
-

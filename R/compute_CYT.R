@@ -19,7 +19,7 @@ compute_CYT <- function(RNA_tpm) {
   CYT.read <- c("GZMA", "PRF1")
   match_CYT.genes <- match(CYT.read, rownames(RNA_tpm))
 
-  if (anyNA(match_CYT.genes)){
+  if (anyNA(match_CYT.genes)) {
     warning(paste0("differenty named or missing signature genes : \n", paste(CYT.read[!CYT.read %in% rownames(RNA_tpm)], collapse = "\n")))
     match_CYT.genes <- stats::na.omit(match_CYT.genes)
   }

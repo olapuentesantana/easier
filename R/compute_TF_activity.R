@@ -21,7 +21,7 @@
 #' @examples
 #' # TODOTODO
 compute_TF_activity <- function(RNA_tpm,
-                                remove_genes_ICB_proxies = FALSE){
+                                remove_genes_ICB_proxies = FALSE) {
 
   # Gene expression data
   tpm <- RNA_tpm
@@ -34,18 +34,18 @@ compute_TF_activity <- function(RNA_tpm,
   if (remove_genes_ICB_proxies) {
     message("Removing signatures genes for proxy's of ICB response  \n")
     idy <- stats::na.exclude(match(cor_genes_to_remove, rownames(tpm)))
-    tpm <- tpm[-idy,]
+    tpm <- tpm[-idy, ]
   }
 
   # Log transformed expression matrix (log2[tpm+1]): expression matrix scaled and recentered.
-  gene_expr <- standardization(t(tpm) , mean = TCGA.mean.pancancer, sd = TCGA.sd.pancancer)
+  gene_expr <- standardization(t(tpm), mean = TCGA.mean.pancancer, sd = TCGA.sd.pancancer)
 
   # redefine gene names to match transcripts for viper
   E <- t(gene_expr)
-  newNames <- sapply(rownames(E), function(x){
+  newNames <- sapply(rownames(E), function(x) {
     # strsplit(x, "\\.")[[1]][1]
     zz_tmp <- strsplit(x, "\\.")[[1]]
-    paste0(zz_tmp[1:(length(zz_tmp)-1)], collapse = "-")
+    paste0(zz_tmp[1:(length(zz_tmp) - 1)], collapse = "-")
   })
   rownames(E) <- newNames
 
@@ -55,12 +55,14 @@ compute_TF_activity <- function(RNA_tpm,
   all_tfs <- unique(regulons$tf)
 
   # check what is the percentage of regulated transcripts and TF that we have in our data
-  message(" percentage of regulated transcripts = ", sum(all_regulated_transcripts %in%  rownames(E))*100/length(all_regulated_transcripts), "\n")
-  message(" percentage of TF = ", sum(all_tfs %in% rownames(E))*100/length(all_tfs), "\n")
+  message(" percentage of regulated transcripts = ", sum(all_regulated_transcripts %in% rownames(E)) * 100 / length(all_regulated_transcripts), "\n")
+  message(" percentage of TF = ", sum(all_tfs %in% rownames(E)) * 100 / length(all_tfs), "\n")
 
   # TF activity: run viper
-  TF_activities <- dorothea::run_viper(input = E, regulons = regulons,
-                                       options = list(method = "none", minsize = 4, eset.filter = FALSE, cores = 1, verbose=FALSE))
+  TF_activities <- dorothea::run_viper(
+    input = E, regulons = regulons,
+    options = list(method = "none", minsize = 4, eset.filter = FALSE, cores = 1, verbose = FALSE)
+  )
 
   # Samples as rows, TFs as columns
   TF_activities <- t(TF_activities)
@@ -70,9 +72,11 @@ compute_TF_activity <- function(RNA_tpm,
   genes_left <- setdiff(all_regulated_transcripts, rownames(E))
 
   # Output list:
-  TFs <- list(scores = as.data.frame(TF_activities),
-              transcripts_kept = length(genes_kept),
-              transcripts_left = length(genes_left))
+  TFs <- list(
+    scores = as.data.frame(TF_activities),
+    transcripts_kept = length(genes_kept),
+    transcripts_left = length(genes_left)
+  )
 
   message("TF activities computed \n")
 

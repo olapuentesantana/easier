@@ -19,7 +19,7 @@ compute_IFNy <- function(RNA_tpm) {
   IFNy.read <- c("IFNG", "STAT1", "CXCL9", "CXCL10", "IDO1", "HLA-DRA")
   match_IFNy.genes <- match(IFNy.read, rownames(RNA_tpm))
 
-  if (anyNA(match_IFNy.genes)){
+  if (anyNA(match_IFNy.genes)) {
     warning(paste0("differenty named or missing signature genes : \n", IFNy.read[!IFNy.read %in% rownames(RNA_tpm)]))
     match_IFNy.genes <- stats::na.omit(match_IFNy.genes)
   }

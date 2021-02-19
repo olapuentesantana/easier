@@ -16,7 +16,7 @@
 #' # TODOTODO
 compute_cell_fractions <- function(RNA_tpm
                                    # TODOTODO; do we need an ellipsis here?
-                                   ){
+) {
 
   # ****************
   # packages
@@ -37,9 +37,9 @@ compute_cell_fractions <- function(RNA_tpm
 
   # Samples as rows, TFs as columns
   old_cellnames <- cell_fractions$cell_type
-  new_cellnames <- c("B","M1", "M2", "Monocyte", "Neutrophil", "NK", "CD4 T", "CD8+ T", "Treg", "DC", "Other")
+  new_cellnames <- c("B", "M1", "M2", "Monocyte", "Neutrophil", "NK", "CD4 T", "CD8+ T", "Treg", "DC", "Other")
 
-  cell_fractions <- t(cell_fractions[,-1])
+  cell_fractions <- t(cell_fractions[, -1])
   colnames(cell_fractions) <- new_cellnames
 
   message("Cell fractions computed \n")
