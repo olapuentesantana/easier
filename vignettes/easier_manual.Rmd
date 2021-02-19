@@ -42,6 +42,9 @@ library(easier)
 ## Computation of system-based signatures of the tumor microenvironment
 
 ```{r eval = FALSE}
+# Example: Riaz
+data("Riaz_data")
+
 # Computation of cell fractions
 cell_fractions <- compute_cell_fractions(RNA_tpm = Riaz_data$tpm_RNAseq)
 
@@ -67,10 +70,10 @@ ccpair_scores <- compute_CC_pairs_grouped(lrpairs = lrpairs_weights$LRpairs,
 
 ```{r eval = FALSE}
 tasks <- c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
-immune_response <- compute_gold_standards(RNA_tpm = tpm, 
+immune_response <- compute_gold_standards(RNA_tpm = Riaz_data$tpm_RNAseq, 
                                           list_gold_standards = tasks, 
-                                          cancertype = cancer_type,
-                                          output_file_path = tmp_file_path)
+                                          cancertype = "SKCM",
+                                          output_file_path = "/Users/Oscar/Desktop/Riaz")
 ```
 
 ## Predict patients' immune response
@@ -81,7 +84,7 @@ predictions_immune_response <- predict_immune_response(pathways = pathways_activ
                                                        lrpairs = lrpairs_weights,
                                                        tfs = tf_activity,
                                                        ccpairs = ccpairs_scores,
-                                                       cancertype = cancertype)
+                                                       cancertype = "SKCM")
 ```
 
 

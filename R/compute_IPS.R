@@ -12,7 +12,10 @@
 #' @export
 #'
 #' @examples
-#' # TODOTODO
+#' # Example: Riaz
+#' data("Riaz_data")
+#'
+#' IPS <- compute_IPS(RNA_tpm= Riaz_data$tpm_RNAseq)
 compute_IPS <- function(RNA_tpm) {
 
   # Log2 transformation:

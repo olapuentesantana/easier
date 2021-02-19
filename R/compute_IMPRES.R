@@ -12,7 +12,10 @@
 #' @export
 #'
 #' @examples
-#' # TODOTODO
+#' # Example: Riaz
+#' data("Riaz_data")
+#'
+#' IMPRES <- compute_IMPRES(RNA_tpm= Riaz_data$tpm_RNAseq)
 compute_IMPRES <- function(RNA_tpm) {
 
   # Literature genes

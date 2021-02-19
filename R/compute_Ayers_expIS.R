@@ -12,7 +12,10 @@
 #' @export
 #'
 #' @examples
-#' # TODOTODO
+#' # Example: Riaz
+#' data("Riaz_data")
+#'
+#' Ayers_expIS <- compute_Ayers_expIS(RNA_tpm= Riaz_data$tpm_RNAseq)
 compute_Ayers_expIS <- function(RNA_tpm) {
 
   # Literature genes

@@ -12,7 +12,10 @@
 #' @export
 #'
 #' @examples
-#' # TODOTODO
+#' # Example: Riaz
+#' data("Riaz_data")
+#'
+#' Roh_IS <- compute_Roh_IS(RNA_tpm= Riaz_data$tpm_RNAseq)
 compute_Roh_IS <- function(RNA_tpm) {
 
   # Literature genes

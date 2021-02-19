@@ -17,7 +17,12 @@
 #'   }
 #'
 #' @examples
-#' # TODOTODO
+#' # Example: Riaz
+#' data("Riaz_data")
+#'
+#' # Computation of cell-cell interaction scores
+#' ccpair_scores <- compute_CC_pairs_grouped(lrpairs = lrpairs_weights$LRpairs,
+#' cancertype = "pancan")
 compute_CC_pairs_grouped <- function(lrpairs,
                                      cancertype = "pancan") {
 

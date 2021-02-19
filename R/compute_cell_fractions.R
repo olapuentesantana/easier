@@ -13,7 +13,11 @@
 #' rows=samples and columns=TFs
 #'
 #' @examples
-#' # TODOTODO
+#' # Example: Riaz
+#' data("Riaz_data")
+#'
+#' # Computation of cell fractions
+#' cell_fractions <- compute_cell_fractions(RNA_tpm = Riaz_data$tpm_RNAseq)
 compute_cell_fractions <- function(RNA_tpm
                                    # TODOTODO; do we need an ellipsis here?
 ) {

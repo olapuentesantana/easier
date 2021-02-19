@@ -12,7 +12,10 @@
 #' @export
 #'
 #' @examples
-#' # TODOTODO
+#' # Example: Riaz
+#' data("Riaz_data")
+#'
+#' CYT <- compute_CYT(RNA_tpm= Riaz_data$tpm_RNAseq)
 compute_CYT <- function(RNA_tpm) {
 
   # Literature genes

@@ -13,7 +13,15 @@
 #' @return List with the scores of all the gold standards specified.
 #'
 #' @examples
-#' # TODOTODO
+#' # Example: Riaz
+#' data("Riaz_data")
+#'
+#' Computation of different hallmarks of the immune response
+#' tasks <- c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
+#' immune_response <- compute_gold_standards(RNA_tpm = Riaz_data$tpm_RNAseq,
+#' list_gold_standards = tasks,
+#' cancertype = "SKCM",
+#' output_file_path = "/Users/Oscar/Desktop/Riaz")
 compute_gold_standards <- function(RNA_tpm,
                                    list_gold_standards,
                                    cancertype,

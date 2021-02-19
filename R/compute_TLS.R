@@ -12,7 +12,10 @@
 #' @export
 #'
 #' @examples
-#' # TODOTODO
+#' # Example: Riaz
+#' data("Riaz_data")
+#'
+#' TLS <- compute_TLS(RNA_tpm= Riaz_data$tpm_RNAseq)
 compute_TLS <- function(RNA_tpm) {
 
   # Literature genes

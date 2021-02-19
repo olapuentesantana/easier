@@ -16,7 +16,12 @@
 #' @export
 #'
 #' @examples
-#' # TODOTODO
+#' # Example: Riaz
+#' data("Riaz_data")
+#'
+#' TIDE <- compute_TIDE(RNA_tpm= Riaz_data$tpm_RNAseq,
+#' cancertype = "SKCM",
+#' output_file_path = "/Users/Oscar/Desktop/Riaz")
 compute_TIDE <- function(RNA_tpm,
                          cancertype,
                          output_file_path) {

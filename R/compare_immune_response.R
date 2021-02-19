@@ -29,7 +29,42 @@
 #' @return ROC curves plots and barplots showing AUC values.
 #'
 #' @examples
-#' # TODOTODO
+#' # Example: Riaz
+#' data("Riaz_data")
+#'
+#' # Computation of cell fractions
+#' cell_fractions <- compute_cell_fractions(RNA_tpm = Riaz_data$tpm_RNAseq)
+#'
+#' # Computation of pathway scores
+#' pathway_activity <- compute_pathways_scores(RNA_counts = Riaz_data$raw_counts_RNAseq,
+#' remove_genes_ICB_proxies = TRUE)
+#'
+#' # Computation of TF activity
+#' tf_activity <- compute_TF_activity(RNA_tpm = Riaz_data$tpm_RNAseq,
+#' remove_genes_ICB_proxies = FALSE)
+#'
+#' # Computation of ligand-receptor pair weights
+#' lrpair_weights <- compute_LR_pairs(RNA_tpm = Riaz_data$tpm_RNAseq,
+#' remove_genes_ICB_proxies = FALSE, cancertype = "pancan")
+#'
+#' # Computation of cell-cell interaction scores
+#' ccpair_scores <- compute_CC_pairs_grouped(lrpairs = lrpairs_weights$LRpairs,
+#' cancertype = "pancan")
+#'
+#' # Predict patients' immune response
+#' predictions_immune_response <- predict_immune_response(pathways = pathways_activity,
+#' immunecells = cell_fractions,
+#' lrpairs = lrpairs_weights,
+#' tfs = tf_activity
+#' ccpairs = ccpairs_scores,
+#' cancertype = "SKCM")
+#'
+#' Assess patient-specific likelihood of response to ICB therapy
+#' compare_immune_response(predictions_immune_response = predictions_immune_response,
+#' real_patient_response = Riaz_data$patient_response,
+#' RNA_tpm = Riaz_data$tpm_RNAseq,
+#' output_file_path = "/Users/Oscar/Desktop/Riaz",
+#' cancertype = "SKCM")
 compare_immune_response <- function(predictions_immune_response = NULL,
                                     real_patient_response,
                                     RNA_tpm,

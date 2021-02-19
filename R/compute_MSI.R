@@ -12,7 +12,10 @@
 #' @export
 #'
 #' @examples
-#' # TODOTODO
+#' # Example: Riaz
+#' data("Riaz_data")
+#'
+#' MSI <- compute_MSI(RNA_tpm= Riaz_data$tpm_RNAseq)
 compute_MSI <- function(RNA_tpm) {
 
   # Literature genes: * (CCRN4L in tcga, NOCT approved symbol)

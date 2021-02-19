@@ -12,7 +12,10 @@
 #' @export
 #'
 #' @examples
-#' # TODOTODO
+#' # Example: Riaz
+#' data("Riaz_data")
+#'
+#' chemokines <- compute_chemokines(RNA_tpm= Riaz_data$tpm_RNAseq)
 compute_chemokines <- function(RNA_tpm) {
 
   # Literature genes

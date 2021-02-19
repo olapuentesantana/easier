@@ -18,7 +18,13 @@
 #' @export
 #'
 #' @examples
-#' # TODOTODO
+#' # Example: Riaz
+#' data("Riaz_data")
+#'
+#' # Computation of ligand-receptor pair weights
+#' lrpair_weights <- compute_LR_pairs(RNA_tpm = Riaz_data$tpm_RNAseq,
+#' remove_genes_ICB_proxies = FALSE,
+#' cancertype = "pancan")
 compute_LR_pairs <- function(RNA_tpm,
                              remove_genes_ICB_proxies = FALSE,
                              cancertype = "pancan") {
