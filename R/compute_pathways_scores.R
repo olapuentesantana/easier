@@ -32,7 +32,7 @@ compute_pathways_scores <- function(RNA_counts,
   try(if (any(grep("ENSG00000", genes))) stop("hgnc gene symbols are required", call. = FALSE))
 
   # Remove list of genes used to build proxy's of ICB response
-  if (remove_genes.ICB_proxies) {
+  if (remove_genes_ICB_proxies) {
     message("Removing signatures genes for proxy's of ICB response  \n")
     idy <- stats::na.exclude(match(cor_genes_to_remove, rownames(raw_counts)))
     raw_counts <- raw_counts[-idy, ]
