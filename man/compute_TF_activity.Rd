@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute_TF_activity.R
 \name{compute_TF_activity}
 \alias{compute_TF_activity}
-\title{Compute transription factors activity}
+\title{Compute transcription factors activity}
 \usage{
 compute_TF_activity(RNA_tpm, remove_genes_ICB_proxies = FALSE)
 }
@@ -21,7 +21,7 @@ A list with the following elements:
 }
 }
 \description{
-\code{compute_TF_activity} infers transription factor activity from tpm RNA-seq data.
+\code{compute_TF_activity} infers transcription factor activity from tpm RNA-seq data.
 }
 \examples{
 # TODOTODO

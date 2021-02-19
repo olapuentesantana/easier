@@ -1,6 +1,6 @@
-#' Compute transription factors activity
+#' Compute transcription factors activity
 #'
-#' `compute_TF_activity` infers transription factor activity from tpm RNA-seq data.
+#' `compute_TF_activity` infers transcription factor activity from tpm RNA-seq data.
 #'
 #' @importFrom dorothea run_viper
 #' @importFrom stats na.exclude
