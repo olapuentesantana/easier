@@ -55,11 +55,11 @@
 #' predictions_immune_response <- predict_immune_response(pathways = pathways_activity,
 #' immunecells = cell_fractions,
 #' lrpairs = lrpairs_weights,
-#' tfs = tf_activity
+#' tfs = tf_activity,
 #' ccpairs = ccpairs_scores,
 #' cancertype = "SKCM")
 #'
-#' Assess patient-specific likelihood of response to ICB therapy
+#' # Assess patient-specific likelihood of response to ICB therapy
 #' compare_immune_response(predictions_immune_response = predictions_immune_response,
 #' real_patient_response = Riaz_data$patient_response,
 #' RNA_tpm = Riaz_data$tpm_RNAseq,

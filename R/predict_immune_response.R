@@ -51,7 +51,7 @@
 #' predictions_immune_response <- predict_immune_response(pathways = pathways_activity,
 #' immunecells = cell_fractions,
 #' lrpairs = lrpairs_weights,
-#' tfs = tf_activity
+#' tfs = tf_activity,
 #' ccpairs = ccpairs_scores,
 #' cancertype = "SKCM")
 predict_immune_response <- function(pathways = NULL,
