@@ -1,9 +1,9 @@
 #' Immune response prediction
 #'
 #' `predict_immune_response` predicts immune response using two algorithms:
-#' multi-task elastic net and bayesian efficient multi-kernel algorithm. While
+#' regularized multi-task linear regression (RMTLR) and bayesian efficient multi-kernel algorithm (BEMKL). While
 #' BEMKL can exploit information across different input and output datasets,
-#' multi-task elastic net can only do so for response variables.
+#' RMTLR can only do so for response variables.
 #' Another advantage of BEMKL is missing data handling, which is not the case
 #' for the other algorithm.
 #'
@@ -79,7 +79,7 @@ predict_immune_response <- function(pathways = NULL,
 
   view_combinations <- NULL
 
-  algorithm <- c("Multi_Task_EN") # ,"BEMKL")
+  algorithm <- c("RMTLR") # ,"BEMKL")
 
   # Check which views are missing
   miss_views <- c(
@@ -139,8 +139,8 @@ predict_immune_response <- function(pathways = NULL,
           view_data = view_data,
           learned_model = trained_models[[cancertype]][[view_name]]
         )
-      } else if (alg %in% c("Multi_Task_EN")) {
-        pred_alg <- predict_with_multitaskelasticnet(
+      } else if (alg %in% c("RMTLR")) {
+        pred_alg <- predict_with_rmtlr(
           view_name = view_name,
           view_info = view_info,
           view_data = view_data,

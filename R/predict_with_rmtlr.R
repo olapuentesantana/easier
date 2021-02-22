@@ -1,7 +1,7 @@
-#' Make predictions using multi-task elastic net
+#' Make predictions using RMTLR
 #'
-#' `predict_with_multitaskelasticnet` predicts immune response using multi-task
-#' elastic net algorithm.
+#' `predict_with_rmtlr` predicts immune response using regularized multi-task
+#' linear algorithm.
 #' This algorithm employs model parameters learned during training on different
 #' types of data in order to compute the immune response.
 #'
@@ -20,10 +20,10 @@
 #'
 #' @examples
 #' # TODOTODO
-predict_with_multitaskelasticnet <- function(view_name,
-                                             view_info,
-                                             view_data,
-                                             learned_model) {
+predict_with_rmtlr <- function(view_name,
+                               view_info,
+                               view_data,
+                               learned_model) {
 
   # Initialize variables
   P <- length(view_info)
@@ -101,7 +101,7 @@ predict_with_multitaskelasticnet <- function(view_name,
 
     # perform prediction
     prediction_cv <- lapply(state, function(X) {
-      multi_task_EN_test(prediction.X, X)
+      rmtlr_test(prediction.X, X)
     })
 
     # save predictions

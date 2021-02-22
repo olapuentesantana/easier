@@ -1,7 +1,7 @@
-#' Multi-task elastic net algorithm implements the model training coefficients and
+#' Regularized multi-task linear regression algorithm implements the model training coefficients and
 #' hyperparameters on the test set.
 #'
-#' `multi_task_EN_test` implements multi-task elastic net regression on the test data
+#' `rmtlr_test` implements regularized multi-task linear regression on the test data
 #'
 #' @importFrom stats na.omit
 #'
@@ -15,7 +15,7 @@
 #'
 #' @examples
 #' # TODOTODO
-multi_task_EN_test <- function(x_test,
+rmtlr_test <- function(x_test,
                                coef_matrix) {
 
   # Keep intercept

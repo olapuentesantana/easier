@@ -219,14 +219,14 @@ compare_immune_response <- function(predictions_immune_response = NULL,
     # pred_alg_EN <- easier::predict_with_multitaskelasticnet(view_name = view_name,
     #                                                         view_info = view_info,
     #                                                         view_data = view_data,
-    #                                                         learned_model = all_cv_res[["Multi_Task_EN"]])
+    #                                                         learned_model = all_cv_res[["RMTLR"]])
     #
     # pred_alg_BE <- easier::predict_with_bemkl(view_name = view_name,
     #                                           view_info = view_info,
     #                                           view_data = view_data,
     #                                           learned_model = all_cv_res[["BEMKL"]])
     #
-    # predictions_immune_response$transcript <- list(Multi_Task_EN = pred_alg_EN, BEMKL = pred_alg_BE)
+    # predictions_immune_response$transcript <- list(RMTLR = pred_alg_EN, BEMKL = pred_alg_BE)
 
     # *******************************************
     # Predictions #
@@ -605,7 +605,7 @@ compare_immune_response <- function(predictions_immune_response = NULL,
         "Pathways.cor_TFs" = "Pathways + TFs",
         "TFs_CCpairsGroupedScores.spec.pc" = "TFs + C-C pairs",
         "TFs_LRpairs.spec.pc" = "TFs + L-R pairs",
-        "Multi_Task_EN" = "Gold_Standard",
+        "RMTLR" = "Gold_Standard",
         "Pathways_ImmuneCells_TFs_LRpairs" = "Combo\nall views",
         "CTLA4" = "\nCTLA4", "PD1" = "\nPD1", "PDL1" = "\nPDL1"
       )) +
@@ -637,33 +637,33 @@ compare_immune_response <- function(predictions_immune_response = NULL,
     par(cex.axis = 1.6, mar = c(5, 5, 5, 5), col.lab = "black")
 
     # Single views
-    ROCR::plot(ROC_info$Pathways.cor$Multi_Task_EN$common_mean[["1se.mse"]]$Curve[[1]],
+    ROCR::plot(ROC_info$Pathways.cor$RMTLR$common_mean[["1se.mse"]]$Curve[[1]],
       avg = "threshold", col = all_color_views["Pathways.cor"], lwd = 3, type = "S",
       cex.lab = 1.6, ylab = "True Positive Rate", xlab = "False Positive Rate"
     )
 
-    ROCR::plot(ROC_info$ImmuneCells$Multi_Task_EN$common_mean[["1se.mse"]]$Curve[[1]],
+    ROCR::plot(ROC_info$ImmuneCells$RMTLR$common_mean[["1se.mse"]]$Curve[[1]],
       avg = "threshold", col = all_color_views["ImmuneCells"], lwd = 3, type = "S",
       cex.lab = 1.6, ylab = "True Positive Rate", xlab = "False Positive Rate", add = TRUE
     )
 
-    ROCR::plot(ROC_info$TFs$Multi_Task_EN$common_mean[["1se.mse"]]$Curve[[1]],
+    ROCR::plot(ROC_info$TFs$RMTLR$common_mean[["1se.mse"]]$Curve[[1]],
       avg = "threshold", col = all_color_views["TFs"], lwd = 3, type = "S",
       cex.lab = 1.6, ylab = "True Positive Rate", xlab = "False Positive Rate", add = TRUE
     )
 
-    ROCR::plot(ROC_info$LRpairs.spec.pc$Multi_Task_EN$common_mean[["1se.mse"]]$Curve[[1]],
+    ROCR::plot(ROC_info$LRpairs.spec.pc$RMTLR$common_mean[["1se.mse"]]$Curve[[1]],
       avg = "threshold", col = all_color_views["LRpairs.spec.pc"], lwd = 3, type = "S",
       cex.lab = 1.6, ylab = "True Positive Rate", xlab = "False Positive Rate", add = TRUE
     )
 
-    ROCR::plot(ROC_info$CCpairsGroupedScores.spec.pc$Multi_Task_EN$common_mean[["1se.mse"]]$Curve[[1]],
+    ROCR::plot(ROC_info$CCpairsGroupedScores.spec.pc$RMTLR$common_mean[["1se.mse"]]$Curve[[1]],
       avg = "threshold", col = all_color_views["CCpairsGroupedScores.spec.pc"], lwd = 3, type = "S",
       cex.lab = 1.6, ylab = "True Positive Rate", xlab = "False Positive Rate", add = TRUE
     )
 
 
-    # ROCR::plot(ROC_info$transcript$Multi_Task_EN$common_mean[["1se.mse"]]$Curve[[1]],
+    # ROCR::plot(ROC_info$transcript$RMTLR$common_mean[["1se.mse"]]$Curve[[1]],
     #            avg = "threshold", col = "black", lwd = 2, type = "S",
     #            cex.lab=2.2, ylab="True Positive Rate", xlab="False Positive Rate", add = TRUE)
 
@@ -671,24 +671,24 @@ compare_immune_response <- function(predictions_immune_response = NULL,
     ROCR::plot(ROC_info.GS$consensus_mean.GS$Curve[[1]], col = color_consensus[2], lwd = 3, type = "S", lty = 1, add = TRUE)
 
     # gold standard - overall mean tasks
-    ROCR::plot(ROC_info$overall_mean$Multi_Task_EN$overall[["1se.mse"]]$Curve[[1]], col = color_overalls[2], lwd = 3, type = "S", lty = 1, add = TRUE)
+    ROCR::plot(ROC_info$overall_mean$RMTLR$overall[["1se.mse"]]$Curve[[1]], col = color_overalls[2], lwd = 3, type = "S", lty = 1, add = TRUE)
 
     # abline(a=0, b=1, lty = 3, lwd = 2, col = "antiquewhite4")
     legend(
       x = 0.72, y = 0.57,
       legend = c(
         paste0("Pathways", "\n(AUC=", round(subset(AUC.mean.sd, Task == "common_mean"
-        & Model == "1se.mse" & View == "Pathways.cor" & Alg == "Multi_Task_EN")$AUC.median, 3), ")"),
+        & Model == "1se.mse" & View == "Pathways.cor" & Alg == "RMTLR")$AUC.median, 3), ")"),
         paste0("Cell fractions", "\n(AUC=", round(subset(AUC.mean.sd, Task == "common_mean"
-        & Model == "1se.mse" & View == "ImmuneCells" & Alg == "Multi_Task_EN")$AUC.median, 3), ")"),
+        & Model == "1se.mse" & View == "ImmuneCells" & Alg == "RMTLR")$AUC.median, 3), ")"),
         paste0("TFs", "\n(AUC=", round(subset(AUC.mean.sd, Task == "common_mean"
-        & Model == "1se.mse" & View == "TFs" & Alg == "Multi_Task_EN")$AUC.median, 3), ")"),
+        & Model == "1se.mse" & View == "TFs" & Alg == "RMTLR")$AUC.median, 3), ")"),
         paste0("L-R pairs", "\n(AUC=", round(subset(AUC.mean.sd, Task == "common_mean"
-        & Model == "1se.mse" & View == "LRpairs.spec.pc" & Alg == "Multi_Task_EN")$AUC.median, 3), ")"),
+        & Model == "1se.mse" & View == "LRpairs.spec.pc" & Alg == "RMTLR")$AUC.median, 3), ")"),
         paste0("C-C pairs", "\n(AUC=", round(subset(AUC.mean.sd, Task == "common_mean"
-        & Model == "1se.mse" & View == "CCpairsGroupedScores.spec.pc" & Alg == "Multi_Task_EN")$AUC.median, 3), ")"),
+        & Model == "1se.mse" & View == "CCpairsGroupedScores.spec.pc" & Alg == "RMTLR")$AUC.median, 3), ")"),
         # paste0("Transcriptomics","\n(AUC=", round(subset(AUC.mean.sd, Task == "common_mean"
-        # & Model == "1se.mse" & View == "transcript" & Alg == "Multi_Task_EN")$AUC.median, 3),")"),
+        # & Model == "1se.mse" & View == "transcript" & Alg == "RMTLR")$AUC.median, 3),")"),
         paste0("\nOverall tasks", "\n(AUC=", round(subset(AUC.mean.sd_GS, Model == "1se.mse" & View == "consensus_mean")$AUC.median, 3), ")"),
         paste0("\nOverall views", "\n(AUC=", round(subset(AUC.mean.sd, Model == "1se.mse" & View == "overall_mean")$AUC.median, 3), ")")
       ),
