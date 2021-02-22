@@ -17,5 +17,8 @@ numeric matrix with rows=samples and columns=IMPRES score
 checkpoint gene pairs (Auslander et al., 2018).
 }
 \examples{
-# TODOTODO
+# Example: Riaz
+data("Riaz_data")
+
+IMPRES <- compute_IMPRES(RNA_tpm= Riaz_data$tpm_RNAseq)
 }

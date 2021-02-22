@@ -17,5 +17,8 @@ numeric matrix with rows=samples and columns=Immunophenoscore
 original publication (Charoentong et al., 2017).
 }
 \examples{
-# TODOTODO
+# Example: Riaz
+data("Riaz_data")
+
+IPS <- compute_IPS(RNA_tpm= Riaz_data$tpm_RNAseq)
 }

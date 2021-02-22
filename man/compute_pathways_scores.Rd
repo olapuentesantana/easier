@@ -24,5 +24,10 @@ A list with the following elements:
 \code{compute_pathways_scores} infers pathway activity from raw counts RNA-seq data.
 }
 \examples{
-# TODOTODO
+# Example: Riaz
+data("Riaz_data")
+
+# Computation of pathway scores
+pathway_activity <- compute_pathways_scores(RNA.counts = Riaz_data$raw_counts_RNAseq,
+remove.genes.ICB_proxies = TRUE)
 }

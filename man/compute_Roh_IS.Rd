@@ -17,5 +17,8 @@ numeric matrix with rows=samples and columns=Roh immune score
 score genes (Roh et al., 2017).
 }
 \examples{
-# TODOTODO
+# Example: Riaz
+data("Riaz_data")
+
+Roh_IS <- compute_Roh_IS(RNA_tpm= Riaz_data$tpm_RNAseq)
 }

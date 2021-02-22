@@ -17,5 +17,8 @@ numeric matrix with rows=samples and columns=Davoli immune signature
 immune infiltrate signature genes, after rank normalization (Davoli et al., 2017).
 }
 \examples{
-# TODOTODO
+# Example: Riaz
+data("Riaz_data")
+
+Davoli_IS <- compute_Davoli_IS(RNA_tpm= Riaz_data$tpm_RNAseq)
 }

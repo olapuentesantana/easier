@@ -17,5 +17,8 @@ numeric matrix with rows=samples and columns=chemokine score
 applying PCA to z-score expression of 12 chemokine genes (Messina et al., 2012).
 }
 \examples{
-# TODOTODO
+# Example: Riaz
+data("Riaz_data")
+
+chemokines <- compute_chemokines(RNA_tpm= Riaz_data$tpm_RNAseq)
 }

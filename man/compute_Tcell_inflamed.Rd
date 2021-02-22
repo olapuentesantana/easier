@@ -20,5 +20,8 @@ signature genes
 TODOTODOoscar, async name of function vs doc
 }
 \examples{
-# TODOTODO
+# Example: Riaz
+data("Riaz_data")
+
+Tcell_inflamed <- compute_Tcell_inflamed(RNA_tpm= Riaz_data$tpm_RNAseq)
 }

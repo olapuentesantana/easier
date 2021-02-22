@@ -17,5 +17,8 @@ numeric matrix with rows=samples and columns=Expanded Immune signature score
 mean of genes included in the Expanded Immune signature (Ayers et al., JCI, 2017)
 }
 \examples{
-# TODOTODO
+# Example: Riaz
+data("Riaz_data")
+
+Ayers_expIS <- compute_Ayers_expIS(RNA_tpm= Riaz_data$tpm_RNAseq)
 }

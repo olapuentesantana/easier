@@ -26,5 +26,10 @@ of individual cell types) from tpm, using the null model for CC interaction
 computed on TCGA data.
 }
 \examples{
-# TODOTODO
+# Example: Riaz
+data("Riaz_data")
+
+# Computation of cell-cell interaction scores
+ccpair_scores <- compute_CC_pairs_grouped(lrpairs = lrpairs_weights$LRpairs,
+cancertype = "pancan")
 }

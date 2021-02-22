@@ -24,5 +24,10 @@ A list with the following elements:
 \code{compute_TF_activity} infers transcription factor activity from tpm RNA-seq data.
 }
 \examples{
-# TODOTODO
+# Example: Riaz
+data("Riaz_data")
+
+# Computation of TF activity
+tf_activity <- compute_TF_activity(RNA_tpm = Riaz_data$tpm_RNAseq,
+remove_genes_ICB_proxies = FALSE)
 }

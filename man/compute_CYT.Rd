@@ -17,5 +17,8 @@ numeric matrix with rows=samples and columns=cytolytic activity score
 cytolytic genes (Rooney et al., 2015).
 }
 \examples{
-# TODOTODO
+# Example: Riaz
+data("Riaz_data")
+
+CYT <- compute_CYT(RNA_tpm= Riaz_data$tpm_RNAseq)
 }

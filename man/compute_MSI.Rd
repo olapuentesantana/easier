@@ -17,5 +17,8 @@ numeric matrix with rows=samples and columns=MSI score
 gene pairs (Fu et al., 2019).
 }
 \examples{
-# TODOTODO
+# Example: Riaz
+data("Riaz_data")
+
+MSI <- compute_MSI(RNA_tpm= Riaz_data$tpm_RNAseq)
 }

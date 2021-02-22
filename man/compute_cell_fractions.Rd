@@ -21,5 +21,9 @@ Compute cell fractions from transcriptomics data. This function computes cell
 fractions from tpm RNA-seq data using quanTIseq method
 }
 \examples{
-# TODOTODO
+# Example: Riaz
+data("Riaz_data")
+
+# Computation of cell fractions
+cell_fractions <- compute_cell_fractions(RNA_tpm = Riaz_data$tpm_RNAseq)
 }

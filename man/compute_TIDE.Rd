@@ -22,5 +22,10 @@ processed as recommended by the authors: log2 transformation, quantile
 normalization and mean centralization (Jiang et al., 2018).
 }
 \examples{
-# TODOTODO
+# Example: Riaz
+data("Riaz_data")
+
+TIDE <- compute_TIDE(RNA_tpm= Riaz_data$tpm_RNAseq,
+cancertype = "SKCM",
+output_file_path = "/Users/Oscar/Desktop/Riaz")
 }

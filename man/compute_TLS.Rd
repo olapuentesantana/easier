@@ -17,5 +17,8 @@ numeric matrix with rows=samples and columns=TLS signature
 genes (Cabrita et al., 2020).
 }
 \examples{
-# TODOTODO
+# Example: Riaz
+data("Riaz_data")
+
+TLS <- compute_TLS(RNA_tpm= Riaz_data$tpm_RNAseq)
 }

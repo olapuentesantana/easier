@@ -17,5 +17,8 @@ numeric matrix with rows=samples and columns=IFNy signature score
 included in the IFN-γ signature (Ayers et al., JCI, 2017)
 }
 \examples{
-# TODOTODO
+# Example: Riaz
+data("Riaz_data")
+
+IFNy <- compute_IFNy(RNA_tpm= Riaz_data$tpm_RNAseq)
 }

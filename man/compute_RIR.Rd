@@ -18,5 +18,8 @@ the authors. (Jerby-Arnon et al., 2018).
 TODOTODOoscar: out of sync name vs doc
 }
 \examples{
-# TODOTODO
+# Example: Riaz
+data("Riaz_data")
+
+RIR <- compute_RIR(RNA_tpm= Riaz_data$tpm_RNAseq)
 }
