@@ -28,6 +28,7 @@ A list with the following elements:
 data("Riaz_data")
 
 # Computation of pathway scores
-pathway_activity <- compute_pathways_scores(RNA.counts = Riaz_data$raw_counts_RNAseq,
-remove.genes.ICB_proxies = TRUE)
+pathway_activity <- compute_pathways_scores(
+  RNA_counts = Riaz_data$raw_counts_RNAseq,
+  remove_genes_ICB_proxies = TRUE)
 }
