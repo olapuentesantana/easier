@@ -57,9 +57,9 @@ tf_activity <- compute_TF_activity(RNA_tpm = Riaz_data$tpm_RNAseq,
                                    remove_genes_ICB_proxies = FALSE)
 
 # Computation of ligand-receptor pair weights
-lrpair_weights <- compute_LR_pairs(RNA_tpm = Riaz_data$tpm_RNAseq, 
-                                   remove_genes_ICB_proxies = FALSE, 
-                                   cancertype = "pancan")
+lrpairs_weights <- compute_LR_pairs(RNA_tpm = Riaz_data$tpm_RNAseq, 
+                                    remove_genes_ICB_proxies = FALSE, 
+                                    cancertype = "pancan")
 
 # Computation of cell-cell interaction scores
 ccpair_scores <- compute_CC_pairs_grouped(lrpairs = lrpairs_weights$LRpairs, 
