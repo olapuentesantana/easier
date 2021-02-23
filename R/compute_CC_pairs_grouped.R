@@ -67,8 +67,8 @@ compute_CC_pairs_grouped <- function(lrpairs,
     }))
   }))
 
-  colnames(CC.pairs.score) <- metadata.CC.pairs$CCpair
+  colnames(CC_pairs_score) <- metadata.CC.pairs$CCpair
 
   message("CC pairs computed \n")
-  return(as.data.frame(CC.pairs.score))
+  return(as.data.frame(CC_pairs_score))
 }

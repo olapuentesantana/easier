@@ -12,10 +12,7 @@ compute_CC_pairs_grouped(lrpairs, cancertype = "pancan")
 \item{cancertype}{string character}
 }
 \value{
-A list with the following elements:
-\describe{
-\item{score}{cell-cell interaction scores matrix with rows=samples and columns=cells}
-}
+Cell-Cell interaction scores matrix with rows=samples and columns=cell-cell interactions
 }
 \description{
 Compute CC pairs grouped from transcriptomics data.
