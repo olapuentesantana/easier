@@ -19,10 +19,16 @@
 #' @examples
 #' # Example: Riaz
 #' data("Riaz_data")
+#' lrpairs_weights <- compute_LR_pairs(
+#'   RNA_tpm = Riaz_data$tpm_RNAseq,
+#'   remove_genes_ICB_proxies = FALSE,
+#'   cancertype = "pancan")
 #'
 #' # Computation of cell-cell interaction scores
-#' ccpair_scores <- compute_CC_pairs_grouped(lrpairs = lrpairs_weights$LRpairs,
-#' cancertype = "pancan")
+#' ccpair_scores <- compute_CC_pairs_grouped(
+#'   lrpairs = lrpairs_weights,
+#'   cancertype = "pancan")
+#' head(ccpair_scores)
 compute_CC_pairs_grouped <- function(lrpairs,
                                      cancertype = "pancan") {
 

@@ -22,11 +22,13 @@
 #' @examples
 #' # Example: Riaz
 #' data("Riaz_data")
+#' library("progeny")
 #'
 #' # Computation of pathway scores
 #' pathway_activity <- compute_pathways_scores(
 #'   RNA_counts = Riaz_data$raw_counts_RNAseq,
 #'   remove_genes_ICB_proxies = TRUE)
+#' head(pathway_activity)
 compute_pathways_scores <- function(RNA_counts,
                                     remove_genes_ICB_proxies = TRUE) {
 
@@ -74,6 +76,7 @@ compute_pathways_scores <- function(RNA_counts,
   rownames(gene_expr) <- rownames(raw_counts.integer)
 
   # Pathways activity (Progeny package)
+  # library(progeny)
   Pathway_scores <- progeny::progeny(gene_expr, scale = FALSE, organism = "Human", verbose = TRUE)
 
   # check what is the percentage of genes we have in our data

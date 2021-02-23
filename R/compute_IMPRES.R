@@ -15,7 +15,8 @@
 #' # Example: Riaz
 #' data("Riaz_data")
 #'
-#' IMPRES <- compute_IMPRES(RNA_tpm= Riaz_data$tpm_RNAseq)
+#' IMPRES <- compute_IMPRES(RNA_tpm = Riaz_data$tpm_RNAseq)
+#' head(IMPRES)
 compute_IMPRES <- function(RNA_tpm) {
 
   # Literature genes

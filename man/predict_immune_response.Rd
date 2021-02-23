@@ -49,26 +49,33 @@ data("Riaz_data")
 cell_fractions <- compute_cell_fractions(RNA_tpm = Riaz_data$tpm_RNAseq)
 
 # Computation of pathway scores
-pathway_activity <- compute_pathways_scores(RNA_counts = Riaz_data$raw_counts_RNAseq,
-remove_genes_ICB_proxies = TRUE)
+pathway_activity <- compute_pathways_scores(
+  RNA_counts = Riaz_data$raw_counts_RNAseq,
+  remove_genes_ICB_proxies = TRUE)
 
 # Computation of TF activity
-tf_activity <- compute_TF_activity(RNA_tpm = Riaz_data$tpm_RNAseq,
-remove_genes_ICB_proxies = FALSE)
+tf_activity <- compute_TF_activity(
+  RNA_tpm = Riaz_data$tpm_RNAseq,
+  remove_genes_ICB_proxies = FALSE)
 
 # Computation of ligand-receptor pair weights
-lrpair_weights <- compute_LR_pairs(RNA_tpm = Riaz_data$tpm_RNAseq,
-remove_genes_ICB_proxies = FALSE, cancertype = "pancan")
+lrpairs_weights <- compute_LR_pairs(
+  RNA_tpm = Riaz_data$tpm_RNAseq,
+  remove_genes_ICB_proxies = FALSE,
+  cancertype = "pancan")
 
 # Computation of cell-cell interaction scores
-ccpair_scores <- compute_CC_pairs_grouped(lrpairs = lrpairs_weights$LRpairs,
-cancertype = "pancan")
+ccpairs_scores <- compute_CC_pairs_grouped(
+  lrpairs = lrpairs_weights,
+  cancertype = "pancan")
 
 # Predict patients' immune response
-predictions_immune_response <- predict_immune_response(pathways = pathways_activity,
-immunecells = cell_fractions,
-lrpairs = lrpairs_weights,
-tfs = tf_activity,
-ccpairs = ccpairs_scores,
-cancertype = "SKCM")
+##### predictions_immune_response <- predict_immune_response(
+#####   pathways = pathway_activity,
+#####   immunecells = cell_fractions,
+#####   lrpairs = lrpairs_weights,
+#####   tfs = tf_activity,
+#####   ccpairs = ccpairs_scores,
+#####   cancertype = "SKCM")
+##### TODO: need to check the behaviour over here
 }

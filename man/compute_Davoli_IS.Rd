@@ -21,4 +21,5 @@ immune infiltrate signature genes, after rank normalization (Davoli et al., 2017
 data("Riaz_data")
 
 Davoli_IS <- compute_Davoli_IS(RNA_tpm= Riaz_data$tpm_RNAseq)
+head(Davoli_IS)
 }

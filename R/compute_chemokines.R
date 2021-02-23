@@ -15,7 +15,8 @@
 #' # Example: Riaz
 #' data("Riaz_data")
 #'
-#' chemokines <- compute_chemokines(RNA_tpm= Riaz_data$tpm_RNAseq)
+#' chemokines <- compute_chemokines(RNA_tpm = Riaz_data$tpm_RNAseq)
+#' head(chemokines)
 compute_chemokines <- function(RNA_tpm) {
 
   # Literature genes

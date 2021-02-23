@@ -2,8 +2,8 @@
 % Please edit documentation in R/rmtlr_test.R
 \name{rmtlr_test}
 \alias{rmtlr_test}
-\title{Regularized multi-task linear regression algorithm implements the model training coefficients and
-hyperparameters on the test set.}
+\title{Regularized multi-task linear regression algorithm implements the model
+training coefficients and hyperparameters on the test set.}
 \usage{
 rmtlr_test(x_test, coef_matrix)
 }

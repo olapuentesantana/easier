@@ -20,5 +20,6 @@ original publication (Charoentong et al., 2017).
 # Example: Riaz
 data("Riaz_data")
 
-IPS <- compute_IPS(RNA_tpm= Riaz_data$tpm_RNAseq)
+IPS <- compute_IPS(RNA_tpm = Riaz_data$tpm_RNAseq)
+head(IPS)
 }

@@ -20,5 +20,6 @@ checkpoint gene pairs (Auslander et al., 2018).
 # Example: Riaz
 data("Riaz_data")
 
-IMPRES <- compute_IMPRES(RNA_tpm= Riaz_data$tpm_RNAseq)
+IMPRES <- compute_IMPRES(RNA_tpm = Riaz_data$tpm_RNAseq)
+head(IMPRES)
 }

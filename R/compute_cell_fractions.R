@@ -18,6 +18,7 @@
 #'
 #' # Computation of cell fractions
 #' cell_fractions <- compute_cell_fractions(RNA_tpm = Riaz_data$tpm_RNAseq)
+#' head(cell_fractions)
 compute_cell_fractions <- function(RNA_tpm
                                    # TODOTODO; do we need an ellipsis here?
 ) {

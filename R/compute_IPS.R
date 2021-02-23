@@ -15,7 +15,8 @@
 #' # Example: Riaz
 #' data("Riaz_data")
 #'
-#' IPS <- compute_IPS(RNA_tpm= Riaz_data$tpm_RNAseq)
+#' IPS <- compute_IPS(RNA_tpm = Riaz_data$tpm_RNAseq)
+#' head(IPS)
 compute_IPS <- function(RNA_tpm) {
 
   # Log2 transformation:

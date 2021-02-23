@@ -18,7 +18,8 @@
 #' # Example: Riaz
 #' data("Riaz_data")
 #'
-#' Tcell_inflamed <- compute_Tcell_inflamed(RNA_tpm= Riaz_data$tpm_RNAseq)
+#' Tcell_inflamed <- compute_Tcell_inflamed(RNA_tpm = Riaz_data$tpm_RNAseq)
+#' head(Tcell_inflamed)
 compute_Tcell_inflamed <- function(RNA_tpm) {
 
   # Literature genes

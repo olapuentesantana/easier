@@ -23,8 +23,11 @@
 #' data("Riaz_data")
 #'
 #' # Computation of TF activity
-#' tf_activity <- compute_TF_activity(RNA_tpm = Riaz_data$tpm_RNAseq,
-#' remove_genes_ICB_proxies = FALSE)
+#' tf_activity <- compute_TF_activity(
+#'   RNA_tpm = Riaz_data$tpm_RNAseq,
+#'   remove_genes_ICB_proxies = FALSE)
+#'
+#' head(tf_activity)
 compute_TF_activity <- function(RNA_tpm,
                                 remove_genes_ICB_proxies = FALSE) {
 

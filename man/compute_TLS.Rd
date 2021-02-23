@@ -20,5 +20,6 @@ genes (Cabrita et al., 2020).
 # Example: Riaz
 data("Riaz_data")
 
-TLS <- compute_TLS(RNA_tpm= Riaz_data$tpm_RNAseq)
+TLS <- compute_TLS(RNA_tpm = Riaz_data$tpm_RNAseq)
+head(TLS)
 }

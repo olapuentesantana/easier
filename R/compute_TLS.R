@@ -15,7 +15,8 @@
 #' # Example: Riaz
 #' data("Riaz_data")
 #'
-#' TLS <- compute_TLS(RNA_tpm= Riaz_data$tpm_RNAseq)
+#' TLS <- compute_TLS(RNA_tpm = Riaz_data$tpm_RNAseq)
+#' head(TLS)
 compute_TLS <- function(RNA_tpm) {
 
   # Literature genes

@@ -1,5 +1,5 @@
-#' Regularized multi-task linear regression algorithm implements the model training coefficients and
-#' hyperparameters on the test set.
+#' Regularized multi-task linear regression algorithm implements the model
+#' training coefficients and hyperparameters on the test set.
 #'
 #' `rmtlr_test` implements regularized multi-task linear regression on the test data
 #'
@@ -16,7 +16,7 @@
 #' @examples
 #' # TODOTODO
 rmtlr_test <- function(x_test,
-                               coef_matrix) {
+                       coef_matrix) {
 
   # Keep intercept
   Intercept <- as.matrix(coef_matrix)[1, ]

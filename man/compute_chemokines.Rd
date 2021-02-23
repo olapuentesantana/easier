@@ -20,5 +20,6 @@ applying PCA to z-score expression of 12 chemokine genes (Messina et al., 2012).
 # Example: Riaz
 data("Riaz_data")
 
-chemokines <- compute_chemokines(RNA_tpm= Riaz_data$tpm_RNAseq)
+chemokines <- compute_chemokines(RNA_tpm = Riaz_data$tpm_RNAseq)
+head(chemokines)
 }

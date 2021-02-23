@@ -16,6 +16,7 @@
 #' data("Riaz_data")
 #'
 #' Davoli_IS <- compute_Davoli_IS(RNA_tpm= Riaz_data$tpm_RNAseq)
+#' head(Davoli_IS)
 compute_Davoli_IS <- function(RNA_tpm) {
 
   # Literature genes

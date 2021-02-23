@@ -15,7 +15,8 @@
 #' # Example: Riaz
 #' data("Riaz_data")
 #'
-#' CYT <- compute_CYT(RNA_tpm= Riaz_data$tpm_RNAseq)
+#' CYT <- compute_CYT(RNA_tpm = Riaz_data$tpm_RNAseq)
+#' head(CYT)
 compute_CYT <- function(RNA_tpm) {
 
   # Literature genes

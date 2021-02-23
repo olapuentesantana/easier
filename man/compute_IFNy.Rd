@@ -20,5 +20,6 @@ included in the IFN-γ signature (Ayers et al., JCI, 2017)
 # Example: Riaz
 data("Riaz_data")
 
-IFNy <- compute_IFNy(RNA_tpm= Riaz_data$tpm_RNAseq)
+IFNy <- compute_IFNy(RNA_tpm = Riaz_data$tpm_RNAseq)
+head(IFNy)
 }
