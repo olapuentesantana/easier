@@ -77,20 +77,16 @@ compute_pathways_scores <- function(RNA_counts,
 
   # Pathways activity (Progeny package)
   # library(progeny)
-  Pathway_scores <- progeny::progeny(gene_expr, scale = FALSE, organism = "Human", verbose = TRUE)
+  pathway_activity <- progeny::progeny(gene_expr, scale = FALSE, organism = "Human", verbose = TRUE)
 
   # check what is the percentage of genes we have in our data
   all_pathway_responsive_genes <- unique(unlist(top_100_per_pathway_responsive_genes))
   genes_kept <- intersect(rownames(gene_expr), all_pathway_responsive_genes)
   genes_left <- setdiff(all_pathway_responsive_genes, rownames(gene_expr))
-
-  # Output list:
-  Pathways <- list(
-    scores = as.data.frame(Pathway_scores),
-    transcripts_kept = length(genes_kept),
-    transcripts_left = length(genes_left)
-  )
+  total_genes <- length(genes_left) + length(genes_kept)
+  message("Pathway signature genes found in data set: ", length(genes_kept), "/", total_genes, " (", round(length(genes_kept)/total_genes, 3) * 100,"%)")
 
   message("\n Pathway scores computed \n")
-  return(Pathways)
+  return(as.data.frame(pathway_activity))
+
 }

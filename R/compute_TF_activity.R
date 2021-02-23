@@ -62,31 +62,24 @@ compute_TF_activity <- function(RNA_tpm,
   all_regulated_transcripts <- unique(regulons$target)
   all_tfs <- unique(regulons$tf)
 
-  # check what is the percentage of regulated transcripts and TF that we have in our data
-  message(" percentage of regulated transcripts = ", sum(all_regulated_transcripts %in% rownames(E)) * 100 / length(all_regulated_transcripts), "\n")
-  message(" percentage of TF = ", sum(all_tfs %in% rownames(E)) * 100 / length(all_tfs), "\n")
+  # check what is the percentage of genes we have in our data
+  genes_kept <- intersect(rownames(E), all_regulated_transcripts)
+  genes_left <- setdiff(all_regulated_transcripts, rownames(E))
+
+  # check what is the percentage of regulated transcripts that we have in our data
+  message("Regulated transcripts found in data set: ", length(genes_kept), "/", length(all_regulated_transcripts), " (", round(length(genes_kept)/length(all_regulated_transcripts), 3) * 100,"%)")
 
   # TF activity: run viper
-  TF_activities <- dorothea::run_viper(
+  tf_activity <- dorothea::run_viper(
     input = E, regulons = regulons,
     options = list(method = "none", minsize = 4, eset.filter = FALSE, cores = 1, verbose = FALSE)
   )
 
   # Samples as rows, TFs as columns
-  TF_activities <- t(TF_activities)
+  tf_activity <- t(tf_activity)
 
-  # check what is the percentage of genes we have in our data
-  genes_kept <- intersect(rownames(E), all_regulated_transcripts)
-  genes_left <- setdiff(all_regulated_transcripts, rownames(E))
+  message("TF activity computed \n")
 
-  # Output list:
-  TFs <- list(
-    scores = as.data.frame(TF_activities),
-    transcripts_kept = length(genes_kept),
-    transcripts_left = length(genes_left)
-  )
+  return(as.data.frame(tf_activity))
 
-  message("TF activities computed \n")
-
-  return(TFs)
 }

@@ -46,6 +46,7 @@ compute_cell_fractions <- function(RNA_tpm
 
   cell_fractions <- t(cell_fractions[, -1])
   colnames(cell_fractions) <- new_cellnames
+  cell_fractions[,"CD4 T"] <- cell_fractions[,"CD4 T"] +  cell_fractions[,"Treg"]
 
   message("Cell fractions computed \n")
 

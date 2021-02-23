@@ -10,11 +10,7 @@
 #' involved in the computation of ICB proxy's of response
 #' @param cancertype string character
 #'
-#' @return A list with the following elements:
-#'   \describe{
-#'     \item{LRpairs}{Ligand-receptor pairs weights matrix in log2(tpm + 1) with
-#'      rows=samples and columns = L-R pairs}
-#'   }
+#' @return Ligand-receptor pairs weights matrix in log2(tpm + 1) with rows=samples and columns=L-R pairs
 #' @export
 #'
 #' @examples
