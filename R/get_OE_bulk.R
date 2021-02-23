@@ -31,7 +31,7 @@ get_OE_bulk <- function(r,
   if (rand.flag) {
     # TODOTODO: maybe use message instead - it is handled in a more gentle way and could be suppressed in practical manners ;)
     # TODOTODO: could apply to other print commands
-    print("Computing also random scores.")
+    message("Computing also random scores...")
     r$rand.scores <- r$sig.scores
   }
   for (i in sig.names) {
