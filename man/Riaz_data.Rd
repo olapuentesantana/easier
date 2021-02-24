@@ -17,6 +17,10 @@ A list with three dataframes and one character vector.
 Riaz N, Havel JJ, Makarov V, Desrichard A et al. Tumor and Microenvironment Evolution during Immunotherapy with
 Nivolumab. Cell 2017 Nov 2;171(4):934-949.e16. PMID: 29033130
 }
+\usage{
+Riaz_data
+}
 \description{
 Transcriptomics, immune cell quantification and patient response data from 49 melanoma patients
 }
+\keyword{datasets}
