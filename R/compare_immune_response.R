@@ -154,7 +154,7 @@ compare_immune_response <- function(predictions_immune_response = NULL,
     })
 
     # Compute gold standards
-    default_list_gold_standards <- c(names(color_tasks), "CTLA4", "PD1", "PDL1")
+    default_list_gold_standards <- names(color_tasks)
     if (missing(list_gold_standards)) {
       list_gold_standards <- default_list_gold_standards
     }

@@ -37,7 +37,7 @@ compute_LR_pairs <- function(RNA_tpm,
   # Genes to remove according to all ICB proxy's
   if (remove_genes_ICB_proxies) {
     message("Removing signatures genes for proxy's of ICB response  \n")
-    idy <- stats::na.exclude(match(all_genes_to_remove, rownames(gene_expr)))
+    idy <- stats::na.exclude(match(cor_genes_to_remove, rownames(gene_expr)))
     gene_expr <- gene_expr[-idy, ]
   }
 
