@@ -30,9 +30,6 @@ compute_gold_standards <- function(RNA_tpm,
                                    cancertype,
                                    output_file_path) {
 
-  # calculate Immune Checkpoint genes expression #
-  ICB_genes <- compute_ICB_genes(RNA_tpm)
-
   gold.standards <- sapply(list_gold_standards, function(X) {
     if ("CYT" == X) {
 
@@ -99,15 +96,6 @@ compute_gold_standards <- function(RNA_tpm,
       # calculate MSI signature #
       TLS <- t(compute_TLS(RNA_tpm))
       return(list(TLS))
-    } else if ("CTLA4" == X) {
-      CTLA4 <- ICB_genes$CTLA4
-      return(list(CTLA4))
-    } else if ("PD1" == X) {
-      PD1 <- ICB_genes$PD1
-      return(list(PD1))
-    } else if ("PDL1" == X) {
-      PDL1 <- ICB_genes$PDL1
-      return(list(PDL1))
     }
   })
 
