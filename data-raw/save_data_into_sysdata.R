@@ -91,3 +91,38 @@
 #
 #
 #
+# # Change immune cell names (to shorter ones) in trained models
+#
+# old_cellnames <- names(trained_models$SKCM$ImmuneCells[[1]]$mas.mea.learning.X[[1]])
+# new_cellnames <- c("B", "M1", "M2", "Monocyte", "Neutrophil", "NK", "CD4 T", "CD8+ T", "Treg", "DC", "Other")
+#
+# # load trained models
+# load("~/ownCloud2/SystemsImmunoOncology/easier_project/easier_devel/R/sysdata.rda")
+#
+# views <- names(trained_models$SKCM)
+# where <- grep("ImmuneCells", views, fixed = TRUE)
+#
+# for(X in where){
+#   for(Y in 1:100){
+#
+#     rownames(trained_models[["SKCM"]][[X]][[Y]][["model"]][["cv.glmnet.features"]][["1se.mse"]])[2:12] <- new_cellnames
+#     rownames(trained_models[["SKCM"]][[X]][[Y]][["model"]][["cv.glmnet.features"]][["min.mse"]])[2:12] <- new_cellnames
+#     names(trained_models[["SKCM"]][[X]][[Y]][["mas.mea.learning.X"]][[1]]) <- new_cellnames
+#
+#   }
+# }
+#
+# setwd("~/ownCloud2/SystemsImmunoOncology/easier_project/easier_devel/")
+# usethis::use_data(cor_genes_to_remove,
+#                   TCGA.mean.pancancer,
+#                   TCGA.sd.pancancer,
+#                   IPSG_read,
+#                   res.sig,
+#                   grouping_lrpairs_info,
+#                   top_100_per_pathway_responsive_genes,
+#                   intercell.network.cancer.spec,
+#                   lr.frequency,
+#                   trained_models,
+#                   internal = TRUE, overwrite = TRUE, compress = "xz")
+#
+#

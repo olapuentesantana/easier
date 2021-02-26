@@ -149,16 +149,16 @@ compare_immune_response <- function(predictions_immune_response = NULL,
   # AUC predictions (when response available)
 
   if (missing(real_patient_response) == FALSE) {
-    try(if (all(levels(as.factor(real_patient_response)) %in% c("NR", "R")) == FALSE) {
+    if (all(levels(as.factor(real_patient_response)) %in% c("NR", "R")) == FALSE) {
       stop("real_patient_response factor levels are not NR and R")
-    })
+    }
 
     # Compute gold standards
     default_list_gold_standards <- names(color_tasks)
     if (missing(list_gold_standards)) {
       list_gold_standards <- default_list_gold_standards
     }
-    gold.standards <- compute_gold_standards(RNA_tpm, list_gold_standards, cancertype, output_file_path)
+    gold_standards <- compute_gold_standards(RNA_tpm, list_gold_standards, cancertype, output_file_path)
 
     # *******************************
     # Assess correlation between chemokines and the other correlated tasks
@@ -166,10 +166,10 @@ compare_immune_response <- function(predictions_immune_response = NULL,
     cor_tasks <- names(color_tasks)[!names(color_tasks) %in% c("IPS", "IMPRES", "TIDE", "MSI")]
     cor_tasks <- cor_tasks[!cor_tasks %in% c("Ock_IS")] # Unfeasible computation
     tasks_values <- do.call(cbind, lapply(cor_tasks, function(X) {
-      tmp <- as.numeric(unlist(gold.standards[[X]]))
+      tmp <- as.numeric(unlist(gold_standards[[X]]))
     }))
     colnames(tasks_values) <- cor_tasks
-    rownames(tasks_values) <- colnames(gold.standards$CYT[[1]])
+    rownames(tasks_values) <- colnames(gold_standards$CYT)
     tasks_cormatrix <- cor(tasks_values)
     cor_sign <- sign(tasks_cormatrix[, "chemokines"])
     cor_sign <- cor_sign[names(cor_sign) != "chemokines"]
@@ -178,63 +178,9 @@ compare_immune_response <- function(predictions_immune_response = NULL,
     }
     tasks_values <- as.data.frame(tasks_values)
 
-    # Overall mean and median tasks measure
-    tasks_values$consensus_mean <- tasks_values$consensus_median
-    tasks_values$consensus_median <- apply(tasks_values, 1, median)
-    tasks_values$consensus_mean <- apply(tasks_values, 1, mean)
-
-    gold.standards_unscaled <- sapply(colnames(tasks_values), function(X) {
-      tmp <- matrix(as.numeric(tasks_values[[X]]),
-        nrow = nrow(tasks_values), ncol = 100,
-        dimnames = list(colnames(tasks_values[[X]]))
-      )
-      return(list(tmp))
-    })
-
-    # *******************************
-    # Scale tasks (according to our analysis, scaling does not affect prediction)
-
-    # tasks_values_scaled <- data.frame(standardization(tasks_values))
-    # rownames(tasks_values_scaled) <- colnames(RNA_tpm)
-    # colnames(tasks_values_scaled) <- cor_tasks
-
-    # tasks_values_scaled$consensus_mean <- tasks_values_scaled$consensus_median
-    # tasks_values_scaled$consensus_median <- apply(tasks_values_scaled, 1, median)
-    # tasks_values_scaled$consensus_mean <- apply(tasks_values_scaled, 1, mean)
-    #
-    # gold.standards_scaled <- sapply(colnames(tasks_values_scaled), function(X){
-    #   tmp <- matrix(as.numeric(tasks_values_scaled[[X]]), nrow = nrow(tasks_values_scaled), ncol = 100,
-    #                 dimnames = list(colnames(tasks_values_scaled[[X]])))
-    #   return(list(tmp))
-    # })
-
-    # *******************************************
-    # Comparison with transcriptomics data (only us)
-
-    # transcript <- t(RNA_tpm)
-    # view_info <- c(transcript = 'gaussian')
-    # view_name <- paste(names(view_info), collapse="_")
-    # view_data <- lapply(tolower(names(view_info)), function(x) as.data.frame(get(x)))
-    # names(view_data) <- names(view_info)
-    #
-    # # Read tcga model
-    # file <- dir(path = paste0("output/PanCancer_draft_v1/", cancertype, "/group_cor_tasks"),
-    #             pattern = "all_cv_res_", full.names = TRUE, recursive = FALSE)
-    # which_file <- grep(pattern = paste0("_with_cor_tasks_Transcript",".RData"), file, fixed = TRUE)
-    # load(file[which_file])
-    #
-    # # Predict immune response using model parameters
-    # pred_alg_EN <- easier::predict_with_multitaskelasticnet(view_name = view_name,
-    #                                                         view_info = view_info,
-    #                                                         view_data = view_data,
-    #                                                         learned_model = all_cv_res[["RMTLR"]])
-    #
-    # pred_alg_BE <- easier::predict_with_bemkl(view_name = view_name,
-    #                                           view_info = view_info,
-    #                                           view_data = view_data,
-    #                                           learned_model = all_cv_res[["BEMKL"]])
-    #
-    # predictions_immune_response$transcript <- list(RMTLR = pred_alg_EN, BEMKL = pred_alg_BE)
+    # Tasks normalization
+    all_tasks_values_norm <- as.data.frame(standardization(tasks_values))
+    gold_standards_scaled <- all_tasks_values_norm
 
     # *******************************************
     # Predictions #
@@ -339,105 +285,60 @@ compare_immune_response <- function(predictions_immune_response = NULL,
     })
     names(ROC_info) <- c(view_combinations)
 
-    # save(ROC_info, file = "../../../Desktop/comb.Gide_Auslander_pre_na/comb.Gide_Auslander_ROC_predictions_count_varstab_tcga.RData")
-
     # Predictions #
-    overall_ROC_info <- lapply(c("overall_median", "overall_mean"), function(main_view) {
-      overall_ROC_info <- lapply(algorithms, function(alg) {
-        overall_ROC_info <- lapply("overall", function(task) {
-          overall_ROC_info <- lapply(models, function(model) {
-            df_overall <- lapply(view_combinations, function(view) {
+    overall_types <- "overall_mean_single"
+    overall_ROC_info <- lapply(overall_types, function(main_view){
+      overall_ROC_info <- lapply(algorithms, function(alg){
+        overall_ROC_info <- lapply("overall", function(task){
+          overall_ROC_info <- lapply(models, function(model){
+            df_overall <- lapply(view_combinations, function(view){
               df <- matrix(0, nrow = nrow(labels), ncol = 100)
 
-              if (alg != "BEMKL") {
-                if (main_view == "overall_median") {
-                  for (run in 1:ncol(labels)) {
-                    df[, run] <- apply(rbind(
-                      predictions_immune_response[[view]][[alg]][["CYT"]][[model]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["IS"]][[model]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["RohIS"]][[model]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["chemokine"]][[model]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["IS_Davoli"]][[model]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["IFny"]][[model]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["ExpandedImmune"]][[model]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["T_cell_inflamed"]][[model]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["resF.down"]][[model]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["TLS"]][[model]][[1]][, run]
-                    ), 2, median)
-                  }
+              if (alg != "BEMKL"){ # Only for now RMTLR implemented
+                if (main_view %in% c("overall_mean_single")){
+                  df_1 <- rowMeans(predictions_immune_response[[view]][[alg]][[1]][[model]][[1]])
+                  df_2 <- rowMeans(predictions_immune_response[[view]][[alg]][[2]][[model]][[1]])
+                  df_3 <- rowMeans(predictions_immune_response[[view]][[alg]][[3]][[model]][[1]])
+                  df_4 <- rowMeans(predictions_immune_response[[view]][[alg]][[4]][[model]][[1]])
+                  df_5 <- rowMeans(predictions_immune_response[[view]][[alg]][[5]][[model]][[1]])
+                  df_6 <- rowMeans(predictions_immune_response[[view]][[alg]][[6]][[model]][[1]])
+                  df_7 <- rowMeans(predictions_immune_response[[view]][[alg]][[7]][[model]][[1]])
+                  df_8 <- rowMeans(predictions_immune_response[[view]][[alg]][[8]][[model]][[1]])
+                  df_9 <- rowMeans(predictions_immune_response[[view]][[alg]][[9]][[model]][[1]])
+                  df_10 <- rowMeans(predictions_immune_response[[view]][[alg]][[10]][[model]][[1]])
 
-                  df_overall <- apply(df, 1, median)
-                } else if (main_view == "overall_mean") {
-                  for (run in 1:ncol(labels)) {
-                    df[, run] <- apply(rbind(
-                      predictions_immune_response[[view]][[alg]][["CYT"]][[model]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["IS"]][[model]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["RohIS"]][[model]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["chemokine"]][[model]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["IS_Davoli"]][[model]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["IFny"]][[model]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["ExpandedImmune"]][[model]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["T_cell_inflamed"]][[model]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["resF.down"]][[model]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["TLS"]][[model]][[1]][, run]
-                    ), 2, mean)
-                  }
-                  df_overall <- apply(df, 1, mean)
+                  df_overall <- cbind(df_1, df_2,df_3,df_4,df_5,df_6, df_7, df_8, df_9, df_10)
                 }
-              } else {
-                if (main_view == "overall_median") {
-                  for (run in 1:ncol(labels)) {
-                    df[, run] <- apply(rbind(
-                      predictions_immune_response[[view]][[alg]][["CYT"]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["IS"]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["RohIS"]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["chemokine"]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["IS_Davoli"]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["IFny"]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["ExpandedImmune"]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["T_cell_inflamed"]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["resF.down"]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["TLS"]][[1]][, run]
-                    ), 2, median)
-                  }
+              }else{
+                if (main_view %in% c("overall_mean_single", "overall_mean_combo", "overall_mean_all")){
+                  df_1 <- rowMeans(predictions_immune_response[[view]][[alg]][[1]][[1]])
+                  df_2 <- rowMeans(predictions_immune_response[[view]][[alg]][[2]][[1]])
+                  df_3 <- rowMeans(predictions_immune_response[[view]][[alg]][[3]][[1]])
+                  df_4 <- rowMeans(predictions_immune_response[[view]][[alg]][[4]][[1]])
+                  df_5 <- rowMeans(predictions_immune_response[[view]][[alg]][[5]][[1]])
+                  df_6 <- rowMeans(predictions_immune_response[[view]][[alg]][[6]][[1]])
+                  df_7 <- rowMeans(predictions_immune_response[[view]][[alg]][[7]][[1]])
+                  df_8 <- rowMeans(predictions_immune_response[[view]][[alg]][[8]][[1]])
+                  df_9 <- rowMeans(predictions_immune_response[[view]][[alg]][[9]][[1]])
+                  df_10 <- rowMeans(predictions_immune_response[[view]][[alg]][[10]][[1]])
 
-                  df_overall <- apply(df, 1, median)
-                } else if (main_view == "overall_mean") {
-                  for (run in 1:ncol(labels)) {
-                    df[, run] <- apply(rbind(
-                      predictions_immune_response[[view]][[alg]][["CYT"]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["IS"]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["RohIS"]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["chemokine"]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["IS_Davoli"]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["IFny"]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["ExpandedImmune"]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["T_cell_inflamed"]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["resF.down"]][[1]][, run],
-                      predictions_immune_response[[view]][[alg]][["TLS"]][[1]][, run]
-                    ), 2, mean)
-                  }
-                  df_overall <- apply(df, 1, mean)
+                  df_overall <- cbind(df_1, df_2,df_3,df_4,df_5,df_6, df_7, df_8, df_9, df_10)
                 }
               }
               return(df_overall)
             })
-            names(df_overall) <- view_combinations
 
-            if (main_view == "overall_median") {
-              overall_df <- apply(rbind(
-                df_overall$Pathways.cor, df_overall$ImmuneCells, df_overall$LRpairs.spec.pc,
-                df_overall$TFs, df_overall$CCpairsGroupedScores.spec.pc
-              ), 2, median)
-            } else if (main_view == "overall_mean") {
-              overall_df <- apply(rbind(
-                df_overall$Pathways.cor, df_overall$ImmuneCells, df_overall$LRpairs.spec.pc,
-                df_overall$TFs, df_overall$CCpairsGroupedScores.spec.pc
+            names(df_overall) <- view_combinations
+            overall_df <- matrix(0, nrow = nrow(labels), ncol = 10)
+            for (task in 1:10){
+              overall_df[,task] <- apply(rbind(
+                df_overall$Pathways.cor[, task], df_overall$ImmuneCells[, task], df_overall$LRpairs.spec.pc[, task],
+                                               df_overall$TFs[, task], df_overall$CCpairsGroupedScores.spec.pc[, task]
               ), 2, mean)
             }
 
-            pred <- ROCR::prediction(overall_df, labels[, 1], label.ordering = c("NR", "R"))
-            perf <- ROCR::performance(pred, "tpr", "fpr")
+            pred <- ROCR::prediction(overall_df, labels[, 1:10], label.ordering = c("NR", "R"))
+            perf <- ROCR::performance(pred,"tpr","fpr")
             AUC <- unlist(ROCR::performance(pred, "auc")@y.values)
 
             data_ROC <- list(perf)
@@ -453,16 +354,14 @@ compare_immune_response <- function(predictions_immune_response = NULL,
       names(overall_ROC_info) <- algorithms
       return(overall_ROC_info)
     })
-    names(overall_ROC_info) <- c("overall_median", "overall_mean")
+    names(overall_ROC_info) <- overall_types
 
-    # Combine views and overall
+    # Combine ROC data for views and overall
     ROC_info <- c(ROC_info, overall_ROC_info)
 
     # Gold standards #
-    gold_standards <- gold.standards_unscaled
-
-    ROC_info.GS <- lapply(names(gold_standards), function(GS) {
-      pred.GS <- ROCR::prediction(gold_standards[[GS]], labels, label.ordering = c("NR", "R"))
+    ROC_info.GS <- lapply(colnames(gold_standards_scaled), function(GS) {
+      pred.GS <- ROCR::prediction(gold_standards_scaled[,GS], labels[,1], label.ordering = c("NR", "R"))
       perf.GS <- ROCR::performance(pred.GS, "tpr", "fpr")
       AUC.GS <- unlist(ROCR::performance(pred.GS, "auc")@y.values)
 
@@ -471,7 +370,7 @@ compare_immune_response <- function(predictions_immune_response = NULL,
 
       return(list(Curve = data_ROC.GS, Barplot = Barplot.GS))
     })
-    names(ROC_info.GS) <- paste0(names(gold_standards), ".GS")
+    names(ROC_info.GS) <- paste0(colnames(gold_standards_scaled), ".GS")
 
     # Predictions #
     AUC.mean.sd <- do.call(rbind, lapply(names(ROC_info), function(view) {
@@ -547,36 +446,17 @@ compare_immune_response <- function(predictions_immune_response = NULL,
       return(AUC.mean.sd_GS)
     }))
     AUC.mean.sd <- rbind(AUC.mean.sd, AUC.mean.sd_GS)
-
-    AUC.mean.sd$Task <- factor(AUC.mean.sd$Task, levels = unique(AUC.mean.sd$Task))
     AUC.mean.sd$View <- factor(AUC.mean.sd$View, levels = unique(AUC.mean.sd$View))
 
     # Keep more regularized model
     AUC.mean.sd_reg <- subset(AUC.mean.sd, Model == "1se.mse")
+    AUC.mean.sd_reg$View <- factor(AUC.mean.sd_reg$View,
+                                   levels = c(names(all_color_views), overall_types, "Gold_Standard"))
 
-    # *******************************************
-    # Symplify for us (subset) #
-    keep <- c("overall_mean", "overall_median", "consensus_mean", "consensus_median")
-    AUC.mean.sd_reg_a <- subset(AUC.mean.sd_reg, View %in% keep)
-    AUC.mean.sd_reg_b <- subset(AUC.mean.sd_reg, Task %in% c("common_median", "common_mean"))
-
-    AUC.mean.sd_reg_final <- rbind(AUC.mean.sd_reg_a, AUC.mean.sd_reg_b)
-
-    AUC.mean.sd_reg_final$View <- factor(AUC.mean.sd_reg_final$View,
-      levels = c(
-        "overall_median", "overall_mean", "consensus_median", "consensus_mean",
-        names(all_color_views)
-      )
-    )
-
-    AUC.mean.sd_reg_final$Task <- factor(AUC.mean.sd_reg_final$Task,
-      levels = c("overall", "Gold_Standard", "common_median", "common_mean")
-    )
-
-    color_consensus <- c("gray82", "gray57")
-    names(color_consensus) <- c("Overall (median) tasks", "Overall (mean) tasks")
-    color_overalls <- c("gold1", "gold3")
-    names(color_overalls) <- c("Overall (median) views", "Overall (mean) views")
+    # Colors Gold standards and Overall
+    color_gold_standard <- "gray82"; names(color_gold_standard) <- "Gold Standard"
+    color_overalls <- "gold2"
+    names(color_overalls) <- c( "Overall (mean) single views")
 
     n_R <- table(real_patient_response)[["R"]]
     n_NR <- table(real_patient_response)[["NR"]]
@@ -584,18 +464,14 @@ compare_immune_response <- function(predictions_immune_response = NULL,
     # *******************************************
     # Barplot AUC values
 
-    # We go for common mean in Gide + Auslander (SD as R) #
-    AUC.mean.sd_reg_final_sub <- subset(AUC.mean.sd_reg_final, Task %in% c("overall", "Gold_Standard", "common_mean")
-    & !View %in% c("overall_median", "consensus_median"))
 
-
-    ggplot2::ggplot(AUC.mean.sd_reg_final_sub, aes(x = View, y = round(AUC.median, 4), fill = View)) + # alpha = Task
+    ggplot2::ggplot(AUC.mean.sd_reg, aes(x = View, y = round(AUC.median, 2), fill = View,  alpha = Alg)) +
       ggplot2::geom_bar(stat = "identity", position = position_dodge(), color = "white") +
       ggplot2::scale_fill_manual(values = c(
-        as.vector(color_overalls)[2], as.vector(color_consensus)[2],
-        as.vector(all_color_views)
+        as.vector(all_color_views)[1:15], as.vector(color_overalls),
+        as.vector(color_gold_standard)
       ), guide = FALSE) +
-      # ggplot2::scale_alpha_manual(values = c(1,1,0.6,0.8)) +
+      ggplot2::scale_alpha_manual(values = c(0.6, 1), labels = c("BEMKL", "RMTLR"), name = "Algorithm") +
       ggplot2::scale_x_discrete(labels = c(
         "overall_mean" = "Overall\n(mean) views", "overall_median" = "Overall\n(median) views",
         "consensus_median" = "Overall\n(median) tasks", "consensus_mean" = "Overall\n(mean) tasks",
@@ -614,17 +490,16 @@ compare_immune_response <- function(predictions_immune_response = NULL,
         "TFs_CCpairsGroupedScores.spec.pc" = "TFs + C-C pairs",
         "TFs_LRpairs.spec.pc" = "TFs + L-R pairs",
         "RMTLR" = "Gold_Standard",
-        "Pathways_ImmuneCells_TFs_LRpairs" = "Combo\nall views",
-        "CTLA4" = "\nCTLA4", "PD1" = "\nPD1", "PDL1" = "\nPDL1"
-      )) +
+        "Pathways_ImmuneCells_TFs_LRpairs" = "Combo\nall views"
+        )) +
       ggplot2::theme(panel.grid = element_blank(), panel.background = element_rect(fill = NA)) +
       ggplot2::theme_bw() +
       ggplot2::ylim(0, 1) +
       ggplot2::ylab("Area under the curve (AUC)") +
-      ggplot2::geom_errorbar(aes(ymin = round(AUC.median, 4) - AUC.sd, ymax = round(AUC.median, 4) + AUC.sd), width = .5, color = "black", position = position_dodge(0.9)) +
-      ggplot2::geom_text(aes(label = round(AUC.median, 4)), stat = "identity", color = "black", size = 3, angle = 90, hjust = -0.8, position = position_dodge(0.9)) +
+      ggplot2::geom_errorbar(aes(ymin = round(AUC.median, 2) - AUC.sd, ymax = round(AUC.median, 2) + AUC.sd), width = .3, color="black", position = position_dodge(0.9)) +
+      ggplot2::geom_text(aes(label= round(AUC.median, 2)), stat = "identity", color="black", size = 4, angle = 90, hjust = -0.5, position = position_dodge(0.9)) +
       ggplot2::theme(
-        axis.text.x = element_text(size = 12, angle = 45, vjust = 0.7, hjust = 0.7, color = "black"),
+        axis.text.x = element_text(size=12, angle = 45, vjust = 1, hjust = 1, color = "black"),
         axis.text.y = element_text(size = 12, color = "black"),
         axis.title.y = element_text(size = 12), axis.title.x = element_blank(),
         legend.position = "right", legend.text = element_text(size = 10),
