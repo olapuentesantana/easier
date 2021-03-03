@@ -102,7 +102,7 @@ immune_response <- compute_gold_standards(RNA_tpm = Riaz_data$tpm_RNAseq,
                                           output_file_path = "/Users/Oscar/Desktop/Riaz")
 ```
 
-We are going to use the systems-based signatures computed previously to predict patients' immune response. `predict_immune_response` returns compute predictions for single system-based signatures and pairwise combinations of these system-based signatures. 
+We are going to use the systems-based signatures computed previously to predict patients' immune response. `predict_immune_response` returns compute predictions for single system-based signatures and pairwise combinations of these system-based signatures when `include_pairwise_combos = TRUE`. 
 
 Because models were built in a cancer-type-specific fashion, the user is required to indicate to which `cancertype` the bulk RNA-seq data belongs.
 
@@ -112,6 +112,7 @@ predictions_immune_response <- predict_immune_response(pathways = pathway_activi
                                                        lrpairs = lrpair_weights,
                                                        tfs = tf_activity,
                                                        ccpairs = ccpair_scores,
+                                                       include_pairwise_combos = TRUE,
                                                        cancertype = "SKCM")
 ```
 

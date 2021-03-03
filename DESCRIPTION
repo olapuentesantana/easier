@@ -47,7 +47,8 @@ Imports:
     preprocessCore,
     immunedeconv,
     rlang,
-    arules
+    arules,
+    BiocParallel
 Remotes:
     icbi-lab/immunedeconv
 License: MIT + file LICENSE

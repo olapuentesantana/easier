@@ -10,6 +10,7 @@ predict_immune_response(
   tfs = NULL,
   lrpairs = NULL,
   ccpairs = NULL,
+  include_pairwise_combos = FALSE,
   cancertype
 )
 }
@@ -23,6 +24,8 @@ predict_immune_response(
 \item{lrpairs}{numeric matrix with data}
 
 \item{ccpairs}{numeric matrix with data}
+
+\item{include_pairwise_combos}{boolean variable to compute predictions using pairwise combinations of single views.}
 
 \item{cancertype}{string character}
 }
@@ -76,6 +79,7 @@ ccpairs_scores <- compute_CC_pairs_grouped(
 #####   lrpairs = lrpairs_weights,
 #####   tfs = tf_activity,
 #####   ccpairs = ccpairs_scores,
+#####   include_pairwise_combos = FALSE,
 #####   cancertype = "SKCM")
 ##### TODO: need to check the behaviour over here
 }

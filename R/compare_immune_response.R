@@ -64,6 +64,7 @@
 #' #####  lrpairs = lrpairs_weights,
 #' #####  tfs = tf_activity,
 #' #####  ccpairs = ccpairs_scores,
+#' #####  include_pairwise_combos = FALSE,
 #' #####  cancertype = "SKCM")
 #' #####
 #' ###### Assess patient-specific likelihood of response to ICB therapy
