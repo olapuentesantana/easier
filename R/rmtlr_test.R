@@ -35,7 +35,6 @@ rmtlr_test <- function(x_test,
 
   if (length(coef) > 1) {
     Slope <- coef
-    rownames(Slope) <- gsub(" ", "", rownames(Slope)) # In case of Dorothea is needed, do not affect the other features
     fit.pred <- t(matrix(as.matrix(Intercept), nrow = ncol(Slope), ncol = nrow(x_test.combo))
     + t(Slope) %*% t(as.matrix(x_test.combo[, rownames(Slope)])))
   } else {

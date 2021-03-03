@@ -122,10 +122,6 @@ compare_immune_response <- function(predictions_immune_response = NULL,
   )
   names(all_color_views) <- view_combinations
 
-  # all_color_views <- c("#6CD8CB","#CC6AF2","salmon","#01AD3F","#9E1D3F")
-  # names(all_color_views) <- c("Pathways","ImmuneCells", "TFs", "LRpairs.spec.pc","CCpairsGroupedScores.spec.pc")
-
-
   # Selected views
   # sel_color_views <- all_color_views[names(all_color_views) %in% sel_views]
 
@@ -372,16 +368,16 @@ compare_immune_response <- function(predictions_immune_response = NULL,
     })
     names(ROC_info.GS) <- paste0(colnames(gold_standards_scaled), ".GS")
 
-    # Predictions #
+    # Collect derived signatures predictions into data.frame #
     AUC.mean.sd <- do.call(rbind, lapply(names(ROC_info), function(view) {
       AUC.mean.sd <- do.call(rbind, lapply(names(ROC_info[[view]]), function(alg) {
         AUC.mean.sd <- do.call(rbind, lapply(names(ROC_info[[view]][[alg]]), function(task) {
           AUC.mean.sd <- do.call(rbind, lapply(names(ROC_info[[view]][[alg]][[task]]), function(model) {
-            View <- rep(view, times = 100)
-            Alg <- rep(alg, times = 100)
-            Model <- rep(model, times = 100)
-            Task <- rep(task, times = 100)
-            cv_iter <- seq(1, 100)
+            View <- rep(view, times = 1)
+            Alg <- rep(alg, times = 1)
+            Model <- rep(model, times = 1)
+            Task <- rep(task, times = 1)
+            cv_iter <- "average"
 
             AUC.data <- data.frame(
               Alg = Alg,
@@ -389,21 +385,9 @@ compare_immune_response <- function(predictions_immune_response = NULL,
               AUC = as.numeric(unlist(ROC_info[[view]][[alg]][[task]][[model]]$Barplot)),
               View = View,
               Task = Task,
-              iteration = cv_iter
+              Iteration = cv_iter
             )
-
-            AUC.mean.sd <- do.call(
-              data.frame,
-              aggregate(AUC ~ Alg + Model + View + Task,
-                data = AUC.data,
-                FUN = function(x) {
-                  c(
-                    median = median(x),
-                    sd = sd(x)
-                  )
-                }
-              )
-            )
+            AUC.mean.sd <- AUC.data
 
             return(AUC.mean.sd)
           }))
@@ -414,13 +398,25 @@ compare_immune_response <- function(predictions_immune_response = NULL,
       return(AUC.mean.sd)
     }))
 
-    # Gold standards #
+    # Calculate mean and sd across tasks
+    AUC.mean.sd_across_tasks <- do.call(
+      data.frame,
+      aggregate(AUC ~ Alg + Model + View + Iteration,
+        data = AUC.mean.sd, FUN = function(x)
+          c(
+            median = mean(x),
+            sd = sd(x)
+            )
+        )
+      )
+
+    # Collect gold standards predictions into data.frame #
     AUC.mean.sd_GS <- do.call(rbind, lapply(names(ROC_info.GS), function(view) {
-      View <- rep(sapply(strsplit(view, split = ".", fixed = TRUE), head, 1), times = 100)
-      Alg <- rep("any", times = 100)
-      Model <- rep("1se.mse", times = 100)
-      Task <- rep("Gold_Standard", times = 100)
-      cv_iter <- seq(1, 100)
+      Task <- rep(sapply(strsplit(view, split = ".", fixed = TRUE), head, 1), times = 1)
+      Alg <- rep(algorithms, times = 1)
+      Model <- rep("1se.mse", times = 1)
+      View <- rep("Gold_Standard", times = 1)
+      cv_iter <- "average"
 
       AUC.data <- data.frame(
         Alg = Alg,
@@ -428,29 +424,32 @@ compare_immune_response <- function(predictions_immune_response = NULL,
         AUC = as.numeric(unlist(ROC_info.GS[[view]]$Barplot)),
         View = View,
         Task = Task,
-        iteration = cv_iter
+        Iteration = cv_iter
       )
-
-      AUC.mean.sd_GS <- do.call(
-        data.frame,
-        aggregate(AUC ~ Alg + Model + View + Task,
-          data = AUC.data, FUN = function(x) {
-            c(
-              median = median(x),
-              sd = sd(x)
-            )
-          }
-        )
-      )
+      AUC.mean.sd_GS <- AUC.data
 
       return(AUC.mean.sd_GS)
     }))
-    AUC.mean.sd <- rbind(AUC.mean.sd, AUC.mean.sd_GS)
+
+    # Calculate mean and sd across tasks
+    AUC.mean.sd_GS_across_tasks <- do.call(
+      data.frame,
+      aggregate(AUC ~ Alg + Model + View + Iteration,
+                data = AUC.mean.sd_GS, FUN = function(x) {
+                  c(
+                    median = median(x),
+                    sd = sd(x)
+                  )
+                }
+      )
+    )
+
+    AUC.mean.sd <- rbind(AUC.mean.sd_across_tasks, AUC.mean.sd_GS_across_tasks)
     AUC.mean.sd$View <- factor(AUC.mean.sd$View, levels = unique(AUC.mean.sd$View))
 
     # Keep more regularized model
-    AUC.mean.sd_reg <- subset(AUC.mean.sd, Model == "1se.mse")
-    AUC.mean.sd_reg$View <- factor(AUC.mean.sd_reg$View,
+    AUC.mean.sd_RMTLR <- subset(AUC.mean.sd, Model == "1se.mse")
+    AUC.mean.sd_RMTLR$View <- factor(AUC.mean.sd_RMTLR$View,
                                    levels = c(names(all_color_views), overall_types, "Gold_Standard"))
 
     # Colors Gold standards and Overall
@@ -464,51 +463,52 @@ compare_immune_response <- function(predictions_immune_response = NULL,
     # *******************************************
     # Barplot AUC values
 
-
-    ggplot2::ggplot(AUC.mean.sd_reg, aes(x = View, y = round(AUC.median, 2), fill = View,  alpha = Alg)) +
-      ggplot2::geom_bar(stat = "identity", position = position_dodge(), color = "white") +
+    ggplot2::ggplot(AUC.mean.sd_RMTLR, ggplot2::aes(x = View, y = round(AUC.median, 2), fill = View,  alpha = Alg)) +
+      ggplot2::geom_bar(stat = "identity", position = ggplot2::position_dodge(), color = "white") +
       ggplot2::scale_fill_manual(values = c(
-        as.vector(all_color_views)[1:15], as.vector(color_overalls),
+        as.vector(all_color_views), as.vector(color_overalls),
         as.vector(color_gold_standard)
       ), guide = FALSE) +
-      ggplot2::scale_alpha_manual(values = c(0.6, 1), labels = c("BEMKL", "RMTLR"), name = "Algorithm") +
+      ggplot2::scale_alpha_manual(values = c(1),
+         labels = c("RMTLR"),
+         name = "Algorithm",
+         guide = FALSE) +
       ggplot2::scale_x_discrete(labels = c(
-        "overall_mean" = "Overall\n(mean) views", "overall_median" = "Overall\n(median) views",
-        "consensus_median" = "Overall\n(median) tasks", "consensus_mean" = "Overall\n(mean) tasks",
+        "overall_mean_single" = "Ensemble",
         "ImmuneCells" = "Cell fractions",
         "Pathways.cor" = "Pathways",
         "TFs" = "TFs",
-        "LRpairs.spec.pc" = "L-R pairs",
-        "CCpairsGroupedScores.spec.pc" = "C-C pairs",
-        "ImmuneCells_CCpairsGroupedScores.spec.pc" = "Cell fractions + C-C pairs",
-        "ImmuneCells_LRpairs.spec.pc" = "Cell fractions + L-R pairs",
+        "LRpairs.spec.pc" = "LR pairs",
+        "CCpairsGroupedScores.spec.pc" = "CC pairs",
+        "ImmuneCells_CCpairsGroupedScores.spec.pc" = "Cell fractions + CC pairs",
+        "ImmuneCells_LRpairs.spec.pc" = "Cell fractions + LR pairs",
         "ImmuneCells_TFs" = "Cell fractions + TFs",
-        "Pathways.cor_CCpairsGroupedScores.spec.pc" = "Pathways + C-C pairs",
+        "Pathways.cor_CCpairsGroupedScores.spec.pc" = "Pathways + CC pairs",
         "Pathways.cor_ImmuneCells" = "Pathways + Cell fractions",
-        "Pathways.cor_LRpairs.spec.pc" = "Pathways + L-R pairs",
+        "Pathways.cor_LRpairs.spec.pc" = "Pathways + LR pairs",
         "Pathways.cor_TFs" = "Pathways + TFs",
-        "TFs_CCpairsGroupedScores.spec.pc" = "TFs + C-C pairs",
-        "TFs_LRpairs.spec.pc" = "TFs + L-R pairs",
-        "RMTLR" = "Gold_Standard",
+        "TFs_CCpairsGroupedScores.spec.pc" = "TFs + CC pairs",
+        "TFs_LRpairs.spec.pc" = "TFs + LR pairs",
+        "Gold_Standard" = "Tasks (gold standard)",
         "Pathways_ImmuneCells_TFs_LRpairs" = "Combo\nall views"
         )) +
-      ggplot2::theme(panel.grid = element_blank(), panel.background = element_rect(fill = NA)) +
+      ggplot2::theme(panel.grid = ggplot2::element_blank(), panel.background = ggplot2::element_rect(fill = NA)) +
       ggplot2::theme_bw() +
       ggplot2::ylim(0, 1) +
       ggplot2::ylab("Area under the curve (AUC)") +
-      ggplot2::geom_errorbar(aes(ymin = round(AUC.median, 2) - AUC.sd, ymax = round(AUC.median, 2) + AUC.sd), width = .3, color="black", position = position_dodge(0.9)) +
-      ggplot2::geom_text(aes(label= round(AUC.median, 2)), stat = "identity", color="black", size = 4, angle = 90, hjust = -0.5, position = position_dodge(0.9)) +
+      ggplot2::geom_errorbar(ggplot2::aes(ymin = round(AUC.median, 2) - AUC.sd, ymax = round(AUC.median, 2) + AUC.sd), width = .3, color="black", position = ggplot2::position_dodge(0.9)) +
+      ggplot2::geom_text(ggplot2::aes(label= round(AUC.median, 2)), stat = "identity", color="black", size = 4, angle = 90, hjust = -0.5, position = ggplot2::position_dodge(0.9)) +
       ggplot2::theme(
-        axis.text.x = element_text(size=12, angle = 45, vjust = 1, hjust = 1, color = "black"),
-        axis.text.y = element_text(size = 12, color = "black"),
-        axis.title.y = element_text(size = 12), axis.title.x = element_blank(),
-        legend.position = "right", legend.text = element_text(size = 10),
-        legend.box.background = element_rect(color = "black", size = 0.3),
-        legend.box.margin = margin(0.5, 0.5, 0.5, 0.5)
+        axis.text.x = ggplot2::element_text(size=12, angle = 45, vjust = 1, hjust = 1, color = "black"),
+        axis.text.y = ggplot2::element_text(size = 12, color = "black"),
+        axis.title.y = ggplot2::element_text(size = 12), axis.title.x = ggplot2::element_blank(),
+        legend.position = "right", legend.text = ggplot2::element_text(size = 10),
+        legend.box.background = ggplot2::element_rect(color = "black", size = 0.3),
+        legend.box.margin = ggplot2::margin(0.5, 0.5, 0.5, 0.5)
       ) +
       ggplot2::labs(title = paste0("n=", length(real_patient_response), " (R=", n_R, "; ", "NR=", n_NR, ")"))
 
-    ggplot2::ggsave(paste0(output_file_path, "/AUC_barplot_all_views_and_overall.pdf"), width = 10, height = 10)
+    ggplot2::ggsave(paste0(output_file_path, "/plot_auc_barplot_values.pdf"), width = 10, height = 8)
 
     # *******************************************
     # Plot ROC curve
@@ -516,7 +516,7 @@ compare_immune_response <- function(predictions_immune_response = NULL,
     all_color_views <- c("#6CD8CB", "#CC6AF2", "#01AD3F", "salmon", "#9E1D3F")
     names(all_color_views) <- c("Pathways.cor", "ImmuneCells", "TFs", "LRpairs.spec.pc", "CCpairsGroupedScores.spec.pc")
 
-    pdf(paste0(output_file_path, "/Final/ROC_curve_all_views_and_overall.pdf"), width = 10, height = 10)
+    pdf(paste0(output_file_path, "/plot_roc_curves.pdf"), width = 10, height = 10)
     par(cex.axis = 1.6, mar = c(5, 5, 5, 5), col.lab = "black")
 
     # Single views
@@ -545,41 +545,42 @@ compare_immune_response <- function(predictions_immune_response = NULL,
       cex.lab = 1.6, ylab = "True Positive Rate", xlab = "False Positive Rate", add = TRUE
     )
 
+    # overall views
+    ROCR::plot(ROC_info$overall_mean$RMTLR$overall[["1se.mse"]]$Curve[[1]],
+      avg = "threshold", col = color_overalls[1], lwd = 3, type = "S",
+      lty = 1, add = TRUE)
 
-    # ROCR::plot(ROC_info$transcript$RMTLR$common_mean[["1se.mse"]]$Curve[[1]],
-    #            avg = "threshold", col = "black", lwd = 2, type = "S",
-    #            cex.lab=2.2, ylab="True Positive Rate", xlab="False Positive Rate", add = TRUE)
+    # gold standard
+    pred.GS <- ROCR::prediction(all_tasks_values_norm, labels[,1:9], label.ordering = c("NR", "R"))
+    perf.GS  <- ROCR::performance(pred.GS,"tpr","fpr")
+    AUC.GS <- unlist(ROCR::performance(pred.GS, "auc")@y.values)
 
-    # gold standard - overall mean tasks
-    ROCR::plot(ROC_info.GS$consensus_mean.GS$Curve[[1]], col = color_consensus[2], lwd = 3, type = "S", lty = 1, add = TRUE)
+    data_ROC.GS <- list(perf.GS)
+    Barplot.GS <- list(AUC.GS)
+    ROC_info.GS <- list(Curve = data_ROC.GS, Barplot = Barplot.GS)
 
-    # gold standard - overall mean tasks
-    ROCR::plot(ROC_info$overall_mean$RMTLR$overall[["1se.mse"]]$Curve[[1]], col = color_overalls[2], lwd = 3, type = "S", lty = 1, add = TRUE)
+    ROCR::plot(ROC_info.GS$Curve[[1]],
+      avg = "threshold", col = color_gold_standard[1], lwd = 3, type = "S",
+      lty = 1, add = TRUE)
 
     # abline(a=0, b=1, lty = 3, lwd = 2, col = "antiquewhite4")
     legend(
       x = 0.72, y = 0.57,
       legend = c(
-        paste0("Pathways", "\n(AUC=", round(subset(AUC.mean.sd, Task == "common_mean"
-        & Model == "1se.mse" & View == "Pathways.cor" & Alg == "RMTLR")$AUC.median, 3), ")"),
-        paste0("Cell fractions", "\n(AUC=", round(subset(AUC.mean.sd, Task == "common_mean"
-        & Model == "1se.mse" & View == "ImmuneCells" & Alg == "RMTLR")$AUC.median, 3), ")"),
-        paste0("TFs", "\n(AUC=", round(subset(AUC.mean.sd, Task == "common_mean"
-        & Model == "1se.mse" & View == "TFs" & Alg == "RMTLR")$AUC.median, 3), ")"),
-        paste0("L-R pairs", "\n(AUC=", round(subset(AUC.mean.sd, Task == "common_mean"
-        & Model == "1se.mse" & View == "LRpairs.spec.pc" & Alg == "RMTLR")$AUC.median, 3), ")"),
-        paste0("C-C pairs", "\n(AUC=", round(subset(AUC.mean.sd, Task == "common_mean"
-        & Model == "1se.mse" & View == "CCpairsGroupedScores.spec.pc" & Alg == "RMTLR")$AUC.median, 3), ")"),
-        # paste0("Transcriptomics","\n(AUC=", round(subset(AUC.mean.sd, Task == "common_mean"
-        # & Model == "1se.mse" & View == "transcript" & Alg == "RMTLR")$AUC.median, 3),")"),
-        paste0("\nOverall tasks", "\n(AUC=", round(subset(AUC.mean.sd_GS, Model == "1se.mse" & View == "consensus_mean")$AUC.median, 3), ")"),
-        paste0("\nOverall views", "\n(AUC=", round(subset(AUC.mean.sd, Model == "1se.mse" & View == "overall_mean")$AUC.median, 3), ")")
+        paste0("Pathways", " (", round(subset(AUC.mean.sd_RMTLR, View == "Pathways.cor" & Alg == "RMTLR")$AUC.median, 2), ")"),
+        paste0("Cell fractions", " (", round(subset(AUC.mean.sd_RMTLR, View == "ImmuneCells" & Alg == "RMTLR")$AUC.median, 2), ")"),
+        paste0("TFs", " (", round(subset(AUC.mean.sd_RMTLR, View == "TFs" & Alg == "RMTLR")$AUC.median, 2), ")"),
+        paste0("LR pairs", " (", round(subset(AUC.mean.sd_RMTLR, View == "LRpairs.spec.pc" & Alg == "RMTLR")$AUC.median, 2), ")"),
+        paste0("CC pairs", " (", round(subset(AUC.mean.sd_RMTLR, View == "CCpairsGroupedScores.spec.pc" & Alg == "RMTLR")$AUC.median, 2), ")"),
+        paste0("\nEnsemble", " (", round(subset(AUC.mean.sd_RMTLR, View == "overall_mean_single")$AUC.median, 2), ")"),
+        paste0("\nTasks", " (", round(subset(AUC.mean.sd_RMTLR, View == "Gold_Standard")$AUC.median, 2), ")")
+
       ),
 
       col = c(
         all_color_views[c("Pathways.cor", "ImmuneCells", "TFs", "LRpairs.spec.pc", "CCpairsGroupedScores.spec.pc")],
-        as.vector(color_consensus)[2], as.vector(color_overalls)[2]
-      ), lty = 1, lwd = 4, cex = 1.1, bty = "n"
+        as.vector(color_overalls)[1], as.vector(color_gold_standard)[1]
+      ), lty = 1, lwd = 3, cex = 0.9, bty = "n"
     )
     title(main = paste0("n=", length(real_patient_response), " (R=", n_R, "; ", "NR=", n_NR, ")"))
 

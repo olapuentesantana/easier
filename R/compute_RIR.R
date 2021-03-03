@@ -21,7 +21,7 @@
 compute_RIR <- function(RNA_tpm) {
 
   # Literature genes
-  RIR.read <- unique(unlist(res.sig))
+  RIR.read <- unique(unlist(res_sig))
   match_RIR.read <- match(RIR.read, rownames(RNA_tpm))
 
   if (anyNA(match_RIR.read)) {
@@ -38,7 +38,7 @@ compute_RIR <- function(RNA_tpm) {
   r$genes <- rownames(log2.RNA_tpm)
 
   # Apply function to calculate OE:
-  res.scores <- get_OE_bulk(r, gene_sign = res.sig)
+  res.scores <- get_OE_bulk(r, gene_sign = res_sig)
 
   # Merge as recommend by authors
   res <- cbind.data.frame(

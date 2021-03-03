@@ -32,15 +32,14 @@ In order to use `r BiocStyle::Biocpkg("easier")` in your analysis, bulk-tumor RN
 
 - `RNA_counts`, a `data.frame` containing TPM values with HGNC symbols in rows and samples in columns. 
 - `RNA_tpm`, a `data.frame` containing raw counts values with HGNC symbols in rows and samples in columns. 
-- `patient_response`, a character `vector` containing clinical patients' response (where non-responders are labeled as NR and responders as R.
+- `real_patient_response`, a character `vector` containing clinical patients' response (where non-responders are labeled as NR and responders as R).
 
-In this vignette, we will illustrate the main features of `easier` on a publicly available melanoma dataset including both response to ICB therapy and RNA sequencing from Gide, et al. "Distinct Immune Cell Populations Define Response to Anti-PD-1 Monotherapy and Anti-PD-1/Anti-CTLA-4 Combined Therapy"
-", published in Cancer Cell, 2019 [@Gide2019]
+In this vignette, we will illustrate the main features of `easier` on a publicly available melanoma dataset including both response to ICB therapy and RNA sequencing from Gide, et al. "Distinct Immune Cell Populations Define Response to Anti-PD-1 Monotherapy and Anti-PD-1/Anti-CTLA-4 Combined Therapy", published in Cancer Cell, 2019 [@Gide2019]
 [doi:10.1016/j.ccell.2019.01.003](https://doi.org/10.1016/j.ccell.2019.01.003). ** Still need to ask for consent.
 
 The RNA sequencing fastq files are available from NCBI BioProject [PRJEB23709](https://www.ncbi.nlm.nih.gov/bioproject/522397).
 
-In this dataset, we considered 41 metastatic melanoma patients ()treated with anti-PD1 with prior BRAFi therapy.
+In this dataset, we considered 41 metastatic melanoma patients () treated with anti-PD1 with prior BRAFi therapy.
 
 # Getting started {#gettingstarted}
 
@@ -53,7 +52,6 @@ library(easier)
 
 If you have your bulk-tumor RNA sequencing data ready, you can compute five systems-based signatures of the tumor microenvironment by running:
 
-## Computation of system-based signatures of the tumor microenvironment
 
 ```{r eval = FALSE}
 # Example: Riaz
@@ -76,11 +74,25 @@ lrpair_weights <- compute_LR_pairs(RNA_tpm = Riaz_data$tpm_RNAseq,
                                    cancertype = "pancan")
 
 # Computation of cell-cell interaction scores
-ccpair_scores <- compute_CC_pairs_grouped(lrpairs = lrpairs_weights, 
+ccpair_scores <- compute_CC_pairs_grouped(lrpairs = lrpair_weights, 
                                           cancertype = "pancan")
 ````
 
-## Computation of different hallmarks of the immune response
+You can additionally compute published hallmarks of the immune response on your patients' data. 
+
+Hallmark of the immune response | Original study |
+------------------------------- | -------------- |
+Cytolytic activity (CYT) | Rooney et al, Cell, 2015 |
+Roh immune score (Roh_IS) | Roh et al., Sci. Transl. Med., 2017 |
+Chemokine signature (chemokines) | Messina et al., Nat. Sci. Rep., 2012 |
+Davoli immune signature (Davoli_IS) | Davoli et al., Science 2017 |
+IFNy signature (IFNy) | Ayers et al., JCI, 2017 |
+Expanded immune signature (Ayers_expIS) | Ayers et al., JCI, 2017 |
+T-cell inflamed signature (Tcell_inflamed) | Ayers et al., JCI, 2017 |
+Repressed immune resistance (RIR) | Jerby-Arnon et al., Cell, 2018 |
+Tertiary lymphoid structures signature (TLS) | Cabrita et al., Nature, 2020 |
+
+By default all hallmarks of the immune response are used, however you can set your own `list_gold_standards`.
 
 ```{r eval = FALSE}
 tasks <- c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
@@ -90,7 +102,9 @@ immune_response <- compute_gold_standards(RNA_tpm = Riaz_data$tpm_RNAseq,
                                           output_file_path = "/Users/Oscar/Desktop/Riaz")
 ```
 
-## Predict patients' immune response
+We are going to use the systems-based signatures computed previously to predict patients' immune response. `predict_immune_response` returns compute predictions for single system-based signatures and pairwise combinations of these system-based signatures. 
+
+Because models were built in a cancer-type-specific fashion, the user is required to indicate to which `cancertype` the bulk RNA-seq data belongs.
 
 ```{r eval = FALSE}
 predictions_immune_response <- predict_immune_response(pathways = pathway_activity,
@@ -101,19 +115,23 @@ predictions_immune_response <- predict_immune_response(pathways = pathway_activi
                                                        cancertype = "SKCM")
 ```
 
+Depending on the patient's response information available, we can now think of two possible scenarios where:
 
+- `real_patient_response` is **known** and the performance of the computed predictions can be evaluated. In this case, we expect the user to provide a character `vector` containing clinical patients' response (where non-responders are labeled as NR and responders as R).
+- `real_patient_response` is **unknown** and an score is provided assessing patient-specific likelihood of response to therapy.
 
-## Assess patient-specific likelihood of response to ICB therapy
 
 ```{r eval = FALSE}
 compare_immune_response(predictions_immune_response = predictions_immune_response,
                         real_patient_response = Riaz_data$patient_response,
                         RNA_tpm = Riaz_data$tpm_RNAseq,
                         output_file_path = "/Users/Oscar/Desktop/Riaz",
-                        cancertype = cancertype)
+                        cancertype = "SKCM")
 ```
 
-## Analyze systems biomarkers of immune response
+We can go further and analyze systems biomarkers present in the user's bulk RNA-seq data. `explore_biomarkers` allows to investigate mechanisms behind patients' response to treatment through interpretable biomarkers. 
+
+In order to leverage the biomarkers information obtained during model training, you need to specify again which `cancertype` the bulk RNA-seq data belongs.
 
 ```{r eval = FALSE}
 explore_biomarkers(pathways = pathways_scores,
@@ -125,6 +143,11 @@ explore_biomarkers(pathways = pathways_scores,
                    real_patient_response = Riaz_data$patient_response,
                    output_file_path = "/Users/Oscar/Desktop/Riaz")
 ```
+
+## Ready to go!
+
+Once you go through the full framework of `easier`, you are ready to engage in the app of `easier`. To do so, you can just launch the `easier()` app:
+
 
 # Session info {-}
 

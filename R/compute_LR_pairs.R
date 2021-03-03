@@ -44,8 +44,8 @@ compute_LR_pairs <- function(RNA_tpm,
   gene_expr <- as.data.frame(gene_expr)
 
   # Cancer-specific LR pairs network
-  intercell.network <- intercell.network.cancer.spec[[cancertype]]
-  LR_pairs <- unique(paste0(intercell.network$ligands, "_", intercell.network$receptors))
+  intercell_network <- intercell_network_cancer_spec[[cancertype]]
+  LR_pairs <- unique(paste0(intercell_network$ligands, "_", intercell_network$receptors))
 
   # Compute L-R pairs
   LR.pairs.computed <- do.call(rbind, lapply(1:length(LR_pairs), function(x) {

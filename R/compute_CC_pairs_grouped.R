@@ -41,10 +41,10 @@ compute_CC_pairs_grouped <- function(lrpairs,
   # sum(LR.pairs.binary)/(ncol(LR.pairs.binary)*nrow(LR.pairs.binary))*100 #percentage of
 
   # keep only the LR.pairs for which I have (non-zero) frequencies in the TCGA
-  lrpairs_binary <- lrpairs_binary[, colnames(lrpairs_binary) %in% names(lr.frequency)]
+  lrpairs_binary <- lrpairs_binary[, colnames(lrpairs_binary) %in% names(lr_frequency)]
 
   # cancer type specific network
-  intercell_network <- intercell.network.cancer.spec[[cancertype]]
+  intercell_network <- intercell_network_cancer_spec[[cancertype]]
 
   # compute the CC score for each patient
   celltypes <- unique(c(as.character(intercell_network$cell1), as.character(intercell_network$cell2)))
@@ -52,13 +52,13 @@ compute_CC_pairs_grouped <- function(lrpairs,
   CC_pairs_score <- do.call(cbind, lapply(celltypes, function(celltype1) {
     do.call(cbind, lapply(celltypes, function(celltype2) {
       compute_CCpair_score(celltype1, celltype2, intercell_network,
-        lrpairs_binary, lr.frequency,
+        lrpairs_binary, lr_frequency,
         compute_log = TRUE
       )
     }))
   }))
 
-  metadata.CC.pairs <- do.call(rbind, lapply(celltypes, function(celltype1) {
+  metadata_CC_pairs <- do.call(rbind, lapply(celltypes, function(celltype1) {
     do.call(rbind, lapply(celltypes, function(celltype2) {
       data.frame(
         CCpair = gsub(" ", "", paste(celltype1, celltype2, sep = "_")),
@@ -67,7 +67,7 @@ compute_CC_pairs_grouped <- function(lrpairs,
     }))
   }))
 
-  colnames(CC_pairs_score) <- metadata.CC.pairs$CCpair
+  colnames(CC_pairs_score) <- metadata_CC_pairs$CCpair
 
   message("CC pairs computed \n")
   return(as.data.frame(CC_pairs_score))

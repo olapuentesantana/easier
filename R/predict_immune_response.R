@@ -125,11 +125,6 @@ predict_immune_response <- function(pathways = NULL,
     paste(names(view_combinations[[X]]), collapse = "_")
   })
 
-  # Immune cells features curation:
-  if (missing(immunecells) == FALSE) {
-    colnames(immunecells) <- gsub(".", "_", colnames(immunecells), fixed = TRUE)
-  }
-
   all_predictions <- lapply(1:length(view_combinations), function(X) {
     view_info <- view_combinations[[X]]
     view_name <- paste(names(view_info), collapse = "_")
