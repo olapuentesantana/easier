@@ -10,6 +10,7 @@
 #' @param RNA_counts numeric matrix of read counts with rows=genes and columns=samples
 #' @param remove_genes_ICB_proxies boolean variable to remove all those genes involved
 #' in the computation of ICB proxy's of response
+#' @param verbose A logical value indicating whether to display informative messages
 #'
 #' @return A list with the following elements:
 #'   \describe{
@@ -30,18 +31,19 @@
 #'   remove_genes_ICB_proxies = TRUE)
 #' head(pathway_activity)
 compute_pathways_scores <- function(RNA_counts,
-                                    remove_genes_ICB_proxies = TRUE) {
+                                    remove_genes_ICB_proxies = TRUE,
+                                    verbose = TRUE) {
 
   # Gene expression data
   raw_counts <- RNA_counts
   genes <- rownames(raw_counts)
 
   # HGNC symbols are required
-  try(if (any(grep("ENSG00000", genes))) stop("hgnc gene symbols are required", call. = FALSE))
+  if (any(grep("ENSG00000", genes))) stop("hgnc gene symbols are required", call. = FALSE)
 
   # Remove list of genes used to build proxy's of ICB response
   if (remove_genes_ICB_proxies) {
-    message("Removing signatures genes for proxy's of ICB response  \n")
+    if (verbose) message("Removing signatures genes for proxy's of ICB response  \n")
     idy <- stats::na.exclude(match(cor_genes_to_remove, rownames(raw_counts)))
     raw_counts <- raw_counts[-idy, ]
   }
@@ -60,7 +62,7 @@ compute_pathways_scores <- function(RNA_counts,
   # Column data:
   colData <- data.frame(id = colnames(raw_counts.integer))
 
-  message("DESeq2 -->  \n")
+  if (verbose) message("DESeq2 normalization -->\n")
   # Construction a DESeqDataSet: (Forced all to be data.frames($ operator))
   dset <- DESeq2::DESeqDataSetFromMatrix(
     countData = raw_counts.integer,
@@ -84,9 +86,9 @@ compute_pathways_scores <- function(RNA_counts,
   genes_kept <- intersect(rownames(gene_expr), all_pathway_responsive_genes)
   genes_left <- setdiff(all_pathway_responsive_genes, rownames(gene_expr))
   total_genes <- length(genes_left) + length(genes_kept)
-  message("Pathway signature genes found in data set: ", length(genes_kept), "/", total_genes, " (", round(length(genes_kept)/total_genes, 3) * 100,"%)")
+  if (verbose) message("Pathway signature genes found in data set: ", length(genes_kept), "/", total_genes, " (", round(length(genes_kept)/total_genes, 3) * 100,"%)")
 
-  message("\n Pathway scores computed \n")
+  if (verbose) message("\n Pathway scores computed \n")
   return(as.data.frame(pathway_activity))
 
 }

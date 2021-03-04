@@ -4,13 +4,15 @@
 \alias{compute_TF_activity}
 \title{Compute transcription factors activity}
 \usage{
-compute_TF_activity(RNA_tpm, remove_genes_ICB_proxies = FALSE)
+compute_TF_activity(RNA_tpm, remove_genes_ICB_proxies = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{RNA_tpm}{numeric matrix of tpm values with rows=genes and columns=samples}
 
 \item{remove_genes_ICB_proxies}{boolean variable to remove all those genes
 involved in the computation of ICB proxy's of response}
+
+\item{verbose}{A logical value indicating whether to display informative messages}
 }
 \value{
 A list with the following elements:

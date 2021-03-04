@@ -6,6 +6,7 @@
 #' @importFrom stats sd
 #'
 #' @param RNA_tpm numeric matrix with rows=genes and columns=samples
+#' @param verbose A logical value indicating whether to display informative messages
 #'
 #' @return numeric matrix with rows=samples and columns=Immunophenoscore
 #'
@@ -17,11 +18,12 @@
 #'
 #' IPS <- compute_IPS(RNA_tpm = Riaz_data$tpm_RNAseq)
 #' head(IPS)
-compute_IPS <- function(RNA_tpm) {
+compute_IPS <- function(RNA_tpm,
+                        verbose = TRUE) {
 
   # Log2 transformation:
-  log2.RNA_tpm <- as.data.frame(log2(RNA_tpm + 1))
-  sample_names <- colnames(log2.RNA_tpm)
+  log2_RNA_tpm <- as.data.frame(log2(RNA_tpm + 1))
+  sample_names <- colnames(log2_RNA_tpm)
 
   # Literature genes and corresponding weights
   IPSG <- IPSG_read
@@ -35,7 +37,7 @@ compute_IPS <- function(RNA_tpm) {
   AZ <- NULL
 
   # Gene names in expression file
-  GVEC <- row.names(log2.RNA_tpm)
+  GVEC <- row.names(log2_RNA_tpm)
 
   # Genes names in IPS genes file
   VEC <- as.vector(IPSG$GENE)
@@ -47,7 +49,7 @@ compute_IPS <- function(RNA_tpm) {
   MISSING_GENES <- VEC[ind]
   dat <- IPSG[ind, ]
   if (length(MISSING_GENES) > 0) {
-    cat("differently named or missing genes: ", MISSING_GENES, "\n")
+    warning("differently named or missing genes : \n", MISSING_GENES, "\n")
     for (x in 1:length(ind)) {
       print(IPSG[ind, ])
     }
@@ -55,10 +57,10 @@ compute_IPS <- function(RNA_tpm) {
 
   # calculation
   for (i in 1:length(sample_names)) {
-    GE <- log2.RNA_tpm[[i]]
+    GE <- log2_RNA_tpm[[i]]
     mGE <- mean(GE)
     sGE <- sd(GE)
-    Z1 <- (log2.RNA_tpm[as.vector(IPSG$GENE), i] - mGE) / sGE
+    Z1 <- (log2_RNA_tpm[as.vector(IPSG$GENE), i] - mGE) / sGE
     W1 <- IPSG$WEIGHT
     WEIGHT <- NULL
     MIG <- NULL
@@ -78,6 +80,6 @@ compute_IPS <- function(RNA_tpm) {
   }
   names(score) <- sample_names
 
-  message("IPS score computed")
+  if (verbose) message("IPS score computed")
   return(data.frame(IPS = score, check.names = FALSE))
 }

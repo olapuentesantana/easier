@@ -10,6 +10,7 @@
 #'
 #' @param lrpairs Ligand-receptor pairs weights matrix
 #' @param cancertype string character
+#' @param verbose A logical value indicating whether to display informative messages
 #'
 #' @return Cell-Cell interaction scores matrix with rows=samples and columns=cell-cell interactions
 #'
@@ -27,7 +28,8 @@
 #'   cancertype = "pancan")
 #' head(ccpair_scores)
 compute_CC_pairs_grouped <- function(lrpairs,
-                                     cancertype = "pancan") {
+                                     cancertype = "pancan",
+                                     verbose = TRUE) {
 
   # remove ligand receptor pairs that are always NA
   na_lrpairs <- apply(lrpairs, 2, function(x) {
@@ -69,6 +71,6 @@ compute_CC_pairs_grouped <- function(lrpairs,
 
   colnames(CC_pairs_score) <- metadata_CC_pairs$CCpair
 
-  message("CC pairs computed \n")
+  if (verbose) message("CC pairs computed \n")
   return(as.data.frame(CC_pairs_score))
 }

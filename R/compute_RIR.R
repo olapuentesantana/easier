@@ -7,6 +7,7 @@
 #' @importFrom stats na.omit
 #'
 #' @param RNA_tpm numeric matrix with rows=genes and columns=samples
+#' @param verbose A logical value indicating whether to display informative messages
 #'
 #' @return numeric matrix with rows=samples and columns=IRP
 #'
@@ -18,35 +19,36 @@
 #'
 #' RIR <- compute_RIR(RNA_tpm = Riaz_data$tpm_RNAseq)
 #' head(RIR)
-compute_RIR <- function(RNA_tpm) {
+compute_RIR <- function(RNA_tpm,
+                        verbose = TRUE) {
 
-  # Literature genes
-  RIR.read <- unique(unlist(res_sig))
-  match_RIR.read <- match(RIR.read, rownames(RNA_tpm))
+  # Literature signature
+  sig_read <- unique(unlist(res_sig))
+  match_sig_read <- match(sig_read, rownames(RNA_tpm))
 
-  if (anyNA(match_RIR.read)) {
-    warning(c("differently named or missing signature genes : \n", paste(RIR.read[!RIR.read %in% rownames(RNA_tpm)], collapse = "\n")))
-    match_RIR.read <- stats::na.omit(match_RIR.read)
+  if (anyNA(match_sig_read)) {
+    warning("differently named or missing signature genes : \n", paste(sig_read[!sig_read %in% rownames(RNA_tpm)], collapse = "\n"), "\n")
+    match_sig_read <- stats::na.omit(match_sig_read)
   }
 
   # Log2 transformation:
-  log2.RNA_tpm <- log2(RNA_tpm + 1)
+  log2_RNA_tpm <- log2(RNA_tpm + 1)
 
   # Prepare input data
   r <- list()
-  r$tpm <- log2.RNA_tpm
-  r$genes <- rownames(log2.RNA_tpm)
+  r$tpm <- log2_RNA_tpm
+  r$genes <- rownames(log2_RNA_tpm)
 
   # Apply function to calculate OE:
-  res.scores <- get_OE_bulk(r, gene_sign = res_sig)
+  res_scores <- get_OE_bulk(r, gene_sign = res_sig, verbose = TRUE)
 
   # Merge as recommend by authors
   res <- cbind.data.frame(
-    excF.up = rowMeans(res.scores[, c("exc.up", "exc.seed.up")]),
-    excF.down = rowMeans(res.scores[, c("exc.down", "exc.seed.down")]),
-    res.up = rowMeans(res.scores[, c("trt.up", "exc.up", "exc.seed.up")]),
-    res.down = rowMeans(res.scores[, c("trt.down", "exc.down", "exc.seed.down")]),
-    res.scores
+    excF.up = rowMeans(res_scores[, c("exc.up", "exc.seed.up")]),
+    excF.down = rowMeans(res_scores[, c("exc.down", "exc.seed.down")]),
+    res.up = rowMeans(res_scores[, c("trt.up", "exc.up", "exc.seed.up")]),
+    res.down = rowMeans(res_scores[, c("trt.down", "exc.down", "exc.seed.down")]),
+    res_scores
   )
 
   res <- cbind.data.frame(
@@ -56,10 +58,10 @@ compute_RIR <- function(RNA_tpm) {
   )
 
   # Keep that signature considered to be relevant
-  keep.sig <- c("resF.down")
-  score <- as.matrix(res[, colnames(res) %in% keep.sig])
-  rownames(score) <- colnames(RNA_tpm)
+  keep_sig <- c("resF.down")
+  score <- as.matrix(res[, colnames(res) %in% keep_sig])
+  rownames(score) <- colnames(log2_RNA_tpm)
 
-  message("RIR score computed")
+  if (verbose) message("RIR score computed")
   return(data.frame(RIR = score, check.names = FALSE))
 }

@@ -4,10 +4,12 @@
 \alias{compute_Ayers_expIS}
 \title{Compute Expanded Immune signature}
 \usage{
-compute_Ayers_expIS(RNA_tpm)
+compute_Ayers_expIS(RNA_tpm, verbose = TRUE)
 }
 \arguments{
 \item{RNA_tpm}{numeric matrix with rows=genes and columns=samples}
+
+\item{verbose}{A logical value indicating whether to display informative messages}
 }
 \value{
 numeric matrix with rows=samples and columns=Expanded Immune signature score

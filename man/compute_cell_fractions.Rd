@@ -4,10 +4,12 @@
 \alias{compute_cell_fractions}
 \title{Compute immune cell fractions}
 \usage{
-compute_cell_fractions(RNA_tpm)
+compute_cell_fractions(RNA_tpm, verbose = TRUE)
 }
 \arguments{
 \item{RNA_tpm}{numeric matrix of tpm values with rows=genes and columns=samples}
+
+\item{verbose}{A logical value indicating whether to display informative messages}
 }
 \value{
 Cell fractions matrix: matrix of normalized enrichment scores with

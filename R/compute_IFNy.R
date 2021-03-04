@@ -6,6 +6,7 @@
 #' @importFrom stats na.omit
 #'
 #' @param RNA_tpm numeric matrix with rows=genes and columns=samples
+#' @param verbose A logical value indicating whether to display informative messages
 #'
 #' @return numeric matrix with rows=samples and columns=IFNy signature score
 #'
@@ -17,26 +18,27 @@
 #'
 #' IFNy <- compute_IFNy(RNA_tpm = Riaz_data$tpm_RNAseq)
 #' head(IFNy)
-compute_IFNy <- function(RNA_tpm) {
+compute_IFNy <- function(RNA_tpm,
+                         verbose = TRUE) {
 
-  # Literature genes
-  IFNy.read <- c("IFNG", "STAT1", "CXCL9", "CXCL10", "IDO1", "HLA-DRA")
-  match_IFNy.genes <- match(IFNy.read, rownames(RNA_tpm))
+  # Literature signature
+  sig_read <- c("IFNG", "STAT1", "CXCL9", "CXCL10", "IDO1", "HLA-DRA")
+  match_sig_read <- match(sig_read, rownames(RNA_tpm))
 
-  if (anyNA(match_IFNy.genes)) {
-    warning(paste0("differenty named or missing signature genes : \n", IFNy.read[!IFNy.read %in% rownames(RNA_tpm)]))
-    match_IFNy.genes <- stats::na.omit(match_IFNy.genes)
+  if (anyNA(match_sig_read)) {
+    warning("differenty named or missing signature genes : \n", sig_read[!sig_read %in% rownames(RNA_tpm)], "\n")
+    match_sig_read <- stats::na.omit(match_sig_read)
   }
 
   # Log2 transformation:
-  log2.RNA_tpm <- log2(RNA_tpm + 1)
+  log2_RNA_tpm <- log2(RNA_tpm + 1)
 
   # Subset log2.RNA_tpm
-  sub_log2.RNA_tpm <- log2.RNA_tpm[match_IFNy.genes, ]
+  sub_log2_RNA_tpm <- log2_RNA_tpm[match_sig_read, ]
 
   # Calculation: average of the included genes for the IFN-y signature
-  score <- apply(sub_log2.RNA_tpm, 2, mean)
+  score <- apply(sub_log2_RNA_tpm, 2, mean)
 
-  message("IFNy score computed")
+  if (verbose) message("IFNy score computed")
   return(data.frame(IFNy = score, check.names = FALSE))
 }

@@ -4,7 +4,13 @@
 \alias{predict_with_bemkl}
 \title{Make predictions using BEMKL}
 \usage{
-predict_with_bemkl(view_name, view_info, view_data, learned_model)
+predict_with_bemkl(
+  view_name,
+  view_info,
+  view_data,
+  learned_model,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{view_name}{input view name}
@@ -15,6 +21,8 @@ predict_with_bemkl(view_name, view_info, view_data, learned_model)
 to a certain view.}
 
 \item{learned_model}{parameters learned during training with cross-validation.}
+
+\item{verbose}{A logical value indicating whether to display messages about the prediction process.}
 }
 \value{
 A matrix with the predictions obtained by applying the model on the

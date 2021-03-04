@@ -6,6 +6,7 @@
 #' @importFrom stats na.omit
 #'
 #' @param RNA_tpm numeric matrix with rows=genes and columns=samples
+#' @param verbose A logical value indicating whether to display informative messages
 #'
 #' @return numeric matrix with rows=samples and columns=IMPRES score
 #'
@@ -17,10 +18,11 @@
 #'
 #' IMPRES <- compute_IMPRES(RNA_tpm = Riaz_data$tpm_RNAseq)
 #' head(IMPRES)
-compute_IMPRES <- function(RNA_tpm) {
+compute_IMPRES <- function(RNA_tpm,
+                           verbose = TRUE) {
 
-  # Literature genes
-  IMPRES.basis <- data.frame(
+  # Literature signature
+  sig_basis <- data.frame(
     Gene_1 = c(
       "PDCD1", "CD27", "CTLA4", "CD40", "CD86", "CD28", "CD80",
       "CD274", "CD86", "CD40", "CD86", "CD40", "CD28", "CD40", "TNFRSF14"
@@ -31,52 +33,55 @@ compute_IMPRES <- function(RNA_tpm) {
     )
   )
 
-  IMPRES.read <- unique(as.vector(as.matrix(IMPRES.basis))) # 15 genes
+  sig_read <- unique(as.vector(as.matrix(sig_basis))) # 15 genes
 
   # EQUIVALENT : "VISTA" = "C10orf54", "PDL-1" = "CD274", "TIM-3" = "HAVCR2",
   # "PD-1" = "PDCD1", "HVEM" = "TNFRSF14", "OX40L" = "TNFSF4", "CD137L" = "TNFSF9"
 
   # Some genes might have other name: case for "C10orf54", it's called "VSIR", be carefull
   if (any(rownames(RNA_tpm) == "VSIR")) {
-    cat("Gene name changed: C10orf54 instead of VSIR", "\n")
+    warning("Gene name changed: C10orf54 instead of VSIR", "\n")
     rownames(RNA_tpm)[which(rownames(RNA_tpm) == "VSIR")] <- "C10orf54"
   }
 
   # Subset RNA_tpm
-  match_F_1 <- match(as.character(IMPRES.basis[, 1]), rownames(RNA_tpm))
-  match_F_2 <- match(as.character(IMPRES.basis[, 2]), rownames(RNA_tpm))
+  match_F_1 <- match(as.character(sig_basis[, 1]), rownames(RNA_tpm))
+  match_F_2 <- match(as.character(sig_basis[, 2]), rownames(RNA_tpm))
 
   if (anyNA(c(match_F_1, match_F_2))) {
-    warning(c("differenty named or missing signature genes : \n", paste(IMPRES.read[!IMPRES.read %in% rownames(RNA_tpm)], collapse = "\n")))
+    warning("differenty named or missing signature genes : \n",
+      paste(sig_read[!sig_read %in% rownames(RNA_tpm)], collapse = "\n"),
+      "\n"
+    )
   }
 
   # Initialize variables
-  F_pair_expr_A <- matrix(0, nrow(IMPRES.basis), ncol(RNA_tpm))
-  F_pair_expr_B <- matrix(0, nrow(IMPRES.basis), ncol(RNA_tpm))
-  IMPRES.matrix <- matrix(0, nrow(IMPRES.basis), ncol(RNA_tpm))
-  colnames(IMPRES.matrix) <- colnames(RNA_tpm)
+  F_pair_expr_A <- matrix(0, nrow(sig_basis), ncol(RNA_tpm))
+  F_pair_expr_B <- matrix(0, nrow(sig_basis), ncol(RNA_tpm))
+  F_matrix <- matrix(0, nrow(sig_basis), ncol(RNA_tpm))
+  colnames(F_matrix) <- colnames(RNA_tpm)
   score <- vector("numeric", length = ncol(RNA_tpm))
   names(score) <- colnames(RNA_tpm)
 
   # Log2 transformation:
-  log2.RNA_tpm <- as.data.frame(log2(RNA_tpm + 1))
+  log2_RNA_tpm <- as.data.frame(log2(RNA_tpm + 1))
 
   # Calculation:
-  F_pair_expr_A <- log2.RNA_tpm[match_F_1, ]
-  F_pair_expr_B <- log2.RNA_tpm[match_F_2, ]
+  F_pair_expr_A <- log2_RNA_tpm[match_F_1, ]
+  F_pair_expr_B <- log2_RNA_tpm[match_F_2, ]
 
   if (anyNA(F_pair_expr_A + F_pair_expr_B)) {
     remove_pairs <- as.vector(which(is.na(rowSums(F_pair_expr_A + F_pair_expr_B) == TRUE)))
   }
 
-  IMPRES.matrix <- F_pair_expr_A > F_pair_expr_B
-  if (anyNA(IMPRES.matrix)) {
-    score <- colSums(IMPRES.matrix, na.rm = TRUE)
-    score <- (score * nrow(IMPRES.matrix)) / (nrow(IMPRES.matrix) - length(remove_pairs))
+  F_matrix <- F_pair_expr_A > F_pair_expr_B
+  if (anyNA(F_matrix)) {
+    score <- colSums(F_matrix, na.rm = TRUE)
+    score <- (score * nrow(F_matrix)) / (nrow(F_matrix) - length(remove_pairs))
   } else {
-    score <- colSums(IMPRES.matrix)
+    score <- colSums(F_matrix)
   }
 
-  message("IMPRES score computed")
+  if (verbose) message("IMPRES score computed")
   return(data.frame(IMPRES = score, check.names = FALSE))
 }

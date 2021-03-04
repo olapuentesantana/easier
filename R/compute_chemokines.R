@@ -6,6 +6,7 @@
 #' @importFrom stats na.omit prcomp
 #'
 #' @param RNA_tpm numeric matrix with rows=genes and columns=samples
+#' @param verbose A logical value indicating whether to display informative messages
 #'
 #' @return numeric matrix with rows=samples and columns=chemokine score
 #'
@@ -17,31 +18,32 @@
 #'
 #' chemokines <- compute_chemokines(RNA_tpm = Riaz_data$tpm_RNAseq)
 #' head(chemokines)
-compute_chemokines <- function(RNA_tpm) {
+compute_chemokines <- function(RNA_tpm,
+                               verbose = TRUE) {
 
   # Literature genes
-  chemokines.read <- c(
+  sig_read <- c(
     "CCL2", "CCL3", "CCL4", "CCL5", "CCL8", "CCL18", "CCL19", "CCL21",
     "CXCL9", "CXCL10", "CXCL11", "CXCL13"
   )
 
-  match_chemokines.genes <- match(chemokines.read, rownames(RNA_tpm))
+  match_sig_read <- match(sig_read, rownames(RNA_tpm))
 
-  if (anyNA(match_chemokines.genes)) {
-    warning(c("differenty named or missing signature genes : \n", paste(chemokines.read[!chemokines.read %in% rownames(RNA_tpm)], collapse = "\n")))
-    match_chemokines.genes <- stats::na.omit(match_chemokines.genes)
+  if (anyNA(match_sig_read)) {
+    warning("differenty named or missing signature genes : \n", paste(sig_read[!sig_read %in% rownames(RNA_tpm)], collapse = "\n"), "\n")
+    match_sig_read <- stats::na.omit(match_sig_read)
   }
 
   # Log2 transformation:
-  log2.RNA_tpm <- log2(RNA_tpm + 1)
+  log2_RNA_tpm <- log2(RNA_tpm + 1)
 
   # Subset gene_expr
-  sub_log2.RNA_tpm <- log2.RNA_tpm[match_chemokines.genes, ]
+  sub_log2_RNA_tpm <- log2_RNA_tpm[match_sig_read, ]
 
   # calculation: using PCA (Z-score calculated within prcomp)
-  chemokine.pca <- stats::prcomp(t(sub_log2.RNA_tpm), center = TRUE, scale = TRUE)
-  score <- chemokine.pca$x[, 1]
+  pcs <- stats::prcomp(t(sub_log2_RNA_tpm), center = TRUE, scale = TRUE)
+  score <- pcs$x[, 1]
 
-  message("Chemokines score computed")
+  if (verbose) message("Chemokines score computed")
   return(data.frame(chemokines = score, check.names = FALSE))
 }

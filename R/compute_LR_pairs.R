@@ -9,6 +9,7 @@
 #' @param remove_genes_ICB_proxies boolean variable to remove all those genes
 #' involved in the computation of ICB proxy's of response
 #' @param cancertype string character
+#' @param verbose A logical value indicating whether to display informative messages
 #'
 #' @return Ligand-receptor pairs weights matrix in log2(tpm + 1) with rows=samples and columns=L-R pairs
 #' @export
@@ -25,18 +26,19 @@
 #' lrpairs_weights[1:5, 1:5]
 compute_LR_pairs <- function(RNA_tpm,
                              remove_genes_ICB_proxies = FALSE,
-                             cancertype = "pancan") {
+                             cancertype = "pancan",
+                             verbose = TRUE) {
 
   # Gene expression data (log2 transformed)
   gene_expr <- log2(RNA_tpm + 1)
   genes <- rownames(gene_expr)
 
   # HGNC symbols are required
-  try(if (any(grep("ENSG00000", genes))) stop("hgnc gene symbols are required", call. = FALSE))
+  if (any(grep("ENSG00000", genes))) stop("hgnc gene symbols are required", call. = FALSE)
 
   # Genes to remove according to all ICB proxy's
   if (remove_genes_ICB_proxies) {
-    message("Removing signatures genes for proxy's of ICB response  \n")
+    if (verbose) message("Removing signatures genes for proxy's of ICB response  \n")
     idy <- stats::na.exclude(match(cor_genes_to_remove, rownames(gene_expr)))
     gene_expr <- gene_expr[-idy, ]
   }
@@ -73,6 +75,6 @@ compute_LR_pairs <- function(RNA_tpm,
     LR.pairs.computed <- LR.pairs.computed[, -pos_remove]
   }
 
-  message("LR pairs computed \n")
+  if (verbose) message("LR pairs computed \n")
   return(as.data.frame(LR.pairs.computed))
 }

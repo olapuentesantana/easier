@@ -4,10 +4,12 @@
 \alias{compute_Tcell_inflamed}
 \title{Compute T cell-inflamed signature score}
 \usage{
-compute_Tcell_inflamed(RNA_tpm)
+compute_Tcell_inflamed(RNA_tpm, verbose = TRUE)
 }
 \arguments{
 \item{RNA_tpm}{numeric matrix with rows=genes and columns=samples}
+
+\item{verbose}{A logical value indicating whether to display informative messages}
 }
 \value{
 numeric matrix with rows=samples and columns=T cell-inflamed signature

@@ -4,12 +4,14 @@
 \alias{compute_CC_pairs_grouped}
 \title{compute_CC_pairs_grouped}
 \usage{
-compute_CC_pairs_grouped(lrpairs, cancertype = "pancan")
+compute_CC_pairs_grouped(lrpairs, cancertype = "pancan", verbose = TRUE)
 }
 \arguments{
 \item{lrpairs}{Ligand-receptor pairs weights matrix}
 
 \item{cancertype}{string character}
+
+\item{verbose}{A logical value indicating whether to display informative messages}
 }
 \value{
 Cell-Cell interaction scores matrix with rows=samples and columns=cell-cell interactions

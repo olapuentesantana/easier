@@ -30,8 +30,8 @@ To gain some insight into the fundamentals of `easier` package, we recommend rea
 
 In order to use `r BiocStyle::Biocpkg("easier")` in your analysis, bulk-tumor RNA sequencing data is required as input (when available, patient response to immunotherapy can be optionally entered):
 
-- `RNA_counts`, a `data.frame` containing TPM values with HGNC symbols in rows and samples in columns. 
-- `RNA_tpm`, a `data.frame` containing raw counts values with HGNC symbols in rows and samples in columns. 
+- `RNA_counts`, a `data.frame` containing raw counts values with HGNC symbols in rows and samples in columns. 
+- `RNA_tpm`, a `data.frame` containing TPM values with HGNC symbols in rows and samples in columns. 
 - `real_patient_response`, a character `vector` containing clinical patients' response (where non-responders are labeled as NR and responders as R).
 
 In this vignette, we will illustrate the main features of `easier` on a publicly available melanoma dataset including both response to ICB therapy and RNA sequencing from Gide, et al. "Distinct Immune Cell Populations Define Response to Anti-PD-1 Monotherapy and Anti-PD-1/Anti-CTLA-4 Combined Therapy", published in Cancer Cell, 2019 [@Gide2019]

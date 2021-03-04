@@ -6,6 +6,7 @@
 #' @importFrom stats na.omit
 #'
 #' @param RNA_tpm numeric matrix with rows=genes and columns=samples
+#' @param verbose A logical value indicating whether to display informative messages
 #'
 #' @return numeric matrix with rows=samples and columns=Davoli immune signature
 #'
@@ -17,32 +18,33 @@
 #'
 #' Davoli_IS <- compute_Davoli_IS(RNA_tpm= Riaz_data$tpm_RNAseq)
 #' head(Davoli_IS)
-compute_Davoli_IS <- function(RNA_tpm) {
+compute_Davoli_IS <- function(RNA_tpm,
+                              verbose = TRUE) {
 
-  # Literature genes
-  Davoli_IS.read <- c("CD247", "CD2", "CD3E", "GZMH", "NKG7", "PRF1", "GZMK")
-  match_Davoli_IS.genes <- match(Davoli_IS.read, rownames(RNA_tpm))
+  # Literature signature
+  sig_read <- c("CD247", "CD2", "CD3E", "GZMH", "NKG7", "PRF1", "GZMK")
+  match_sig_read <- match(sig_read, rownames(RNA_tpm))
 
-  if (anyNA(match_Davoli_IS.genes)) {
-    warning(c("differenty named or missing signature genes : \n", paste(Davoli_IS.read[!Davoli_IS.read %in% rownames(RNA_tpm)], collapse = "\n")))
-    match_Davoli_IS.genes <- stats::na.omit(match_Davoli_IS.genes)
+  if (anyNA(match_sig_read)) {
+    warning(c("differenty named or missing signature genes : \n", paste(sig_read[!sig_read %in% rownames(RNA_tpm)], collapse = "\n")))
+    match_sig_read <- stats::na.omit(match_sig_read)
   }
 
   # Log2 transformation:
-  log2.RNA_tpm <- log2(RNA_tpm + 1)
+  log2_RNA_tpm <- log2(RNA_tpm + 1)
 
   # Subset log2.RNA_tpm
-  sub_log2.RNA_tpm <- log2.RNA_tpm[match_Davoli_IS.genes, ]
+  sub_log2_RNA_tpm <- log2_RNA_tpm[match_sig_read, ]
 
   # Calculate rank position for each gene across samples
-  ranks_sub_log2.RNA_tpm <- apply(sub_log2.RNA_tpm, 1, rank)
+  rank_sub_log2_RNA_tpm <- apply(sub_log2_RNA_tpm, 1, rank)
 
   # Get normalized rank by divided
-  ranks_sub_log2.RNA_tpm.norm <- (ranks_sub_log2.RNA_tpm - 1) / (nrow(ranks_sub_log2.RNA_tpm) - 1)
+  norm_rank_sub_log2_RNA_tpm <- (rank_sub_log2_RNA_tpm - 1) / (nrow(rank_sub_log2_RNA_tpm) - 1)
 
   # Calculation: average of the expression value of all the genes within-sample
-  score <- apply(ranks_sub_log2.RNA_tpm.norm, 1, mean)
+  score <- apply(norm_rank_sub_log2_RNA_tpm, 1, mean)
 
-  message("Davoli_IS score computed")
+  if (verbose) message("Davoli_IS score computed")
   return(data.frame(Davoli_IS = score, check.names = FALSE))
 }

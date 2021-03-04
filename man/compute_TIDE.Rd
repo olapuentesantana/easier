@@ -4,7 +4,7 @@
 \alias{compute_TIDE}
 \title{Compute TIDE score}
 \usage{
-compute_TIDE(RNA_tpm, cancertype, output_file_path)
+compute_TIDE(RNA_tpm, cancertype, output_file_path, verbose = TRUE)
 }
 \arguments{
 \item{RNA_tpm}{numeric matrix with rows=genes and columns=samples}
@@ -12,6 +12,8 @@ compute_TIDE(RNA_tpm, cancertype, output_file_path)
 \item{cancertype}{string character}
 
 \item{output_file_path}{TODOTODO to define}
+
+\item{verbose}{A logical value indicating whether to display informative messages}
 }
 \value{
 numeric matrix with rows=samples and columns=TIDE score

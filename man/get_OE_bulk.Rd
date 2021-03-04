@@ -4,7 +4,13 @@
 \alias{get_OE_bulk}
 \title{Calculate overall expression (OE)}
 \usage{
-get_OE_bulk(r, gene_sign = NULL, num_rounds = 1000, full_flag = FALSE)
+get_OE_bulk(
+  r,
+  gene_sign = NULL,
+  num_rounds = 1000,
+  full_flag = FALSE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{r}{list TODOTODO - needs some more info?}
@@ -14,6 +20,8 @@ get_OE_bulk(r, gene_sign = NULL, num_rounds = 1000, full_flag = FALSE)
 \item{num_rounds}{integer}
 
 \item{full_flag}{boolean}
+
+\item{verbose}{A logical value indicating whether to display informative messages}
 }
 \value{
 Random score

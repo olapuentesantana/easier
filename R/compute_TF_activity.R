@@ -9,6 +9,7 @@
 #' @param RNA_tpm numeric matrix of tpm values with rows=genes and columns=samples
 #' @param remove_genes_ICB_proxies boolean variable to remove all those genes
 #' involved in the computation of ICB proxy's of response
+#' @param verbose A logical value indicating whether to display informative messages
 #'
 #' @return A list with the following elements:
 #'   \describe{
@@ -29,18 +30,19 @@
 #'
 #' head(tf_activity)
 compute_TF_activity <- function(RNA_tpm,
-                                remove_genes_ICB_proxies = FALSE) {
+                                remove_genes_ICB_proxies = FALSE,
+                                verbose = TRUE) {
 
   # Gene expression data
   tpm <- RNA_tpm
   genes <- rownames(tpm)
 
   # HGNC symbols are required
-  try(if (any(grep("ENSG00000", genes))) stop("hgnc gene symbols are required", call. = FALSE))
+  if (any(grep("ENSG00000", genes))) stop("hgnc gene symbols are required", call. = FALSE)
 
   # Genes to remove according to all ICB proxy's
   if (remove_genes_ICB_proxies) {
-    message("Removing signatures genes for proxy's of ICB response  \n")
+    if (verbose) message("Removing signatures genes for proxy's of ICB response  \n")
     idy <- stats::na.exclude(match(cor_genes_to_remove, rownames(tpm)))
     tpm <- tpm[-idy, ]
   }
@@ -67,7 +69,7 @@ compute_TF_activity <- function(RNA_tpm,
   genes_left <- setdiff(all_regulated_transcripts, rownames(E))
 
   # check what is the percentage of regulated transcripts that we have in our data
-  message("Regulated transcripts found in data set: ", length(genes_kept), "/", length(all_regulated_transcripts), " (", round(length(genes_kept)/length(all_regulated_transcripts), 3) * 100,"%)")
+  if (verbose) message("Regulated transcripts found in data set: ", length(genes_kept), "/", length(all_regulated_transcripts), " (", round(length(genes_kept)/length(all_regulated_transcripts), 3) * 100,"%)")
 
   # TF activity: run viper
   tf_activity <- dorothea::run_viper(
@@ -78,7 +80,7 @@ compute_TF_activity <- function(RNA_tpm,
   # Samples as rows, TFs as columns
   tf_activity <- t(tf_activity)
 
-  message("TF activity computed \n")
+  if (verbose) message("TF activity computed \n")
 
   return(as.data.frame(tf_activity))
 

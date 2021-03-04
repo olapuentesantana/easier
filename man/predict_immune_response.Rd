@@ -11,7 +11,8 @@ predict_immune_response(
   lrpairs = NULL,
   ccpairs = NULL,
   include_pairwise_combos = FALSE,
-  cancertype
+  cancertype,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ predict_immune_response(
 \item{include_pairwise_combos}{boolean variable to compute predictions using pairwise combinations of single views.}
 
 \item{cancertype}{string character}
+
+\item{verbose}{A logical value indicating whether to display messages about the prediction process.}
 }
 \value{
 Predictions for each model building.

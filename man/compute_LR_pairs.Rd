@@ -7,7 +7,8 @@
 compute_LR_pairs(
   RNA_tpm,
   remove_genes_ICB_proxies = FALSE,
-  cancertype = "pancan"
+  cancertype = "pancan",
+  verbose = TRUE
 )
 }
 \arguments{
@@ -17,6 +18,8 @@ compute_LR_pairs(
 involved in the computation of ICB proxy's of response}
 
 \item{cancertype}{string character}
+
+\item{verbose}{A logical value indicating whether to display informative messages}
 }
 \value{
 Ligand-receptor pairs weights matrix in log2(tpm + 1) with rows=samples and columns=L-R pairs

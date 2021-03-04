@@ -4,10 +4,12 @@
 \alias{compute_Davoli_IS}
 \title{Compute Davoli immune signature}
 \usage{
-compute_Davoli_IS(RNA_tpm)
+compute_Davoli_IS(RNA_tpm, verbose = TRUE)
 }
 \arguments{
 \item{RNA_tpm}{numeric matrix with rows=genes and columns=samples}
+
+\item{verbose}{A logical value indicating whether to display informative messages}
 }
 \value{
 numeric matrix with rows=samples and columns=Davoli immune signature

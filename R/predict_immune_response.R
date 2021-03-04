@@ -12,7 +12,7 @@
 #'
 #' @importFrom utils combn
 #' @importFrom stats na.omit
-#' @importFrom BiocParallel register bplapply
+#' @importFrom BiocParallel register bplapply MulticoreParam
 #'
 #' @export
 #'
@@ -23,6 +23,7 @@
 #' @param ccpairs numeric matrix with data
 #' @param include_pairwise_combos boolean variable to compute predictions using pairwise combinations of single views.
 #' @param cancertype string character
+#' @param verbose A logical value indicating whether to display messages about the prediction process.
 #'
 #' @return Predictions for each model building.
 #'
@@ -70,7 +71,8 @@ predict_immune_response <- function(pathways = NULL,
                                     lrpairs = NULL,
                                     ccpairs = NULL,
                                     include_pairwise_combos = FALSE,
-                                    cancertype) {
+                                    cancertype,
+                                    verbose = TRUE) {
   if (missing(cancertype)) stop("cancer type needs to be specified")
   if (all(is.null(pathways), is.null(immunecells), is.null(tfs), is.null(lrpairs), is.null(ccpairs))) stop("none signature specified")
 
@@ -126,13 +128,13 @@ predict_immune_response <- function(pathways = NULL,
   # All corresponding views
   view_combinations <- c(view_simples, view_combinations)
 
-  compute_prediction <- function(view){
+  compute_prediction <- function(view, verbose){
 
     view_info <- view_combinations[[view]]
     view_name <- paste(names(view_info), collapse = "_")
     view_data <- lapply(tolower(names(view_info)), function(x) as.data.frame(get(x)))
     names(view_data) <- names(view_info)
-    message(view, ".view source: ", view_name, "\n")
+    if (verbose) message(view, ".view source: ", view_name, "\n")
 
     # Predict immune response using model parameters
     summary_alg <- lapply(algorithm, function(alg) {
@@ -157,7 +159,7 @@ predict_immune_response <- function(pathways = NULL,
     return(summary_alg)
   }
   # Parallelize model predictions
-  BiocParallel::register(MulticoreParam(workers = 4))
+  BiocParallel::register(BiocParallel::MulticoreParam(workers = 4))
   all_predictions <- BiocParallel::bplapply(1:length(view_combinations), compute_prediction)
 
   names(all_predictions) <- sapply(1:length(view_combinations), function(X) {
