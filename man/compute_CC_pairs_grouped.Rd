@@ -7,7 +7,7 @@
 compute_CC_pairs_grouped(lrpairs, cancertype = "pancan", verbose = TRUE)
 }
 \arguments{
-\item{lrpairs}{A matrix of weights (log2\link{tpm +1}) with samples in rows and ligand-receptor pairs in columns. This data is returned by compute_LR_pairs function.}
+\item{lrpairs}{A matrix of weights log2(TPM +1) with samples in rows and ligand-receptor pairs in columns. This data is returned by compute_LR_pairs function.}
 
 \item{cancertype}{A string detailing the cancer type whose cell-cell interaction network will be used.
 A pan-cancer network is selected by default, whose network represents the union of all

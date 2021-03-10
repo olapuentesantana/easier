@@ -58,7 +58,7 @@ compute_TF_activity <- function(RNA_tpm,
   rownames(E) <- newNames
 
   # data extracted from publication
-  regulons <- dplyr::filter(dorothea::dorothea_hs, confidence %in% c("A", "B"))
+  regulons <- dplyr::filter(dorothea::dorothea_hs, .data$confidence %in% c("A", "B"))
   all_regulated_transcripts <- unique(regulons$target)
   all_tfs <- unique(regulons$tf)
 

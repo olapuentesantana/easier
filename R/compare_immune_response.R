@@ -461,7 +461,7 @@ compare_immune_response <- function(predictions_immune_response = NULL,
     # *******************************************
     # Barplot AUC values
 
-    ggplot2::ggplot(AUC_mean_sd_RMTLR, ggplot2::aes(x = View, y = round(AUC_median, 2), fill = View,  alpha = Alg)) +
+    ggplot2::ggplot(AUC_mean_sd_RMTLR, ggplot2::aes(x = .data$View, y = round(.data$AUC_median, 2), fill = .data$View,  alpha = .data$Alg)) +
       ggplot2::geom_bar(stat = "identity", position = ggplot2::position_dodge(), color = "white") +
       ggplot2::scale_fill_manual(values = c(
         as.vector(all_color_views), as.vector(color_overalls),

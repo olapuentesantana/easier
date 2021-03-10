@@ -6,7 +6,7 @@
 #'
 #' @export
 #'
-#' @param lrpairs A matrix of weights (log2[tpm +1]) with samples in rows and ligand-receptor pairs in columns. This data is returned by compute_LR_pairs function.
+#' @param lrpairs A matrix of weights log2(TPM +1) with samples in rows and ligand-receptor pairs in columns. This data is returned by compute_LR_pairs function.
 #' @param cancertype A string detailing the cancer type whose cell-cell interaction network will be used.
 #' A pan-cancer network is selected by default, whose network represents the union of all
 #' ligand-receptor pairs present across the 18 cancer types studied in (Lapuente-Santana et al., bioRxiv, 2021).
