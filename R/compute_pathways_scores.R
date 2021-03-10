@@ -1,23 +1,21 @@
-#' Compute pathways score
+#' Compute pathway activity from gene expression using PROGENy
 #'
-#' `compute_pathways_scores` infers pathway activity from raw counts RNA-seq data.
+#' This function infers pathway activity from gene expression in raw counts from bulk RNA-seq data
+#' using PROGENy method from (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018).
 #'
 #' @importFrom DESeq2 DESeqDataSetFromMatrix estimateSizeFactors estimateDispersions
 #' getVarianceStabilizedData rlog
 #' @import progeny
 #' @importFrom stats na.exclude
 #'
-#' @param RNA_counts numeric matrix of read counts with rows=genes and columns=samples
-#' @param remove_genes_ICB_proxies boolean variable to remove all those genes involved
-#' in the computation of ICB proxy's of response
-#' @param verbose A logical value indicating whether to display informative messages
+#' @param RNA_counts A data.frame containing raw counts values with HGNC symbols in rows and samples in columns.
+#' @param remove_genes_ICB_proxies A logical value indicating whether to remove signature genes involved
+#' in the derivation of hallmarks of immune response.
+#' @param verbose A logical value indicating whether to display messages about the number of pathway signature
+#' genes found in the gene expression data provided.
 #'
-#' @return A list with the following elements:
-#'   \describe{
-#'     \item{scores}{pathway activity matrix with rows=samples and columns=pathways}
-#'     \item{transcripts_kept}{vector with available gene names}
-#'     \item{transcripts_left}{vector with missing gene names}
-#'   }
+#' @return A matrix with samples in rows and pathways in columns.
+#'
 #' @export
 #'
 #' @examples
@@ -79,7 +77,7 @@ compute_pathways_scores <- function(RNA_counts,
 
   # Pathways activity (Progeny package)
   # library(progeny)
-  pathway_activity <- progeny::progeny(gene_expr, scale = FALSE, organism = "Human", verbose = TRUE)
+  pathway_activity <- progeny::progeny(gene_expr, scale = FALSE, organism = "Human", verbose = verbose)
 
   # check what is the percentage of genes we have in our data
   all_pathway_responsive_genes <- unique(unlist(top_100_per_pathway_responsive_genes))

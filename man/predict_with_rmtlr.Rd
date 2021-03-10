@@ -2,7 +2,7 @@
 % Please edit documentation in R/predict_with_rmtlr.R
 \name{predict_with_rmtlr}
 \alias{predict_with_rmtlr}
-\title{Make predictions using RMTLR}
+\title{Obtain predictions using regularized multi-task linear regression}
 \usage{
 predict_with_rmtlr(
   view_name,
@@ -29,8 +29,8 @@ A matrix with the predictions obtained by applying the model on the
 view input data
 }
 \description{
-\code{predict_with_rmtlr} predicts immune response using regularized multi-task
-linear algorithm.
+\code{predict_with_rmtlr} predicts patients' immune response using the model learned from regularized multi-task
+linear regression
 This algorithm employs model parameters learned during training on different
 types of data in order to compute the immune response.
 }

@@ -2,25 +2,22 @@
 % Please edit documentation in R/compute_cell_fractions.R
 \name{compute_cell_fractions}
 \alias{compute_cell_fractions}
-\title{Compute immune cell fractions}
+\title{Compute immune cell fractions from gene expression using quanTIseq}
 \usage{
 compute_cell_fractions(RNA_tpm, verbose = TRUE)
 }
 \arguments{
-\item{RNA_tpm}{numeric matrix of tpm values with rows=genes and columns=samples}
+\item{RNA_tpm}{A data.frame containing TPM values with HGNC symbols in rows and samples in columns.}
 
-\item{verbose}{A logical value indicating whether to display informative messages}
+\item{verbose}{A logical value indicating whether to display messages about the number of immune cell
+signature genes found in the gene expression data provided.}
 }
 \value{
-Cell fractions matrix: matrix of normalized enrichment scores with
-rows=samples and columns=TFs
+A matrix of normalized enrichment scores with samples in rows and cell types in columns.
 }
 \description{
-\code{compute_cell_fractions} estimates cell fractions from bulk RNA-seq data.
-}
-\details{
-Compute cell fractions from transcriptomics data. This function computes cell
-fractions from tpm RNA-seq data using quanTIseq method
+This function estimates cell fractions from bulk RNA-seq data (tpm)
+using quanTIseq method from (Finotello et al., Genome Med, 2019).
 }
 \examples{
 # Example: Riaz

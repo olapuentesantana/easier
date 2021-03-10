@@ -16,7 +16,7 @@ predict_immune_response(
 )
 }
 \arguments{
-\item{pathways}{numeric matrix with data}
+\item{pathways}{data.frame with matrix with data}
 
 \item{immunecells}{numeric matrix with data}
 

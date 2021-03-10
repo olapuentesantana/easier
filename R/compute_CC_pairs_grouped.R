@@ -1,18 +1,18 @@
-#' compute_CC_pairs_grouped
+#' Compute cell-cell interactions scores from gene expression
 #'
-#' Compute CC pairs grouped from transcriptomics data.
-#'
-#' `compute_CC_pairs_grouped` computes CC pairs (considering cell groups instead
-#' of individual cell types) from tpm, using the null model for CC interaction
-#' computed on TCGA data.
+#' This function scores cell-cell interactions in the tumor microenvironment from
+#' gene expression in TPM from bulk RNA-seq data (Lapuente-Santana et al., 2021), using prior knowledge
+#' coming from ligand-receptor pair annotations from the database of (Ramilowski et al., Nat Commun, 2015).
 #'
 #' @export
 #'
-#' @param lrpairs Ligand-receptor pairs weights matrix
-#' @param cancertype string character
-#' @param verbose A logical value indicating whether to display informative messages
+#' @param lrpairs A matrix of weights (log2[tpm +1]) with samples in rows and ligand-receptor pairs in columns. This data is returned by compute_LR_pairs function.
+#' @param cancertype A string detailing the cancer type whose cell-cell interaction network will be used.
+#' A pan-cancer network is selected by default, whose network represents the union of all
+#' ligand-receptor pairs present across the 18 cancer types studied in (Lapuente-Santana et al., bioRxiv, 2021).
+#' @param verbose A logical value indicating whether to display informative messages about the process.
 #'
-#' @return Cell-Cell interaction scores matrix with rows=samples and columns=cell-cell interactions
+#' @return A matrix of scores with samples in rows and cell-cell pairs in columns.
 #'
 #' @examples
 #' # Example: Riaz

@@ -16,7 +16,7 @@
 #'
 #' @export
 #'
-#' @param pathways numeric matrix with data
+#' @param pathways data.frame with matrix with data
 #' @param immunecells numeric matrix with data
 #' @param tfs numeric matrix with data
 #' @param lrpairs numeric matrix with data
@@ -76,18 +76,13 @@ predict_immune_response <- function(pathways = NULL,
   if (missing(cancertype)) stop("cancer type needs to be specified")
   if (all(is.null(pathways), is.null(immunecells), is.null(tfs), is.null(lrpairs), is.null(ccpairs))) stop("none signature specified")
 
-  # Simplify efforts: get data in lowercase variables
-  pathways.cor <- pathways
-  lrpairs.spec.pc <- lrpairs
-  ccpairsgroupedscores.spec.pc <- ccpairs
-
   # Initialize variables
   views <- c(
-    Pathways.cor = "gaussian",
-    ImmuneCells = "gaussian",
-    TFs = "gaussian",
-    LRpairs.spec.pc = "gaussian",
-    CCpairsGroupedScores.spec.pc = "gaussian"
+    pathways = "gaussian",
+    immunecells = "gaussian",
+    tfs = "gaussian",
+    lrpairs = "gaussian",
+    ccpairs = "gaussian"
   )
 
   view_combinations <- NULL
@@ -128,7 +123,7 @@ predict_immune_response <- function(pathways = NULL,
   # All corresponding views
   view_combinations <- c(view_simples, view_combinations)
 
-  compute_prediction <- function(view, verbose){
+  compute_prediction <- function(view, algorithm, verbose){
 
     view_info <- view_combinations[[view]]
     view_name <- paste(names(view_info), collapse = "_")
@@ -158,9 +153,9 @@ predict_immune_response <- function(pathways = NULL,
     names(summary_alg) <- algorithm
     return(summary_alg)
   }
-  # Parallelize model predictions
+  # Parallelize views model predictions
   BiocParallel::register(BiocParallel::MulticoreParam(workers = 4))
-  all_predictions <- BiocParallel::bplapply(1:length(view_combinations), compute_prediction)
+  all_predictions <- BiocParallel::bplapply(1:length(view_combinations), FUN = compute_prediction, algorithm = algorithm, verbose = verbose)
 
   names(all_predictions) <- sapply(1:length(view_combinations), function(X) {
     paste(names(view_combinations[[X]]), collapse = "_")

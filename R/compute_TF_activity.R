@@ -1,22 +1,20 @@
-#' Compute transcription factors activity
+#' Compute transcription factor activity from gene expression using DoRothEA
 #'
-#' `compute_TF_activity` infers transcription factor activity from tpm RNA-seq data.
+#' This function infers transcription factor activity from gene expression in TPM
+#' from bulk RNA-seq data using DoRothEA method (Garcia-Alonso et al., Genome Res, 2019).
 #'
 #' @importFrom dorothea run_viper
 #' @importFrom stats na.exclude
 #' @importFrom dplyr filter
 #'
-#' @param RNA_tpm numeric matrix of tpm values with rows=genes and columns=samples
-#' @param remove_genes_ICB_proxies boolean variable to remove all those genes
-#' involved in the computation of ICB proxy's of response
-#' @param verbose A logical value indicating whether to display informative messages
+#' @param RNA_tpm A data.frame containing TPM values with HGNC symbols in rows and samples in columns.
+#' @param remove_genes_ICB_proxies A logical value indicating whether to remove signature genes involved
+#' in the derivation of hallmarks of immune response.
+#' @param verbose A logical value indicating whether to display messages about the number of regulated
+#' genes found in the gene expression data provided.
 #'
-#' @return A list with the following elements:
-#'   \describe{
-#'     \item{scores}{TF activity matrix with rows=samples and columns=TFs}
-#'     \item{transcripts_kept}{vector with available gene names}
-#'     \item{transcripts_left}{vector with missing gene names}
-#'   }
+#' @return a matrix with samples in rows and transcription factors in columns.
+#'
 #' @export
 #'
 #' @examples

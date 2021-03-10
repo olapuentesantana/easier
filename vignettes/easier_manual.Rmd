@@ -24,33 +24,38 @@ library(easier)
 
 This vignette describes how to use the `easier` package for the prediction and interpretation of cancer patients' systems immune response. 
 
-This packages provides a Shiny application to allow users to finely explore patient-specific systems biomarkers of the immune response, including composition of the immune repertoire, and activity of intra- and inter- cellular communications.
+This packages provides a Shiny application to allow users to finely explore patient-specific systems biomarkers of immune response inspecting the tumor microenvironment from several points of view, including composition of the tumor immune contexture, and activity of intra- and extra-cellular communication.
 
-To gain some insight into the fundamentals of `easier` package, we recommend reading the following preprint [article](https://www.biorxiv.org/content/10.1101/2021.02.05.429977v1).
+To gain some insight into the fundamentals of `easier` package, we recommend reading our original work: Lapuente-Santana et al. "Predictive systems biomarkers of response to immune checkpoint inhibitors", available in bioRxiv [doi:10.1101/2021.02.05.429977](https://www.biorxiv.org/content/10.1101/2021.02.05.429977v1).
 
-In order to use `r BiocStyle::Biocpkg("easier")` in your analysis, bulk-tumor RNA sequencing data is required as input (when available, patient response to immunotherapy can be optionally entered):
+In order to use `easier` in your study, bulk-tumor RNA sequencing data is required as input (when available, patient response to immunotherapy can be optionally entered):
 
 - `RNA_counts`, a `data.frame` containing raw counts values with HGNC symbols in rows and samples in columns. 
 - `RNA_tpm`, a `data.frame` containing TPM values with HGNC symbols in rows and samples in columns. 
 - `real_patient_response`, a character `vector` containing clinical patients' response (where non-responders are labeled as NR and responders as R).
 
-In this vignette, we will illustrate the main features of `easier` on a publicly available melanoma dataset including both response to ICB therapy and RNA sequencing from Gide, et al. "Distinct Immune Cell Populations Define Response to Anti-PD-1 Monotherapy and Anti-PD-1/Anti-CTLA-4 Combined Therapy", published in Cancer Cell, 2019 [@Gide2019]
-[doi:10.1016/j.ccell.2019.01.003](https://doi.org/10.1016/j.ccell.2019.01.003). ** Still need to ask for consent.
+In this vignette, we will illustrate the main features of `easier` on a publicly available melanoma dataset including both response to ICB therapy and RNA sequencing from Gide, et al. "Distinct Immune Cell Populations Define Response to Anti-PD-1 Monotherapy and Anti-PD-1/Anti-CTLA-4 Combined Therapy", published in Cancer Cell, 2019 [doi:10.1016/j.ccell.2019.01.003](https://doi.org/10.1016/j.ccell.2019.01.003). ** Still need to ask for consent.
 
-The RNA sequencing fastq files are available from NCBI BioProject [PRJEB23709](https://www.ncbi.nlm.nih.gov/bioproject/522397).
-
-In this dataset, we considered 41 metastatic melanoma patients () treated with anti-PD1 with prior BRAFi therapy.
+The RNA sequencing fastq files are available from NCBI BioProject [PRJEB23709](https://www.ncbi.nlm.nih.gov/bioproject/522397). For the example dataset, we considered 41 metastatic melanoma patients () treated with anti-PD1 with prior BRAFi therapy.
 
 # Getting started {#gettingstarted}
 
 Starting R, this package can be installed as follows:
 
 ```{r eval = FALSE}
-# install.packages("~/ownCloud/SystemsImmunoOncology/Mechanistic_signatures_project/easier_1.0.3.tar.gz", repos = NULL, type="source")
+install.packages("/Users/Oscar/ownCloud2/SystemsImmunoOncology/easier_project/easier_0.9.0.tar.gz", repos = NULL, type="source")
 library(easier)
 ````
 
-If you have your bulk-tumor RNA sequencing data ready, you can compute five systems-based signatures of the tumor microenvironment by running:
+If you have your bulk-tumor RNA sequencing data ready, you can compute five quantitative descriptors of the tumor microenvironment.
+
+| Quantitative descriptor  | Descriptor conception  | Prior knowledge |
+|------------------------ | ----------------------------------- | ----------------------------------- |
+| Pathway activity | Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018 | Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018 |
+| Immune cell quantification | Finotello et al., Genome Med, 2019 | Finotello et al., Genome Med, 2019|
+| TF activity | Garcia-Alonso et al., Genome Res, 2019 | Garcia-Alonso et al., Genome Res, 2019 |
+| Ligand-Receptor pairs | Lapuente-Santana et al., bioRxiv, 2021 | Ramilowski et al., Nat Commun, 2015 |
+| Cell-cell interaction | Lapuente-Santana et al., bioRxiv, 2021 | Ramilowski et al., Nat Commun, 2015 |
 
 
 ```{r eval = FALSE}
@@ -107,13 +112,16 @@ We are going to use the systems-based signatures computed previously to predict 
 Because models were built in a cancer-type-specific fashion, the user is required to indicate to which `cancertype` the bulk RNA-seq data belongs.
 
 ```{r eval = FALSE}
+
 predictions_immune_response <- predict_immune_response(pathways = pathway_activity,
                                                        immunecells = cell_fractions,
                                                        lrpairs = lrpair_weights,
                                                        tfs = tf_activity,
                                                        ccpairs = ccpair_scores,
                                                        include_pairwise_combos = TRUE,
-                                                       cancertype = "SKCM")
+                                                       cancertype = "SKCM", 
+                                                       verbose = TRUE)
+
 ```
 
 Depending on the patient's response information available, we can now think of two possible scenarios where:

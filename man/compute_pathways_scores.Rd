@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute_pathways_scores.R
 \name{compute_pathways_scores}
 \alias{compute_pathways_scores}
-\title{Compute pathways score}
+\title{Compute pathway activity from gene expression using PROGENy}
 \usage{
 compute_pathways_scores(
   RNA_counts,
@@ -11,23 +11,20 @@ compute_pathways_scores(
 )
 }
 \arguments{
-\item{RNA_counts}{numeric matrix of read counts with rows=genes and columns=samples}
+\item{RNA_counts}{A data.frame containing raw counts values with HGNC symbols in rows and samples in columns.}
 
-\item{remove_genes_ICB_proxies}{boolean variable to remove all those genes involved
-in the computation of ICB proxy's of response}
+\item{remove_genes_ICB_proxies}{A logical value indicating whether to remove signature genes involved
+in the derivation of hallmarks of immune response.}
 
-\item{verbose}{A logical value indicating whether to display informative messages}
+\item{verbose}{A logical value indicating whether to display messages about the number of pathway signature
+genes found in the gene expression data provided.}
 }
 \value{
-A list with the following elements:
-\describe{
-\item{scores}{pathway activity matrix with rows=samples and columns=pathways}
-\item{transcripts_kept}{vector with available gene names}
-\item{transcripts_left}{vector with missing gene names}
-}
+A matrix with samples in rows and pathways in columns.
 }
 \description{
-\code{compute_pathways_scores} infers pathway activity from raw counts RNA-seq data.
+This function infers pathway activity from gene expression in raw counts from bulk RNA-seq data
+using PROGENy method from (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018).
 }
 \examples{
 # Example: Riaz

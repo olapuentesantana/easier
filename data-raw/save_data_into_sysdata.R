@@ -4,7 +4,8 @@
 # load("analysis/pre-processing/TCGA_samples_available_screening_with_quanTIseq_IS.RData")
 # PanCancer_names <- names(TCGA.samples.pancancer_with_screen_quantiseg_IS)
 #
-# Views
+
+# Old names for Views
 views <- c(Pathways.cor = 'gaussian',
            ImmuneCells = 'gaussian',
            TFs = 'gaussian',
@@ -19,16 +20,35 @@ combined_views <- lapply(1:10, function(X){
   return(tmp)
 })
 combined_views <- combined_views[-10]
+
+# New names for Views
+views_new <- c(pathways = 'gaussian',
+           immunecells = 'gaussian',
+           tfs = 'gaussian',
+           lrpairs = 'gaussian',
+           ccpairs = 'gaussian')
+
+single_views_new <- list(views_new[1], views_new[2], views_new[3], views_new[4], views_new[5])
+combined_views_new <- lapply(1:10, function(X){
+  tmp <- c("gaussian")
+  name_tmp <- paste(combn(names(views_new), m = 2)[,X], collapse = "_")
+  names(tmp) <- name_tmp
+  return(tmp)
+})
+combined_views_new <- combined_views_new[-10]
+
 #
 # # general
-# load("data/cor_genes_ICB_proxies.RData")
-# load("data/IPS_genes.RData")
-# load("data/list_top100pathways_responsive_genes.RData")
-# load("data/Ligand_Receptors_Rdata/intercell.network.CC.pairs.grouped.cancer.spec.RData")
-# lr.frequency <- LR.frequency
-# load("data/resistance.program.RData")
-# load("data/grouping_lrpairs_features_info.RData")
-# load("data/TCGA_mean_sd.RData")
+setwd("~/ownCloud2/SystemsImmunoOncology/Mechanistic_signatures_project/")
+
+load("data/cor_genes_ICB_proxies.RData")
+load("data/IPS_genes.RData")
+load("data/list_top100pathways_responsive_genes.RData")
+load("data/Ligand_Receptors_Rdata/intercell.network.CC.pairs.grouped.cancer.spec.RData")
+lr.frequency <- LR.frequency
+load("data/resistance.program.RData")
+load("data/grouping_lrpairs_features_info.RData")
+load("data/TCGA_mean_sd.RData")
 # #
 cor_genes_to_remove
 IPSG_read
@@ -42,6 +62,8 @@ grouping_lrpairs_info
 
 #
 views_combination <- c(single_views, combined_views)
+views_combination_new <- c(single_views_new, combined_views_new)
+
 # views_combination[[15]] <- c(Transcript = 'gaussian')
 # Save learned models in a list
 alg <- "Multi_Task_EN"
@@ -49,8 +71,7 @@ trained_models <- list()
 trained_models <- lapply("SKCM", function(CancerType){
 
   print(CancerType)
-  file <- dir(path = paste0("../../../../Desktop/SKCM/"),
-                           # output/PanCancer_draft_v1/", CancerType, "/group_cor_normalized_tasks"),
+  file <- dir(path = file.path("../../../../Desktop/SKCM"),
               pattern = "all_cv_res_", full.names = T, recursive = F)
 
   trained_models <- lapply(1:length(views_combination), function(X){
@@ -68,7 +89,7 @@ trained_models <- lapply("SKCM", function(CancerType){
 
     return(model)
   })
-  names(trained_models) <- sapply(1:length(views_combination), function(X) names(views_combination[[X]]))
+  names(trained_models) <- sapply(1:length(views_combination_new), function(X) names(views_combination_new[[X]]))
   return(trained_models)
 })
 names(trained_models) <- "SKCM"
@@ -98,15 +119,14 @@ names(trained_models) <- "SKCM"
 #
 #
 # Change immune cell names (to shorter ones) in trained models
-
-old_cellnames <- names(trained_models$SKCM$ImmuneCells[[1]]$mas.mea.learning.X[[1]])
+old_cellnames <- names(trained_models$SKCM$immunecells[[1]]$mas.mea.learning.X[[1]])
 new_cellnames <- c("B", "M1", "M2", "Monocyte", "Neutrophil", "NK", "CD4 T", "CD8+ T", "Treg", "DC", "Other")
 
 # load trained models
 load("~/ownCloud2/SystemsImmunoOncology/easier_project/easier_devel/R/sysdata.rda")
 
 views <- names(trained_models$SKCM)
-where <- grep("ImmuneCells", views, fixed = TRUE)
+where <- grep("immunecells", views, fixed = TRUE)
 
 for(X in where){
   for(Y in 1:100){
@@ -117,7 +137,7 @@ for(X in where){
     rownames(trained_models[["SKCM"]][[X]][[Y]][["model"]][["cv.glmnet.features"]][["1se.mse"]]) <- old_features
     rownames(trained_models[["SKCM"]][[X]][[Y]][["model"]][["cv.glmnet.features"]][["min.mse"]]) <- old_features
 
-    if (sapply(strsplit(views[X], split = "_"), head, 1) == "ImmuneCells") {
+    if (sapply(strsplit(views[X], split = "_"), head, 1) == "immunecells") {
       names(trained_models[["SKCM"]][[X]][[Y]][["mas.mea.learning.X"]][[1]]) <- new_cellnames
     } else if (sapply(strsplit(views[X], split = "_"), tail, 1) == "ImmuneCells") {
       names(trained_models[["SKCM"]][[X]][[Y]][["mas.mea.learning.X"]][[2]]) <- new_cellnames

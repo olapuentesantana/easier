@@ -1,11 +1,12 @@
-#' Make predictions using RMTLR
+#' Obtain predictions using regularized multi-task linear regression
 #'
-#' `predict_with_rmtlr` predicts immune response using regularized multi-task
-#' linear algorithm.
+#' `predict_with_rmtlr` predicts patients' immune response using the model learned from regularized multi-task
+#' linear regression
 #' This algorithm employs model parameters learned during training on different
 #' types of data in order to compute the immune response.
 #'
 #' @importFrom stats na.omit
+#' @importFrom BiocParallel register bplapply MulticoreParam
 #'
 #' @export
 #'
@@ -33,7 +34,6 @@ predict_with_rmtlr <- function(view_name,
   standardize_any <- TRUE
   models <- names(learned_model[[1]]$model$cv.glmnet.features)
   drugs <- colnames(learned_model[[1]]$model$cv.glmnet.features[[1]])
-  Ndrug <- length(drugs)
   predictions <- predictions_all_tasks <- predictions_all_models <- list()
 
   # Algorithm do not deal with NA values: here we removed features with NA values, patients with all NA values are not removed
@@ -63,19 +63,20 @@ predict_with_rmtlr <- function(view_name,
     return(predictions_all_tasks)
   }))
 
-  for (i in 1:K) {
-    state <- learned_model[[i]]$model$cv.glmnet.features
+  predict_each_k <- function(k, K, P, standardize_any, drugs, predictions_all_tasks, view_data_new, verbose){
+
+    state <- learned_model[[k]]$model$cv.glmnet.features
     features_learning <- lapply(1:length(view_info), function(x) {
-      names(learned_model[[i]]$mas.mea.learning.X[[x]])
+      names(learned_model[[k]]$mas.mea.learning.X[[x]])
     })
     prediction_X <- view_data_new
 
     # Display progress bar:
     if (verbose){
       width <- options()$width
-      cat(paste0(rep("=", i / K * width), collapse = ""))
+      cat(paste0(rep("=", k / K * width), collapse = ""))
       Sys.sleep(.05)
-      if (i == K) {
+      if (k == K) {
         cat("\n")
       } else {
         cat(" \r")
@@ -92,13 +93,13 @@ predict_with_rmtlr <- function(view_name,
         prediction_X[[m]] <- prediction_X[[m]][, keep_names]
 
         # Normalization should be done taking into account the train set
-        learned_model[[i]]$mas.mea.learning.X[[m]] <- learned_model[[i]]$mas.mea.learning.X[[m]][keep_pos]
-        learned_model[[i]]$mas.std.learning.X[[m]] <- learned_model[[i]]$mas.std.learning.X[[m]][keep_pos]
-        names(learned_model[[i]]$mas.std.learning.X[[m]]) <- names(learned_model[[i]]$mas.mea.learning.X[[m]])
+        learned_model[[k]]$mas.mea.learning.X[[m]] <- learned_model[[k]]$mas.mea.learning.X[[m]][keep_pos]
+        learned_model[[k]]$mas.std.learning.X[[m]] <- learned_model[[k]]$mas.std.learning.X[[m]][keep_pos]
+        names(learned_model[[k]]$mas.std.learning.X[[m]]) <- names(learned_model[[k]]$mas.mea.learning.X[[m]])
 
         prediction_X[[m]] <- standardization(
-          X = prediction_X[[m]], mean = learned_model[[i]]$mas.mea.learning.X[[m]],
-          sd = learned_model[[i]]$mas.std.learning.X[[m]]
+          X = prediction_X[[m]], mean = learned_model[[k]]$mas.mea.learning.X[[m]],
+          sd = learned_model[[k]]$mas.std.learning.X[[m]]
         )
       }
     }
@@ -110,10 +111,16 @@ predict_with_rmtlr <- function(view_name,
 
     # save predictions
     for (X in drugs) {
-      predictions_all_tasks[[X]][["1se.mse"]][[view_name]][, i] <- prediction_cv$`1se.mse`[, X]
-      predictions_all_tasks[[X]][["min.mse"]][[view_name]][, i] <- prediction_cv$min.mse[, X]
+      predictions_all_tasks[[X]][["1se.mse"]][[view_name]][, k] <- prediction_cv$`1se.mse`[, X]
+      predictions_all_tasks[[X]][["min.mse"]][[view_name]][, k] <- prediction_cv$min.mse[, X]
     }
+    return(predictions_all_tasks)
   }
-  summary_pred <- predictions_all_tasks
+
+  # Parallelize randomized cross-validation model predictions
+  BiocParallel::register(BiocParallel::MulticoreParam(workers = 4))
+  summary_pred <- BiocParallel::bplapply(1:K, FUN = predict_each_k, K = K, P = P, standardize_any = standardize_any,
+                                         drugs = drugs, predictions_all_tasks = predictions_all_tasks,
+                                         view_data_new = view_data_new, verbose = verbose)
   return(summary_pred)
 }
