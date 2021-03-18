@@ -32,8 +32,9 @@ compute_gold_standards <- function(RNA.tpm,
     }else if("IPS" == X) {
 
       # calculate Immunophenoscore #
-      IPS <- t(compute.IPS(RNA.tpm))
-      return(list(IPS))
+      # IPS <- t(compute.IPS(RNA.tpm))
+      # return(list(IPS))
+      return(NA)
 
     }else if("IMPRES" == X) {
 
@@ -80,8 +81,9 @@ compute_gold_standards <- function(RNA.tpm,
     }else if("TIDE" == X) {
 
       # calculate TIDE signature #
-      TIDE <- t(compute.TIDE(RNA.tpm, cancertype, output_file_path))
-      return(list(TIDE))
+      # TIDE <- t(compute.TIDE(RNA.tpm, cancertype, output_file_path))
+      # return(list(TIDE))
+      return(NA)
 
     }else if("MSI" == X) {
 

@@ -51,3 +51,9 @@
 - general: consistent spacing and style in all functions
 - predict_with_multi... --> replace do.call(c) with unlist()
 
+
+#
+# Arsenij's notes
+#
+- error occurs, when trying to run compute_ICB_genes: Error in "rownames<-". 
+
