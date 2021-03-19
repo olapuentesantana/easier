@@ -133,7 +133,7 @@ coldata_file <- system.file("extdata/rna-seq/SRP029880.colData.tsv",
 
 counts <- as.matrix(read.table(counts_file, header = T, sep = '\t'))
 tasks <- c("CYT", "IPS", "IMPRES", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
-           "Ayers_expIS", "Tcell_inflamed", "TIDE", "MSI", "TLS", "RIR")
+           "Ayers_expIS", "Tcell_inflamed", "TIDE", "MSI", "TLS")
 # create a vector of gene lengths 
 geneLengths <- as.vector(subset(counts, select = c(width)))
 #find gene length normalized values 
