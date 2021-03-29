@@ -51,3 +51,9 @@
 - general: consistent spacing and style in all functions
 - predict_with_multi... --> replace do.call(c) with unlist()
 
+
+#
+# Arsenij's notes:
+#
+- compute_cell_fraction.R l.41 old_cellnames are not used further
+- make one function for all remove.genes.ICB_proxies
