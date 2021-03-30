@@ -9,12 +9,12 @@ compute_pathways_scores(RNA.counts, remove.genes.ICB_proxies = TRUE)
 \arguments{
 \item{RNA.counts}{numeric matrix of read counts with rows=genes and columns=samples}
 
-\item{remove.genes.ICB_proxies}{boolean variable to reomove all those genes involved in the computation of ICB proxy's of response}
+\item{remove.genes.ICB_proxies}{boolean variable to remove all those genes involved in the computation of ICB proxy's of response}
 }
 \value{
 A list with the following elements:
 \describe{
-\item{scores}{pathway activity matrix with rows=samples and columns=pathwats}
+\item{scores}{pathway activity matrix with rows=samples and columns=pathways}
 \item{transcripts_kept}{vector with available gene names}
 \item{transcripts_left}{vector with missing gene names}
 }

@@ -57,3 +57,5 @@
 #
 - compute_cell_fraction.R l.41 old_cellnames are not used further
 - make one function for all remove.genes.ICB_proxies
+
+- error occurs, when trying to run compute_ICB_genes: Error in "rownames<-". 

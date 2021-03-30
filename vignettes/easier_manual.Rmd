@@ -124,8 +124,36 @@ explore_biomarkers(pathways = pathways_scores,
 # ---------------------------------------------------------------------------
 # Computation of the different tasks (i.e. gold standards)
 # ---------------------------------------------------------------------------
+-----------------
+#colorectal cancer
+counts_file <- system.file("extdata/rna-seq/SRP029880.raw_counts.tsv",
+                           package = "compGenomRData")
+coldata_file <- system.file("extdata/rna-seq/SRP029880.colData.tsv",
+                            package = "compGenomRData")
+
+counts <- as.matrix(read.table(counts_file, header = T, sep = '\t'))
 tasks <- c("CYT", "IPS", "IMPRES", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
-           "Ayers_expIS", "Tcell_inflamed", "TIDE", "MSI")
+           "Ayers_expIS", "Tcell_inflamed", "TIDE", "MSI", "TLS", "CTLA4", "PD1", "PDL1")
+# create a vector of gene lengths 
+geneLengths <- as.vector(subset(counts, select = c(width)))
+#find gene length normalized values 
+rpk <- apply( subset(counts, select = c(-width)), 2, 
+              function(x) x/(geneLengths/1000))
+#normalize by the sample size using rpk values
+tpm <- apply(rpk, 2, function(x) x / sum(as.numeric(x)) * 10^6)
+
+cancertype <- "coadread"
+output_file_path <- "ars_dir"
+
+#compute_gold_standards(RNA.tpm = tpm,list_gold_standards = tasks,cancertype,output_file_path)
+
+
+selected_signatures <- c("CYT", "IMPRES", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
+ "Ayers_expIS", "Tcell_inflamed", "MSI", "TLS", "ICB_genes", "RIR", "TIDE", "IPS")
+
+easier::compute_gene_signatures(tpm, selected_signatures)
+
+------------------
 
 tasks_values <- compute_gold_standards(RNA.tpm = tpm,
                                        list_gold_standards = tasks,
