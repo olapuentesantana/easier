@@ -209,18 +209,4 @@ compute_Tcell_inflamed <- function(housekeeping, predictors, weights, RNA.tpm){
 }
 
 
-as.data.frame(c(myvec))
-
-
-
-df1 <- compute_CYT(c(8614, 14408), tpm)
-
-df2 <- compute_TLS(c(177, 10077, 4034, 17645, 7978, 1720,16867, 7686, 3381), tpm)
-
-df3 <- compute_IFNy(c(3872,  4389,  7624, 12340,  6340, 17148), tpm)
-
-dfs <- list(df1, df2, df3)
-
-as.data.frame(lapply(dfs, function(df){return(df)}))
-
 
