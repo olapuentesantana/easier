@@ -1,11 +1,11 @@
-selected_signatures <- c("CYT", "IPS", "IMPRES", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
-  "Ayers_expIS", "Tcell_inflamed", "TIDE", "MSI", "TLS")
-
+#' Compute gold standards
 #'
+#' \code{computation_gold_standards} computes the scores for the gold standards required by the user
 #'
 #' @param RNA.tpm numeric matrix with rows=genes and columns=samples
+#' @param selected_signatures TODOTODO
 #'
-#' @return
+#' @return TODOTODO
 #' @export
 #'
 #' @examples
@@ -31,55 +31,155 @@ compute_gene_signatures <- function(RNA.tpm, selected_signatures){
                                "CCL5", "CXCL9", "CXCL10", "CXCL11", "ICAM1", "ICAM2", "ICAM3", "ICAM4", "ICAM5", "VCAM1"),
                       Davoli_IS=c("CD247", "CD2", "CD3E", "GZMH", "NKG7", "PRF1", "GZMK"),
                       chemokines=c("CCL2", "CCL3", "CCL4", "CCL5", "CCL8", "CCL18", "CCL19", "CCL21",
-                                   "CXCL9", "CXCL10", "CXCL11", "CXCL13"))
+                                   "CXCL9", "CXCL10", "CXCL11", "CXCL13"),
+                      IMPRES=list(
+                        Gene_1 = c("PDCD1", "CD27", "CTLA4", "CD40", "CD86", "CD28", "CD80",
+                                   "CD274", "CD86", "CD40", "CD86", "CD40", "CD28", "CD40", "TNFRSF14"),
+                        Gene_2 = c("TNFSF4", "PDCD1", "TNFSF4", "CD28", "TNFSF4", "CD86", "TNFSF9",
+                                   "C10orf54", "HAVCR2", "PDCD1", "CD200", "CD80", "CD276", "CD274", "CD86")),
+                      MSI=list(
+                        Gene_1 = c("HNRNPL", "MTA2", "CALR", "RASL11A", "LYG1", "STRN3", "HPSE", "PRPF39", "NOCT","AMFR"),
+                        Gene_2 = c("CDC16", "VGF", "SEC22B", "CAB39L", "DHRS12", "TMEM192", "BCAS3", "ATF6","GRM8","DUSP18")),
+                      ICB_genes = c("CD274","CTLA4","PDCD1"),
+                      TIDE=c(),
+                      IPS=c(),
+                      RIR=c())
 
+  #check for which selected signatures appropriate functions exist
   sigs <- names(easier_sigs) %in% selected_signatures
   message(c("Following scores can be computed: \n", paste(names(easier_sigs)[sigs], collapse = "\n")))
 
   result <- lapply(names(easier_sigs)[sigs], function(sig){
+    tryCatch(
+      {
+        if(sig=="Tcell_inflamed"){
+          if (any(rownames(RNA.tpm) %in% "C14orf102")){
+            message("Gene name changed: NRDE2 is approved symbol, not C14orf102","\n")
+            rownames(RNA.tpm)[rownames(RNA.tpm) %in% "C14orf102"] <- "NRDE2"
+          }
 
-    if(sig=="Tcell_inflamed"){
-      if (any(rownames(RNA.tpm) %in% "C14orf102")){
-        cat("Gene name changed: NRDE2 is approved symbol, not C14orf102","\n")
-        rownames(RNA.tpm)[rownames(RNA.tpm) %in% "C14orf102"] <- "NRDE2"
+          # Subset RNA.tpm
+          match_genes.housekeeping <- match(easier_sigs$Tcell_inflamed$Housekeeping.read, rownames(RNA.tpm))
+          match_genes.predictors <- match(easier_sigs$Tcell_inflamed$Tcell_inflamed.read, rownames(RNA.tpm))
+
+          if (anyNA(c(match_genes.housekeeping, match_genes.predictors))){
+            tmp <- c(easier_sigs$Tcell_inflamed$Housekeeping.read, easier_sigs$Tcell_inflamed$Tcell_inflamed.read)
+            message(c(paste0("Differenty named or missing signature genes for ",sig,": \n"), paste(tmp[!tmp %in% rownames(RNA.tpm)], collapse = "\n")))
+            match_genes.housekeeping <- match_genes.housekeeping[!is.na(match_genes.housekeeping)]
+            match_genes.predictors <- match_genes.housekeeping[!is.na(match_genes.housekeeping)]
+          }
+          do.call(
+            paste0("compute_", sig),
+            args = list(
+              housekeeping = match_genes.housekeeping,
+              predictors = match_genes.predictors,
+              weights = easier_sigs$Tcell_inflamed$weights,
+              RNA.tpm = RNA.tpm
+            )
+          )
+        } else if (sig=="IMPRES" | sig=="MSI") {
+          read <- unique(unlist(easier_sigs[[sig]])) # 15 genes
+
+          # EQUIVALENT : "VISTA" = "C10orf54", "PDL-1" = "CD274", "TIM-3" = "HAVCR2",
+          # "PD-1" = "PDCD1", "HVEM" = "TNFRSF14", "OX40L" = "TNFSF4", "CD137L" = "TNFSF9"
+
+          # Some genes might have other name: case for "C10orf54", it's called "VSIR", be carefull
+          if (any(rownames(RNA.tpm) %in% "VSIR") & sig == "IMPRES"){
+            message("Gene name changed: C10orf54 instead of VSIR","\n")
+            rownames(RNA.tpm)[rownames(RNA.tpm) %in% "VSIR"] <- "C10orf54"
+          }
+
+          # Some genes might have other name: case for "CCRN4L", it's called "NOCT", be carefull
+          if (any(rownames(RNA.tpm) %in% "CCRN4L") & sig == "MSI"){
+            message("Gene name changed: NOCT is approved symbol, not CCRN4L","\n")
+            rownames(RNA.tpm)[rownames(RNA.tpm) %in% "CCRN4L"] <- "NOCT"
+          }
+
+          # Subset RNA.tpm
+          match_F_1 <- match(easier_sigs[[sig]]$Gene_1, rownames(RNA.tpm))
+          match_F_2 <- match(easier_sigs[[sig]]$Gene_2, rownames(RNA.tpm))
+
+          if (anyNA(c(match_F_1, match_F_2))) {
+            message(c("Differenty named or missing signature genes : \n", paste(read[!read %in% rownames(RNA.tpm)], collapse = "\n")))
+          }
+
+          do.call(
+            "compute_IMPRES_MSI",
+            args = list(
+              sig = sig,
+              len = length(easier_sigs[sig]$Gene_1),
+              match_F_1 = match_F_1,
+              match_F_2 = match_F_2,
+              RNA.tpm = RNA.tpm
+            )
+          )
+
+        } else if (sig=="ICB_genes") {
+          do.call(
+            "compute_ICB_genes",
+            args = list(
+              genes = easier_sigs[[sig]],
+              RNA.tpm = RNA.tpm
+            )
+          )
+
+        } else if (sig=="TIDE" | sig=="IPS" | sig=="RIR") {
+          # TODOTODO add cancertype and file.path as arguments
+          do.call(
+            paste0("compute.",sig),
+            args = list(
+              RNA.tpm = RNA.tpm
+            )
+          )
+
+        } else {
+          # Literature genes
+          literature_matches <- match(easier_sigs[[sig]], rownames(RNA.tpm))
+
+          if (anyNA(literature_matches)){
+            message(c(paste0("Differenty named or missing signature genes for ",sig,": \n"),
+                      paste(easier_sigs[[sig]][!easier_sigs[[sig]] %in% rownames(RNA.tpm)], collapse = "\n")))
+            literature_matches <- literature_matches[!is.na(literature_matches)]
+          }
+
+          do.call(paste0("compute_", sig), args=list(matches=literature_matches, RNA.tpm=RNA.tpm))
+        }
+      },
+      error=function(cond){
+        message(paste("The following error occurred while computing sinature of", sig, ":"))
+        message(paste(cond, collapse = "/n"))
+        df <- data.frame(rep(NA, ncol(RNA.tpm)), row.names = colnames(RNA.tpm))
+        names(df)[1] <- sig
+        return(df)
+
+      },
+      warning=function(cond){
+        message(paste("The following warning occurred while computing sinature of", sig, ":"))
+        message(paste(cond, collapse ="/n"))
+        df <- data.frame(rep(NA, ncol(RNA.tpm)), row.names = colnames(RNA.tpm))
+        names(df)[1] <- sig
+        return(df)
       }
-
-      match_genes.housekeeping <- match(easier_sigs$Tcell_inflamed$Housekeeping.read, rownames(RNA.tpm))
-      match_genes.predictors <- match(easier_sigs$Tcell_inflamed$Tcell_inflamed.read, rownames(RNA.tpm))
-
-      if (anyNA(c(match_genes.housekeeping, match_genes.predictors))){
-        tmp <- c(Tcell_inflamed.read, Housekeeping.read)
-        warning(c(paste0("Differenty named or missing signature genes for ",sig,": \n"), paste(tmp[!tmp %in% rownames(RNA.tpm)], collapse = "\n")))
-        match_genes.housekeeping <- match_genes.housekeeping[!is.na(match_genes.housekeeping)]
-        match_genes.predictors <- match_genes.housekeeping[!is.na(match_genes.housekeeping)]
-      }
-      do.call(
-        paste0("compute_", sig),
-        args = list(
-          housekeeping = match_genes.housekeeping,
-          predictors = match_genes.predictors,
-          weights = easier_sigs$Tcell_inflamed$weights,
-          RNA.tpm = RNA.tpm
-        )
-      )
-    } else {
-      # Literature genes
-      literature_matches <- match(easier_sigs[[sig]], rownames(RNA.tpm))
-
-      if (anyNA(literature_matches)){
-        warning(c(paste0("Differenty named or missing signature genes for ",sig,": \n"), paste(easier_sigs[[sig]][!easier_sigs[[sig]] %in% rownames(RNA.tpm)], collapse = "\n")), immediate. = TRUE)
-        literature_matches <- literature_matches[!is.na(literature_matches)]
-      }
-
-      do.call(paste0("compute_", sig), args=list(matches=literature_matches, RNA.tpm=RNA.tpm))
-    }
+    )
   })
-  as.data.frame(result)
+  return(as.data.frame(result))
 }
 
-compute_gene_signatures(tpm, selected_signatures)
-
-
+#' Compute cytolytic activity score
+#'
+#' \code{compute_CYT} computes cytolytic activity score as the geometric mean of immune cytolytic genes
+#' (Rooney et al., 2015).
+#'
+#' @importFrom stats na.omit
+#' @param matches TODOTODO
+#' @param RNA.tpm numeric matrix with rows=genes and columns=samples
+#'
+#' @return numeric matrix with rows=samples and columns=cytolytic activity score
+#'
+#' @export
+#'
+#' @examples
+#' # TODOTODO
 compute_CYT <- function(matches, RNA.tpm){
   # Subset RNA.tpm
   subset_RNA.tpm <- RNA.tpm[matches, ]
@@ -91,6 +191,19 @@ compute_CYT <- function(matches, RNA.tpm){
   return(data.frame(CYT = score, check.names = FALSE))
 }
 
+#' Compute tertiary lymphoid structures signature
+#'
+#' \code{compute_TLS} computes TLS signature as the geometric-mean of TLS signature genes
+#' (Cabrita et al., 2020).
+#'
+#' @importFrom stats na.omit
+#' @param matches TODOTODO
+#' @param RNA.tpm numeric matrix with rows=genes and columns=samples
+#' @return numeric matrix with rows=samples and columns=TLS signature
+#' @export
+#'
+#' @examples
+#' # TODOTODO
 compute_TLS <- function(matches, RNA.tpm){
   # Subset RNA.tpm
   sub_gene.tpm <- RNA.tpm[matches, ]
@@ -102,6 +215,21 @@ compute_TLS <- function(matches, RNA.tpm){
   return(data.frame(TLS = geom_mean, check.names = FALSE))
 }
 
+#' Compute IFNy signature score
+#'
+#' \code{compute_IFNy} computes IFNy signature score as the arithmetic mean of genes included
+#' in the IFN-γ signature (Ayers et al., JCI, 2017)
+#'
+#' @importFrom stats na.omit
+#' @param matches TODOTODO
+#' @param RNA.tpm numeric matrix with rows=genes and columns=samples
+#'
+#' @return numeric matrix with rows=samples and columns=IFNy signature score
+#'
+#' @export
+#'
+#' @examples
+#' # TODOTODO
 compute_IFNy <- function(matches, RNA.tpm){
   # Log2 transformation:
   log2.RNA.tpm <- log2(RNA.tpm + 1)
@@ -116,6 +244,21 @@ compute_IFNy <- function(matches, RNA.tpm){
   return(data.frame(IFNy = score, check.names = FALSE))
 }
 
+#' Compute Expanded Immune signature
+#'
+#' \code{compute_Ayers_expIS} computes Expanded Immune signature score as the arithmetic mean of genes included
+#' in the Expanded Immune signature (Ayers et al., JCI, 2017)
+#'
+#' @importFrom stats na.omit
+#' @param matches TODOTODO
+#' @param RNA.tpm numeric matrix with rows=genes and columns=samples
+#'
+#' @return numeric matrix with rows=samples and columns=Expanded Immune signature score
+#'
+#' @export
+#'
+#' @examples
+#' # TODOTODO
 compute_Ayers_expIS <- function(matches, RNA.tpm){
   # Log2 transformation:
   log2.RNA.tpm <- log2(RNA.tpm + 1)
@@ -130,6 +273,21 @@ compute_Ayers_expIS <- function(matches, RNA.tpm){
   return(data.frame(Ayers_expIS = score, check.names = FALSE))
 }
 
+#' Compute Roh immune score
+#'
+#' \code{compute_roh_IS} computes Roh immune score as the geometric-mean of immune score genes
+#' (Roh et al., 2017).
+#'
+#' @importFrom stats na.omit
+#' @param matches TODOTODO
+#' @param RNA.tpm numeric matrix with rows=genes and columns=samples
+#'
+#' @return numeric matrix with rows=samples and columns=Roh immune score
+#'
+#' @export
+#'
+#' @examples
+#' # TODOTODO
 compute_Roh_IS <- function(matches, RNA.tpm){
   # Subset RNA.tpm
   sub_gene.tpm <- RNA.tpm[matches, ]
@@ -147,6 +305,21 @@ compute_Roh_IS <- function(matches, RNA.tpm){
   return(data.frame(Roh_IS = score, check.names = FALSE))
 }
 
+#' Compute Davoli immune signature
+#'
+#' \code{compute_davoli_IS} computes Davoli immune signature as the arithmetic mean of cytotoxic
+#' immune infiltrate signature genes, after rank normalization (Davoli et al., 2017).
+#'
+#' @importFrom stats na.omit
+#' @param matches TODOTODO
+#' @param RNA.tpm numeric matrix with rows=genes and columns=samples
+#'
+#' @return numeric matrix with rows=samples and columns=Davoli immune signature
+#'
+#' @export
+#'
+#' @examples
+#' # TODOTODO
 compute_Davoli_IS <- function(matches, RNA.tpm){
   # Log2 transformation:
   log2.RNA.tpm <- log2(RNA.tpm + 1)
@@ -167,6 +340,21 @@ compute_Davoli_IS <- function(matches, RNA.tpm){
   return(data.frame(Davoli_IS = score, check.names = FALSE))
 }
 
+#' Compute chemokine score
+#'
+#' \code{compute_chemokine} computes chemoine score as the PC1 score that results from applying PCA
+#' to z-score expression of 12 chemokine genes (Messina et al., 2012).
+#'
+#' @importFrom stats na.omit prcomp
+#' @param matches TODOTODO
+#' @param RNA.tpm numeric matrix with rows=genes and columns=samples
+#'
+#' @return numeric matrix with rows=samples and columns=chemokine score
+#'
+#' @export
+#'
+#' @examples
+#' # TODOTODO
 compute_chemokines <- function(matches, RNA.tpm){
   # Log2 transformation:
   log2.RNA.tpm <- log2(RNA.tpm + 1)
@@ -182,6 +370,24 @@ compute_chemokines <- function(matches, RNA.tpm){
   return(data.frame(chemokines = score, check.names = FALSE))
 }
 
+#' Compute T cell-inflamed signature score
+#'
+#' \code{compute_ayersTcellInfl} computes T cell-inflamed signature score by taking a weighted sum of
+#'  the housekeeping normalized values of the T cell-inflamed signature genes
+#'
+#' @importFrom stats na.omit
+#'
+#' @param RNA.tpm numeric matrix with rows=genes and columns=samples
+#' @param housekeeping TODOTODO
+#' @param predictors TODOTODO
+#' @param weights TODOTODO
+#'
+#' @return numeric matrix with rows=samples and columns=T cell-inflamed signature score
+#'
+#' @export
+#'
+#' @examples
+#' # TODOTODO
 compute_Tcell_inflamed <- function(housekeeping, predictors, weights, RNA.tpm){
   # Log2 transformation:
   log2.RNA.tpm <- log2(RNA.tpm + 1)
@@ -208,5 +414,89 @@ compute_Tcell_inflamed <- function(housekeeping, predictors, weights, RNA.tpm){
   return(data.frame( Tcell_inflamed = score, check.names = FALSE))
 }
 
+#' Compute Immuno-Predictive Score (IMPRES)
+#'
+#' \code{compute_IMPRES} computes IMPRES score by applying logical comparison of checkpoint gene pairs
+#' (Auslander et al., 2018).
+#'
+#' @importFrom stats na.omit
+#'
+#' @param RNA.tpm numeric matrix with rows=genes and columns=samples
+#' @param sig TODOTODO
+#' @param len TODOTODO
+#' @param match_F_1 TODOTODO
+#' @param match_F_2 TODOTODO
+#'
+#' @return numeric matrix with rows=samples and columns=IMPRES score
+#'
+#' @export
+#'
+#' @examples
+#' # TODOTODO
+compute_IMPRES_MSI <- function(sig, len, match_F_1, match_F_2, RNA.tpm){
+  # Initialize variables
+  F_pair_expr_A <- F_pair_expr_B <- IMPRES.matrix <- matrix(0, len, ncol(RNA.tpm))
+  colnames(IMPRES.matrix) <- colnames(RNA.tpm)
+  score <- vector("numeric", length = ncol(RNA.tpm))
+  names(score) <- colnames(RNA.tpm)
 
+  # Log2 transformation:
+  log2.RNA.tpm <- as.data.frame(log2(RNA.tpm + 1))
+
+  # Calculation:
+  F_pair_expr_A <- log2.RNA.tpm[match_F_1, ]
+  F_pair_expr_B <- log2.RNA.tpm[match_F_2, ]
+
+  if(anyNA(F_pair_expr_A + F_pair_expr_B)) {
+    remove_pairs <- as.vector(which(is.na(rowSums(F_pair_expr_A + F_pair_expr_B) == TRUE)))
+  }
+
+  IMPRES.matrix <- F_pair_expr_A > F_pair_expr_B
+  if(anyNA(IMPRES.matrix)){
+    score <- colSums(IMPRES.matrix, na.rm = TRUE)
+    score <- (score * nrow(IMPRES.matrix)) / (nrow(IMPRES.matrix) - length(remove_pairs))
+  }else{
+    score <- colSums(IMPRES.matrix)
+  }
+
+  message(paste(sig,"score computed"))
+  df <- data.frame(score, check.names = FALSE)
+  names(df)[1] <- sig
+
+  return(df)
+}
+
+#' Compute the expression of the immune checkpoints genes
+#'
+#' \code{computation_ICB_genes} computes the scores for the immune checkpoint genes.
+#'
+#' @export
+#'
+#' @param RNA.tpm numeric matrix with data
+#' @param genes TODOTODO
+#'
+#' @return Data.frame with the expression of the immune checkpoint genes
+#'
+#' @examples
+#' # TODOTODO
+compute_ICB_genes <- function(genes, RNA.tpm){
+  # Extract position genes for GZMA and PRF1
+  tmp <- match(genes, rownames(RNA.tpm))
+
+  df <- data.frame(
+    PDL1=rep(NA, ncol(RNA.tpm)),
+    CTLA4=rep(NA, ncol(RNA.tpm)),
+    PD1=rep(NA, ncol(RNA.tpm)))
+
+  # PDL-1 calculation
+  if(!is.na(tmp[1])) df$PDL1 = RNA.tpm[tmp[1],]
+
+  # CTLA-4 calculation
+  if(!is.na(tmp[2])) df$CTLA4 = RNA.tpm[tmp[2],]
+
+  # PD-1 calculation
+  if(!is.na(tmp[3])) df$PD1 = RNA.tpm[tmp[3],]
+  message("ICB genes PDL1, CTLA4, PD1 computed")
+  return(df)
+}
 

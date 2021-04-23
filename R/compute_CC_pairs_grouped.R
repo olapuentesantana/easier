@@ -7,7 +7,7 @@
 #'
 #' @export
 #'
-#' @param lrpairs Ligand-leceptor pairs weights matrix
+#' @param lrpairs Ligand-receptor pairs weights matrix
 #' @param cancertype string character
 #'
 #' @return A list with the following elements:

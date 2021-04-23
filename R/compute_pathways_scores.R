@@ -7,11 +7,11 @@
 #' @importFrom stats na.exclude
 #'
 #' @param RNA.counts numeric matrix of read counts with rows=genes and columns=samples
-#' @param remove.genes.ICB_proxies boolean variable to reomove all those genes involved in the computation of ICB proxy's of response
+#' @param remove.genes.ICB_proxies boolean variable to remove all those genes involved in the computation of ICB proxy's of response
 #'
 #' @return A list with the following elements:
 #'         \describe{
-#'               \item{scores}{pathway activity matrix with rows=samples and columns=pathwats}
+#'               \item{scores}{pathway activity matrix with rows=samples and columns=pathways}
 #'               \item{transcripts_kept}{vector with available gene names}
 #'               \item{transcripts_left}{vector with missing gene names}
 #'         }

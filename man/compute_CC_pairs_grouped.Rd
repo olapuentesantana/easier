@@ -7,7 +7,7 @@
 compute_CC_pairs_grouped(lrpairs, cancertype)
 }
 \arguments{
-\item{lrpairs}{Ligand-leceptor pairs weights matrix}
+\item{lrpairs}{Ligand-receptor pairs weights matrix}
 
 \item{cancertype}{string character}
 }
