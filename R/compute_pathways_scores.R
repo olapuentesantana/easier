@@ -19,18 +19,46 @@
 #' @export
 #'
 #' @examples
-#' # Example: Riaz
-#' data("Riaz_data")
+#' # Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
+#' if (!requireNamespace("BiocManager", quietly = TRUE))
+#'  install.packages("BiocManager")
+#'
+#' BiocManager::install(c("biomaRt",
+#'  "circlize",
+#'  "ComplexHeatmap",
+#'  "corrplot",
+#'  "DESeq2",
+#'  "dplyr",
+#'  "DT",
+#'  "edgeR",
+#'  "ggplot2",
+#'  "limma",
+#'  "lsmeans",
+#'  "reshape2",
+#'  "spatstat",
+#'  "survival",
+#'  "plyr"))
+#'
+#' install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
+#' library(IMvigor210CoreBiologies)
+#'
+#' data(cds)
+#' mariathasan_data <- preprocess_mariathasan(cds)
+#' gene_count <- mariathasan_data$counts
+#' rm(cds)
+#'
 #' library("progeny")
 #'
 #' # Computation of pathway scores
 #' pathway_activity <- compute_pathways_scores(
-#'   RNA_counts = Riaz_data$raw_counts_RNAseq,
+#'   RNA_counts = gene_count,
 #'   remove_genes_ICB_proxies = TRUE)
 #' head(pathway_activity)
 compute_pathways_scores <- function(RNA_counts,
                                     remove_genes_ICB_proxies = TRUE,
                                     verbose = TRUE) {
+  # Some checks
+  if (is.null(RNA_counts)) stop("raw counts data not found")
 
   # Gene expression data
   raw_counts <- RNA_counts

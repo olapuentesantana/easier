@@ -7,7 +7,7 @@
 compute_LR_pairs(
   RNA_tpm,
   remove_genes_ICB_proxies = FALSE,
-  cancertype = "pancan",
+  cancer_type = "pancan",
   verbose = TRUE
 )
 }
@@ -17,7 +17,7 @@ compute_LR_pairs(
 \item{remove_genes_ICB_proxies}{a logical value indicating whether to remove signature genes involved
 in the derivation of hallmarks of immune response.}
 
-\item{cancertype}{A string detailing the cancer type whose ligand-receptor pairs network will be used.
+\item{cancer_type}{A string detailing the cancer type whose ligand-receptor pairs network will be used.
 A pan-cancer network is selected by default, whose network represents the union of all
 ligand-receptor pairs present across the 18 cancer types studied in (Lapuente-Santana et al., bioRxiv, 2021).}
 
@@ -33,13 +33,38 @@ coming from ligand-receptor pair annotations from the database of (Ramilowski et
 Each ligand-receptor weight is defined as the minimum of the log2(TPM+1) expression of the ligand and the receptor.
 }
 \examples{
-# Example: Riaz
-data("Riaz_data")
+# Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
+if (!requireNamespace("BiocManager", quietly = TRUE))
+ install.packages("BiocManager")
+
+BiocManager::install(c("biomaRt",
+ "circlize",
+ "ComplexHeatmap",
+ "corrplot",
+ "DESeq2",
+ "dplyr",
+ "DT",
+ "edgeR",
+ "ggplot2",
+ "limma",
+ "lsmeans",
+ "reshape2",
+ "spatstat",
+ "survival",
+ "plyr"))
+
+install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
+library(IMvigor210CoreBiologies)
+
+data(cds)
+mariathasan_data <- preprocess_mariathasan(cds)
+gene_tpm <- mariathasan_data$tpm
+rm(cds)
 
 # Computation of ligand-receptor pair weights
-lrpairs_weights <- compute_LR_pairs(
-  RNA_tpm = Riaz_data$tpm_RNAseq,
+lrpair_weights <- compute_LR_pairs(
+  RNA_tpm = gene_tpm,
   remove_genes_ICB_proxies = FALSE,
-  cancertype = "pancan")
-lrpairs_weights[1:5, 1:5]
+  cancer_type = "pancan")
+lrpair_weights[1:5, 1:5]
 }

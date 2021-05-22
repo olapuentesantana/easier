@@ -19,9 +19,34 @@ numeric matrix with rows=samples and columns=Davoli immune signature
 immune infiltrate signature genes, after rank normalization (Davoli et al., 2017).
 }
 \examples{
-# Example: Riaz
-data("Riaz_data")
+# Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
+if (!requireNamespace("BiocManager", quietly = TRUE))
+ install.packages("BiocManager")
 
-Davoli_IS <- compute_Davoli_IS(RNA_tpm= Riaz_data$tpm_RNAseq)
+BiocManager::install(c("biomaRt",
+ "circlize",
+ "ComplexHeatmap",
+ "corrplot",
+ "DESeq2",
+ "dplyr",
+ "DT",
+ "edgeR",
+ "ggplot2",
+ "limma",
+ "lsmeans",
+ "reshape2",
+ "spatstat",
+ "survival",
+ "plyr"))
+
+install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
+library(IMvigor210CoreBiologies)
+
+data(cds)
+mariathasan_data <- preprocess_mariathasan(cds)
+gene_tpm <- mariathasan_data$tpm
+rm(cds)
+
+Davoli_IS <- compute_Davoli_IS(RNA_tpm= gene_tpm)
 head(Davoli_IS)
 }

@@ -10,8 +10,7 @@ compute_CCpair_score(
   intercell_network,
   lrpairs_binary,
   lr_frequency,
-  compute_log = TRUE,
-  cancertype
+  compute_log = TRUE
 )
 }
 \arguments{
@@ -26,8 +25,6 @@ compute_CCpair_score(
 \item{lr_frequency}{numeric vector with LR pairs frequency across the whole TCGA database}
 
 \item{compute_log}{boolean variable in order to take the log of the weighted score}
-
-\item{cancertype}{string character}
 }
 \value{
 numeric vector with weighted scores
@@ -36,5 +33,61 @@ numeric vector with weighted scores
 \code{compute_CCpair_score} computes the score for each cell-cell pair for all the patients.
 }
 \examples{
-# TODOTODO
+# Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
+if (!requireNamespace("BiocManager", quietly = TRUE))
+ install.packages("BiocManager")
+
+BiocManager::install(c("biomaRt",
+ "circlize",
+ "ComplexHeatmap",
+ "corrplot",
+ "DESeq2",
+ "dplyr",
+ "DT",
+ "edgeR",
+ "ggplot2",
+ "limma",
+ "lsmeans",
+ "reshape2",
+ "spatstat",
+ "survival",
+ "plyr"))
+
+install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
+library(IMvigor210CoreBiologies)
+
+data(cds)
+mariathasan_data <- preprocess_mariathasan(cds)
+gene_tpm <- mariathasan_data$tpm
+rm(cds)
+
+# Computation of ligand-receptor pair weights
+lrpair_weights <- compute_LR_pairs(
+  RNA_tpm = gene_tpm,
+  remove_genes_ICB_proxies = FALSE,
+  cancer_type = "pancan")
+
+# remove ligand receptor pairs that are always NA
+na_lrpairs <- apply(lrpair_weights, 2, function(x) {
+ all(is.na(x))
+ })
+lrpair_weights <- lrpair_weights[, na_lrpairs == FALSE]
+
+# binarize the data: set a threshold to 10 TPM, only pairs where both ligand and receptor have TPM > 10 are kept
+lrpairs_binary <- ifelse(lrpair_weights > log2(10 + 1), 1, 0)
+
+# keep only the LR.pairs for which I have (non-zero) frequencies in the TCGA
+lrpairs_binary <- lrpairs_binary[, colnames(lrpairs_binary) \%in\% names(lr_frequency)]
+
+# cancer type specific network
+intercell_network <- intercell_network_cancer_spec[[cancer_type]]
+celltypes <- unique(c(as.character(intercell_network$cell1), as.character(intercell_network$cell2)))
+celltype1 <- celltypes[1]
+celltype2 <- celltypes[1]
+
+# compute the CC score for each patient
+CCpair_score <- compute_CCpair_score(celltype1, celltype2, intercell_network,
+lrpairs_binary, lr_frequency,
+compute_log = TRUE)
+head(CCpair_score)
 }

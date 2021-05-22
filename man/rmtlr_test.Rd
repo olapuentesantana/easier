@@ -2,23 +2,61 @@
 % Please edit documentation in R/rmtlr_test.R
 \name{rmtlr_test}
 \alias{rmtlr_test}
-\title{Regularized multi-task linear regression algorithm implements the model
-training coefficients and hyperparameters on the test set.}
+\title{Function to apply regularized multi-task linear regression model}
 \usage{
 rmtlr_test(x_test, coef_matrix)
 }
 \arguments{
-\item{x_test}{A matrix with data required to perform predictions.}
+\item{x_test}{A numeric matrix containing features values (rows = samples; columns = features).}
 
-\item{coef_matrix}{A coefficient matrix obtained during training the model
-(rows = features and columns = tasks).}
+\item{coef_matrix}{A numeric matrix containing the parameters values derived from model training
+(rows = features; columns = tasks).}
 }
 \value{
-A matrix with predictions for each sample and task.
+A numeric matrix of predicted values (rows = samples; columns = tasks).
 }
 \description{
-\code{rmtlr_test} implements regularized multi-task linear regression on the test data
+\code{rmtlr_test} computes the matrix multiplication using the input features values and the parameters values derived from model optimization.
 }
 \examples{
-# TODOTODO
+# Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
+if (!requireNamespace("BiocManager", quietly = TRUE))
+ install.packages("BiocManager")
+
+BiocManager::install(c("biomaRt",
+ "circlize",
+ "ComplexHeatmap",
+ "corrplot",
+ "DESeq2",
+ "dplyr",
+ "DT",
+ "edgeR",
+ "ggplot2",
+ "limma",
+ "lsmeans",
+ "reshape2",
+ "spatstat",
+ "survival",
+ "plyr"))
+
+install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
+library(IMvigor210CoreBiologies)
+
+data(cds)
+mariathasan_data <- preprocess_mariathasan(cds)
+gene_tpm <- mariathasan_data$tpm
+rm(cds)
+
+# Computation of cell fractions
+cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
+
+# Parameters valus: rows = features, columns = tasks
+estimated_parameters <- matrix(rnorm(n= (ncol(cell_fractions)+1) * 10),
+nrow = ncol(cell_fractions) + 1, ncol = 10)
+rownames(estimated_parameters) <- c("(Intercept)", colnames(cell_fractions))
+colnames(estimated_parameters) <- c("CYT", "Ock_IS", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
+
+# Compute predictions using parameters values
+pred_test <- rmtlr_test(x_test = cell_fractions,
+ coef_matrix = estimated_parameters)
 }

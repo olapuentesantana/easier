@@ -1,40 +1,78 @@
-#' Obtain predictions using regularized multi-task linear regression
+#' Function to compute regularized multi-task linear regression predictions
 #'
-#' `predict_with_rmtlr` predicts patients' immune response using the model learned from regularized multi-task
-#' linear regression
-#' This algorithm employs model parameters learned during training on different
-#' types of data in order to compute the immune response.
+#' `predict_with_rmtlr` predicts patients' immune response using a cancer-specifc model learned from training.
 #'
 #' @importFrom stats na.omit
-#' @importFrom BiocParallel register bplapply MulticoreParam
 #'
 #' @export
 #'
-#' @param view_name input view name
-#' @param view_info input view information of its composition.
-#' @param view_data input view data as a list. Each item of the list corresponds
-#' to a certain view.
-#' @param learned_model parameters learned during training with cross-validation.
-#' @param verbose A logical value indicating whether to display messages about the prediction process.
+#' @param view_name A character string containing the name of the input view.
+#' @param view_info A character string informing about the family of the input data.
+#' @param view_data A list containing the data for each input view.
+#' @param cancer_type A character string indicating cancer type to specify cancer-specific optimization model to be used.
+#' @param verbose A logical flag indicating whether to display messages about the process.
 #'
-#' @return A matrix with the predictions obtained by applying the model on the
-#' view input data
+#' @return A list of predictions matrices, one for each tasks (rows = samples; columns = runs).
 #'
 #' @examples
-#' # TODOTODO
+#' # Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
+#' if (!requireNamespace("BiocManager", quietly = TRUE))
+#'  install.packages("BiocManager")
+#'
+#' BiocManager::install(c("biomaRt",
+#'  "circlize",
+#'  "ComplexHeatmap",
+#'  "corrplot",
+#'  "DESeq2",
+#'  "dplyr",
+#'  "DT",
+#'  "edgeR",
+#'  "ggplot2",
+#'  "limma",
+#'  "lsmeans",
+#'  "reshape2",
+#'  "spatstat",
+#'  "survival",
+#'  "plyr"))
+#'
+#' install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
+#' library(IMvigor210CoreBiologies)
+#'
+#' data(cds)
+#' mariathasan_data <- preprocess_mariathasan(cds)
+#' gene_tpm <- mariathasan_data$tpm
+#' rm(cds)
+#'
+#' # Computation of cell fractions
+#' cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
+#'
+#' view_name <- "immunecells"
+#' view_info <- c(immunecells = "gaussian")
+#' view_data <- list(immunecells = as.data.frame(cell_fractions))
+#'
+#' # Predict using rmtlr
+#' prediction_view <- predict_with_rmtlr(
+#' view_name = view_name,
+#' view_info = view_info,
+#' view_data = view_data,
+#' cancer_type = "SKCM"
+#' )
 predict_with_rmtlr <- function(view_name,
                                view_info,
                                view_data,
-                               learned_model,
+                               cancer_type,
                                verbose = TRUE) {
 
   # Initialize variables
+  opt_model_cancer_view_spec <- lapply(view_name, function(X) return(opt_models[[cancer_type]][[X]]))
+  names(opt_model_cancer_view_spec) <- view_name
+  opt_xtrain_stats_cancer_view_spec <- lapply(view_name, function(X) return(opt_xtrain_stats[[cancer_type]][[X]]))
+  names(opt_xtrain_stats_cancer_view_spec) <- view_name
+
   P <- length(view_info)
-  K <- 100
+  K <- ncol(opt_model_cancer_view_spec[[1]][[1]])
   standardize_any <- TRUE
-  models <- names(learned_model[[1]]$model$cv.glmnet.features)
-  drugs <- colnames(learned_model[[1]]$model$cv.glmnet.features[[1]])
-  predictions <- predictions_all_tasks <- predictions_all_models <- list()
+  tasks <- names(opt_model_cancer_view_spec[[1]])
 
   # Algorithm do not deal with NA values: here we removed features with NA values, patients with all NA values are not removed
   view_data_new <- lapply(names(view_data), function(x) {
@@ -47,80 +85,53 @@ predict_with_rmtlr <- function(view_name,
   })
   names(view_data_new) <- names(view_data)
 
-  # Per task, per view
-  predictions[[view_name]] <- matrix(NA,
-    nrow = nrow(view_data_new[[1]]), ncol = K,
-    dimnames = list(rownames(view_data_new[[1]]), seq(1, K, 1))
-  )
+  state <- opt_model_cancer_view_spec
+  prediction_X <- view_data_new
 
-  predictions_all_models <- do.call(c, lapply(models, function(X) {
-    predictions_all_models[[X]] <- predictions
-    return(predictions_all_models)
-  }))
+  # standardize
+  if (standardize_any == TRUE) {
+    for (m in 1:P) {
 
-  predictions_all_tasks <- do.call(c, lapply(drugs, function(X) {
-    predictions_all_tasks[[X]] <- predictions_all_models
-    return(predictions_all_tasks)
-  }))
+      # Check features availability
+      keep_pos <- stats::na.omit(match(colnames(prediction_X[[m]]), rownames(opt_xtrain_stats_cancer_view_spec[[m]]$mean)))
+      keep_names <- intersect(colnames(prediction_X[[m]]), rownames(opt_xtrain_stats_cancer_view_spec[[m]]$mean))
+      prediction_X[[m]] <- prediction_X[[m]][, keep_names]
 
-  predict_each_k <- function(k, K, P, standardize_any, drugs, predictions_all_tasks, view_data_new, verbose){
+      # Normalization should be done taking into account the train set
+      opt_xtrain_stats_cancer_view_spec[[m]]$mean <- opt_xtrain_stats_cancer_view_spec[[m]]$mean[keep_pos, ]
+      opt_xtrain_stats_cancer_view_spec[[m]]$sd <- opt_xtrain_stats_cancer_view_spec[[m]]$sd[keep_pos, ]
 
-    state <- learned_model[[k]]$model$cv.glmnet.features
-    features_learning <- lapply(1:length(view_info), function(x) {
-      names(learned_model[[k]]$mas.mea.learning.X[[x]])
-    })
-    prediction_X <- view_data_new
-
-    # Display progress bar:
-    if (verbose){
-      width <- options()$width
-      cat(paste0(rep("=", k / K * width), collapse = ""))
-      Sys.sleep(.05)
-      if (k == K) {
-        cat("\n")
-      } else {
-        cat(" \r")
-      }
-    }
-
-    # standardize
-    if (standardize_any == TRUE) {
-      for (m in 1:P) {
-
-        # Check features availability
-        keep_pos <- stats::na.omit(match(colnames(prediction_X[[m]]), features_learning[[m]]))
-        keep_names <- intersect(colnames(prediction_X[[m]]), features_learning[[m]])
-        prediction_X[[m]] <- prediction_X[[m]][, keep_names]
-
-        # Normalization should be done taking into account the train set
-        learned_model[[k]]$mas.mea.learning.X[[m]] <- learned_model[[k]]$mas.mea.learning.X[[m]][keep_pos]
-        learned_model[[k]]$mas.std.learning.X[[m]] <- learned_model[[k]]$mas.std.learning.X[[m]][keep_pos]
-        names(learned_model[[k]]$mas.std.learning.X[[m]]) <- names(learned_model[[k]]$mas.mea.learning.X[[m]])
-
-        prediction_X[[m]] <- standardization(
-          X = prediction_X[[m]], mean = learned_model[[k]]$mas.mea.learning.X[[m]],
-          sd = learned_model[[k]]$mas.std.learning.X[[m]]
+      prediction_X_norm <- lapply(1:K, function(k){
+        prediction_X[[m]] <- calc_z_score(
+          X = prediction_X[[m]], mean = opt_xtrain_stats_cancer_view_spec[[m]]$mean[, k],
+          sd = opt_xtrain_stats_cancer_view_spec[[m]]$sd[, k]
         )
-      }
+      })
     }
-
-    # perform prediction
-    prediction_cv <- lapply(state, function(X) {
-      rmtlr_test(prediction_X, X)
-    })
-
-    # save predictions
-    for (X in drugs) {
-      predictions_all_tasks[[X]][["1se.mse"]][[view_name]][, k] <- prediction_cv$`1se.mse`[, X]
-      predictions_all_tasks[[X]][["min.mse"]][[view_name]][, k] <- prediction_cv$min.mse[, X]
-    }
-    return(predictions_all_tasks)
   }
 
-  # Parallelize randomized cross-validation model predictions
-  BiocParallel::register(BiocParallel::MulticoreParam(workers = 4))
-  summary_pred <- BiocParallel::bplapply(1:K, FUN = predict_each_k, K = K, P = P, standardize_any = standardize_any,
-                                         drugs = drugs, predictions_all_tasks = predictions_all_tasks,
-                                         view_data_new = view_data_new, verbose = verbose)
-  return(summary_pred)
+  # perform prediction
+  prediction_cv <- lapply(1:K, function(k){
+    coef_matrix <- sapply(tasks, function(task){
+      state[[view_name]][[task]][, k]
+    })
+    rmtlr_test(prediction_X_norm[[k]], coef_matrix)
+  })
+
+  # save predictions
+  prediction_cv <- lapply(1:K, function(k){
+    coef_matrix <- sapply(tasks, function(task){
+      state[[view_name]][[task]][, k]
+    })
+    rmtlr_test(prediction_X_norm[[k]], coef_matrix)
+  })
+
+  predictions_all_tasks_cv <- lapply(tasks, function(task){
+    prediction_task_cv <- sapply(1:K, function(k){
+      prediction_cv[[k]][, task]
+    })
+    return(prediction_task_cv)
+  })
+  names(predictions_all_tasks_cv) <- tasks
+  return(predictions_all_tasks_cv)
 }

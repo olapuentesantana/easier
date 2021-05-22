@@ -1,103 +1,111 @@
-#' Compute gold standards
+#' Compute gold standards (i.e. tasks)
 #'
-#' `computation_gold_standards` computes the scores for the gold standards
-#' required by the user
+#' `computation_gold_standards` computes the scores for the gold standards required by the user
 #'
 #' @export
 #'
-#' @param RNA_tpm numeric matrix with data, as tpm values
-#' @param list_gold_standards string with gold standards names
-#' @param cancertype string character
-#' @param output_file_path TODOTODO to define - maybe name it more specifically to the function it absolves?
+#' @param RNA_tpm A numeric matrix of patients' gene expression data as tpm values.
+#' @param list_gold_standards A character string of task names to be considered as gold standards for comparison.
 #'
-#' @return List with the scores of all the gold standards specified.
+#' @return A numeric matrix of patients' gold standard values (rows = samples; columns = tasks).
 #'
 #' @examples
-#' # Example: Riaz
-#' data("Riaz_data")
+#' # Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
+#' if (!requireNamespace("BiocManager", quietly = TRUE))
+#'  install.packages("BiocManager")
+#'
+#' BiocManager::install(c("biomaRt",
+#'  "circlize",
+#'  "ComplexHeatmap",
+#'  "corrplot",
+#'  "DESeq2",
+#'  "dplyr",
+#'  "DT",
+#'  "edgeR",
+#'  "ggplot2",
+#'  "limma",
+#'  "lsmeans",
+#'  "reshape2",
+#'  "spatstat",
+#'  "survival",
+#'  "plyr"))
+#'
+#' install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
+#' library(IMvigor210CoreBiologies)
+#'
+#' data(cds)
+#' mariathasan_data <- preprocess_mariathasan(cds)
+#' gene_tpm <- mariathasan_data$tpm
+#' rm(cds)
 #'
 #' # Computation of different hallmarks of the immune response
 #' tasks <- c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
 #'            "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
-#' immune_response <- compute_gold_standards(
-#'   RNA_tpm = Riaz_data$tpm_RNAseq,
-#'   list_gold_standards = tasks,
-#'   cancertype = "SKCM",
-#'   output_file_path = "/Users/Oscar/Desktop/Riaz")
-#' head(immune_response)
+#' tasks_values <- compute_gold_standards(
+#'   RNA_tpm = gene_tpm,
+#'   list_gold_standards = tasks)
+#' head(tasks_values)
 compute_gold_standards <- function(RNA_tpm,
-                                   list_gold_standards,
-                                   cancertype,
-                                   output_file_path) {
+                                   list_gold_standards = c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")) {
 
-  gold.standards <- sapply(list_gold_standards, function(X) {
+  gold_standards <- sapply(list_gold_standards, function(X) {
     if ("CYT" == X) {
 
       # calculate Cytolytic activity #
       CYT <- t(compute_CYT(RNA_tpm))
-      return(list(CYT))
-    } else if ("IPS" == X) {
-
-      # calculate Immunophenoscore #
-      IPS <- t(compute_IPS(RNA_tpm))
-      return(list(IPS))
+      return(CYT)
     } else if ("IMPRES" == X) {
 
       # calculate Impres #
       IMPRES <- t(compute_IMPRES(RNA_tpm))
-      return(list(IMPRES))
+      return(IMPRES)
     } else if ("Roh_IS" == X) {
 
       # calculate roh immune signature #
       Roh_IS <- t(compute_Roh_IS(RNA_tpm))
-      return(list(Roh_IS))
+      return(Roh_IS)
     } else if ("chemokines" == X) {
 
       # calculate chemokine signature #
       chemokines <- t(compute_chemokines(RNA_tpm))
-      return(list(chemokines))
+      return(chemokines)
     } else if ("Davoli_IS" == X) {
 
       # calculate davoli cytotoxic immune signature #
       Davoli_IS <- t(compute_Davoli_IS(RNA_tpm))
-      return(list(Davoli_IS))
+      return(Davoli_IS)
     } else if ("IFNy" == X) {
 
       # calculate ayers IFNy #
       IFNy <- t(compute_IFNy(RNA_tpm))
-      return(list(IFNy))
+      return(IFNy)
     } else if ("Ayers_expIS" == X) {
 
       # calculate ayers expanded immune signature #
       Ayers_expIS <- t(compute_Ayers_expIS(RNA_tpm))
-      return(list(Ayers_expIS))
+      return(Ayers_expIS)
     } else if ("Tcell_inflamed" == X) {
 
       # calculate ayers T cell inflamed signature #
       Tcell_inflamed <- t(compute_Tcell_inflamed(RNA_tpm))
-      return(list(Tcell_inflamed))
-    } else if ("TIDE" == X) {
-
-      # calculate TIDE signature #
-      TIDE <- t(compute_TIDE(RNA_tpm, cancertype, output_file_path))
-      return(list(TIDE))
+      return(Tcell_inflamed)
     } else if ("MSI" == X) {
 
       # calculate MSI signature #
       MSI <- t(compute_MSI(RNA_tpm))
-      return(list(MSI))
+      return(MSI)
     } else if ("RIR" == X) {
 
       # calculate MSI signature #
       RIR <- t(compute_RIR(RNA_tpm))
-      return(list(RIR))
+      return(RIR)
     } else if ("TLS" == X) {
 
       # calculate MSI signature #
       TLS <- t(compute_TLS(RNA_tpm))
-      return(list(TLS))
+      return(TLS)
     }
   })
-
-  return(gold.standards)
+  rownames(gold_standards) <- colnames(RNA_tpm)
+  return(gold_standards)
 }

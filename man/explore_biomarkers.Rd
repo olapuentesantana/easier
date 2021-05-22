@@ -5,38 +5,36 @@
 \title{Examination of possible relevant biomarkers in cancer dataset}
 \usage{
 explore_biomarkers(
-  pathways,
-  immunecells,
-  lrpairs,
-  cytokinepairs,
-  tfs,
-  ccpairsgroupedscores,
-  ccpairsgroupedpval,
-  cancertype,
+  pathways = NULL,
+  immunecells = NULL,
+  tfs = NULL,
+  lrpairs = NULL,
+  ccpairs = NULL,
+  cancer_type,
   real_patient_response,
-  output_file_path
+  output_file_path,
+  TMB_values,
+  verbose = TRUE
 )
 }
 \arguments{
-\item{pathways}{numeric matrix with data}
+\item{pathways}{A numeric matrix (rows = samples; columns = pathways).}
 
-\item{immunecells}{numeric matrix with data}
+\item{immunecells}{A numeric matrix (rows = samples; columns = cell types).}
 
-\item{lrpairs}{numeric matrix with data}
+\item{tfs}{A numeric matrix (rows = samples; columns = transcription factors).}
 
-\item{cytokinepairs}{numeric matrix with data}
+\item{lrpairs}{A numeric matrix (rows = samples; columns = ligand-receptor pairs).}
 
-\item{tfs}{numeric matrix with data}
+\item{ccpairs}{A numeric matrix (rows = samples; columns = cell-cell pairs).}
 
-\item{ccpairsgroupedscores}{numeric matrix with data}
+\item{cancer_type}{A character string indicating which cancer-specific model should be used to compute the predictions.}
 
-\item{ccpairsgroupedpval}{numeric matrix with data}
+\item{real_patient_response}{A character vector with two factors (Non-responders = NR, Responders = R).}
 
-\item{cancertype}{string character}
+\item{output_file_path}{A character string pointing to a directory to save the plots returned by the function.}
 
-\item{real_patient_response}{vector with two factors (NR,R)}
-
-\item{output_file_path}{string with a file name}
+\item{verbose}{A logical flag indicating whether to display messages about the process.}
 }
 \value{
 boxplot with features distribution

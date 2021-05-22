@@ -2,42 +2,59 @@
 % Please edit documentation in R/compute_gold_standards.R
 \name{compute_gold_standards}
 \alias{compute_gold_standards}
-\title{Compute gold standards}
+\title{Compute gold standards (i.e. tasks)}
 \usage{
 compute_gold_standards(
   RNA_tpm,
-  list_gold_standards,
-  cancertype,
-  output_file_path
+  list_gold_standards = c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
+    "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
 )
 }
 \arguments{
-\item{RNA_tpm}{numeric matrix with data, as tpm values}
+\item{RNA_tpm}{A numeric matrix of patients' gene expression data as tpm values.}
 
-\item{list_gold_standards}{string with gold standards names}
-
-\item{cancertype}{string character}
-
-\item{output_file_path}{TODOTODO to define - maybe name it more specifically to the function it absolves?}
+\item{list_gold_standards}{A character string of task names to be considered as gold standards for comparison.}
 }
 \value{
-List with the scores of all the gold standards specified.
+A numeric matrix of patients' gold standard values (rows = samples; columns = tasks).
 }
 \description{
-\code{computation_gold_standards} computes the scores for the gold standards
-required by the user
+\code{computation_gold_standards} computes the scores for the gold standards required by the user
 }
 \examples{
-# Example: Riaz
-data("Riaz_data")
+# Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
+if (!requireNamespace("BiocManager", quietly = TRUE))
+ install.packages("BiocManager")
+
+BiocManager::install(c("biomaRt",
+ "circlize",
+ "ComplexHeatmap",
+ "corrplot",
+ "DESeq2",
+ "dplyr",
+ "DT",
+ "edgeR",
+ "ggplot2",
+ "limma",
+ "lsmeans",
+ "reshape2",
+ "spatstat",
+ "survival",
+ "plyr"))
+
+install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
+library(IMvigor210CoreBiologies)
+
+data(cds)
+mariathasan_data <- preprocess_mariathasan(cds)
+gene_tpm <- mariathasan_data$tpm
+rm(cds)
 
 # Computation of different hallmarks of the immune response
 tasks <- c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
            "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
-immune_response <- compute_gold_standards(
-  RNA_tpm = Riaz_data$tpm_RNAseq,
-  list_gold_standards = tasks,
-  cancertype = "SKCM",
-  output_file_path = "/Users/Oscar/Desktop/Riaz")
-head(immune_response)
+tasks_values <- compute_gold_standards(
+  RNA_tpm = gene_tpm,
+  list_gold_standards = tasks)
+head(tasks_values)
 }

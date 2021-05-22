@@ -4,12 +4,12 @@
 \alias{compute_CC_pairs_grouped}
 \title{Compute cell-cell interactions scores from gene expression}
 \usage{
-compute_CC_pairs_grouped(lrpairs, cancertype = "pancan", verbose = TRUE)
+compute_CC_pairs_grouped(lrpairs, cancer_type = "pancan", verbose = TRUE)
 }
 \arguments{
 \item{lrpairs}{A matrix of weights log2(TPM +1) with samples in rows and ligand-receptor pairs in columns. This data is returned by compute_LR_pairs function.}
 
-\item{cancertype}{A string detailing the cancer type whose cell-cell interaction network will be used.
+\item{cancer_type}{A string detailing the cancer type whose cell-cell interaction network will be used.
 A pan-cancer network is selected by default, whose network represents the union of all
 ligand-receptor pairs present across the 18 cancer types studied in (Lapuente-Santana et al., bioRxiv, 2021).}
 
@@ -24,16 +24,43 @@ gene expression in TPM from bulk RNA-seq data (Lapuente-Santana et al., 2021), u
 coming from ligand-receptor pair annotations from the database of (Ramilowski et al., Nat Commun, 2015).
 }
 \examples{
-# Example: Riaz
-data("Riaz_data")
-lrpairs_weights <- compute_LR_pairs(
-  RNA_tpm = Riaz_data$tpm_RNAseq,
+# Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
+if (!requireNamespace("BiocManager", quietly = TRUE))
+ install.packages("BiocManager")
+
+BiocManager::install(c("biomaRt",
+ "circlize",
+ "ComplexHeatmap",
+ "corrplot",
+ "DESeq2",
+ "dplyr",
+ "DT",
+ "edgeR",
+ "ggplot2",
+ "limma",
+ "lsmeans",
+ "reshape2",
+ "spatstat",
+ "survival",
+ "plyr"))
+
+install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
+library(IMvigor210CoreBiologies)
+
+data(cds)
+mariathasan_data <- preprocess_mariathasan(cds)
+gene_tpm <- mariathasan_data$tpm
+rm(cds)
+
+# Computation of ligand-receptor pair weights
+lrpair_weights <- compute_LR_pairs(
+  RNA_tpm = gene_tpm,
   remove_genes_ICB_proxies = FALSE,
-  cancertype = "pancan")
+  cancer_type = "pancan")
 
 # Computation of cell-cell interaction scores
 ccpair_scores <- compute_CC_pairs_grouped(
-  lrpairs = lrpairs_weights,
-  cancertype = "pancan")
+  lrpairs = lrpair_weights,
+  cancer_type = "pancan")
 head(ccpair_scores)
 }

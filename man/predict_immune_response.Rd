@@ -2,7 +2,7 @@
 % Please edit documentation in R/predict_immune_response.R
 \name{predict_immune_response}
 \alias{predict_immune_response}
-\title{Immune response prediction}
+\title{Function to compute predicted immune response}
 \usage{
 predict_immune_response(
   pathways = NULL,
@@ -10,79 +10,88 @@ predict_immune_response(
   tfs = NULL,
   lrpairs = NULL,
   ccpairs = NULL,
-  include_pairwise_combos = FALSE,
-  cancertype,
+  cancer_type,
   verbose = TRUE
 )
 }
 \arguments{
-\item{pathways}{data.frame with matrix with data}
+\item{pathways}{A numeric matrix (rows = samples; columns = pathways).}
 
-\item{immunecells}{numeric matrix with data}
+\item{immunecells}{A numeric matrix (rows = samples; columns = cell types).}
 
-\item{tfs}{numeric matrix with data}
+\item{tfs}{A numeric matrix (rows = samples; columns = transcription factors).}
 
-\item{lrpairs}{numeric matrix with data}
+\item{lrpairs}{A numeric matrix (rows = samples; columns = ligand-receptor pairs).}
 
-\item{ccpairs}{numeric matrix with data}
+\item{ccpairs}{A numeric matrix (rows = samples; columns = cell-cell pairs).}
 
-\item{include_pairwise_combos}{boolean variable to compute predictions using pairwise combinations of single views.}
+\item{cancer_type}{A character string indicating which cancer-specific model should be used to compute the predictions.}
 
-\item{cancertype}{string character}
-
-\item{verbose}{A logical value indicating whether to display messages about the prediction process.}
+\item{verbose}{A logical flag indicating whether to display messages about the process.}
 }
 \value{
-Predictions for each model building.
+A list containing the predictions for each quantitative descriptor and for each task.
+Given that the model training was repeated 100 times with randomized-cross validation, a set of 100 predictions is returned.
 }
 \description{
-\code{predict_immune_response} predicts immune response using two algorithms:
-regularized multi-task linear regression (RMTLR) and bayesian efficient multi-kernel algorithm (BEMKL). While
-BEMKL can exploit information across different input and output datasets,
-RMTLR can only do so for response variables.
-Another advantage of BEMKL is missing data handling, which is not the case
-for the other algorithm.
-}
-\details{
-These algorithms use model parameters learned during training on different
-types of data in order to compute the immune response.
+\code{predict_immune_response} predicts patients' immune response using regularized multi-task linear regression (RMTLR).
+The predicted immune response is calculated based on the input features data and the parameters learned during model training.
 }
 \examples{
-# Example: Riaz
-data("Riaz_data")
+# Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
+if (!requireNamespace("BiocManager", quietly = TRUE))
+ install.packages("BiocManager")
+
+BiocManager::install(c("biomaRt",
+ "circlize",
+ "ComplexHeatmap",
+ "corrplot",
+ "DESeq2",
+ "dplyr",
+ "DT",
+ "edgeR",
+ "ggplot2",
+ "limma",
+ "lsmeans",
+ "reshape2",
+ "spatstat",
+ "survival",
+ "plyr"))
+
+install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
+library(IMvigor210CoreBiologies)
+
+data(cds)
+mariathasan_data <- preprocess_mariathasan(cds)
+gene_count <- mariathasan_data$counts
+gene_tpm <- mariathasan_data$tpm
+rm(cds)
 
 # Computation of cell fractions
-cell_fractions <- compute_cell_fractions(RNA_tpm = Riaz_data$tpm_RNAseq)
+cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
 
 # Computation of pathway scores
-pathway_activity <- compute_pathways_scores(
-  RNA_counts = Riaz_data$raw_counts_RNAseq,
-  remove_genes_ICB_proxies = TRUE)
+pathway_activity <- compute_pathways_scores(RNA_counts = gene_count,
+remove_genes_ICB_proxies = TRUE)
 
 # Computation of TF activity
-tf_activity <- compute_TF_activity(
-  RNA_tpm = Riaz_data$tpm_RNAseq,
-  remove_genes_ICB_proxies = FALSE)
+tf_activity <- compute_TF_activity(RNA_tpm = gene_tpm,
+remove_genes_ICB_proxies = FALSE)
 
 # Computation of ligand-receptor pair weights
-lrpairs_weights <- compute_LR_pairs(
-  RNA_tpm = Riaz_data$tpm_RNAseq,
-  remove_genes_ICB_proxies = FALSE,
-  cancertype = "pancan")
+lrpair_weights <- compute_LR_pairs(RNA_tpm = gene_tpm,
+remove_genes_ICB_proxies = FALSE,
+cancer_type = "pancan")
 
 # Computation of cell-cell interaction scores
-ccpairs_scores <- compute_CC_pairs_grouped(
-  lrpairs = lrpairs_weights,
-  cancertype = "pancan")
+ccpair_scores <- compute_CC_pairs_grouped(lrpairs = lrpair_weights,
+cancer_type = "pancan")
 
 # Predict patients' immune response
-##### predictions_immune_response <- predict_immune_response(
-#####   pathways = pathway_activity,
-#####   immunecells = cell_fractions,
-#####   lrpairs = lrpairs_weights,
-#####   tfs = tf_activity,
-#####   ccpairs = ccpairs_scores,
-#####   include_pairwise_combos = FALSE,
-#####   cancertype = "SKCM")
-##### TODO: need to check the behaviour over here
+predictions_immune_response <- predict_immune_response(pathways = pathway_activity,
+immunecells = cell_fractions,
+tfs = tf_activity,
+lrpairs = lrpair_weights,
+ccpairs = ccpair_scores,
+cancer_type = "SKCM")
 }

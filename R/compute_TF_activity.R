@@ -18,18 +18,45 @@
 #' @export
 #'
 #' @examples
-#' # Example: Riaz
-#' data("Riaz_data")
+#' # Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
+#' if (!requireNamespace("BiocManager", quietly = TRUE))
+#'  install.packages("BiocManager")
+#'
+#' BiocManager::install(c("biomaRt",
+#'  "circlize",
+#'  "ComplexHeatmap",
+#'  "corrplot",
+#'  "DESeq2",
+#'  "dplyr",
+#'  "DT",
+#'  "edgeR",
+#'  "ggplot2",
+#'  "limma",
+#'  "lsmeans",
+#'  "reshape2",
+#'  "spatstat",
+#'  "survival",
+#'  "plyr"))
+#'
+#' install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
+#' library(IMvigor210CoreBiologies)
+#'
+#' data(cds)
+#' mariathasan_data <- preprocess_mariathasan(cds)
+#' gene_tpm <- mariathasan_data$tpm
+#' rm(cds)
 #'
 #' # Computation of TF activity
 #' tf_activity <- compute_TF_activity(
-#'   RNA_tpm = Riaz_data$tpm_RNAseq,
+#'   RNA_tpm = gene_tpm,
 #'   remove_genes_ICB_proxies = FALSE)
 #'
 #' head(tf_activity)
 compute_TF_activity <- function(RNA_tpm,
                                 remove_genes_ICB_proxies = FALSE,
                                 verbose = TRUE) {
+  # Some checks
+  if (is.null(RNA_tpm)) stop("tpm data not found")
 
   # Gene expression data
   tpm <- RNA_tpm
@@ -46,7 +73,7 @@ compute_TF_activity <- function(RNA_tpm,
   }
 
   # Log transformed expression matrix (log2[tpm+1]): expression matrix scaled and recentered.
-  gene_expr <- standardization(t(tpm), mean = TCGA_mean_pancancer, sd = TCGA_sd_pancancer)
+  gene_expr <- calc_z_score(t(tpm), mean = TCGA_mean_pancancer, sd = TCGA_sd_pancancer)
 
   # redefine gene names to match transcripts for viper
   E <- t(gene_expr)

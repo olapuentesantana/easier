@@ -11,7 +11,7 @@
 #' @param RNA_tpm A data.frame containing TPM values with HGNC symbols in rows and samples in columns.
 #' @param remove_genes_ICB_proxies a logical value indicating whether to remove signature genes involved
 #' in the derivation of hallmarks of immune response.
-#' @param cancertype A string detailing the cancer type whose ligand-receptor pairs network will be used.
+#' @param cancer_type A string detailing the cancer type whose ligand-receptor pairs network will be used.
 #' A pan-cancer network is selected by default, whose network represents the union of all
 #' ligand-receptor pairs present across the 18 cancer types studied in (Lapuente-Santana et al., bioRxiv, 2021).
 #' @param verbose A logical value indicating whether to display messages about the number of ligand-receptor genes found in the gene expression data provided.
@@ -21,18 +21,43 @@
 #' @export
 #'
 #' @examples
-#' # Example: Riaz
-#' data("Riaz_data")
+#' # Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
+#' if (!requireNamespace("BiocManager", quietly = TRUE))
+#'  install.packages("BiocManager")
+#'
+#' BiocManager::install(c("biomaRt",
+#'  "circlize",
+#'  "ComplexHeatmap",
+#'  "corrplot",
+#'  "DESeq2",
+#'  "dplyr",
+#'  "DT",
+#'  "edgeR",
+#'  "ggplot2",
+#'  "limma",
+#'  "lsmeans",
+#'  "reshape2",
+#'  "spatstat",
+#'  "survival",
+#'  "plyr"))
+#'
+#' install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
+#' library(IMvigor210CoreBiologies)
+#'
+#' data(cds)
+#' mariathasan_data <- preprocess_mariathasan(cds)
+#' gene_tpm <- mariathasan_data$tpm
+#' rm(cds)
 #'
 #' # Computation of ligand-receptor pair weights
-#' lrpairs_weights <- compute_LR_pairs(
-#'   RNA_tpm = Riaz_data$tpm_RNAseq,
+#' lrpair_weights <- compute_LR_pairs(
+#'   RNA_tpm = gene_tpm,
 #'   remove_genes_ICB_proxies = FALSE,
-#'   cancertype = "pancan")
-#' lrpairs_weights[1:5, 1:5]
+#'   cancer_type = "pancan")
+#' lrpair_weights[1:5, 1:5]
 compute_LR_pairs <- function(RNA_tpm,
                              remove_genes_ICB_proxies = FALSE,
-                             cancertype = "pancan",
+                             cancer_type = "pancan",
                              verbose = TRUE) {
 
   # Gene expression data (log2 transformed)
@@ -52,7 +77,7 @@ compute_LR_pairs <- function(RNA_tpm,
   gene_expr <- as.data.frame(gene_expr)
 
   # Cancer-specific LR pairs network
-  intercell_network <- intercell_network_cancer_spec[[cancertype]]
+  intercell_network <- intercell_network_cancer_spec[[cancer_type]]
   LR_pairs <- unique(paste0(intercell_network$ligands, "_", intercell_network$receptors))
 
   # check what is the percentage of genes we have in our data

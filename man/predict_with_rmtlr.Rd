@@ -2,38 +2,74 @@
 % Please edit documentation in R/predict_with_rmtlr.R
 \name{predict_with_rmtlr}
 \alias{predict_with_rmtlr}
-\title{Obtain predictions using regularized multi-task linear regression}
+\title{Function to compute regularized multi-task linear regression predictions}
 \usage{
 predict_with_rmtlr(
   view_name,
   view_info,
   view_data,
-  learned_model,
+  cancer_type,
   verbose = TRUE
 )
 }
 \arguments{
-\item{view_name}{input view name}
+\item{view_name}{A character string containing the name of the input view.}
 
-\item{view_info}{input view information of its composition.}
+\item{view_info}{A character string informing about the family of the input data.}
 
-\item{view_data}{input view data as a list. Each item of the list corresponds
-to a certain view.}
+\item{view_data}{A list containing the data for each input view.}
 
-\item{learned_model}{parameters learned during training with cross-validation.}
+\item{cancer_type}{A character string indicating cancer type to specify cancer-specific optimization model to be used.}
 
-\item{verbose}{A logical value indicating whether to display messages about the prediction process.}
+\item{verbose}{A logical flag indicating whether to display messages about the process.}
 }
 \value{
-A matrix with the predictions obtained by applying the model on the
-view input data
+A list of predictions matrices, one for each tasks (rows = samples; columns = runs).
 }
 \description{
-\code{predict_with_rmtlr} predicts patients' immune response using the model learned from regularized multi-task
-linear regression
-This algorithm employs model parameters learned during training on different
-types of data in order to compute the immune response.
+\code{predict_with_rmtlr} predicts patients' immune response using a cancer-specifc model learned from training.
 }
 \examples{
-# TODOTODO
+# Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
+if (!requireNamespace("BiocManager", quietly = TRUE))
+ install.packages("BiocManager")
+
+BiocManager::install(c("biomaRt",
+ "circlize",
+ "ComplexHeatmap",
+ "corrplot",
+ "DESeq2",
+ "dplyr",
+ "DT",
+ "edgeR",
+ "ggplot2",
+ "limma",
+ "lsmeans",
+ "reshape2",
+ "spatstat",
+ "survival",
+ "plyr"))
+
+install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
+library(IMvigor210CoreBiologies)
+
+data(cds)
+mariathasan_data <- preprocess_mariathasan(cds)
+gene_tpm <- mariathasan_data$tpm
+rm(cds)
+
+# Computation of cell fractions
+cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
+
+view_name <- "immunecells"
+view_info <- c(immunecells = "gaussian")
+view_data <- list(immunecells = as.data.frame(cell_fractions))
+
+# Predict using rmtlr
+prediction_view <- predict_with_rmtlr(
+view_name = view_name,
+view_info = view_info,
+view_data = view_data,
+cancer_type = "SKCM"
+)
 }
