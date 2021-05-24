@@ -30,7 +30,76 @@
 #' @return boxplot with features distribution
 #'
 #' @examples
-#' # TODOTODO
+#' # Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
+#' if (!requireNamespace("BiocManager", quietly = TRUE))
+#'  install.packages("BiocManager")
+#'
+#' BiocManager::install(c("biomaRt",
+#'  "circlize",
+#'  "ComplexHeatmap",
+#'  "corrplot",
+#'  "DESeq2",
+#'  "dplyr",
+#'  "DT",
+#'  "edgeR",
+#'  "ggplot2",
+#'  "limma",
+#'  "lsmeans",
+#'  "reshape2",
+#'  "spatstat",
+#'  "survival",
+#'  "plyr"))
+#'
+#' install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
+#' library(IMvigor210CoreBiologies)
+#'
+#' data(cds)
+#' mariathasan_data <- preprocess_mariathasan(cds)
+#' gene_count <- mariathasan_data$counts
+#' gene_tpm <- mariathasan_data$tpm
+#' rm(cds)
+#'
+#' # Computation of cell fractions
+#' cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
+#'
+#' # Computation of pathway scores
+#' pathway_activity <- compute_pathways_scores(RNA_counts = gene_count,
+#' remove_genes_ICB_proxies = TRUE)
+#'
+#' # Computation of TF activity
+#' tf_activity <- compute_TF_activity(RNA_tpm = gene_tpm,
+#' remove_genes_ICB_proxies = FALSE)
+#'
+#' # Computation of ligand-receptor pair weights
+#' lrpair_weights <- compute_LR_pairs(RNA_tpm = gene_tpm,
+#' remove_genes_ICB_proxies = FALSE,
+#' cancer_type = "pancan")
+#'
+#' # Computation of cell-cell interaction scores
+#' ccpair_scores <- compute_CC_pairs_grouped(lrpairs = lrpair_weights,
+#' cancer_type = "pancan")
+#'
+#' # retrieve clinical response
+#' clinical_data <- mariathasan_data$clinical
+#' patient_response <- clinical_data[, "Best Confirmed Overall Response"]
+#' patient_response <- gsub("CR","R", patient_response)
+#' patient_response <- gsub("PD","NR", patient_response)
+#' names(patient_response) <- rownames(clinical_data)
+#' # retrieve TMB
+#' TMB <- clinical_data[, "FMOne mutation burden per MB"]
+#' names(TMB) <- rownames(clinical_data)
+#'
+#' # Investigate possible biomarkers
+#' explore_biomarkers(pathways = pathway_activity,
+#' immunecells = cell_fractions,
+#' lrpairs = lrpair_weights,
+#' tfs = tf_activity,
+#' ccpairs = ccpair_scores,
+#' cancer_type = "BLCA",
+#' real_patient_response = patient_response,
+#' output_file_path = "../figures",
+#' TMB_values = TMB)
+#'
 explore_biomarkers <- function(pathways = NULL,
                                immunecells = NULL,
                                tfs = NULL,
@@ -53,7 +122,6 @@ explore_biomarkers <- function(pathways = NULL,
     patients_to_keep <- names(TMB_values[!is.na(TMB_values)])
     TMB_values <- TMB_values[patients_to_keep]
     real_patient_response <- real_patient_response[patients_to_keep]
-    RNA_tpm <- RNA_tpm[, patients_to_keep]
   }
   # Check that folder exists, create folder otherwise
   if (dir.exists(output_file_path) == FALSE) {
@@ -128,7 +196,7 @@ explore_biomarkers <- function(pathways = NULL,
                                         FUN = "median", na.rm = TRUE, data = my_coefs
     )
 
-  return(list(weights=my_coefs_median, features = features_df, features_matrix = features_matrix))
+  return(list(weights=my_coefs_median, features = features_df))
   }
 
   comparison <- do.call(rbind, lapply(1:length(view_combinations), function(ii){
@@ -180,24 +248,23 @@ explore_biomarkers <- function(pathways = NULL,
       biomarkers_weights_sort$cor <- factor(biomarkers_weights_sort$cor, levels = unique(biomarkers_weights_sort$cor))
 
       # BARPLOT #
-      barplot <- ggplot2::ggplot(biomarkers_weights_sort, aes(x = .data$variable, y = abs(.data$weight), fill = .data$cor)) +
+      barplot <- ggplot2::ggplot(biomarkers_weights_sort, ggplot2::aes(x = .data$variable, y = abs(.data$weight), fill = .data$cor)) +
         ggplot2::geom_bar(stat = "identity", color = "white") +
         ggplot2::scale_fill_manual(
           name = "Association sign",
           labels = levels(biomarkers_weights_sort$cor),
           values = c("-" = "#BB4444", "+" = "#4477AA", "0" = "gray")
         ) +
-        ggplot2::theme(panel.grid = element_blank()) +
-        ggplot2::theme(
-          axis.text.y = element_text(size = 12, color = "black"), axis.title.x = element_blank(), axis.title.y = element_text(size = 12),
-          axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.ticks.y = element_line(size = 0.5, color = "black"),
+        ggplot2::theme(panel.grid = ggplot2::element_blank()) +
+        ggplot2::theme(axis.text.y = ggplot2::element_text(size = 12, color = "black"), axis.title.x = ggplot2::element_blank(), axis.title.y = ggplot2::element_text(size = 12),
+          axis.text.x = ggplot2::element_blank(), axis.ticks.x = ggplot2::element_blank(), axis.ticks.y = ggplot2::element_line(size = 0.5, color = "black"),
           legend.position = "top", legend.direction = "horizontal",
-          legend.box.background = element_rect(color = "black", size = 0.3),
-          legend.box.margin = margin(0.5, 0.5, 0.5, 0.5),
-          legend.text = element_text(size = 12),
-          legend.title = element_text(size = 12, face = "bold", vjust = 0.5),
-          panel.border = element_blank(), panel.background = element_blank(),
-          plot.margin = unit(c(0, 0, 0.2, 0.2), "cm"), axis.line.y = element_line(colour = "black")
+          legend.box.background = ggplot2::element_rect(color = "black", size = 0.3),
+          legend.box.margin = ggplot2::margin(0.5, 0.5, 0.5, 0.5),
+          legend.text = ggplot2::element_text(size = 12),
+          legend.title = ggplot2::element_text(size = 12, face = "bold", vjust = 0.5),
+          panel.border = ggplot2::element_blank(), panel.background = ggplot2::element_blank(),
+          plot.margin = ggplot2::unit(c(0, 0, 0.2, 0.2), "cm"), axis.line.y = ggplot2::element_line(colour = "black")
         ) +
         ggplot2::labs(y = "Biomarker weight")
 
@@ -206,9 +273,9 @@ explore_biomarkers <- function(pathways = NULL,
       features_boxplot$label <- factor(features_boxplot$label, levels = c("NR", "R"))
 
       # BOXPLOT #
-      boxplot <- ggplot2::ggplot(features_boxplot, aes(x = .data$feature, y = .data$value_z, fill = .data$label, color = .data$label)) +
+      boxplot <- ggplot2::ggplot(features_boxplot, ggplot2::aes(x = .data$feature, y = .data$value_z, fill = .data$label, color = .data$label)) +
         ggplot2::geom_boxplot(alpha = 0.8, outlier.shape = NA) +
-        ggplot2::geom_point(position = position_jitterdodge(), size = 0.05) +
+        ggplot2::geom_point(position = ggplot2::position_jitterdodge(), size = 0.05) +
         ggplot2::scale_fill_manual(
           name = "Label",
           labels = levels(features_boxplot$label),
@@ -221,24 +288,26 @@ explore_biomarkers <- function(pathways = NULL,
         ) +
         ggplot2::ylim(c(-5, 5)) +
         ggplot2::theme_minimal() +
-        ggplot2::theme(panel.grid = element_blank()) +
+        ggplot2::theme(panel.grid = ggplot2::element_blank()) +
         ggplot2::theme(
-          axis.text.x = element_text(size = 12, angle = 45, hjust = 1, color = "black"), axis.text.y = element_text(size = 12, color = "black"),
-          axis.title.x = element_blank(), axis.title.y = element_text(size = 12), axis.ticks.x = element_blank(),
-          legend.position = "bottom", legend.direction = "horizontal", axis.ticks.y = element_line(size = 0.5, color = "black"),
-          legend.box.background = element_rect(color = "black", size = 0.3),
-          legend.box.margin = margin(0.5, 0.5, 0.5, 0.5),
-          legend.text = element_text(size = 12),
-          legend.title = element_text(size = 12, face = "bold", vjust = 0.5),
-          plot.margin = unit(c(0.2, 0, 0, 0.2), "cm"), axis.line.y = element_line(colour = "black")
+          axis.text.x = ggplot2::element_text(size = 12, angle = 45, hjust = 1, color = "black"), axis.text.y = ggplot2::element_text(size = 12, color = "black"),
+          axis.title.x = ggplot2::element_blank(), axis.title.y = ggplot2::element_text(size = 12), axis.ticks.x = ggplot2::element_blank(),
+          legend.position = "bottom", legend.direction = "horizontal", axis.ticks.y = ggplot2::element_line(size = 0.5, color = "black"),
+          legend.box.background = ggplot2::element_rect(color = "black", size = 0.3),
+          legend.box.margin = ggplot2::margin(0.5, 0.5, 0.5, 0.5),
+          legend.text = ggplot2::element_text(size = 12),
+          legend.title = ggplot2::element_text(size = 12, face = "bold", vjust = 0.5),
+          plot.margin = ggplot2::unit(c(0.2, 0, 0, 0.2), "cm"), axis.line.y = ggplot2::element_line(colour = "black")
         ) +
         ggplot2::labs(y = "Z-score")
 
-      if (length(unique(median_biomarkers$feature)) > 30) {
-        boxplot <- boxplot + ggplot2::theme(axis.text.y = element_text(size = 10))
+      if (length(unique(biomarkers_weights$feature)) > 30) {
+        boxplot <- boxplot + ggplot2::theme(axis.text.y = ggplot2::element_text(size = 10))
       } else {
-        boxplot <- boxplot + ggplot2::theme(axis.text.y = element_text(size = 12))
+        boxplot <- boxplot + ggplot2::theme(axis.text.y = ggplot2::element_text(size = 12))
       }
+
+      if (verbose) message("Saving biomarkers box-barplot for ", names(view_combinations[[ii]])," in ", file.path(output_file_path), "\n")
 
       # Combine plots
       g1 <- ggplot2::ggplotGrob(boxplot)
@@ -260,8 +329,8 @@ explore_biomarkers <- function(pathways = NULL,
 
         if (length(unique(tmp$value))!=1){
           # compute wilcoxon sum rank test, effect size and sign
-          stattest <- tmp %>% rstatix::wilcox_test(value ~ label)
-          effsize <- tmp %>% rstatix::wilcox_effsize(value ~ label)
+          stattest <- rstatix::wilcox_test(data = tmp, value ~ label)
+          effsize <- rstatix::wilcox_effsize(data = tmp, value ~ label)
           sign <- sign(tmp_mean['R'] - tmp_mean['NR'])
           p_val = stattest$p
           eff_size = effsize$effsize
@@ -321,24 +390,32 @@ explore_biomarkers <- function(pathways = NULL,
   }
 
   # VOLCANO PLOT #
+  if (verbose) message("Saving biomarkers volcano plot for all views in ", file.path(output_file_path), "\n")
+
   xminmax <- max(abs(comparison$signedEffect))
   xminmax <- xminmax + xminmax*0.01
   ymax <- max(-log10(comparison$p_val))
   ymax <- ymax + ymax*0.01
 
-  ggplot2::ggplot(data=comparison, aes(x=.data$signedEffect, y=-log10(.data$p_val), color=.data$threshold, size=abs(.data$weight))) +
-    ggplot2::geom_point(alpha=1, aes(shape=as.factor(sign(weight)))) +
-    ggplot2::xlim(c(-xminmax, xminmax)) + ylim(c(0, ymax)) +
-    ggplot2::xlab("higher in NR          effect size          higher in R") + ylab("-log10 p-value") + ggtitle("") +
+  volcano_plot <- ggplot2::ggplot(data=comparison, ggplot2::aes(x=.data$signedEffect, y=-log10(.data$p_val), color=.data$threshold, size=abs(.data$weight))) +
+    ggplot2::geom_point(alpha=1, ggplot2::aes(shape=as.factor(sign(weight)))) +
+    ggplot2::xlim(c(-xminmax, xminmax)) +
+    ggplot2::ylim(c(0, ymax)) +
+    ggplot2::xlab("higher in NR          effect size          higher in R") +
+    ggplot2::ylab("-log10 p-value") +
+    ggplot2::ggtitle("") +
     ggplot2::scale_color_manual(values = c("notSign" = "#a6a6a6", "Sign" = "#4BA8D7"), name = "R vs NR significance")+
     ggplot2::scale_shape_manual(values=c(15, 16, 17), name = "Association sign") +
     ggplot2::scale_size_continuous(name = "Estimated weight") +
     ggplot2::theme_bw() +
-    ggplot2::geom_hline(yintercept = -log10(0.05), linetype = "longdash", colour="#9e9e9e") + geom_vline(xintercept = 0, linetype = "solid", colour="#9e9e9e") +
-    ggplot2::theme(axis.text = element_text(color = "black"), axis.ticks = element_line(color = "black")) +
+    ggplot2::geom_hline(yintercept = -log10(0.05), linetype = "longdash", colour="#9e9e9e") +
+    ggplot2::geom_vline(xintercept = 0, linetype = "solid", colour="#9e9e9e") +
+    ggplot2::theme(axis.text = ggplot2::element_text(color = "black"), axis.ticks = ggplot2::element_line(color = "black")) +
     ggplot2::theme(legend.position = "right") +
-    ggrepel::geom_text_repel(data=subset(comparison, (threshold!="notSign" & istop == TRUE)), aes(x=.data$signedEffect, y=-log10(.data$p_val), label=.data$variable, size=.05),
+    ggrepel::geom_text_repel(data=subset(comparison, (threshold!="notSign" & istop == TRUE)), ggplot2::aes(x=.data$signedEffect, y=-log10(.data$p_val), label=.data$variable, size=.05),
                                     show.legend = NA, inherit.aes = FALSE)
+
+ if (verbose) suppressWarnings(print(volcano_plot))
 
   ggplot2::ggsave(file.path(output_file_path, "volcano_plot.pdf"), width = 7, height = 7)
 }

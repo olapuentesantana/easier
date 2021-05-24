@@ -49,5 +49,74 @@ Plot original features distribution together with the feature importance in
 the model
 }
 \examples{
-# TODOTODO
+# Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
+if (!requireNamespace("BiocManager", quietly = TRUE))
+ install.packages("BiocManager")
+
+BiocManager::install(c("biomaRt",
+ "circlize",
+ "ComplexHeatmap",
+ "corrplot",
+ "DESeq2",
+ "dplyr",
+ "DT",
+ "edgeR",
+ "ggplot2",
+ "limma",
+ "lsmeans",
+ "reshape2",
+ "spatstat",
+ "survival",
+ "plyr"))
+
+install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
+library(IMvigor210CoreBiologies)
+
+data(cds)
+mariathasan_data <- preprocess_mariathasan(cds)
+gene_count <- mariathasan_data$counts
+gene_tpm <- mariathasan_data$tpm
+rm(cds)
+
+# Computation of cell fractions
+cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
+
+# Computation of pathway scores
+pathway_activity <- compute_pathways_scores(RNA_counts = gene_count,
+remove_genes_ICB_proxies = TRUE)
+
+# Computation of TF activity
+tf_activity <- compute_TF_activity(RNA_tpm = gene_tpm,
+remove_genes_ICB_proxies = FALSE)
+
+# Computation of ligand-receptor pair weights
+lrpair_weights <- compute_LR_pairs(RNA_tpm = gene_tpm,
+remove_genes_ICB_proxies = FALSE,
+cancer_type = "pancan")
+
+# Computation of cell-cell interaction scores
+ccpair_scores <- compute_CC_pairs_grouped(lrpairs = lrpair_weights,
+cancer_type = "pancan")
+
+# retrieve clinical response
+clinical_data <- mariathasan_data$clinical
+patient_response <- clinical_data[, "Best Confirmed Overall Response"]
+patient_response <- gsub("CR","R", patient_response)
+patient_response <- gsub("PD","NR", patient_response)
+names(patient_response) <- rownames(clinical_data)
+# retrieve TMB
+TMB <- clinical_data[, "FMOne mutation burden per MB"]
+names(TMB) <- rownames(clinical_data)
+
+# Investigate possible biomarkers
+explore_biomarkers(pathways = pathway_activity,
+immunecells = cell_fractions,
+lrpairs = lrpair_weights,
+tfs = tf_activity,
+ccpairs = ccpair_scores,
+cancer_type = "BLCA",
+real_patient_response = patient_response,
+output_file_path = "../figures",
+TMB_values = TMB)
+
 }

@@ -20,7 +20,8 @@
 #' @param list_gold_standards A character string of task names to be considered as gold standards for comparison.
 #' @param cancer_type A character string indicating which cancer-specific model should be used to compute the predictions.
 #' @param TMB_values A numeric vector containing patients' tumor mutational burden (TMB) values.
-#' @param easier_with_TMB A logical flag indicating whether to apply refined approach using the combination of easier predictions and tumor mutational burden..
+#' @param easier_with_TMB A logical flag indicating whether to apply refined approach using the combination of easier predictions and tumor mutational burden.
+#' @param verbose A logical flag indicating whether to display messages about the process.
 #'
 #' @return If easier_with_TMB is set to FALSE, two figures (roc curve and bar plots) are directly saved in the path specified in output_file_path.
 #' If easier_with_TMB is set to TRUE, an additional plot is returned displaying an integrated approach that uses both immune response and tumor
@@ -96,11 +97,13 @@
 #' names(TMB) <- rownames(clinical_data)
 #'
 #' # Assess patient-specific likelihood of response to ICB therapy
-#' assess_immune_response(predictions_immune_response = predictions_immune_response, real_patient_response = patient_response,
+#' assess_immune_response(predictions_immune_response = predictions_immune_response,
+#' real_patient_response = patient_response,
 #' RNA_tpm = gene_tpm,
 #' output_file_path = "../figures",
-#' cancer_type = "SKCM",
-#' TMB_values = TMB)
+#' cancer_type = "BLCA",
+#' TMB_values = TMB,
+#' easier_with_TMB = TRUE)
 assess_immune_response <- function(predictions_immune_response = NULL,
                                    real_patient_response,
                                    RNA_tpm,
@@ -108,7 +111,8 @@ assess_immune_response <- function(predictions_immune_response = NULL,
                                    list_gold_standards,
                                    cancer_type,
                                    TMB_values,
-                                   easier_with_TMB = FALSE) {
+                                   easier_with_TMB = FALSE,
+                                   verbose = TRUE) {
   if (missing(cancer_type)) stop("cancer type needs to be specified")
   if (is.null(predictions_immune_response)) stop("none predictions found")
   if (missing(TMB_values)){
@@ -155,6 +159,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     default_list_gold_standards <- c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
     if (missing(list_gold_standards)) {
       list_gold_standards <- default_list_gold_standards
+      if(verbose){message("gold standards (tasks) computed!")}
     }
     gold_standards <- compute_gold_standards(RNA_tpm, list_gold_standards)
     # Assess correlation between chemokines and the other correlated tasks
@@ -293,6 +298,9 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     # *******************************************
     n_R <- table(real_patient_response)[["R"]]
     n_NR <- table(real_patient_response)[["NR"]]
+
+    if (verbose) message("Saving barplot displaying AUC performance in ", file.path(output_file_path), "\n")
+
     gg <- ggplot2::ggplot(AUC_mean_sd_all_run_tasks, ggplot2::aes(x = .data$View, y = round(.data$AUC.mean, 2), fill = .data$View)) +
       ggplot2::geom_bar(stat = "identity", position = ggplot2::position_dodge(), color = "white") +
       if (TMB_available){
@@ -336,6 +344,8 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     # *******************************************
     # Plot ROC curve
     # *******************************************
+    if (verbose) message("Saving ROC curves in ", file.path(output_file_path), "\n")
+
     pdf(file.path(output_file_path, "roc_curve.pdf"), width = 8, height = 8)
     par(cex.axis = 1.6, mar = c(5, 5, 5, 5), col.lab = "black")
 
@@ -415,11 +425,10 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     }
     title(main = paste0("n=", length(real_patient_response), " (R=", n_R, "; ", "NR=", n_NR, ")"))
     dev.off()
-
     # *******************************************
     # Integrated score
     # *******************************************
-    if (combo_easier_and_TMB == TRUE){
+    if (easier_with_TMB == TRUE){
       rp_df <- data.frame(response = real_patient_response,
                           prediction_easier = apply(overall_df, 1, mean),
                           TMB = TMB_values)
@@ -455,6 +464,8 @@ assess_immune_response <- function(predictions_immune_response = NULL,
         AUC_averaged <- ROCR::performance(pred, measure = "auc")
         AUC_averaged_v <- AUC_averaged@y.values[[1]]
       })
+
+     if (verbose) message("Saving integrated score (easier & TMB) plot in ", file.path(output_file_path), "\n")
 
       pdf(file.path(output_file_path, "easier_tmb_combo_auc.pdf"), width = 8, height = 8)
       par(cex.axis = 1.6, mar = c(5, 5, 5, 5), col.lab = "black")

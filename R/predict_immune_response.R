@@ -76,7 +76,7 @@
 #' tfs = tf_activity,
 #' lrpairs = lrpair_weights,
 #' ccpairs = ccpair_scores,
-#' cancer_type = "SKCM")
+#' cancer_type = "BLCA")
 predict_immune_response <- function(pathways = NULL,
                                     immunecells = NULL,
                                     tfs = NULL,
@@ -120,7 +120,7 @@ predict_immune_response <- function(pathways = NULL,
     view_name <- paste(names(view_info), collapse = "_")
     view_data <- lapply(tolower(names(view_info)), function(x) as.data.frame(get(x)))
     names(view_data) <- names(view_info)
-    if (verbose) message(view, ".view source: ", view_name, "\n")
+    if (verbose) message("Computing predictions using ", view_name, "...\n")
 
     # Predict immune response using RMTLR model parameters
     prediction_view <- predict_with_rmtlr(

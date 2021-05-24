@@ -31,9 +31,7 @@ get_OE_bulk <- function(r,
   r$sig_scores_raw <- r$sig_scores
   rand_flag <- is.null(r$rand_scores) | !all(is.element(names(gene_sign), colnames(r$rand_scores)))
   if (rand_flag) {
-    # TODOTODO: maybe use message instead - it is handled in a more gentle way and could be suppressed in practical manners ;)
-    # TODOTODO: could apply to other print commands
-    if (verbose) message("Computing also random scores...", "\n")
+    #if (verbose) message("Computing also random scores...", "\n")
     r$rand_scores <- r$sig_scores
   }
   for (i in sig_names) {

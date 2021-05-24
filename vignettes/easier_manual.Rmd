@@ -43,11 +43,11 @@ The RNA sequencing data of Mariathasan cohort is made available via `IMvigor210C
 Starting R, this package can be installed as follows:
 
 ```{r eval = FALSE}
-install.packages("easier_0.9.0.tar.gz", repos = NULL, type="source")
+install.packages("../easier_0.9.0.tar.gz", repos = NULL, type="source")
 library(easier)
 ````
 
-To download and install `IMvigor210CoreBiologies` package including its dependencies, we followed [IMvigor210CoreBiologies](http://research-pub.gene.com/IMvigor210CoreBiologies/) vignette.
+To download and install `IMvigor210CoreBiologies` package including its dependencies, please follow [IMvigor210CoreBiologies](http://research-pub.gene.com/IMvigor210CoreBiologies/) vignette.
 
 ```{r eval = FALSE}
 if (!requireNamespace("BiocManager", quietly = TRUE))
@@ -69,7 +69,7 @@ BiocManager::install(c("biomaRt",
            "survival",
            "plyr"))
 
-install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
+install.packages("path/to/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
 library(IMvigor210CoreBiologies)
  
 ````
@@ -191,7 +191,7 @@ Depending on the patient's response information available, we can now think of t
 
 For the first scenario, we can use the patients' response information available from Mariathasan cohort. Because patients' tumor mutational burden is also provided, we can also used to compare its performance against the quantitative descriptors. 
 
-Additionally the user can set `combo_easier_and_TMB = TRUE` to apply a refined approach based on the integration of `easier` predictions with information on tumor mutational burden (TMB). 
+Additionally the user can set `easier_with_TMB = TRUE` to apply a refined approach based on the integration of `easier` predictions with information on tumor mutational burden (TMB). 
 Since both immune response and TMB are essential for an effective immunotherapy response, we decided to conceptualize this in our predictions by either penalizing or weighting differently our scores in high- and low-TMB patients. 
 
 ```{r eval = FALSE}

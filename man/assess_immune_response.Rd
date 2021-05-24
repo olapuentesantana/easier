@@ -12,7 +12,8 @@ assess_immune_response(
   list_gold_standards,
   cancer_type,
   TMB_values,
-  easier_with_TMB = FALSE
+  easier_with_TMB = FALSE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -30,7 +31,9 @@ assess_immune_response(
 
 \item{TMB_values}{A numeric vector containing patients' tumor mutational burden (TMB) values.}
 
-\item{easier_with_TMB}{A logical flag indicating whether to apply refined approach using the combination of easier predictions and tumor mutational burden..}
+\item{easier_with_TMB}{A logical flag indicating whether to apply refined approach using the combination of easier predictions and tumor mutational burden.}
+
+\item{verbose}{A logical flag indicating whether to display messages about the process.}
 }
 \value{
 If easier_with_TMB is set to FALSE, two figures (roc curve and bar plots) are directly saved in the path specified in output_file_path.
@@ -113,9 +116,11 @@ TMB <- clinical_data[, "FMOne mutation burden per MB"]
 names(TMB) <- rownames(clinical_data)
 
 # Assess patient-specific likelihood of response to ICB therapy
-assess_immune_response(predictions_immune_response = predictions_immune_response, real_patient_response = patient_response,
+assess_immune_response(predictions_immune_response = predictions_immune_response,
+real_patient_response = patient_response,
 RNA_tpm = gene_tpm,
 output_file_path = "../figures",
-cancer_type = "SKCM",
-TMB_values = TMB)
+cancer_type = "BLCA",
+TMB_values = TMB,
+easier_with_TMB = TRUE)
 }

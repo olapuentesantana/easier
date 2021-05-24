@@ -93,5 +93,5 @@ immunecells = cell_fractions,
 tfs = tf_activity,
 lrpairs = lrpair_weights,
 ccpairs = ccpair_scores,
-cancer_type = "SKCM")
+cancer_type = "BLCA")
 }
