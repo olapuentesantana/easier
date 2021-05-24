@@ -40,7 +40,6 @@ Imports:
     grid,
     DESeq2,
     utils,
-    pdist,
     dorothea,
     dplyr,
     matrixStats,
@@ -48,7 +47,10 @@ Imports:
     immunedeconv,
     rlang,
     arules,
-    BiocParallel
+    BiocParallel,
+    reshape2,
+    rstatix,
+    ggrepel
 Remotes:
     icbi-lab/immunedeconv
 License: MIT + file LICENSE

@@ -159,7 +159,6 @@ Tertiary lymphoid structures signature (TLS) | Cabrita et al., Nature, 2020 |
 Immuno-predictive score (IMPRES) | Auslander et al., Nat.Med., 2018 |
 Microsatellite instability status | Fu et al., BMC Genomics, 2019 |
 
-
 By default nine hallmarks of the immune response are used (see below), however you can set your own preferences by modifying the argument `list_gold_standards`.
 
 ```{r eval = FALSE}
