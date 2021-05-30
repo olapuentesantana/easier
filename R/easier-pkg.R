@@ -4,8 +4,9 @@
 #'
 #'
 #' @importFrom stats cor
-#' @importFrom utils globalVariables install.packages installed.packages
 #' @importFrom rlang .data
+#' @importFrom graphics abline lines
+#' @importFrom utils View
 #'
 #' @name easier-pkg
 #' @docType package

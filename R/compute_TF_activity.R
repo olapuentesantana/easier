@@ -18,40 +18,16 @@
 #' @export
 #'
 #' @examples
-#' # Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
-#' if (!requireNamespace("BiocManager", quietly = TRUE))
-#'  install.packages("BiocManager")
-#'
-#' BiocManager::install(c("biomaRt",
-#'  "circlize",
-#'  "ComplexHeatmap",
-#'  "corrplot",
-#'  "DESeq2",
-#'  "dplyr",
-#'  "DT",
-#'  "edgeR",
-#'  "ggplot2",
-#'  "limma",
-#'  "lsmeans",
-#'  "reshape2",
-#'  "spatstat",
-#'  "survival",
-#'  "plyr"))
-#'
-#' install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
-#' library(IMvigor210CoreBiologies)
-#'
+#' # use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
 #' data(cds)
 #' mariathasan_data <- preprocess_mariathasan(cds)
 #' gene_tpm <- mariathasan_data$tpm
 #' rm(cds)
 #'
-#' # Computation of TF activity
+#' # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
 #' tf_activity <- compute_TF_activity(
 #'   RNA_tpm = gene_tpm,
 #'   remove_genes_ICB_proxies = FALSE)
-#'
-#' head(tf_activity)
 compute_TF_activity <- function(RNA_tpm,
                                 remove_genes_ICB_proxies = FALSE,
                                 verbose = TRUE) {
@@ -94,7 +70,11 @@ compute_TF_activity <- function(RNA_tpm,
   genes_left <- setdiff(all_regulated_transcripts, rownames(E))
 
   # check what is the percentage of regulated transcripts that we have in our data
-  if (verbose) message("Regulated transcripts found in data set: ", length(genes_kept), "/", length(all_regulated_transcripts), " (", round(length(genes_kept)/length(all_regulated_transcripts), 3) * 100,"%)")
+  if (verbose) {
+    message("Regulated transcripts found in data set: ", length(genes_kept), "/",
+            length(all_regulated_transcripts), " (",
+            round(length(genes_kept)/length(all_regulated_transcripts), 3) * 100,"%)")
+  }
 
   # TF activity: run viper
   tf_activity <- dorothea::run_viper(

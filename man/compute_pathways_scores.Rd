@@ -27,39 +27,14 @@ This function infers pathway activity from gene expression in raw counts from bu
 using PROGENy method from (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018).
 }
 \examples{
-# Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
-if (!requireNamespace("BiocManager", quietly = TRUE))
- install.packages("BiocManager")
-
-BiocManager::install(c("biomaRt",
- "circlize",
- "ComplexHeatmap",
- "corrplot",
- "DESeq2",
- "dplyr",
- "DT",
- "edgeR",
- "ggplot2",
- "limma",
- "lsmeans",
- "reshape2",
- "spatstat",
- "survival",
- "plyr"))
-
-install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
-library(IMvigor210CoreBiologies)
-
+# use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
 data(cds)
 mariathasan_data <- preprocess_mariathasan(cds)
 gene_count <- mariathasan_data$counts
 rm(cds)
 
-library("progeny")
-
-# Computation of pathway scores
+# Computation of pathway scores (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018)
 pathway_activity <- compute_pathways_scores(
   RNA_counts = gene_count,
   remove_genes_ICB_proxies = TRUE)
-head(pathway_activity)
 }

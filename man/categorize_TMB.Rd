@@ -4,12 +4,12 @@
 \alias{categorize_TMB}
 \title{Convert tumor mutational burden (TMB) to categorical.}
 \usage{
-categorize_TMB(x, thresholds = NULL)
+categorize_TMB(TMB, thresholds = NULL)
 }
 \arguments{
-\item{thresholds}{A numeric vector to specify thresholds to be used. Default thresholds are low (<100), moderate (100-400) and high TMB (>400).}
-
 \item{TMB}{A numeric vector with tumor mutational burden values.}
+
+\item{thresholds}{A numeric vector to specify thresholds to be used. Default thresholds are low (<100), moderate (100-400) and high TMB (>400).}
 }
 \value{
 A numeric vector assigning each sample a class from 1 to 3.
@@ -18,29 +18,7 @@ A numeric vector assigning each sample a class from 1 to 3.
 \code{categorize_TMB} encodes tumor mutational variable (TMB) numerical variable to categorical.
 }
 \examples{
-# Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
-if (!requireNamespace("BiocManager", quietly = TRUE))
- install.packages("BiocManager")
-
-BiocManager::install(c("biomaRt",
- "circlize",
- "ComplexHeatmap",
- "corrplot",
- "DESeq2",
- "dplyr",
- "DT",
- "edgeR",
- "ggplot2",
- "limma",
- "lsmeans",
- "reshape2",
- "spatstat",
- "survival",
- "plyr"))
-
-install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
-library(IMvigor210CoreBiologies)
-
+# use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
 data(cds)
 mariathasan_data <- preprocess_mariathasan(cds)
 rm(cds)
@@ -49,6 +27,6 @@ rm(cds)
 TumorMutationalBurden <- clinical_data[, "FMOne mutation burden per MB"]
 names(TumorMutationalBurden) <- rownames(clinical_data)
 
-TMB_cat <- categorize_TMB(TumorMutationalBurden)
-TMB_cat
+# Convert TMB continous values into categories
+TMB_cat <- categorize_TMB(TMB = TumorMutationalBurden)
 }

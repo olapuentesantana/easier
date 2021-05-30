@@ -1,15 +1,15 @@
-#' Calculate overall expression (OE)
+#' Calculate overall expression (OE) of the immune resistance program
 #'
 #' `get_OE_bulk` obtained from literature to calculate Immune resistance program
 #' (Jerby-Arnon et al., 2018)
 #'
 #' @importFrom arules discretize
 #'
-#' @param r list TODOTODO - needs some more info?
-#' @param gene_sign string
-#' @param num_rounds integer
-#' @param full_flag boolean
-#' @param verbose A logical value indicating whether to display informative messages
+#' @param r A list containing a numeric matrix with bulk RNA-Seq data (tpm values) and a character string with the available gene names.
+#' @param gene_sign A list containing different character strings associated with subsets of the resistance program.
+#' @param num_rounds An integer value related to
+#' @param full_flag A logical flag
+#' @param verbose A logical flag indicating whether to display messages about the process.
 #'
 #' @return Random score
 #'

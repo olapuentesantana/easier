@@ -171,6 +171,10 @@ opt_xtrain_stats <- lapply(names(trained_models), function(cancertype){
 names(opt_xtrain_stats) <-  c("LUAD", "LUSC", "BLCA","BRCA", "CESC", "CRC", "GBM", "HNSC", "KIRC", "KIRP", "LIHC", "OV", "PAAD", "PRAD", "SKCM", "STAD", "THCA", "UCEC")
 
 
+HGNC <- read.csv(file.path("../../Anti_PD1_challenge/Anti-PD1-DREAM-cSysImmunoOnco_system/tmp_data/HGNC_genenames_20170418.txt"),
+                   header=TRUE, sep="\t")
+
+
 setwd("~/ownCloud2/SystemsImmunoOncology/easier_project/easier_devel/")
 usethis::use_data(cor_genes_to_remove,
                   TCGA_mean_pancancer,
@@ -182,9 +186,5 @@ usethis::use_data(cor_genes_to_remove,
                   lr_frequency,
                   opt_models,
                   opt_xtrain_stats,
+                  HGNC,
                   internal = TRUE, overwrite = TRUE, compress = "xz")
-
-
-
-
-

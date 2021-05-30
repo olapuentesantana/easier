@@ -33,29 +33,7 @@ coming from ligand-receptor pair annotations from the database of (Ramilowski et
 Each ligand-receptor weight is defined as the minimum of the log2(TPM+1) expression of the ligand and the receptor.
 }
 \examples{
-# Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
-if (!requireNamespace("BiocManager", quietly = TRUE))
- install.packages("BiocManager")
-
-BiocManager::install(c("biomaRt",
- "circlize",
- "ComplexHeatmap",
- "corrplot",
- "DESeq2",
- "dplyr",
- "DT",
- "edgeR",
- "ggplot2",
- "limma",
- "lsmeans",
- "reshape2",
- "spatstat",
- "survival",
- "plyr"))
-
-install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
-library(IMvigor210CoreBiologies)
-
+# use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
 data(cds)
 mariathasan_data <- preprocess_mariathasan(cds)
 gene_tpm <- mariathasan_data$tpm

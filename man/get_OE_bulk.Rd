@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_OE_bulk.R
 \name{get_OE_bulk}
 \alias{get_OE_bulk}
-\title{Calculate overall expression (OE)}
+\title{Calculate overall expression (OE) of the immune resistance program}
 \usage{
 get_OE_bulk(
   r,
@@ -13,15 +13,15 @@ get_OE_bulk(
 )
 }
 \arguments{
-\item{r}{list TODOTODO - needs some more info?}
+\item{r}{A list containing a numeric matrix with bulk RNA-Seq data (tpm values) and a character string with the available gene names.}
 
-\item{gene_sign}{string}
+\item{gene_sign}{A list containing different character strings associated with subsets of the resistance program.}
 
-\item{num_rounds}{integer}
+\item{num_rounds}{An integer value related to}
 
-\item{full_flag}{boolean}
+\item{full_flag}{A logical flag}
 
-\item{verbose}{A logical value indicating whether to display informative messages}
+\item{verbose}{A logical flag indicating whether to display messages about the process.}
 }
 \value{
 Random score

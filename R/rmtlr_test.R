@@ -13,42 +13,21 @@
 #' @return A numeric matrix of predicted values (rows = samples; columns = tasks).
 #'
 #' @examples
-#' # Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
-#' if (!requireNamespace("BiocManager", quietly = TRUE))
-#'  install.packages("BiocManager")
-#'
-#' BiocManager::install(c("biomaRt",
-#'  "circlize",
-#'  "ComplexHeatmap",
-#'  "corrplot",
-#'  "DESeq2",
-#'  "dplyr",
-#'  "DT",
-#'  "edgeR",
-#'  "ggplot2",
-#'  "limma",
-#'  "lsmeans",
-#'  "reshape2",
-#'  "spatstat",
-#'  "survival",
-#'  "plyr"))
-#'
-#' install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
-#' library(IMvigor210CoreBiologies)
-#'
+#' # use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
 #' data(cds)
 #' mariathasan_data <- preprocess_mariathasan(cds)
 #' gene_tpm <- mariathasan_data$tpm
 #' rm(cds)
 #'
-#' # Computation of cell fractions
+#' # Computation of cell fractions (Finotello et al., Genome Med, 2019)
 #' cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
 #'
-#' # Parameters valus: rows = features, columns = tasks
+#' # Parameters values should be defined with features as rows and tasks as columns
 #' estimated_parameters <- matrix(rnorm(n= (ncol(cell_fractions)+1) * 10),
 #' nrow = ncol(cell_fractions) + 1, ncol = 10)
 #' rownames(estimated_parameters) <- c("(Intercept)", colnames(cell_fractions))
-#' colnames(estimated_parameters) <- c("CYT", "Ock_IS", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
+#' colnames(estimated_parameters) <- c("CYT", "Ock_IS", "Roh_IS", "chemokines",
+#' "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
 #'
 #' # Compute predictions using parameters values
 #' pred_test <- rmtlr_test(x_test = cell_fractions,

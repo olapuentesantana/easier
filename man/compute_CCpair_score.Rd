@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute_CCpair_score.R
 \name{compute_CCpair_score}
 \alias{compute_CCpair_score}
-\title{compute_CCpair_score}
+\title{Compute cell-cell pair score}
 \usage{
 compute_CCpair_score(
   celltype1,
@@ -30,32 +30,10 @@ compute_CCpair_score(
 numeric vector with weighted scores
 }
 \description{
-\code{compute_CCpair_score} computes the score for each cell-cell pair for all the patients.
+This function derives a score for each cell-cell pair feature.
 }
 \examples{
-# Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
-if (!requireNamespace("BiocManager", quietly = TRUE))
- install.packages("BiocManager")
-
-BiocManager::install(c("biomaRt",
- "circlize",
- "ComplexHeatmap",
- "corrplot",
- "DESeq2",
- "dplyr",
- "DT",
- "edgeR",
- "ggplot2",
- "limma",
- "lsmeans",
- "reshape2",
- "spatstat",
- "survival",
- "plyr"))
-
-install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
-library(IMvigor210CoreBiologies)
-
+# use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
 data(cds)
 mariathasan_data <- preprocess_mariathasan(cds)
 gene_tpm <- mariathasan_data$tpm
@@ -73,7 +51,8 @@ na_lrpairs <- apply(lrpair_weights, 2, function(x) {
  })
 lrpair_weights <- lrpair_weights[, na_lrpairs == FALSE]
 
-# binarize the data: set a threshold to 10 TPM, only pairs where both ligand and receptor have TPM > 10 are kept
+# binarize the data: set a threshold to 10 TPM,
+# only pairs where both ligand and receptor have TPM > 10 are kept
 lrpairs_binary <- ifelse(lrpair_weights > log2(10 + 1), 1, 0)
 
 # keep only the LR.pairs for which I have (non-zero) frequencies in the TCGA
@@ -89,5 +68,4 @@ celltype2 <- celltypes[1]
 CCpair_score <- compute_CCpair_score(celltype1, celltype2, intercell_network,
 lrpairs_binary, lr_frequency,
 compute_log = TRUE)
-head(CCpair_score)
 }

@@ -25,34 +25,13 @@
 #' @param cancer_type A character string indicating which cancer-specific model should be used to compute the predictions.
 #' @param real_patient_response A character vector with two factors (Non-responders = NR, Responders = R).
 #' @param output_file_path A character string pointing to a directory to save the plots returned by the function.
+#' @param TMB_values A numeric vector containing patients' tumor mutational burden (TMB) values.
 #' @param verbose A logical flag indicating whether to display messages about the process.
 #'
 #' @return boxplot with features distribution
 #'
 #' @examples
-#' # Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
-#' if (!requireNamespace("BiocManager", quietly = TRUE))
-#'  install.packages("BiocManager")
-#'
-#' BiocManager::install(c("biomaRt",
-#'  "circlize",
-#'  "ComplexHeatmap",
-#'  "corrplot",
-#'  "DESeq2",
-#'  "dplyr",
-#'  "DT",
-#'  "edgeR",
-#'  "ggplot2",
-#'  "limma",
-#'  "lsmeans",
-#'  "reshape2",
-#'  "spatstat",
-#'  "survival",
-#'  "plyr"))
-#'
-#' install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
-#' library(IMvigor210CoreBiologies)
-#'
+#' # use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
 #' data(cds)
 #' mariathasan_data <- preprocess_mariathasan(cds)
 #' gene_count <- mariathasan_data$counts
@@ -316,9 +295,9 @@ explore_biomarkers <- function(pathways = NULL,
       g$widths <- grid::unit.pmax(g1$widths, g2$widths)
 
       grid::grid.newpage()
-      pdf(paste0(output_file_path, "/box_barplot_for_", names(view_combinations[[ii]]), ".pdf"), width = 12, height = 8)
+      grDevices::pdf(paste0(output_file_path, "/box_barplot_for_", names(view_combinations[[ii]]), ".pdf"), width = 12, height = 8)
       grid::grid.draw(g)
-      dev.off()
+      grDevices::dev.off()
 
       features_names <- levels(features$feature)
       datatype_comparison <- do.call(rbind, lapply(features_names, function(x){

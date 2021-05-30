@@ -2,6 +2,12 @@
 #'
 #' `preprocess_mariathasan` prepares data from mariathasan cohort to be used along the vignette.
 #'
+#' @references Mariathasan, S., Turley, S., Nickles, D. et al. TGFβ attenuates tumour response to PD-L1 blockade by contributing to exclusion of T cells.
+#' Nature 554, 544–548 (2018). https://doi.org/10.1038/nature25501
+#'
+#' @importFrom BiocGenerics counts
+#' @importFrom Biobase fData pData
+#'
 #' @param cds CountDataSet object
 #' @param verbose A logical value indicating whether to display informative messages
 #'
@@ -14,19 +20,17 @@
 #' @export
 #'
 #' @examples
-#'
+#' # use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
 #' data(cds)
-#'
-#' data_mariathsan <- preprocess_mariathasan(cds)
-#'
+#' data_mariathasan <- preprocess_mariathasan(cds)
 preprocess_mariathasan <- function(cds,
                                    verbose = TRUE) {
   # Load CountDataSet object
   data(cds)
   # Retrieve counts and genes information
-  gene_count <- counts(cds)
-  gene_info <- fData(cds)
-  clin_info <- pData(cds)
+  gene_count <- BiocGenerics::counts(cds)
+  gene_info <- Biobase::fData(cds)
+  clin_info <- Biobase::pData(cds)
 
   # Are there any duplicated symbols?
   all_duplicates <- gene_info[duplicated(gene_info$symbol), ]

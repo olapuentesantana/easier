@@ -15,36 +15,13 @@
 #' @return A numeric matrix with values as z-scores.
 #'
 #' @examples
-#' # Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
-#' if (!requireNamespace("BiocManager", quietly = TRUE))
-#'  install.packages("BiocManager")
-#'
-#' BiocManager::install(c("biomaRt",
-#'  "circlize",
-#'  "ComplexHeatmap",
-#'  "corrplot",
-#'  "DESeq2",
-#'  "dplyr",
-#'  "DT",
-#'  "edgeR",
-#'  "ggplot2",
-#'  "limma",
-#'  "lsmeans",
-#'  "reshape2",
-#'  "spatstat",
-#'  "survival",
-#'  "plyr"))
-#'
-#' install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
-#' library(IMvigor210CoreBiologies)
-#'
+#' # use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
 #' data(cds)
 #' mariathasan_data <- preprocess_mariathasan(cds)
 #' gene_tpm <- mariathasan_data$tpm
 #' rm(cds)
-#'
+#' # apply z-score normalization
 #' tpm_zscore <- calc_z_score(t(gene_tpm))
-#' head(tpm_zscore)
 calc_z_score <- function(X,
                          mean,
                          sd) {

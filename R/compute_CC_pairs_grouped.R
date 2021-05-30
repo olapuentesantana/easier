@@ -15,29 +15,7 @@
 #' @return A matrix of scores with samples in rows and cell-cell pairs in columns.
 #'
 #' @examples
-#' # Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
-#' if (!requireNamespace("BiocManager", quietly = TRUE))
-#'  install.packages("BiocManager")
-#'
-#' BiocManager::install(c("biomaRt",
-#'  "circlize",
-#'  "ComplexHeatmap",
-#'  "corrplot",
-#'  "DESeq2",
-#'  "dplyr",
-#'  "DT",
-#'  "edgeR",
-#'  "ggplot2",
-#'  "limma",
-#'  "lsmeans",
-#'  "reshape2",
-#'  "spatstat",
-#'  "survival",
-#'  "plyr"))
-#'
-#' install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
-#' library(IMvigor210CoreBiologies)
-#'
+#' # use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
 #' data(cds)
 #' mariathasan_data <- preprocess_mariathasan(cds)
 #' gene_tpm <- mariathasan_data$tpm
@@ -53,7 +31,6 @@
 #' ccpair_scores <- compute_CC_pairs_grouped(
 #'   lrpairs = lrpair_weights,
 #'   cancer_type = "pancan")
-#' head(ccpair_scores)
 compute_CC_pairs_grouped <- function(lrpairs,
                                      cancer_type = "pancan",
                                      verbose = TRUE) {

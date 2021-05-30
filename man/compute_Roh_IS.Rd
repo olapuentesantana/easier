@@ -19,34 +19,12 @@ numeric matrix with rows=samples and columns=Roh immune score
 score genes (Roh et al., 2017).
 }
 \examples{
-# Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
-if (!requireNamespace("BiocManager", quietly = TRUE))
- install.packages("BiocManager")
-
-BiocManager::install(c("biomaRt",
- "circlize",
- "ComplexHeatmap",
- "corrplot",
- "DESeq2",
- "dplyr",
- "DT",
- "edgeR",
- "ggplot2",
- "limma",
- "lsmeans",
- "reshape2",
- "spatstat",
- "survival",
- "plyr"))
-
-install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
-library(IMvigor210CoreBiologies)
-
+# use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
 data(cds)
 mariathasan_data <- preprocess_mariathasan(cds)
 gene_tpm <- mariathasan_data$tpm
 rm(cds)
 
+# compute Roh immune score (Roh et al., Sci. Transl. Med., 2017)
 Roh_IS <- compute_Roh_IS(RNA_tpm = gene_tpm)
-head(Roh_IS)
 }

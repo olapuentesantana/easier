@@ -22,29 +22,7 @@ A numeric matrix of patients' gold standard values (rows = samples; columns = ta
 \code{computation_gold_standards} computes the scores for the gold standards required by the user
 }
 \examples{
-# Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
-if (!requireNamespace("BiocManager", quietly = TRUE))
- install.packages("BiocManager")
-
-BiocManager::install(c("biomaRt",
- "circlize",
- "ComplexHeatmap",
- "corrplot",
- "DESeq2",
- "dplyr",
- "DT",
- "edgeR",
- "ggplot2",
- "limma",
- "lsmeans",
- "reshape2",
- "spatstat",
- "survival",
- "plyr"))
-
-install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
-library(IMvigor210CoreBiologies)
-
+# use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
 data(cds)
 mariathasan_data <- preprocess_mariathasan(cds)
 gene_tpm <- mariathasan_data$tpm
@@ -56,5 +34,4 @@ tasks <- c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
 tasks_values <- compute_gold_standards(
   RNA_tpm = gene_tpm,
   list_gold_standards = tasks)
-head(tasks_values)
 }

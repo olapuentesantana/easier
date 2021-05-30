@@ -19,41 +19,16 @@
 #' @export
 #'
 #' @examples
-#' # Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
-#' if (!requireNamespace("BiocManager", quietly = TRUE))
-#'  install.packages("BiocManager")
-#'
-#' BiocManager::install(c("biomaRt",
-#'  "circlize",
-#'  "ComplexHeatmap",
-#'  "corrplot",
-#'  "DESeq2",
-#'  "dplyr",
-#'  "DT",
-#'  "edgeR",
-#'  "ggplot2",
-#'  "limma",
-#'  "lsmeans",
-#'  "reshape2",
-#'  "spatstat",
-#'  "survival",
-#'  "plyr"))
-#'
-#' install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
-#' library(IMvigor210CoreBiologies)
-#'
+#' # use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
 #' data(cds)
 #' mariathasan_data <- preprocess_mariathasan(cds)
 #' gene_count <- mariathasan_data$counts
 #' rm(cds)
 #'
-#' library("progeny")
-#'
-#' # Computation of pathway scores
+#' # Computation of pathway scores (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018)
 #' pathway_activity <- compute_pathways_scores(
 #'   RNA_counts = gene_count,
 #'   remove_genes_ICB_proxies = TRUE)
-#' head(pathway_activity)
 compute_pathways_scores <- function(RNA_counts,
                                     remove_genes_ICB_proxies = TRUE,
                                     verbose = TRUE) {
@@ -76,22 +51,22 @@ compute_pathways_scores <- function(RNA_counts,
 
   # Integers are required for "DESeq2"
   if (is.integer(raw_counts) == FALSE) {
-    raw_counts.integer <- apply(raw_counts, 2, as.integer)
-    rownames(raw_counts.integer) <- rownames(raw_counts)
+    raw_counts_integer <- apply(raw_counts, 2, as.integer)
+    rownames(raw_counts_integer) <- rownames(raw_counts)
   } else {
-    raw_counts.integer <- raw_counts
+    raw_counts_integer <- raw_counts
   }
 
   # Variance stabilizing transformation (DESeq2 package)
   # Integer count matrix, a data frame with the sample info,  design =~1 to consider all samples as part of the same group.
 
   # Column data:
-  colData <- data.frame(id = colnames(raw_counts.integer))
+  colData <- data.frame(id = colnames(raw_counts_integer))
 
   if (verbose) message("DESeq2 normalization -->\n")
   # Construction a DESeqDataSet: (Forced all to be data.frames($ operator))
   dset <- DESeq2::DESeqDataSetFromMatrix(
-    countData = raw_counts.integer,
+    countData = raw_counts_integer,
     colData = colData,
     design = ~1
   )
@@ -99,9 +74,9 @@ compute_pathways_scores <- function(RNA_counts,
   # Variance stabilization transformation
   dset <- DESeq2::estimateSizeFactors(dset)
   dset <- DESeq2::estimateDispersions(dset)
-  # gene_expr <- DESeq2::rlog(raw_counts.integer)
+  # gene_expr <- DESeq2::rlog(raw_counts_integer)
   gene_expr <- DESeq2::getVarianceStabilizedData(dset)
-  rownames(gene_expr) <- rownames(raw_counts.integer)
+  rownames(gene_expr) <- rownames(raw_counts_integer)
 
   # Pathways activity (Progeny package)
   # library(progeny)

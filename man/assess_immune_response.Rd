@@ -47,43 +47,21 @@ the patients' response provided. For comparison, a gold standard is plotted base
 average of the tasks.
 }
 \examples{
-# Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
-if (!requireNamespace("BiocManager", quietly = TRUE))
- install.packages("BiocManager")
-
-BiocManager::install(c("biomaRt",
- "circlize",
- "ComplexHeatmap",
- "corrplot",
- "DESeq2",
- "dplyr",
- "DT",
- "edgeR",
- "ggplot2",
- "limma",
- "lsmeans",
- "reshape2",
- "spatstat",
- "survival",
- "plyr"))
-
-install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
-library(IMvigor210CoreBiologies)
-
+# use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
 data(cds)
 mariathasan_data <- preprocess_mariathasan(cds)
 gene_count <- mariathasan_data$counts
 gene_tpm <- mariathasan_data$tpm
 rm(cds)
 
-# Computation of cell fractions
+# Computation of cell fractions  (Finotello et al., Genome Med, 2019)
 cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
 
-# Computation of pathway scores
+# Computation of pathway scores (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018)
 pathway_activity <- compute_pathways_scores(RNA_counts = gene_count,
 remove_genes_ICB_proxies = TRUE)
 
-# Computation of TF activity
+# Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
 tf_activity <- compute_TF_activity(RNA_tpm = gene_tpm,
 remove_genes_ICB_proxies = FALSE)
 

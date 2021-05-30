@@ -6,10 +6,10 @@
 #' average of the tasks.
 #'
 #' @importFrom ROCR prediction performance plot
-#' @importFrom grDevices gray.colors pdf dev.off
+#' @importFrom grDevices pdf dev.off
 #' @importFrom stats aggregate median sd
+#' @importFrom graphics legend par title abline lines
 #' @import ggplot2
-#' @importFrom graphics legend par title
 #'
 #' @export
 #'
@@ -28,43 +28,21 @@
 #' mutational burden (TMB) to predict patients' response.
 #'
 #' @examples
-#' # Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
-#' if (!requireNamespace("BiocManager", quietly = TRUE))
-#'  install.packages("BiocManager")
-#'
-#' BiocManager::install(c("biomaRt",
-#'  "circlize",
-#'  "ComplexHeatmap",
-#'  "corrplot",
-#'  "DESeq2",
-#'  "dplyr",
-#'  "DT",
-#'  "edgeR",
-#'  "ggplot2",
-#'  "limma",
-#'  "lsmeans",
-#'  "reshape2",
-#'  "spatstat",
-#'  "survival",
-#'  "plyr"))
-#'
-#' install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
-#' library(IMvigor210CoreBiologies)
-#'
+#' # use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
 #' data(cds)
 #' mariathasan_data <- preprocess_mariathasan(cds)
 #' gene_count <- mariathasan_data$counts
 #' gene_tpm <- mariathasan_data$tpm
 #' rm(cds)
 #'
-#' # Computation of cell fractions
+#' # Computation of cell fractions  (Finotello et al., Genome Med, 2019)
 #' cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
 #'
-#' # Computation of pathway scores
+#' # Computation of pathway scores (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018)
 #' pathway_activity <- compute_pathways_scores(RNA_counts = gene_count,
 #' remove_genes_ICB_proxies = TRUE)
 #'
-#' # Computation of TF activity
+#' # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
 #' tf_activity <- compute_TF_activity(RNA_tpm = gene_tpm,
 #' remove_genes_ICB_proxies = FALSE)
 #'
@@ -346,8 +324,8 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     # *******************************************
     if (verbose) message("Saving ROC curves in ", file.path(output_file_path), "\n")
 
-    pdf(file.path(output_file_path, "roc_curve.pdf"), width = 8, height = 8)
-    par(cex.axis = 1.6, mar = c(5, 5, 5, 5), col.lab = "black")
+    grDevices::pdf(file.path(output_file_path, "roc_curve.pdf"), width = 8, height = 8)
+    graphics::par(cex.axis = 1.6, mar = c(5, 5, 5, 5), col.lab = "black")
 
     # Single views
     ROCR::plot(ROC_all_run_tasks$pathways$Curve[[1]],
@@ -390,7 +368,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
       ROCR::plot(ROC_all_run_tasks$TMB$Curve[[1]], col = color_TMB, lwd = 3, type = "S",
         lty = 1, add = TRUE)
 
-      legend(
+      graphics::legend(
         x = 0.65, y = 0.27,
         legend = c(
           paste0("Pathways", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "pathways")$AUC.mean, 2), ")"),
@@ -407,7 +385,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
         ), lty = 1, lwd = 3, cex = 0.9, bty = "n"
       )
     }else{
-      legend(
+      graphics::legend(
         x = 0.65, y = 0.27,
         legend = c(
           paste0("Pathways", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "pathways")$AUC.mean, 2), ")"),
@@ -423,8 +401,8 @@ assess_immune_response <- function(predictions_immune_response = NULL,
         ), lty = 1, lwd = 3, cex = 0.9, bty = "n"
       )
     }
-    title(main = paste0("n=", length(real_patient_response), " (R=", n_R, "; ", "NR=", n_NR, ")"))
-    dev.off()
+    graphics::title(main = paste0("n=", length(real_patient_response), " (R=", n_R, "; ", "NR=", n_NR, ")"))
+    grDevices::dev.off()
     # *******************************************
     # Integrated score
     # *******************************************
@@ -467,17 +445,17 @@ assess_immune_response <- function(predictions_immune_response = NULL,
 
      if (verbose) message("Saving integrated score (easier & TMB) plot in ", file.path(output_file_path), "\n")
 
-      pdf(file.path(output_file_path, "easier_tmb_combo_auc.pdf"), width = 8, height = 8)
-      par(cex.axis = 1.6, mar = c(5, 5, 5, 5), col.lab = "black")
+      grDevices::pdf(file.path(output_file_path, "easier_tmb_combo_auc.pdf"), width = 8, height = 8)
+      graphics::par(cex.axis = 1.6, mar = c(5, 5, 5, 5), col.lab = "black")
 
       plot(seq(from=0, to=1, by=0.1), AUC_combined_v, xlab="Penalty or Relative weight", ylab="Area under the curve (AUC)", type = "b", col="#c15050", lty = 1, pch = 19, lwd = 3, ylim=c(0.5,1),  cex.lab = 1.6)
-      lines(seq(from=0, to=1, by=0.1), AUC_averaged_v, xlab="Penalty or Relative weight", ylab="Area under the curve (AUC)", type = "b", col="#693c72", lty = 1, pch = 19, lwd = 3, ylim=c(0.5,1),  cex.lab = 1.6)
+      graphics::lines(seq(from=0, to=1, by=0.1), AUC_averaged_v, xlab="Penalty or Relative weight", ylab="Area under the curve (AUC)", type = "b", col="#693c72", lty = 1, pch = 19, lwd = 3, ylim=c(0.5,1),  cex.lab = 1.6)
       # TMB
-      abline(h = AUC_mean_sd_TMB_run_tasks$AUC.mean, col = color_TMB)
+      graphics::abline(h = AUC_mean_sd_TMB_run_tasks$AUC.mean, col = color_TMB)
       # easier (ensemble)
-      abline(h = AUC_mean_sd_ensemble_run_tasks$AUC.mean, col = color_ensemble)
+      graphics::abline(h = AUC_mean_sd_ensemble_run_tasks$AUC.mean, col = color_ensemble)
 
-      legend(
+      graphics::legend(
         x = 0.55, y = 1,
         legend = c("Penalized score", "Weighted average", "EaSIeR", "TMB"
         ),
@@ -485,7 +463,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
           "#c15050", "#693c72",  as.vector(color_ensemble), color_TMB
         ), lty = 1, lwd = 3, cex = 1.3, bty = "n"
       )
-      dev.off()
+      grDevices::dev.off()
     }
 
   } else {

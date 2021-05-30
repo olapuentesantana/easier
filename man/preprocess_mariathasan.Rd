@@ -23,9 +23,11 @@ A list with three data.frames:
 \code{preprocess_mariathasan} prepares data from mariathasan cohort to be used along the vignette.
 }
 \examples{
-
+# use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
 data(cds)
-
-data_mariathsan <- preprocess_mariathasan(cds)
-
+data_mariathasan <- preprocess_mariathasan(cds)
+}
+\references{
+Mariathasan, S., Turley, S., Nickles, D. et al. TGFβ attenuates tumour response to PD-L1 blockade by contributing to exclusion of T cells.
+Nature 554, 544–548 (2018). https://doi.org/10.1038/nature25501
 }

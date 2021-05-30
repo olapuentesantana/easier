@@ -34,6 +34,8 @@ explore_biomarkers(
 
 \item{output_file_path}{A character string pointing to a directory to save the plots returned by the function.}
 
+\item{TMB_values}{A numeric vector containing patients' tumor mutational burden (TMB) values.}
+
 \item{verbose}{A logical flag indicating whether to display messages about the process.}
 }
 \value{
@@ -49,29 +51,7 @@ Plot original features distribution together with the feature importance in
 the model
 }
 \examples{
-# Example: Mariathasan cohort (Mariathasan et al., Nature, 2018)
-if (!requireNamespace("BiocManager", quietly = TRUE))
- install.packages("BiocManager")
-
-BiocManager::install(c("biomaRt",
- "circlize",
- "ComplexHeatmap",
- "corrplot",
- "DESeq2",
- "dplyr",
- "DT",
- "edgeR",
- "ggplot2",
- "limma",
- "lsmeans",
- "reshape2",
- "spatstat",
- "survival",
- "plyr"))
-
-install.packages("Downloads/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
-library(IMvigor210CoreBiologies)
-
+# use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
 data(cds)
 mariathasan_data <- preprocess_mariathasan(cds)
 gene_count <- mariathasan_data$counts
