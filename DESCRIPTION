@@ -50,7 +50,9 @@ Imports:
     BiocParallel,
     reshape2,
     rstatix,
-    ggrepel
+    ggrepel,
+    BiocGenerics,
+    Biobase
 Remotes:
     icbi-lab/immunedeconv
 License: MIT + file LICENSE
