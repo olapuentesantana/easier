@@ -2,32 +2,31 @@
 % Please edit documentation in R/compute_Tcell_inflamed.R
 \name{compute_Tcell_inflamed}
 \alias{compute_Tcell_inflamed}
-\title{Compute T cell-inflamed signature score}
+\title{Compute T cell-inflamed signature (Tcell_inflamed) score}
 \usage{
 compute_Tcell_inflamed(RNA_tpm, verbose = TRUE)
 }
 \arguments{
 \item{RNA_tpm}{numeric matrix with rows=genes and columns=samples}
 
-\item{verbose}{A logical value indicating whether to display informative messages}
+\item{verbose}{logical value indicating whether to display informative messages}
 }
 \value{
-numeric matrix with rows=samples and columns=T cell-inflamed signature
-score
+numeric matrix with rows=samples and columns=T cell-inflamed signaturescore
 }
 \description{
-\code{compute_ayersTcellInfl} computes T cell-inflamed signature score by
-taking a weighted sum of the housekeeping normalized values of the T cell-inflamed
-signature genes
-TODOTODOoscar, async name of function vs doc
+Computes Tcell_inflamed score as a weighted sum of housekeeping normalized expression of its signature genes
 }
 \examples{
-# use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-data(cds)
-mariathasan_data <- preprocess_mariathasan(cds)
-gene_tpm <- mariathasan_data$tpm
-rm(cds)
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_tpm <- dataset_mariathasan@tpm
 
 # compute T-cell inflamed signature (Ayers et al., JCI, 2017)
 Tcell_inflamed <- compute_Tcell_inflamed(RNA_tpm = gene_tpm)
+}
+\references{
+Ayers, M., Lunceford, J., Nebozhyn, M., Murphy, E., Loboda, A., Kaufman, D.R., Albright,
+A., Cheng, J.D., Kang, S.P., Shankaran, V., et al. (2017). IFN-γ-related mRNA profile predicts clinical
+response to PD-1 blockade. J. Clin. Invest. 127, 2930–2940. https://doi.org/10.1172/JCI91190.
 }

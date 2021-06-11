@@ -1,23 +1,24 @@
-#' Compute MSI score
+#' Compute microsatellite instability status (MSI) score
 #'
-#' `compute_MSI` computes MSI score by applying logical comparison of MSI-related
-#' gene pairs (Fu et al., 2019).
+#' Computes MSI score by logical comparison of MSI-related gene pairs expression
+#'
+#' @references Fu, Y., Qi, L., Guo, W., Jin, L., Song, K., You, T., Zhang, S., Gu, Y., Zhao, W.,
+#' and Guo, Z. (2019). A qualitative transcriptional signature for predicting microsatellite instability
+#' status of right-sided Colon Cancer. BMC Genomics 20, 769. https://doi.org/10.1186/s12864-019-6129-8.
 #'
 #' @importFrom stats na.omit
 #'
 #' @param RNA_tpm numeric matrix with rows=genes and columns=samples
-#' @param verbose A logical value indicating whether to display informative messages
+#' @param verbose logical value indicating whether to display informative messages
 #'
 #' @return numeric matrix with rows=samples and columns=MSI score
 #'
 #' @export
 #'
 #' @examples
-#' # use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-#' data(cds)
-#' mariathasan_data <- preprocess_mariathasan(cds)
-#' gene_tpm <- mariathasan_data$tpm
-#' rm(cds)
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' gene_tpm <- dataset_mariathasan@tpm
 #'
 #' # Compute Microsatellite instability status (Fu et al., BMC Genomics, 2019 )
 #' MSI <- compute_MSI(RNA_tpm = gene_tpm)

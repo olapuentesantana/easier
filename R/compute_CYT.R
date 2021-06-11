@@ -1,7 +1,9 @@
-#' Compute cytolytic activity score
+#' Compute cytolytic activity (CYT) score
 #'
-#' `compute_CYT` computes cytolytic activity score as the geometric mean of immune
-#' cytolytic genes (Rooney et al., 2015).
+#' Computes CYT score as the geometric mean of its signature genes
+#'
+#' @references Rooney, M.S., Shukla, S.A., Wu, C.J., Getz, G., and Hacohen, N. (2015). Molecular and genetic properties
+#' of tumors associated with local immune cytolytic activity. Cell 160, 48–61. https://doi.org/10.1016/j.cell.2014.12.033.
 #'
 #' @importFrom stats na.omit
 #'
@@ -13,11 +15,9 @@
 #' @export
 #'
 #' @examples
-#' # use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-#' data(cds)
-#' mariathasan_data <- preprocess_mariathasan(cds)
-#' gene_tpm <- mariathasan_data$tpm
-#' rm(cds)
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' gene_tpm <- dataset_mariathasan@tpm
 #'
 #' # Compute cytolytic activity (Rooney et al, Cell, 2015)
 #' CYT <- compute_CYT(RNA_tpm = gene_tpm)

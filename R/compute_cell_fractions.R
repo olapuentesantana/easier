@@ -12,11 +12,9 @@
 #' @return A matrix of normalized enrichment scores with samples in rows and cell types in columns.
 #'
 #' @examples
-#' # use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-#' data(cds)
-#' mariathasan_data <- preprocess_mariathasan(cds)
-#' gene_tpm <- mariathasan_data$tpm
-#' rm(cds)
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' gene_tpm <- dataset_mariathasan@tpm
 #'
 #' # Computation of cell fractions (Finotello et al., Genome Med, 2019)
 #' cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
@@ -40,7 +38,7 @@ compute_cell_fractions <- function(RNA_tpm,
 
   cell_fractions <- t(cell_fractions[, -1])
   colnames(cell_fractions) <- new_cellnames
-  cell_fractions[,"CD4 T"] <- cell_fractions[,"CD4 T"] +  cell_fractions[,"Treg"]
+  cell_fractions[, "CD4 T"] <- cell_fractions[, "CD4 T"] + cell_fractions[, "Treg"]
 
   if (verbose) message("Cell fractions computed \n")
   return(cell_fractions)

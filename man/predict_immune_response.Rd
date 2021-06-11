@@ -38,38 +38,45 @@ Given that the model training was repeated 100 times with randomized-cross valid
 The predicted immune response is calculated based on the input features data and the parameters learned during model training.
 }
 \examples{
-# use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-data(cds)
-mariathasan_data <- preprocess_mariathasan(cds)
-gene_count <- mariathasan_data$counts
-gene_tpm <- mariathasan_data$tpm
-rm(cds)
+data("dataset_mariathasan")
+gene_count <- dataset_mariathasan@counts
+gene_tpm <- dataset_mariathasan@tpm
 
 # Computation of cell fractions (Finotello et al., Genome Med, 2019)
 cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
 
 # Computation of pathway scores (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018)
-pathway_activity <- compute_pathways_scores(RNA_counts = gene_count,
-remove_genes_ICB_proxies = TRUE)
+pathway_activity <- compute_pathways_scores(
+  RNA_counts = gene_count,
+  remove_genes_ICB_proxies = TRUE
+)
 
 # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
-tf_activity <- compute_TF_activity(RNA_tpm = gene_tpm,
-remove_genes_ICB_proxies = FALSE)
+tf_activity <- compute_TF_activity(
+  RNA_tpm = gene_tpm,
+  remove_genes_ICB_proxies = FALSE
+)
 
 # Computation of ligand-receptor pair weights
-lrpair_weights <- compute_LR_pairs(RNA_tpm = gene_tpm,
-remove_genes_ICB_proxies = FALSE,
-cancer_type = "pancan")
+lrpair_weights <- compute_LR_pairs(
+  RNA_tpm = gene_tpm,
+  remove_genes_ICB_proxies = FALSE,
+  cancer_type = "pancan"
+)
 
 # Computation of cell-cell interaction scores
-ccpair_scores <- compute_CC_pairs_grouped(lrpairs = lrpair_weights,
-cancer_type = "pancan")
+ccpair_scores <- compute_CC_pairs_grouped(
+  lrpairs = lrpair_weights,
+  cancer_type = "pancan"
+)
 
 # Predict patients' immune response
-predictions_immune_response <- predict_immune_response(pathways = pathway_activity,
-immunecells = cell_fractions,
-tfs = tf_activity,
-lrpairs = lrpair_weights,
-ccpairs = ccpair_scores,
-cancer_type = "BLCA")
+predictions_immune_response <- predict_immune_response(
+  pathways = pathway_activity,
+  immunecells = cell_fractions,
+  tfs = tf_activity,
+  lrpairs = lrpair_weights,
+  ccpairs = ccpair_scores,
+  cancer_type = "BLCA"
+)
 }

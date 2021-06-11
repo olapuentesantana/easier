@@ -21,17 +21,16 @@
 #' @export
 #'
 #' @examples
-#' # use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-#' data(cds)
-#' mariathasan_data <- preprocess_mariathasan(cds)
-#' gene_tpm <- mariathasan_data$tpm
-#' rm(cds)
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' gene_tpm <- dataset_mariathasan@tpm
 #'
 #' # Computation of ligand-receptor pair weights
 #' lrpair_weights <- compute_LR_pairs(
 #'   RNA_tpm = gene_tpm,
 #'   remove_genes_ICB_proxies = FALSE,
-#'   cancer_type = "pancan")
+#'   cancer_type = "pancan"
+#' )
 #' lrpair_weights[1:5, 1:5]
 compute_LR_pairs <- function(RNA_tpm,
                              remove_genes_ICB_proxies = FALSE,
@@ -64,7 +63,7 @@ compute_LR_pairs <- function(RNA_tpm,
   genes_left <- setdiff(all_lrpairs_genes, rownames(gene_expr))
 
   # check what is the percentage of regulated transcripts that we have in our data
-  message("LR signature genes found in data set: ", length(genes_kept), "/", length(all_lrpairs_genes), " (", round(length(genes_kept)/length(all_lrpairs_genes), 3) * 100,"%)")
+  message("LR signature genes found in data set: ", length(genes_kept), "/", length(all_lrpairs_genes), " (", round(length(genes_kept) / length(all_lrpairs_genes), 3) * 100, "%)")
 
   # Compute L-R pairs
   LR.pairs.computed <- do.call(rbind, lapply(1:length(LR_pairs), function(x) {

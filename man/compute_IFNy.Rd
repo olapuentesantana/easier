@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute_IFNy.R
 \name{compute_IFNy}
 \alias{compute_IFNy}
-\title{Compute IFNy signature score}
+\title{Compute IFNy signature (IFNy) score}
 \usage{
 compute_IFNy(RNA_tpm, verbose = TRUE)
 }
@@ -15,16 +15,18 @@ compute_IFNy(RNA_tpm, verbose = TRUE)
 numeric matrix with rows=samples and columns=IFNy signature score
 }
 \description{
-\code{compute_IFNy} computes IFNy signature score as the arithmetic mean of genes
-included in the IFN-γ signature (Ayers et al., JCI, 2017)
+Computes IFNy signature score as the average expression of its signature genes
 }
 \examples{
-# use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-data(cds)
-mariathasan_data <- preprocess_mariathasan(cds)
-gene_tpm <- mariathasan_data$tpm
-rm(cds)
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_tpm <- dataset_mariathasan@tpm
 
 # Compute IFNy signature (Ayers et al., JCI, 2017)
 IFNy <- compute_IFNy(RNA_tpm = gene_tpm)
+}
+\references{
+Ayers, M., Lunceford, J., Nebozhyn, M., Murphy, E., Loboda, A., Kaufman, D.R., Albright,
+A., Cheng, J.D., Kang, S.P., Shankaran, V., et al. (2017). IFN-γ-related mRNA profile predicts clinical
+response to PD-1 blockade. J. Clin. Invest. 127, 2930–2940. https://doi.org/10.1172/JCI91190.
 }

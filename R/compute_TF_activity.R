@@ -18,16 +18,15 @@
 #' @export
 #'
 #' @examples
-#' # use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-#' data(cds)
-#' mariathasan_data <- preprocess_mariathasan(cds)
-#' gene_tpm <- mariathasan_data$tpm
-#' rm(cds)
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' gene_tpm <- dataset_mariathasan@tpm
 #'
 #' # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
 #' tf_activity <- compute_TF_activity(
 #'   RNA_tpm = gene_tpm,
-#'   remove_genes_ICB_proxies = FALSE)
+#'   remove_genes_ICB_proxies = FALSE
+#' )
 compute_TF_activity <- function(RNA_tpm,
                                 remove_genes_ICB_proxies = FALSE,
                                 verbose = TRUE) {
@@ -71,9 +70,11 @@ compute_TF_activity <- function(RNA_tpm,
 
   # check what is the percentage of regulated transcripts that we have in our data
   if (verbose) {
-    message("Regulated transcripts found in data set: ", length(genes_kept), "/",
-            length(all_regulated_transcripts), " (",
-            round(length(genes_kept)/length(all_regulated_transcripts), 3) * 100,"%)")
+    message(
+      "Regulated transcripts found in data set: ", length(genes_kept), "/",
+      length(all_regulated_transcripts), " (",
+      round(length(genes_kept) / length(all_regulated_transcripts), 3) * 100, "%)"
+    )
   }
 
   # TF activity: run viper
@@ -88,5 +89,4 @@ compute_TF_activity <- function(RNA_tpm,
   if (verbose) message("TF activity computed \n")
 
   return(as.data.frame(tf_activity))
-
 }

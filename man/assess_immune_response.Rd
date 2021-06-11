@@ -2,7 +2,7 @@
 % Please edit documentation in R/assess_immune_response.R
 \name{assess_immune_response}
 \alias{assess_immune_response}
-\title{Assess predicted immune response performance}
+\title{Assess performance of predicted immune response score}
 \usage{
 assess_immune_response(
   predictions_immune_response = NULL,
@@ -17,23 +17,23 @@ assess_immune_response(
 )
 }
 \arguments{
-\item{predictions_immune_response}{A list containing the predictions for each quantitative descriptor and for each task.}
+\item{predictions_immune_response}{ist containing the predictions for each quantitative descriptor and for each task.}
 
-\item{real_patient_response}{A character vector with two factors (Non-responders = NR, Responders = R).}
+\item{real_patient_response}{character vector with two factors (Non-responders = NR, Responders = R).}
 
-\item{RNA_tpm}{A numeric matrix of patients' gene expression data as tpm values.}
+\item{RNA_tpm}{numeric matrix of patients' gene expression data as tpm values.}
 
-\item{output_file_path}{A character string pointing to a directory to save the plots returned by the function.}
+\item{output_file_path}{character string pointing to a directory to save the plots returned by the function.}
 
-\item{list_gold_standards}{A character string of task names to be considered as gold standards for comparison.}
+\item{list_gold_standards}{character string of task names to be considered as gold standards for comparison.}
 
-\item{cancer_type}{A character string indicating which cancer-specific model should be used to compute the predictions.}
+\item{cancer_type}{character string indicating which cancer-specific model should be used to compute the predictions.}
 
-\item{TMB_values}{A numeric vector containing patients' tumor mutational burden (TMB) values.}
+\item{TMB_values}{numeric vector containing patients' tumor mutational burden (TMB) values.}
 
-\item{easier_with_TMB}{A logical flag indicating whether to apply refined approach using the combination of easier predictions and tumor mutational burden.}
+\item{easier_with_TMB}{logical flag indicating whether to apply refined approach using the combination of easier predictions and tumor mutational burden.}
 
-\item{verbose}{A logical flag indicating whether to display messages about the process.}
+\item{verbose}{logical flag indicating whether to display messages about the process.}
 }
 \value{
 If easier_with_TMB is set to FALSE, two figures (roc curve and bar plots) are directly saved in the path specified in output_file_path.
@@ -41,64 +41,70 @@ If easier_with_TMB is set to TRUE, an additional plot is returned displaying an 
 mutational burden (TMB) to predict patients' response.
 }
 \description{
-\code{assess_immune_response} generates a roc curve plot and a barplot showing the average
+Generates a roc curve plot and a barplot showing the average
 (across tasks) area under the ROC curve (AUC) values for each quantitative descriptor on
 the patients' response provided. For comparison, a gold standard is plotted based on the
 average of the tasks.
 }
 \examples{
-# use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-data(cds)
-mariathasan_data <- preprocess_mariathasan(cds)
-gene_count <- mariathasan_data$counts
-gene_tpm <- mariathasan_data$tpm
-rm(cds)
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_count <- dataset_mariathasan@counts
+gene_tpm <- dataset_mariathasan@tpm
 
 # Computation of cell fractions  (Finotello et al., Genome Med, 2019)
 cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
 
 # Computation of pathway scores (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018)
-pathway_activity <- compute_pathways_scores(RNA_counts = gene_count,
-remove_genes_ICB_proxies = TRUE)
+pathway_activity <- compute_pathways_scores(
+  RNA_counts = gene_count,
+  remove_genes_ICB_proxies = TRUE
+)
 
 # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
-tf_activity <- compute_TF_activity(RNA_tpm = gene_tpm,
-remove_genes_ICB_proxies = FALSE)
+tf_activity <- compute_TF_activity(
+  RNA_tpm = gene_tpm,
+  remove_genes_ICB_proxies = FALSE
+)
 
 # Computation of ligand-receptor pair weights
-lrpair_weights <- compute_LR_pairs(RNA_tpm = gene_tpm,
-remove_genes_ICB_proxies = FALSE,
-cancer_type = "pancan")
+lrpair_weights <- compute_LR_pairs(
+  RNA_tpm = gene_tpm,
+  remove_genes_ICB_proxies = FALSE,
+  cancer_type = "pancan"
+)
 
 # Computation of cell-cell interaction scores
-ccpair_scores <- compute_CC_pairs_grouped(lrpairs = lrpair_weights,
-cancer_type = "pancan")
+ccpair_scores <- compute_CC_pairs_grouped(
+  lrpairs = lrpair_weights,
+  cancer_type = "pancan"
+)
 
 # Predict patients' immune response
-predictions_immune_response <- predict_immune_response(pathways = pathway_activity,
-immunecells = cell_fractions,
-tfs = tf_activity,
-lrpairs = lrpair_weights,
-ccpairs = ccpair_scores,
-cancer_type = "SKCM",
-verbose = TRUE)
+predictions_immune_response <- predict_immune_response(
+  pathways = pathway_activity,
+  immunecells = cell_fractions,
+  tfs = tf_activity,
+  lrpairs = lrpair_weights,
+  ccpairs = ccpair_scores,
+  cancer_type = "SKCM",
+  verbose = TRUE
+)
 
 # retrieve clinical response
-clinical_data <- mariathasan_data$clinical
-patient_response <- clinical_data[, "Best Confirmed Overall Response"]
-patient_response <- gsub("CR","R", patient_response)
-patient_response <- gsub("PD","NR", patient_response)
-names(patient_response) <- rownames(clinical_data)
+patient_response <- dataset_mariathasan@response
+
 # retrieve TMB
-TMB <- clinical_data[, "FMOne mutation burden per MB"]
-names(TMB) <- rownames(clinical_data)
+TMB <- dataset_mariathasan@TMB
 
 # Assess patient-specific likelihood of response to ICB therapy
-assess_immune_response(predictions_immune_response = predictions_immune_response,
-real_patient_response = patient_response,
-RNA_tpm = gene_tpm,
-output_file_path = "../figures",
-cancer_type = "BLCA",
-TMB_values = TMB,
-easier_with_TMB = TRUE)
+assess_immune_response(
+  predictions_immune_response = predictions_immune_response,
+  real_patient_response = patient_response,
+  RNA_tpm = gene_tpm,
+  output_file_path = "../figures",
+  cancer_type = "BLCA",
+  TMB_values = TMB,
+  easier_with_TMB = TRUE
+)
 }

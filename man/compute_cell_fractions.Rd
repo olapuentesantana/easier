@@ -20,11 +20,9 @@ This function estimates cell fractions from bulk RNA-seq data (tpm)
 using quanTIseq method from (Finotello et al., Genome Med, 2019).
 }
 \examples{
-# use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-data(cds)
-mariathasan_data <- preprocess_mariathasan(cds)
-gene_tpm <- mariathasan_data$tpm
-rm(cds)
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_tpm <- dataset_mariathasan@tpm
 
 # Computation of cell fractions (Finotello et al., Genome Med, 2019)
 cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)

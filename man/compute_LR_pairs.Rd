@@ -33,16 +33,15 @@ coming from ligand-receptor pair annotations from the database of (Ramilowski et
 Each ligand-receptor weight is defined as the minimum of the log2(TPM+1) expression of the ligand and the receptor.
 }
 \examples{
-# use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-data(cds)
-mariathasan_data <- preprocess_mariathasan(cds)
-gene_tpm <- mariathasan_data$tpm
-rm(cds)
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_tpm <- dataset_mariathasan@tpm
 
 # Computation of ligand-receptor pair weights
 lrpair_weights <- compute_LR_pairs(
   RNA_tpm = gene_tpm,
   remove_genes_ICB_proxies = FALSE,
-  cancer_type = "pancan")
+  cancer_type = "pancan"
+)
 lrpair_weights[1:5, 1:5]
 }

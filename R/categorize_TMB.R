@@ -12,22 +12,17 @@
 #' @return A numeric vector assigning each sample a class from 1 to 3.
 #'
 #' @examples
-#' # use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-#'data(cds)
-#'mariathasan_data <- preprocess_mariathasan(cds)
-#'rm(cds)
-#'
-#'# retrieve Tumor Mutational Burden
-#'TumorMutationalBurden <- clinical_data[, "FMOne mutation burden per MB"]
-#'names(TumorMutationalBurden) <- rownames(clinical_data)
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' TumorMutationalBurden <- dataset_mariathasan@TMB
 #'
 #' # Convert TMB continous values into categories
 #' TMB_cat <- categorize_TMB(TMB = TumorMutationalBurden)
-categorize_TMB <- function(TMB, thresholds=NULL) {
-  vTert <- stats::quantile(TMB , c(0:3/3))
-  if (is.null(thresholds)){
-    x_out <- cut(TMB, vTert, include.lowest = TRUE, labels = c(1, 2, 3))
-  }else if ((is.numeric(thresholds)) & (length(thresholds)==2)){
+categorize_TMB <- function(TMB, thresholds = NULL) {
+  vTert <- stats::quantile(TMB, probs = c(0:3 / 3), na.rm = TRUE)
+  if (is.null(thresholds)) {
+    TMB_out <- cut(TMB, vTert, include.lowest = TRUE, labels = c(1, 2, 3))
+  } else if ((is.numeric(thresholds)) & (length(thresholds) == 2)) {
     # x_out = cut(x, c(min(x, na.rm = T), 100, 400, max(x, na.rm = T)), include.lowest = T, labels = c(1, 2, 3))
     TMB_out <- cut(TMB, c(min(TMB, na.rm = TRUE), 100, 400, max(TMB, na.rm = TRUE)), include.lowest = FALSE, labels = c(1, 2, 3))
   }

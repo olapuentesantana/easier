@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_semi_random_OE.R
 \name{get_semi_random_OE}
 \alias{get_semi_random_OE}
-\title{Calculate random scores}
+\title{Calculate random scores used within get_OE_bulk function to compute the immune resistance program derived in Jerby-Arnon et al., 2018.}
 \usage{
 get_semi_random_OE(
   r,
@@ -13,23 +13,56 @@ get_semi_random_OE(
 )
 }
 \arguments{
-\item{r}{list TODOTODO - more info here as well}
+\item{r}{list containing a numeric matrix with bulk RNA-Seq data (tpm values) and a character string with the available gene names.}
 
-\item{genes_dist_q}{integer}
+\item{genes_dist_q}{factor variable obtained as output from the function discretize. Jerby-Arnon et al. binned genes into 50 expression bins according
+their average gene expression across samples.}
 
-\item{b_sign}{boolean}
+\item{b_sign}{logical vector representing whether signature genes were found in bulk tpm matrix.}
 
-\item{num_rounds}{integer}
+\item{num_rounds}{integer value related to the number of random gene signatures samples to be computed for normalization.
+Jerby-Arnon et al. found that 1000 random signatures were sufficient to yield an estimate of the expected value.}
 
-\item{full_flag}{boolean}
+\item{full_flag}{logical flag indicating whether to return also random scores.}
 }
 \value{
-Random score
+Numeric vector containing the estimated random score for each sample.
 }
 \description{
-\code{get_semi_random_OE} obtained from literature to calculate Immune resistance
-program  (Jerby-Arnon et al., 2018) TODOTODO - out of sync?
+Calculates random scores to yield a robust estimate of the immune resistance program values. The code was provided via Github
+https://github.com/livnatje/ImmuneResistance/blob/master/Code/ImmRes_OE.R.
 }
 \examples{
-# TODOTODO
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_tpm <- dataset_mariathasan@tpm
+
+# Log2 transformation:
+log2_gene_tpm <- log2(gene_tpm + 1)
+# Prepare input data
+r <- list()
+r$tpm <- log2_gene_tpm
+r$genes <- rownames(log2_gene_tpm)
+
+# Gene signature for Immune Resistance Program from Jerby-Arnon et al., 2018.
+RIR_gene_signature <- easier:::res_sig
+
+# Compute gene average expression across samples
+r$genes_dist <- r$genes_mean <- rowMeans(r$tpm)
+
+# Cente gene expression matrix
+r$zscores <- sweep(r$tpm, 1, r$genes_mean, FUN = "-")
+
+# Bin genes into 50 expression bins according to their average
+r$genes_dist_q <- arules::discretize(r$genes_dist, n.cat = 50)
+
+# Match genes from exc.down signature with genes from expression matrix
+b_sign <- is.element(r$genes, RIR_gene_signature[["exc.down"]])
+
+# Compute random score:
+rand_scores <- get_semi_random_OE(r, r$genes_dist_q, b_sign)
+}
+\references{
+Jerby-Arnon, L., Shah, P., Cuoco, M.S., Rodman, C., Su, M.-J., Melms, J.C., Leeson, R., Kanodia, A., Mei, S., Lin, J.-R., et al. (2018).
+A Cancer Cell Program Promotes T Cell Exclusion and Resistance to Checkpoint Blockade. Cell 175, 984–997.e24. https://doi.org/10.1016/j.cell.2018.09.006
 }

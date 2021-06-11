@@ -1,5 +1,5 @@
 Package: easier
-Title: Evaluate patient immune response to ICBs through a systems approach
+Title: Estimate Systems Immune Response from RNA-seq data
 Version: 0.9.0
 Authors@R: 
     c(
@@ -24,14 +24,20 @@ Authors@R:
             email = "xx@yy.zz", comment = c(ORCID = "0000-0002-7822-3867")
         )
     )
-Description: This package allows researchers to assess patients' likelihood to respond to ICB therapies. 
-             A machine learning model integrates patient transcriptomics data to gain insights into the 
-             effect of ICBs on the patient immune response. TODO another sentence TODO.
+Description: This package provides a workflow for the use of EaSIeR tool, developed to assess patients' likelihood
+             to respond to ICB therapies providing just the patients' RNA-seq data as input. We integrate RNA-seq 
+             data with different types of prior knowledge to extract quantitative descriptors of the tumor 
+             microenvironment from several points of view, including composition of the immune repertoire, and 
+             activity of intra- and extra-cellular communications. Then, we use multi-task machine learning trained
+             in TCGA data to identify how these descriptors can simultaneously predict several state-of-the-art 
+             hallmarks of anti-cancer immune response. In this way we derive cancer-specific models and identify 
+             cancer-specific systems biomarkers of immune response. These biomarkers have been experimentally validated
+             in the literature and the performance of EaSIeR predictions has been validated using independent datasets
+             form four different cancer types with patients treated with anti-PD1 or anti-PDL1 therapy.
 Depends:
     R (>= 4.0)
 Imports: 
     progeny,
-    remotes,
     ROCR,
     grDevices,
     stats,
@@ -43,7 +49,6 @@ Imports:
     dorothea,
     dplyr,
     matrixStats,
-    preprocessCore,
     immunedeconv,
     rlang,
     arules,

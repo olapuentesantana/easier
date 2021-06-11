@@ -2,29 +2,32 @@
 % Please edit documentation in R/compute_Roh_IS.R
 \name{compute_Roh_IS}
 \alias{compute_Roh_IS}
-\title{Compute Roh immune score}
+\title{Compute Roh immune score (Roh_IS)}
 \usage{
 compute_Roh_IS(RNA_tpm, verbose = TRUE)
 }
 \arguments{
 \item{RNA_tpm}{numeric matrix with rows=genes and columns=samples}
 
-\item{verbose}{A logical value indicating whether to display informative messages}
+\item{verbose}{logical value indicating whether to display informative messages}
 }
 \value{
 numeric matrix with rows=samples and columns=Roh immune score
 }
 \description{
-\code{compute_Roh_IS} computes Roh immune score as the geometric-mean of immune
-score genes (Roh et al., 2017).
+Computes Roh_IS score as the geometric-mean of its signature genes.
 }
 \examples{
-# use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-data(cds)
-mariathasan_data <- preprocess_mariathasan(cds)
-gene_tpm <- mariathasan_data$tpm
-rm(cds)
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_tpm <- dataset_mariathasan@tpm
 
 # compute Roh immune score (Roh et al., Sci. Transl. Med., 2017)
 Roh_IS <- compute_Roh_IS(RNA_tpm = gene_tpm)
+}
+\references{
+Roh, W., Chen, P.-L., Reuben, A., Spencer, C.N., Prieto, P.A., Miller, J.P., Gopalakrishnan, V.,
+Wang, F., Cooper, Z.A., Reddy, S.M., et al. (2017). Integrated molecular analysis of tumor biopsies on sequential
+CTLA-4 and PD-1 blockade reveals markers of response and resistance. Sci. Transl. Med. 9.
+https://doi.org/10.1126/scitranslmed.aah3560.
 }

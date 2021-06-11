@@ -1,23 +1,25 @@
-#' Compute Roh immune score
+#' Compute Roh immune score (Roh_IS)
 #'
-#' `compute_Roh_IS` computes Roh immune score as the geometric-mean of immune
-#' score genes (Roh et al., 2017).
+#' Computes Roh_IS score as the geometric-mean of its signature genes.
+#'
+#' @references Roh, W., Chen, P.-L., Reuben, A., Spencer, C.N., Prieto, P.A., Miller, J.P., Gopalakrishnan, V.,
+#' Wang, F., Cooper, Z.A., Reddy, S.M., et al. (2017). Integrated molecular analysis of tumor biopsies on sequential
+#' CTLA-4 and PD-1 blockade reveals markers of response and resistance. Sci. Transl. Med. 9.
+#' https://doi.org/10.1126/scitranslmed.aah3560.
 #'
 #' @importFrom stats na.omit
 #'
 #' @param RNA_tpm numeric matrix with rows=genes and columns=samples
-#' @param verbose A logical value indicating whether to display informative messages
+#' @param verbose logical value indicating whether to display informative messages
 #'
 #' @return numeric matrix with rows=samples and columns=Roh immune score
 #'
 #' @export
 #'
 #' @examples
-#' # use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-#' data(cds)
-#' mariathasan_data <- preprocess_mariathasan(cds)
-#' gene_tpm <- mariathasan_data$tpm
-#' rm(cds)
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' gene_tpm <- dataset_mariathasan@tpm
 #'
 #' # compute Roh immune score (Roh et al., Sci. Transl. Med., 2017)
 #' Roh_IS <- compute_Roh_IS(RNA_tpm = gene_tpm)

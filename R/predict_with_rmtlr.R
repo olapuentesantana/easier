@@ -1,25 +1,23 @@
-#' Function to compute regularized multi-task linear regression predictions
+#' Collects Regularized Multi-Task Linear Regression (RMTLR) cancer-specfic model predictions
 #'
-#' `predict_with_rmtlr` predicts patients' immune response using a cancer-specifc model learned from training.
+#' Collects predicted immune response by using a cancer-specifc model learned from training with RMTLR algorithm.
 #'
 #' @importFrom stats na.omit
 #'
 #' @export
 #'
-#' @param view_name A character string containing the name of the input view.
-#' @param view_info A character string informing about the family of the input data.
-#' @param view_data A list containing the data for each input view.
-#' @param cancer_type A character string indicating cancer type to specify cancer-specific optimization model to be used.
-#' @param verbose A logical flag indicating whether to display messages about the process.
+#' @param view_name character string containing the name of the input view.
+#' @param view_info character string informing about the family of the input data.
+#' @param view_data list containing the data for each input view.
+#' @param cancer_type character string indicating cancer type to specify cancer-specific optimization model to be used.
+#' @param verbose logical flag indicating whether to display messages about the process.
 #'
-#' @return A list of predictions matrices, one for each tasks (rows = samples; columns = runs).
+#' @return List of predictions matrices, one for each tasks (rows = samples; columns = runs).
 #'
 #' @examples
-#' # use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-#' data(cds)
-#' mariathasan_data <- preprocess_mariathasan(cds)
-#' gene_tpm <- mariathasan_data$tpm
-#' rm(cds)
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' gene_tpm <- dataset_mariathasan@tpm
 #'
 #' # Computation of cell fractions
 #' cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
@@ -30,10 +28,10 @@
 #'
 #' # Predict using rmtlr
 #' prediction_view <- predict_with_rmtlr(
-#' view_name = view_name,
-#' view_info = view_info,
-#' view_data = view_data,
-#' cancer_type = "SKCM"
+#'   view_name = view_name,
+#'   view_info = view_info,
+#'   view_data = view_data,
+#'   cancer_type = "SKCM"
 #' )
 predict_with_rmtlr <- function(view_name,
                                view_info,
@@ -42,9 +40,13 @@ predict_with_rmtlr <- function(view_name,
                                verbose = TRUE) {
 
   # Initialize variables
-  opt_model_cancer_view_spec <- lapply(view_name, function(X) return(opt_models[[cancer_type]][[X]]))
+  opt_model_cancer_view_spec <- lapply(view_name, function(X) {
+    return(opt_models[[cancer_type]][[X]])
+  })
   names(opt_model_cancer_view_spec) <- view_name
-  opt_xtrain_stats_cancer_view_spec <- lapply(view_name, function(X) return(opt_xtrain_stats[[cancer_type]][[X]]))
+  opt_xtrain_stats_cancer_view_spec <- lapply(view_name, function(X) {
+    return(opt_xtrain_stats[[cancer_type]][[X]])
+  })
   names(opt_xtrain_stats_cancer_view_spec) <- view_name
 
   P <- length(view_info)
@@ -79,7 +81,7 @@ predict_with_rmtlr <- function(view_name,
       opt_xtrain_stats_cancer_view_spec[[m]]$mean <- opt_xtrain_stats_cancer_view_spec[[m]]$mean[keep_pos, ]
       opt_xtrain_stats_cancer_view_spec[[m]]$sd <- opt_xtrain_stats_cancer_view_spec[[m]]$sd[keep_pos, ]
 
-      prediction_X_norm <- lapply(1:K, function(k){
+      prediction_X_norm <- lapply(1:K, function(k) {
         prediction_X[[m]] <- calc_z_score(
           X = prediction_X[[m]], mean = opt_xtrain_stats_cancer_view_spec[[m]]$mean[, k],
           sd = opt_xtrain_stats_cancer_view_spec[[m]]$sd[, k]
@@ -89,23 +91,23 @@ predict_with_rmtlr <- function(view_name,
   }
 
   # perform prediction
-  prediction_cv <- lapply(1:K, function(k){
-    coef_matrix <- sapply(tasks, function(task){
+  prediction_cv <- lapply(1:K, function(k) {
+    coef_matrix <- sapply(tasks, function(task) {
       state[[view_name]][[task]][, k]
     })
     rmtlr_test(prediction_X_norm[[k]], coef_matrix)
   })
 
   # save predictions
-  prediction_cv <- lapply(1:K, function(k){
-    coef_matrix <- sapply(tasks, function(task){
+  prediction_cv <- lapply(1:K, function(k) {
+    coef_matrix <- sapply(tasks, function(task) {
       state[[view_name]][[task]][, k]
     })
     rmtlr_test(prediction_X_norm[[k]], coef_matrix)
   })
 
-  predictions_all_tasks_cv <- lapply(tasks, function(task){
-    prediction_task_cv <- sapply(1:K, function(k){
+  predictions_all_tasks_cv <- lapply(tasks, function(task) {
+    prediction_task_cv <- sapply(1:K, function(k) {
       prediction_cv[[k]][, task]
     })
     return(prediction_task_cv)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/predict_with_rmtlr.R
 \name{predict_with_rmtlr}
 \alias{predict_with_rmtlr}
-\title{Function to compute regularized multi-task linear regression predictions}
+\title{Collects Regularized Multi-Task Linear Regression (RMTLR) cancer-specfic model predictions}
 \usage{
 predict_with_rmtlr(
   view_name,
@@ -13,28 +13,26 @@ predict_with_rmtlr(
 )
 }
 \arguments{
-\item{view_name}{A character string containing the name of the input view.}
+\item{view_name}{character string containing the name of the input view.}
 
-\item{view_info}{A character string informing about the family of the input data.}
+\item{view_info}{character string informing about the family of the input data.}
 
-\item{view_data}{A list containing the data for each input view.}
+\item{view_data}{list containing the data for each input view.}
 
-\item{cancer_type}{A character string indicating cancer type to specify cancer-specific optimization model to be used.}
+\item{cancer_type}{character string indicating cancer type to specify cancer-specific optimization model to be used.}
 
-\item{verbose}{A logical flag indicating whether to display messages about the process.}
+\item{verbose}{logical flag indicating whether to display messages about the process.}
 }
 \value{
-A list of predictions matrices, one for each tasks (rows = samples; columns = runs).
+List of predictions matrices, one for each tasks (rows = samples; columns = runs).
 }
 \description{
-\code{predict_with_rmtlr} predicts patients' immune response using a cancer-specifc model learned from training.
+Collects predicted immune response by using a cancer-specifc model learned from training with RMTLR algorithm.
 }
 \examples{
-# use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-data(cds)
-mariathasan_data <- preprocess_mariathasan(cds)
-gene_tpm <- mariathasan_data$tpm
-rm(cds)
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_tpm <- dataset_mariathasan@tpm
 
 # Computation of cell fractions
 cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
@@ -45,9 +43,9 @@ view_data <- list(immunecells = as.data.frame(cell_fractions))
 
 # Predict using rmtlr
 prediction_view <- predict_with_rmtlr(
-view_name = view_name,
-view_info = view_info,
-view_data = view_data,
-cancer_type = "SKCM"
+  view_name = view_name,
+  view_info = view_info,
+  view_data = view_data,
+  cancer_type = "SKCM"
 )
 }

@@ -7,20 +7,18 @@
 reannotate_genes(cur_genes)
 }
 \arguments{
-\item{cur_genes}{A character string containing gene HGNC symbols to be consider for re-annotation.}
+\item{cur_genes}{character string containing gene HGNC symbols to be consider for re-annotation.}
 }
 \value{
-A data.frame with the old gene HGNC symbol and the new corresponding gene HGNC symbol.
+Data.frame with the old gene HGNC symbol and the new corresponding gene HGNC symbol.
 }
 \description{
-This function performs gene re-annotation using curated data by the HGNC.
+Performs gene re-annotation using curated data by the HGNC.
 }
 \examples{
-# use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-data(cds)
-mariathasan_data <- preprocess_mariathasan(cds)
-gene_count <- mariathasan_data$counts
-rm(cds)
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_tpm <- dataset_mariathasan@tpm
 
-genes_info <- map_genes(cur_genes = rownames(gene_count))
+genes_info <- reannotate_genes(cur_genes = rownames(gene_tpm))
 }

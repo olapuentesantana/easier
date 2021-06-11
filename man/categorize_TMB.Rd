@@ -18,14 +18,9 @@ A numeric vector assigning each sample a class from 1 to 3.
 \code{categorize_TMB} encodes tumor mutational variable (TMB) numerical variable to categorical.
 }
 \examples{
-# use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-data(cds)
-mariathasan_data <- preprocess_mariathasan(cds)
-rm(cds)
-
-# retrieve Tumor Mutational Burden
-TumorMutationalBurden <- clinical_data[, "FMOne mutation burden per MB"]
-names(TumorMutationalBurden) <- rownames(clinical_data)
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+TumorMutationalBurden <- dataset_mariathasan@TMB
 
 # Convert TMB continous values into categories
 TMB_cat <- categorize_TMB(TMB = TumorMutationalBurden)

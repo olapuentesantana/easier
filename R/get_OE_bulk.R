@@ -1,20 +1,44 @@
-#' Calculate overall expression (OE) of the immune resistance program
+#' Compute overall expression (OE) of the immune resistance program derived in Jerby-Arnon et al., 2018.
 #'
-#' `get_OE_bulk` obtained from literature to calculate Immune resistance program
-#' (Jerby-Arnon et al., 2018)
+#' Calculates the overall expression of the immune resistance program which is based on a set of
+#' gene signatures associated with T cell exclusion, post-treatment and functional resistance.
+#' The code was provided via Github https://github.com/livnatje/ImmuneResistance/blob/master/Code/ImmRes_OE.R.
+#'
+#' @export
+#'
+#' @references Jerby-Arnon, L., Shah, P., Cuoco, M.S., Rodman, C., Su, M.-J., Melms, J.C., Leeson, R., Kanodia, A., Mei, S., Lin, J.-R., et al. (2018).
+#' A Cancer Cell Program Promotes T Cell Exclusion and Resistance to Checkpoint Blockade. Cell 175, 984–997.e24. https://doi.org/10.1016/j.cell.2018.09.006
 #'
 #' @importFrom arules discretize
 #'
-#' @param r A list containing a numeric matrix with bulk RNA-Seq data (tpm values) and a character string with the available gene names.
-#' @param gene_sign A list containing different character strings associated with subsets of the resistance program.
-#' @param num_rounds An integer value related to
-#' @param full_flag A logical flag
-#' @param verbose A logical flag indicating whether to display messages about the process.
+#' @param r list containing a numeric matrix with bulk RNA-Seq data (tpm values) and a character string with the available gene names.
+#' @param gene_sign list containing different character strings associated with subsets of the resistance program.
+#' @param num_rounds integer value related to the number of random gene signatures samples to be computed for normalization.
+#' Jerby-Arnon et al. found that 1000 random signatures were sufficient to yield an estimate of the expected value.
+#' @param full_flag logical flag indicating whether to return also random scores.
+#' @param verbose logical flag indicating whether to display messages about the process.
 #'
-#' @return Random score
+#' @return Numeric matrix with computed scores for each sample and subset of signatures included in the immune resistance program
+#' (rows = samples; columns = gene signatures)
 #'
 #' @examples
-#' # TODOTODO
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' gene_tpm <- dataset_mariathasan@tpm
+#'
+#' # Log2 transformation:
+#' log2_gene_tpm <- log2(gene_tpm + 1)
+#'
+#' # Prepare input data
+#' r <- list()
+#' r$tpm <- log2_gene_tpm
+#' r$genes <- rownames(log2_gene_tpm)
+#'
+#' # Gene signature of immune resistance program
+#' RIR_gene_signature <- easier:::res_sig
+#'
+#' # Apply function to calculate OE:
+#' res_scores <- get_OE_bulk(r, gene_sign = RIR_gene_signature, verbose = TRUE)
 get_OE_bulk <- function(r,
                         gene_sign = NULL,
                         num_rounds = 1000,
@@ -31,7 +55,7 @@ get_OE_bulk <- function(r,
   r$sig_scores_raw <- r$sig_scores
   rand_flag <- is.null(r$rand_scores) | !all(is.element(names(gene_sign), colnames(r$rand_scores)))
   if (rand_flag) {
-    #if (verbose) message("Computing also random scores...", "\n")
+    # if (verbose) message("Computing also random scores...", "\n")
     r$rand_scores <- r$sig_scores
   }
   for (i in sig_names) {

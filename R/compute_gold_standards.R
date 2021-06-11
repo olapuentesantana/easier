@@ -10,21 +10,21 @@
 #' @return A numeric matrix of patients' gold standard values (rows = samples; columns = tasks).
 #'
 #' @examples
-#' # use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-#' data(cds)
-#' mariathasan_data <- preprocess_mariathasan(cds)
-#' gene_tpm <- mariathasan_data$tpm
-#' rm(cds)
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' gene_tpm <- dataset_mariathasan@tpm
 #'
 #' # Computation of different hallmarks of the immune response
-#' tasks <- c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
-#'            "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
+#' tasks <- c(
+#'   "CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
+#'   "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS"
+#' )
 #' tasks_values <- compute_gold_standards(
 #'   RNA_tpm = gene_tpm,
-#'   list_gold_standards = tasks)
+#'   list_gold_standards = tasks
+#' )
 compute_gold_standards <- function(RNA_tpm,
                                    list_gold_standards = c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")) {
-
   gold_standards <- sapply(list_gold_standards, function(X) {
     if ("CYT" == X) {
 

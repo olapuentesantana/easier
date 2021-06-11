@@ -2,29 +2,31 @@
 % Please edit documentation in R/compute_TLS.R
 \name{compute_TLS}
 \alias{compute_TLS}
-\title{Compute tertiary lymphoid structures signature}
+\title{Computation of tertiary lymphoid structures signature (TLS) score}
 \usage{
 compute_TLS(RNA_tpm, verbose = TRUE)
 }
 \arguments{
 \item{RNA_tpm}{numeric matrix with rows=genes and columns=samples}
 
-\item{verbose}{A logical value indicating whether to display informative messages}
+\item{verbose}{logical value indicating whether to display informative messages}
 }
 \value{
 numeric matrix with rows=samples and columns=TLS signature
 }
 \description{
-\code{compute_TLS} computes TLS signature as the geometric-mean of TLS signature
-genes (Cabrita et al., 2020).
+Computes TLS score as the geometric-mean of the expression of its signature genes.
 }
 \examples{
-# use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-data(cds)
-mariathasan_data <- preprocess_mariathasan(cds)
-gene_tpm <- mariathasan_data$tpm
-rm(cds)
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_tpm <- dataset_mariathasan@tpm
 
 # compute tertiary lymphoid structures signature (Cabrita et al., Nature, 2020)
 TLS <- compute_TLS(RNA_tpm = gene_tpm)
+}
+\references{
+Cabrita, R., Lauss, M., Sanna, A., Donia, M., Skaarup Larsen, M., Mitra, S., Johansson, I., Phung, B.,
+Harbst, K., Vallon-Christersson, J., et al. (2020). Tertiary lymphoid structures improve immunotherapy and survival
+in melanoma. Nature 577, 561–565.
 }

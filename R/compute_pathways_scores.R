@@ -19,16 +19,15 @@
 #' @export
 #'
 #' @examples
-#' # use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-#' data(cds)
-#' mariathasan_data <- preprocess_mariathasan(cds)
-#' gene_count <- mariathasan_data$counts
-#' rm(cds)
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' gene_count <- dataset_mariathasan@counts
 #'
 #' # Computation of pathway scores (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018)
 #' pathway_activity <- compute_pathways_scores(
 #'   RNA_counts = gene_count,
-#'   remove_genes_ICB_proxies = TRUE)
+#'   remove_genes_ICB_proxies = TRUE
+#' )
 compute_pathways_scores <- function(RNA_counts,
                                     remove_genes_ICB_proxies = TRUE,
                                     verbose = TRUE) {
@@ -87,9 +86,8 @@ compute_pathways_scores <- function(RNA_counts,
   genes_kept <- intersect(rownames(gene_expr), all_pathway_responsive_genes)
   genes_left <- setdiff(all_pathway_responsive_genes, rownames(gene_expr))
   total_genes <- length(genes_left) + length(genes_kept)
-  if (verbose) message("Pathway signature genes found in data set: ", length(genes_kept), "/", total_genes, " (", round(length(genes_kept)/total_genes, 3) * 100,"%)")
+  if (verbose) message("Pathway signature genes found in data set: ", length(genes_kept), "/", total_genes, " (", round(length(genes_kept) / total_genes, 3) * 100, "%)")
 
   if (verbose) message("\n Pathway scores computed \n")
   return(as.data.frame(pathway_activity))
-
 }

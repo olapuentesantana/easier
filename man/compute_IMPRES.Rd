@@ -9,22 +9,24 @@ compute_IMPRES(RNA_tpm, verbose = TRUE)
 \arguments{
 \item{RNA_tpm}{numeric matrix with rows=genes and columns=samples}
 
-\item{verbose}{A logical value indicating whether to display informative messages}
+\item{verbose}{logical value indicating whether to display informative messages}
 }
 \value{
 numeric matrix with rows=samples and columns=IMPRES score
 }
 \description{
-\code{compute_IMPRES} computes IMPRES score by applying logical comparison of
-checkpoint gene pairs (Auslander et al., 2018).
+Computes IMPRES by logical comparison of checkpoint gene pairs expression
 }
 \examples{
-# use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-data(cds)
-mariathasan_data <- preprocess_mariathasan(cds)
-gene_tpm <- mariathasan_data$tpm
-rm(cds)
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_tpm <- dataset_mariathasan@tpm
 
 # Compute IMPRES signature (Auslander et al., Nat.Med., 2018)
 IMPRES <- compute_IMPRES(RNA_tpm = gene_tpm)
+}
+\references{
+Auslander,N.,Zhang,G.,Lee,J.S.,Frederick,D.T.,Miao,B.,Moll,T.,Tian,T.,Wei,Z., Madan, S.,
+Sullivan, R.J., et al. (2018). Robust prediction of response to immune checkpoint blockade therapy in
+metastatic melanoma. Nat. Med. 24, 1545–1549. https://doi.org/10.1038/s41591-018-0157-9.
 }

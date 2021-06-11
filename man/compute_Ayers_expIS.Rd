@@ -2,29 +2,31 @@
 % Please edit documentation in R/compute_Ayers_expIS.R
 \name{compute_Ayers_expIS}
 \alias{compute_Ayers_expIS}
-\title{Compute Expanded Immune signature}
+\title{Compute Expanded Immune signature (Ayers_expIS) score}
 \usage{
 compute_Ayers_expIS(RNA_tpm, verbose = TRUE)
 }
 \arguments{
 \item{RNA_tpm}{numeric matrix with rows=genes and columns=samples}
 
-\item{verbose}{A logical value indicating whether to display informative messages}
+\item{verbose}{logical value indicating whether to display informative messages}
 }
 \value{
 numeric matrix with rows=samples and columns=Expanded Immune signature score
 }
 \description{
-\code{compute_Ayers_expIS} computes Expanded Immune signature score as the arithmetic
-mean of genes included in the Expanded Immune signature (Ayers et al., JCI, 2017)
+Computes Ayers_expIS score as the average expression of its signature genes
 }
 \examples{
-# use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-data(cds)
-mariathasan_data <- preprocess_mariathasan(cds)
-gene_tpm <- mariathasan_data$tpm
-rm(cds)
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_tpm <- dataset_mariathasan@tpm
 
 # Compute expanded immune signature (Ayers et al., JCI, 2017)
 Ayers_expIS <- compute_Ayers_expIS(gene_tpm)
+}
+\references{
+Ayers, M., Lunceford, J., Nebozhyn, M., Murphy, E., Loboda, A., Kaufman, D.R., Albright,
+A., Cheng, J.D., Kang, S.P., Shankaran, V., et al. (2017). IFN-γ-related mRNA profile predicts clinical
+response to PD-1 blockade. J. Clin. Invest. 127, 2930–2940. https://doi.org/10.1172/JCI91190.
 }

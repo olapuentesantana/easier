@@ -1,37 +1,40 @@
-#' Function to apply regularized multi-task linear regression model
+#' Regularized Multi-Task Linear Regression (RMTLR) model predictions
 #'
-#' `rmtlr_test` computes the matrix multiplication using the input features values and the parameters values derived from model optimization.
+#' Computes the predictions from the results of RMTLR models optimization
 #'
 #' @importFrom stats na.omit
 #'
 #' @export
 #'
-#' @param x_test A numeric matrix containing features values (rows = samples; columns = features).
-#' @param coef_matrix A numeric matrix containing the parameters values derived from model training
+#' @param x_test numeric matrix containing features values (rows = samples; columns = features).
+#' @param coef_matrix numeric matrix containing the parameters values derived from model training
 #' (rows = features; columns = tasks).
 #'
-#' @return A numeric matrix of predicted values (rows = samples; columns = tasks).
+#' @return Numeric matrix of predicted values (rows = samples; columns = tasks).
 #'
 #' @examples
-#' # use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-#' data(cds)
-#' mariathasan_data <- preprocess_mariathasan(cds)
-#' gene_tpm <- mariathasan_data$tpm
-#' rm(cds)
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' gene_tpm <- dataset_mariathasan@tpm
 #'
 #' # Computation of cell fractions (Finotello et al., Genome Med, 2019)
 #' cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
 #'
 #' # Parameters values should be defined with features as rows and tasks as columns
-#' estimated_parameters <- matrix(rnorm(n= (ncol(cell_fractions)+1) * 10),
-#' nrow = ncol(cell_fractions) + 1, ncol = 10)
+#' estimated_parameters <- matrix(rnorm(n = (ncol(cell_fractions) + 1) * 10),
+#'   nrow = ncol(cell_fractions) + 1, ncol = 10
+#' )
 #' rownames(estimated_parameters) <- c("(Intercept)", colnames(cell_fractions))
-#' colnames(estimated_parameters) <- c("CYT", "Ock_IS", "Roh_IS", "chemokines",
-#' "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
+#' colnames(estimated_parameters) <- c(
+#'   "CYT", "Ock_IS", "Roh_IS", "chemokines",
+#'   "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS"
+#' )
 #'
 #' # Compute predictions using parameters values
-#' pred_test <- rmtlr_test(x_test = cell_fractions,
-#'  coef_matrix = estimated_parameters)
+#' pred_test <- rmtlr_test(
+#'   x_test = cell_fractions,
+#'   coef_matrix = estimated_parameters
+#' )
 rmtlr_test <- function(x_test,
                        coef_matrix) {
 

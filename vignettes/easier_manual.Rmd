@@ -1,5 +1,5 @@
 ---
-title: "easier_manual"
+title: "easier User Manual"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{easier_manual}
@@ -22,7 +22,8 @@ library(easier)
 
 # Introduction {#introduction} 
 
-This vignette describes how to use the `easier` package for the prediction and interpretation of cancer patients' systems immune response. 
+This vignette describes how to use the `easier` package for streamlining your workflow around the `easier` tool. `easier` is intended to assist researchers in assessing patients' likelihood
+to respond to ICB therapies providing just the patients' RNA-seq data as input.
 
 This packages provides a Shiny application to allow users to finely explore patient-specific systems biomarkers of immune response inspecting the tumor microenvironment from several points of view, including composition of the tumor immune contexture, and activity of intra- and extra-cellular communication.
 
@@ -34,79 +35,23 @@ In order to use `easier` in your study, bulk-tumor RNA sequencing data is requir
 - `RNA_tpm`, a `data.frame` containing TPM values with HGNC symbols in rows and samples in columns. 
 - `real_patient_response`, a character `vector` containing clinical patients' response (where non-responders are labeled as NR and responders as R).
 
-Along this vignette we will illustrate the main features of `easier` on a publicly available bladder cancer dataset including both response to ICB therapy and RNA sequencing from Mariathasan et al. "TGF-B attenuates tumour response to PD-L1 blockade by contributing to exclusion of T cells", published in Nature, 2018 [doi:10.1038/nature25501](https://doi.org/10.1038/nature25501).
+Along this vignette we will illustrate the main features of `easier` on a publicly available bladder cancer dataset including both response to ICB therapy and RNA sequencing from Mariathasan et al. "TGF-B attenuates tumour response to PD-L1 blockade by contributing to exclusion of T cells", published in Nature, 2018 [doi:10.1038/nature25501](https://doi.org/10.1038/nature25501). The processed data is made available via [`IMvigor210CoreBiologies`](http://research-pub.gene.com/IMvigor210CoreBiologies/) package under the CC-BY license.
 
-The RNA sequencing data of Mariathasan cohort is made available via `IMvigor210CoreBiologies` package. Please follow  [IMvigor210CoreBiologies](http://research-pub.gene.com/IMvigor210CoreBiologies/) vignette to install and load `IMvigor210CoreBiologies` package, so the data from Mariathasan cohort can be accessible by `easier`. Here, we will consider bladder cancer patients with complete response (CR) as responders and patients with progressive disease (PD) as non-responders.
+Here we will consider bladder cancer patients with complete response (CR) as responders and patients with progressive disease (PD) as non-responders.
 
 # Getting started {#gettingstarted}
 
 Starting R, this package can be installed as follows:
 
-```{r eval = FALSE}
+```{r, eval=FALSE}
 install.packages("../easier_0.9.0.tar.gz", repos = NULL, type="source")
 library(easier)
 ````
 
-To download and install `IMvigor210CoreBiologies` package including its dependencies, please follow [IMvigor210CoreBiologies](http://research-pub.gene.com/IMvigor210CoreBiologies/) vignette.
+We first load the processed data provided in IMvigor210CoreBiologies from Mariathasan cohort as follows:
 
-```{r eval = FALSE}
-if (!requireNamespace("BiocManager", quietly = TRUE))
-  install.packages("BiocManager")
-
-BiocManager::install(c("biomaRt",
-           "circlize",
-           "ComplexHeatmap",
-           "corrplot",
-           "DESeq2",
-           "dplyr",
-           "DT",
-           "edgeR",
-           "ggplot2",
-           "limma",
-           "lsmeans",
-           "reshape2",
-           "spatstat",
-           "survival",
-           "plyr"))
-
-install.packages("path/to/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
-library(IMvigor210CoreBiologies)
- 
-````
-
-Once `IMvigor210CoreBiologies` package is loaded, we can retrieve the RNA sequencing data from Mariathasan cohort as follows:
-
-```{r eval = FALSE}
-data(cds)
-mariathasan_data <- preprocess_mariathasan(cds)
-rm(cds)
-
-# retrieve clinical response
-clinical_data <- mariathasan_data$clinical
-patient_response <- clinical_data[, "Best Confirmed Overall Response"]
-patient_response <- gsub("CR","R", patient_response)
-patient_response <- gsub("PD","NR", patient_response)
-names(patient_response) <- rownames(clinical_data)
-
-# retrieve Tumor Mutational Burden 
-TumorMutationalBurden <- clinical_data[, "FMOne mutation burden per MB"]
-names(TumorMutationalBurden) <- rownames(clinical_data)
-````
-
-We recommend the user to create a dataset object as described below:
-
-```{r eval = FALSE}
-# Create a external dataset object
-setClass("DatasetUser", slots=list(name="character", counts="data.frame", tpm="data.frame", response="character", TMB="numeric", cancertype="character"))
-
-obj_dataset <- new("DatasetUser",
-                   name="Mariathasan", 
-                   counts=mariathasan_data$counts, 
-                   tpm=mariathasan_data$tpm, 
-                   response=patient_response, 
-                   TMB=TumorMutationalBurden,
-                   cancertype="BLCA"
-                   )
+```{r, eval=FALSE}
+data("dataset_mariathasan")
 ````
 
 If you have your bulk-tumor RNA sequencing data ready, you can compute the five quantitative descriptors of the tumor microenvironment described below.
@@ -123,18 +68,18 @@ Here we use RNA-sequencing data from Mariathasan cohort to compute the five quan
 
 ```{r eval = FALSE}
 # Obtain cell fractions
-cell_fractions <- compute_cell_fractions(RNA_tpm = obj_dataset@tpm)
+cell_fractions <- compute_cell_fractions(RNA_tpm = dataset_mariathasan@tpm)
 
 # Obtain pathway scores
-pathway_activity <- compute_pathways_scores(RNA_counts = obj_dataset@counts,
+pathway_activity <- compute_pathways_scores(RNA_counts = dataset_mariathasan@counts,
                                             remove_genes_ICB_proxies = TRUE)
 
 # Obtain TF activity
-tf_activity <- compute_TF_activity(RNA_tpm = obj_dataset@tpm, 
+tf_activity <- compute_TF_activity(RNA_tpm = dataset_mariathasan@tpm, 
                                    remove_genes_ICB_proxies = FALSE)
 
 # Obtain ligand-receptor pair weights
-lrpair_weights <- compute_LR_pairs(RNA_tpm = obj_dataset@tpm, 
+lrpair_weights <- compute_LR_pairs(RNA_tpm = dataset_mariathasan@tpm, 
                                    remove_genes_ICB_proxies = FALSE, 
                                    cancer_type = "pancan")
 
@@ -163,7 +108,7 @@ By default nine hallmarks of the immune response are used (see below), however y
 
 ```{r eval = FALSE}
 tasks <- c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
-tasks_values <- compute_gold_standards(RNA_tpm = obj_dataset@tpm, 
+tasks_values <- compute_gold_standards(RNA_tpm = dataset_mariathasan@tpm, 
                                        list_gold_standards = tasks)
 ```
 
@@ -178,7 +123,7 @@ predictions_immune_response <- predict_immune_response(pathways = pathway_activi
                                                        tfs = tf_activity,
                                                        lrpairs = lrpair_weights,
                                                        ccpairs = ccpair_scores,
-                                                       cancer_type = obj_dataset@cancertype, 
+                                                       cancer_type = dataset_mariathasan@cancertype, 
                                                        verbose = TRUE)
 
 ```
@@ -196,11 +141,11 @@ Since both immune response and TMB are essential for an effective immunotherapy 
 ```{r eval = FALSE}
 # assess easier predicted immune response
 assess_immune_response(predictions_immune_response = predictions_immune_response,
-                       real_patient_response = obj_dataset@response,
-                       RNA_tpm = obj_dataset@tpm,
+                       real_patient_response = dataset_mariathasan@response,
+                       RNA_tpm = dataset_mariathasan@tpm,
                        output_file_path = "../figures",
-                       cancer_type = obj_dataset@cancertype,
-                       TMB_values = obj_dataset@TMB,
+                       cancer_type = dataset_mariathasan@cancertype,
+                       TMB_values = dataset_mariathasan@TMB,
                        easier_with_TMB = TRUE)
 
 ```
@@ -215,10 +160,10 @@ explore_biomarkers(pathways = pathway_activity,
                    lrpairs = lrpair_weights,
                    tfs = tf_activity,
                    ccpairs = ccpair_scores,
-                   cancer_type = obj_dataset@cancertype,
-                   real_patient_response = obj_dataset@response,
+                   cancer_type = dataset_mariathasan@cancertype,
+                   real_patient_response = dataset_mariathasan@response,
                    output_file_path = "../figures",
-                   TMB_values = obj_dataset@TMB)
+                   TMB_values = dataset_mariathasan@TMB)
 ```
 
 Moving to a real-case scenario where the patients' response is not known, making treatments decision is a must and `easier` aims to help clinicians in this regard.

@@ -6,32 +6,36 @@
 #
 
 # Old names for Views
-views <- c(Pathways.cor = 'gaussian',
-           ImmuneCells = 'gaussian',
-           TFs = 'gaussian',
-           LRpairs.spec.pc = 'gaussian',
-           CCpairsGroupedScores.spec.pc = 'gaussian')
+views <- c(
+  Pathways.cor = "gaussian",
+  ImmuneCells = "gaussian",
+  TFs = "gaussian",
+  LRpairs.spec.pc = "gaussian",
+  CCpairsGroupedScores.spec.pc = "gaussian"
+)
 
 single_views <- list(views[1], views[2], views[3], views[4], views[5])
-combined_views <- lapply(1:10, function(X){
+combined_views <- lapply(1:10, function(X) {
   tmp <- c("gaussian")
-  name_tmp <- paste(combn(names(views), m = 2)[,X], collapse = "_")
+  name_tmp <- paste(combn(names(views), m = 2)[, X], collapse = "_")
   names(tmp) <- name_tmp
   return(tmp)
 })
 combined_views <- combined_views[-10]
 
 # New names for Views
-views_new <- c(pathways = 'gaussian',
-           immunecells = 'gaussian',
-           tfs = 'gaussian',
-           lrpairs = 'gaussian',
-           ccpairs = 'gaussian')
+views_new <- c(
+  pathways = "gaussian",
+  immunecells = "gaussian",
+  tfs = "gaussian",
+  lrpairs = "gaussian",
+  ccpairs = "gaussian"
+)
 
 single_views_new <- list(views_new[1], views_new[2], views_new[3], views_new[4], views_new[5])
-combined_views_new <- lapply(1:10, function(X){
+combined_views_new <- lapply(1:10, function(X) {
   tmp <- c("gaussian")
-  name_tmp <- paste(combn(names(views_new), m = 2)[,X], collapse = "_")
+  name_tmp <- paste(combn(names(views_new), m = 2)[, X], collapse = "_")
   names(tmp) <- name_tmp
   return(tmp)
 })
@@ -68,19 +72,20 @@ views_combination_new <- c(single_views_new, combined_views_new)
 # Save learned models in a list
 alg <- c("Multi_Task_EN")
 trained_models <- list()
-trained_models <- lapply(c("BLCA"), function(CancerType){
-
+trained_models <- lapply(c("BLCA"), function(CancerType) {
   print(CancerType)
-  file <- dir(path = file.path("../../../Desktop/STAD"),
-              pattern = "all_cv_res_", full.names = T, recursive = F)
+  file <- dir(
+    path = file.path("../../../Desktop/STAD"),
+    pattern = "all_cv_res_", full.names = T, recursive = F
+  )
 
-  trained_models <- lapply(1:length(views_combination), function(X){
+  trained_models <- lapply(1:length(views_combination), function(X) {
     DataType <- names(views_combination[[X]])
     print(DataType)
-    load(file[grep(pattern = paste0("_with_cor_tasks_", DataType,".RData"), file, fixed = T)])
+    load(file[grep(pattern = paste0("_with_cor_tasks_", DataType, ".RData"), file, fixed = T)])
 
     model_alg <- all_cv_res[[alg]]
-    model <- lapply(1:length(model_alg), function(iter){
+    model <- lapply(1:length(model_alg), function(iter) {
       model_alg[[iter]][["performances"]] <- NULL
       model_alg[[iter]][["training_set"]] <- NULL
       model_alg[[iter]][["model"]][["cv.glmnet.mse"]] <- NULL
@@ -104,9 +109,8 @@ old_cellnames <- names(trained_models[[CancerType]]$immunecells_lrpairs[[1]]$mas
 views <- names(trained_models[[CancerType]])
 where <- grep("immunecells", views, fixed = TRUE)
 
-for(X in setdiff(where,2)){
-  for(Y in 1:100){
-
+for (X in setdiff(where, 2)) {
+  for (Y in 1:100) {
     old_features <- rownames(trained_models[[CancerType]][[X]][[Y]][["model"]][["cv.glmnet.features"]][["1se.mse"]])
 
     old_features[match(old_cellnames, old_features)] <- new_cellnames
@@ -124,67 +128,68 @@ for(X in setdiff(where,2)){
 # --------------------------------------------------------------- #
 # Restructure sysdata
 
-tasks_new_names <-  c("CYT", "Ock_IS", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
+tasks_new_names <- c("CYT", "Ock_IS", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
 task_old_names <- c("CYT", "IS", "RohIS", "chemokine", "IS_Davoli", "IFny", "ExpandedImmune", "T_cell_inflamed", "resF.down", "TLS")
 
 # collect optimization models
-opt_models <- lapply(names(trained_models), function(cancertype){
-  opt_models <- lapply(names(trained_models[[cancertype]]), function(view){
-    opt_models <- lapply(colnames(trained_models[[cancertype]][[view]][[1]][["model"]][["cv.glmnet.features"]][["1se.mse"]]), function(task){
-      opt_models <- do.call(cbind, lapply(1:100, function(iter){
-
+opt_models <- lapply(names(trained_models), function(cancertype) {
+  opt_models <- lapply(names(trained_models[[cancertype]]), function(view) {
+    opt_models <- lapply(colnames(trained_models[[cancertype]][[view]][[1]][["model"]][["cv.glmnet.features"]][["1se.mse"]]), function(task) {
+      opt_models <- do.call(cbind, lapply(1:100, function(iter) {
         tmp <- trained_models[[cancertype]][[view]][[iter]][["model"]][["cv.glmnet.features"]][["1se.mse"]][, task]
 
         return(tmp)
       }))
       return(opt_models)
     })
-    names(opt_models) <-  tasks_new_names
+    names(opt_models) <- tasks_new_names
     return(opt_models)
   })
-  names(opt_models) <-  c("pathways", "immunecells", "tfs", "lrpairs", "ccpairs")
+  names(opt_models) <- c("pathways", "immunecells", "tfs", "lrpairs", "ccpairs")
   return(opt_models)
 })
-names(opt_models) <-  c("LUAD", "LUSC", "BLCA","BRCA", "CESC", "CRC", "GBM", "HNSC", "KIRC", "KIRP", "LIHC", "OV", "PAAD", "PRAD", "SKCM", "STAD", "THCA", "UCEC")
+names(opt_models) <- c("LUAD", "LUSC", "BLCA", "BRCA", "CESC", "CRC", "GBM", "HNSC", "KIRC", "KIRP", "LIHC", "OV", "PAAD", "PRAD", "SKCM", "STAD", "THCA", "UCEC")
 
 # collect training statistics (mean and sd)
-opt_xtrain_stats <- lapply(names(trained_models), function(cancertype){
-  opt_xtrain_stats <- lapply(names(trained_models[[cancertype]]), function(view){
-    opt_xtrain_stats <-  lapply(c("mean","sd"), function(stat){
-      opt_xtrain_stats <- do.call(cbind, lapply(1:100, function(iter){
-          if(stat %in% "mean"){
-            tmp <- trained_models[[cancertype]][[view]][[iter]]$mas.mea.learning.X[[1]]
-          }else{
-            tmp <- trained_models[[cancertype]][[view]][[iter]]$mas.std.learning.X[[1]]
-            names(tmp) <- names(trained_models[[cancertype]][[view]][[iter]]$mas.mea.learning.X[[1]])
-          }
+opt_xtrain_stats <- lapply(names(trained_models), function(cancertype) {
+  opt_xtrain_stats <- lapply(names(trained_models[[cancertype]]), function(view) {
+    opt_xtrain_stats <- lapply(c("mean", "sd"), function(stat) {
+      opt_xtrain_stats <- do.call(cbind, lapply(1:100, function(iter) {
+        if (stat %in% "mean") {
+          tmp <- trained_models[[cancertype]][[view]][[iter]]$mas.mea.learning.X[[1]]
+        } else {
+          tmp <- trained_models[[cancertype]][[view]][[iter]]$mas.std.learning.X[[1]]
+          names(tmp) <- names(trained_models[[cancertype]][[view]][[iter]]$mas.mea.learning.X[[1]])
+        }
         return(tmp)
       }))
       return(opt_xtrain_stats)
     })
-    names(opt_xtrain_stats) <-  c("mean","sd")
+    names(opt_xtrain_stats) <- c("mean", "sd")
     return(opt_xtrain_stats)
   })
-  names(opt_xtrain_stats) <-  c("pathways", "immunecells", "tfs", "lrpairs", "ccpairs")
+  names(opt_xtrain_stats) <- c("pathways", "immunecells", "tfs", "lrpairs", "ccpairs")
   return(opt_xtrain_stats)
 })
-names(opt_xtrain_stats) <-  c("LUAD", "LUSC", "BLCA","BRCA", "CESC", "CRC", "GBM", "HNSC", "KIRC", "KIRP", "LIHC", "OV", "PAAD", "PRAD", "SKCM", "STAD", "THCA", "UCEC")
+names(opt_xtrain_stats) <- c("LUAD", "LUSC", "BLCA", "BRCA", "CESC", "CRC", "GBM", "HNSC", "KIRC", "KIRP", "LIHC", "OV", "PAAD", "PRAD", "SKCM", "STAD", "THCA", "UCEC")
 
 
 HGNC <- read.csv(file.path("../../Anti_PD1_challenge/Anti-PD1-DREAM-cSysImmunoOnco_system/tmp_data/HGNC_genenames_20170418.txt"),
-                   header=TRUE, sep="\t")
+  header = TRUE, sep = "\t"
+)
 
 
 setwd("~/ownCloud2/SystemsImmunoOncology/easier_project/easier_devel/")
 usethis::use_data(cor_genes_to_remove,
-                  TCGA_mean_pancancer,
-                  TCGA_sd_pancancer,
-                  res_sig,
-                  grouping_lrpairs_info,
-                  top_100_per_pathway_responsive_genes,
-                  intercell_network_cancer_spec,
-                  lr_frequency,
-                  opt_models,
-                  opt_xtrain_stats,
-                  HGNC,
-                  internal = TRUE, overwrite = TRUE, compress = "xz")
+  TCGA_mean_pancancer,
+  TCGA_sd_pancancer,
+  res_sig,
+  grouping_lrpairs_info,
+  top_100_per_pathway_responsive_genes,
+  intercell_network_cancer_spec,
+  lr_frequency,
+  opt_models,
+  opt_xtrain_stats,
+  HGNC,
+  internal = TRUE, overwrite = TRUE, compress = "xz"
+)

@@ -1,23 +1,24 @@
-#' Compute chemokine score
+#' Compute chemokine signature (chemokines) score
 #'
-#' `compute_chemokines` computes chemokine score as the PC1 score that results from
-#' applying PCA to z-score expression of 12 chemokine genes (Messina et al., 2012).
+#' Computes chemokines score as the PC1 score that results from applying PCA to z-score expression of its signature genes
+#'
+#' @references Messina, J.L., Fenstermacher, D.A., Eschrich, S., Qu, X., Berglund, A.E., Lloyd, M.C., Schell, M.J.,
+#' Sondak, V.K., Weber, J.S., and Mulé, J.J. (2012). 12-Chemokine gene signature identifies lymph node-like structures
+#' in melanoma: potential for patient selection for immunotherapy? Sci. Rep. 2, 765. https://doi.org/10.1038/srep00765.
 #'
 #' @importFrom stats na.omit prcomp
 #'
 #' @param RNA_tpm numeric matrix with rows=genes and columns=samples
-#' @param verbose A logical value indicating whether to display informative messages
+#' @param verbose logical value indicating whether to display informative messages
 #'
 #' @return numeric matrix with rows=samples and columns=chemokine score
 #'
 #' @export
 #'
 #' @examples
-#' # use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-#' data(cds)
-#' mariathasan_data <- preprocess_mariathasan(cds)
-#' gene_tpm <- mariathasan_data$tpm
-#' rm(cds)
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' gene_tpm <- dataset_mariathasan@tpm
 #'
 #' # Compute chemokine signature (Messina et al., Nat. Sci. Rep., 2012)
 #' chemokines <- compute_chemokines(RNA_tpm = gene_tpm)

@@ -2,30 +2,31 @@
 % Please edit documentation in R/compute_RIR.R
 \name{compute_RIR}
 \alias{compute_RIR}
-\title{Compute Immune resistance program}
+\title{Compute repressed immune resistance signature (RIR) score}
 \usage{
 compute_RIR(RNA_tpm, verbose = TRUE)
 }
 \arguments{
-\item{RNA_tpm}{A numeric matrix with rows=genes and columns=samples}
+\item{RNA_tpm}{numeric matrix with gene expression data (tpm values). Genes as rows and samples as columns.}
 
-\item{verbose}{A logical value indicating whether to display informative messages}
+\item{verbose}{logical variable indicating whether to display informative messages}
 }
 \value{
-numeric matrix with rows=samples and columns=IRP
+Numeric matrix with computed RIR score for each sample (rows = samples; columns = RIR score)
 }
 \description{
-\code{compute_IRP} computes immune resistance program using the code provided by
-the authors. (Jerby-Arnon et al., 2018).
-TODOTODOoscar: out of sync name vs doc
+Calculates RIR score defined by combining a set of gene signatures associated with downregulation of T cell exclusion, post-treatment and functional resistance.
+More info can be found in original work from Jerby-Arnon et al., Cell, 2018.
 }
 \examples{
-# use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-data(cds)
-mariathasan_data <- preprocess_mariathasan(cds)
-gene_tpm <- mariathasan_data$tpm
-rm(cds)
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_tpm <- dataset_mariathasan@tpm
 
-# compute RIR signature from Jerby-Arnon et al., Cell, 2018
+# compute RIR signature score
 RIR <- compute_RIR(RNA_tpm = gene_tpm)
+}
+\references{
+Jerby-Arnon, L., Shah, P., Cuoco, M.S., Rodman, C., Su, M.-J., Melms, J.C., Leeson, R., Kanodia, A., Mei, S., Lin, J.-R., et al. (2018).
+A Cancer Cell Program Promotes T Cell Exclusion and Resistance to Checkpoint Blockade. Cell 175, 984–997.e24. https://doi.org/10.1016/j.cell.2018.09.006.
 }

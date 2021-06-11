@@ -24,20 +24,20 @@ gene expression in TPM from bulk RNA-seq data (Lapuente-Santana et al., 2021), u
 coming from ligand-receptor pair annotations from the database of (Ramilowski et al., Nat Commun, 2015).
 }
 \examples{
-# use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-data(cds)
-mariathasan_data <- preprocess_mariathasan(cds)
-gene_tpm <- mariathasan_data$tpm
-rm(cds)
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_tpm <- dataset_mariathasan@tpm
 
 # Computation of ligand-receptor pair weights
 lrpair_weights <- compute_LR_pairs(
   RNA_tpm = gene_tpm,
   remove_genes_ICB_proxies = FALSE,
-  cancer_type = "pancan")
+  cancer_type = "pancan"
+)
 
 # Computation of cell-cell interaction scores
 ccpair_scores <- compute_CC_pairs_grouped(
   lrpairs = lrpair_weights,
-  cancer_type = "pancan")
+  cancer_type = "pancan"
+)
 }

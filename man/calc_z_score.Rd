@@ -7,26 +7,25 @@
 calc_z_score(X, mean, sd)
 }
 \arguments{
-\item{X}{A numeric matrix.}
+\item{X}{numeric matrix.}
 
-\item{mean}{A numeric vector with mean values.}
+\item{mean}{numeric vector with mean values.}
 
-\item{sd}{A numeric vector with sd values.}
+\item{sd}{numeric vector with sd values.}
 }
 \value{
-A numeric matrix with values as z-scores.
+Numeric matrix with values as z-scores.
 }
 \description{
-\code{calc_z_score} applies z-score normalization on a numeric matrix per column.
+Performs z-score normalization on a numeric matrix per column.
 The user can specify mean and sd values to be used to calculate z-score values,
 otherwise the mean and sd is calculated based on the input matrix.
 }
 \examples{
-# use example dataset from Mariathasan cohort (Mariathasan et al., Nature, 2018)
-data(cds)
-mariathasan_data <- preprocess_mariathasan(cds)
-gene_tpm <- mariathasan_data$tpm
-rm(cds)
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_tpm <- dataset_mariathasan@tpm
+
 # apply z-score normalization
 tpm_zscore <- calc_z_score(t(gene_tpm))
 }
