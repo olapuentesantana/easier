@@ -37,27 +37,10 @@ Description: This package provides a workflow for the use of EaSIeR tool, develo
 Depends:
     R (>= 4.0)
 Imports: 
-    progeny,
-    ROCR,
-    grDevices,
-    stats,
-    graphics,
-    ggplot2,
-    grid,
-    DESeq2,
-    utils,
-    dorothea,
-    dplyr,
-    matrixStats,
-    immunedeconv,
-    rlang,
-    arules,
-    BiocParallel,
-    reshape2,
-    rstatix,
-    ggrepel,
-    BiocGenerics,
-    Biobase
+    progeny, ROCR, grDevices, stats, graphics, ggplot2,
+    grid, DESeq2, utils, dorothea, dplyr, matrixStats,
+    immunedeconv, rlang, arules, BiocParallel, reshape2,
+    rstatix, ggrepel
 Remotes:
     icbi-lab/immunedeconv
 License: MIT + file LICENSE
@@ -66,12 +49,9 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Suggests: 
-    knitr,
-    rmarkdown,
-    BiocStyle,
-    testthat
+    knitr, rmarkdown, BiocStyle, testthat
 VignetteBuilder: knitr
 biocViews:
     GeneExpression, Software, Transcription, Transcriptomics,Pathways, 
     GeneSetEnrichment, ImmunoOncology, Epigenetics, Classification, 
-    BiomedicalInformatics, Regression
+    BiomedicalInformatics, Regression, ExperimentHubSoftware

@@ -193,3 +193,8 @@ usethis::use_data(cor_genes_to_remove,
   HGNC,
   internal = TRUE, overwrite = TRUE, compress = "xz"
 )
+
+# write to .csv (consider compressing files)
+
+
+
