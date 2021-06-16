@@ -183,7 +183,7 @@ HGNC_checker <- data.frame(
   BiocVersion = "3.13",
   Genome = NA,
   SourceType = "tar.gz",
-  SourceUrl = NA,
+  SourceUrl = "https://www.genenames.org/tools/multi-symbol-checker",
   SourceVersion = NA,
   Species = "Homo sapiens",
   TaxonomyId = "9606",
@@ -206,7 +206,7 @@ RIR_signature <- data.frame(
   BiocVersion = "3.13",
   Genome = NA,
   SourceType = "tar.gz",
-  SourceUrl = NA,
+  SourceUrl = "https://github.com/livnatje/ImmuneResistance/blob/master/Results/Signatures/resistance.program.RData",
   SourceVersion = NA,
   Species = "Homo sapiens",
   TaxonomyId = "9606",
@@ -231,3 +231,4 @@ write.csv(rbind(
   HGNC_checker,
   RIR_signature
 ), file = "inst/extdata/metadata.csv", row.names = FALSE)
+
