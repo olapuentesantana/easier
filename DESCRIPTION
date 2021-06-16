@@ -21,7 +21,7 @@ Authors@R:
         ),
         person(
             given = "Federica", family = "Eduati", role = "aut", 
-            email = "xx@yy.zz", comment = c(ORCID = "0000-0002-7822-3867")
+            email = "f.eduati@tue.nl", comment = c(ORCID = "0000-0002-7822-3867")
         )
     )
 Description: This package provides a workflow for the use of EaSIeR tool, developed to assess patients' likelihood

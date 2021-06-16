@@ -4,7 +4,7 @@
 #' using PROGENy method from (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018).
 #'
 #' @importFrom DESeq2 DESeqDataSetFromMatrix estimateSizeFactors estimateDispersions
-#' getVarianceStabilizedData rlog
+#' getVarianceStabilizedData
 #' @import progeny
 #' @importFrom stats na.exclude
 #'
@@ -73,21 +73,23 @@ compute_pathways_scores <- function(RNA_counts,
   # Variance stabilization transformation
   dset <- DESeq2::estimateSizeFactors(dset)
   dset <- DESeq2::estimateDispersions(dset)
-  # gene_expr <- DESeq2::rlog(raw_counts_integer)
   gene_expr <- DESeq2::getVarianceStabilizedData(dset)
   rownames(gene_expr) <- rownames(raw_counts_integer)
 
-  # Pathways activity (Progeny package)
-  # library(progeny)
+  # Pathways activity
   pathway_activity <- progeny::progeny(gene_expr, scale = FALSE, organism = "Human", verbose = verbose)
 
   # check what is the percentage of genes we have in our data
-  all_pathway_responsive_genes <- unique(unlist(top_100_per_pathway_responsive_genes))
-  genes_kept <- intersect(rownames(gene_expr), all_pathway_responsive_genes)
-  genes_left <- setdiff(all_pathway_responsive_genes, rownames(gene_expr))
+  model_pathways <- progeny::getModel(organism = "Human", top = 100)
+  full_pathway_sig <- unique(unlist(lapply(colnames(model_pathways), function(pathway) {
+    top_genes_pathway <- rownames(model_pathways)[apply(model_pathways, 2, function(X) X != 0)[, pathway]]
+    return(top_genes_pathway)
+  })))
+  genes_kept <- intersect(rownames(gene_expr), full_pathway_sig)
+  genes_left <- setdiff(full_pathway_sig, rownames(gene_expr))
   total_genes <- length(genes_left) + length(genes_kept)
   if (verbose) message("Pathway signature genes found in data set: ", length(genes_kept), "/", total_genes, " (", round(length(genes_kept) / total_genes, 3) * 100, "%)")
 
-  if (verbose) message("\n Pathway scores computed \n")
+  if (verbose) message("\nPathway scores computed \n")
   return(as.data.frame(pathway_activity))
 }
