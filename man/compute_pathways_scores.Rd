@@ -11,19 +11,19 @@ compute_pathways_scores(
 )
 }
 \arguments{
-\item{RNA_counts}{A data.frame containing raw counts values with HGNC symbols in rows and samples in columns.}
+\item{RNA_counts}{data.frame containing raw counts values (with HGNC gene symbols as row names and samples identifiers as column names).}
 
-\item{remove_genes_ICB_proxies}{A logical value indicating whether to remove signature genes involved
+\item{remove_genes_ICB_proxies}{logical value indicating whether to remove signature genes involved
 in the derivation of hallmarks of immune response.}
 
-\item{verbose}{A logical value indicating whether to display messages about the number of pathway signature
+\item{verbose}{logical value indicating whether to display messages about the number of pathway signature
 genes found in the gene expression data provided.}
 }
 \value{
 A matrix with samples in rows and pathways in columns.
 }
 \description{
-This function infers pathway activity from gene expression in raw counts from bulk RNA-seq data
+Infers pathway activity from gene expression in raw counts from bulk RNA-seq data
 using PROGENy method from (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018).
 }
 \examples{

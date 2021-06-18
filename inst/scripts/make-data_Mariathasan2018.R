@@ -134,7 +134,8 @@ Mariathasan2018_PDL1_treatment <- SummarizedExperiment(
   metadata = metadata_Mariathsan2018,
   colData = coldata_Mariathasan2018
 )
+
 # save
-save(Mariathasan2018_PDL1_treatment, file = "Mariathasan2018_PDL1_treatment.rda")
+save(Mariathasan2018_PDL1_treatment, file = "inst/extdata/Mariathasan2018_PDL1_treatment.rda")
 
 

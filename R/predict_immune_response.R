@@ -1,6 +1,6 @@
-#' Function to compute predicted immune response
+#' Compute predicted immune response
 #'
-#' `predict_immune_response` predicts patients' immune response using regularized multi-task linear regression (RMTLR).
+#' Predicts patients' immune response using regularized multi-task linear regression (RMTLR).
 #' The predicted immune response is calculated based on the input features data and the parameters learned during model training.
 #'
 #' @importFrom utils combn
@@ -9,15 +9,15 @@
 #'
 #' @export
 #'
-#' @param pathways A numeric matrix (rows = samples; columns = pathways).
-#' @param immunecells A numeric matrix (rows = samples; columns = cell types).
-#' @param tfs A numeric matrix (rows = samples; columns = transcription factors).
-#' @param lrpairs A numeric matrix (rows = samples; columns = ligand-receptor pairs).
-#' @param ccpairs A numeric matrix (rows = samples; columns = cell-cell pairs).
-#' @param cancer_type A character string indicating which cancer-specific model should be used to compute the predictions.
-#' @param verbose A logical flag indicating whether to display messages about the process.
+#' @param pathways numeric matrix with pathways activity (rows = samples; columns = pathways).
+#' @param immunecells numeric matrix with immune cell quantification (rows = samples; columns = cell types).
+#' @param tfs numeric matrix with transcription factors activity (rows = samples; columns = transcription factors).
+#' @param lrpairs numeric matrix with ligand-receptor weights (rows = samples; columns = ligand-receptor pairs).
+#' @param ccpairs numeric matrix with cell-cell scores (rows = samples; columns = cell-cell pairs).
+#' @param cancer_type character string indicating which cancer-specific model should be used to compute the predictions.
+#' @param verbose logical flag indicating whether to display messages about the process.
 #'
-#' @return A list containing the predictions for each quantitative descriptor and for each task.
+#' @return list containing the predictions for each quantitative descriptor and for each task.
 #' Given that the model training was repeated 100 times with randomized-cross validation, a set of 100 predictions is returned.
 #'
 #' @examples

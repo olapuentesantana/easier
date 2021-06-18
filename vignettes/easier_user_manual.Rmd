@@ -1,5 +1,5 @@
 ---
-title: "easier User Manual"
+title: easier User Manual
 author:
 - name: Óscar Lapuente-Santana^[o.lapuente.santana@tue.nl]
   affiliation: Computational Biology group, Department of Biomedical Engineering, Eindhoven University of Technology ([BME, TU/e](https://www.tue.nl/en/research/research-groups/computational-biology/))
@@ -9,8 +9,9 @@ author:
 - name: Francesca Finotello^[francesca.finotello@i-med.ac.at]
   affiliation: Institute of Bioinformatics, Biocenter Medical University of Innsbruck (https://icbi.i-med.ac.at/index.html)
 - name: Federica Eduati^[f.eduati@tue.nl]
- affiliation: Computational Biology group, Department of Biomedical Engineering, Eindhoven University of Technology ([BME, TU/e](https://www.tue.nl/en/research/research-groups/computational-biology/))
- affiliation: Institute for Complex Molecular Systems, Eindhoven University of Technology ([ICMS, TU/e](https://www.tue.nl/en/research/institutes/institute-for-complex-molecular-systems/))
+  affiliation: Computational Biology group, Department of Biomedical Engineering, Eindhoven University of Technology ([BME, TU/e](https://www.tue.nl/en/research/research-groups/computational-biology/))<br/>
+               Institute for Complex Molecular Systems, Eindhoven University of Technology ([ICMS, TU/e](https://www.tue.nl/en/research/institutes/institute-for-complex-molecular-systems/))
+
 output: rmarkdown::html_vignette
 bibliography: references_easier.bib
 vignette: >

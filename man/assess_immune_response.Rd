@@ -17,7 +17,7 @@ assess_immune_response(
 )
 }
 \arguments{
-\item{predictions_immune_response}{ist containing the predictions for each quantitative descriptor and for each task.}
+\item{predictions_immune_response}{list containing the predictions for each quantitative descriptor and for each task.}
 
 \item{real_patient_response}{character vector with two factors (Non-responders = NR, Responders = R).}
 

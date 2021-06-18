@@ -13,7 +13,7 @@
 #'
 #' @export
 #'
-#' @param predictions_immune_response ist containing the predictions for each quantitative descriptor and for each task.
+#' @param predictions_immune_response list containing the predictions for each quantitative descriptor and for each task.
 #' @param real_patient_response character vector with two factors (Non-responders = NR, Responders = R).
 #' @param RNA_tpm numeric matrix of patients' gene expression data as tpm values.
 #' @param output_file_path character string pointing to a directory to save the plots returned by the function.
@@ -105,7 +105,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
   } else {
     TMB_available <- TRUE
     if (anyNA(TMB_values)) warning("NA values were found in TMB data, patients with NA values are removed from the analysis")
-    message(paste0(", considering ", length(TMB_values[!is.na(TMB_values)]), " patients out of ", length(TMB_values)))
+    message(paste0("\nconsidering ", length(TMB_values[!is.na(TMB_values)]), " patients out of ", length(TMB_values)))
     patients_to_keep <- names(TMB_values[!is.na(TMB_values)])
     TMB_values <- TMB_values[patients_to_keep]
     real_patient_response <- real_patient_response[patients_to_keep]
@@ -143,11 +143,9 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     default_list_gold_standards <- c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
     if (missing(list_gold_standards)) {
       list_gold_standards <- default_list_gold_standards
-      if (verbose) {
-        message("gold standards (tasks) computed!")
-      }
+      gold_standards <- compute_gold_standards(RNA_tpm, list_gold_standards)
+      if (verbose) message("gold standards (tasks) computed!")
     }
-    gold_standards <- compute_gold_standards(RNA_tpm, list_gold_standards)
     # Assess correlation between chemokines and the other correlated tasks
     cor_tasks <- list_gold_standards[!list_gold_standards %in% c("IMPRES", "MSI")]
     cor_tasks <- cor_tasks[!cor_tasks %in% c("Ock_IS")] # Unfeasible computation

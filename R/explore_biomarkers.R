@@ -347,7 +347,7 @@ explore_biomarkers <- function(pathways = NULL,
     })
 
     # LR pairs network
-    intercell_network <- intercell_network_cancer_spec[[cancer_type]]
+    intercell_network <- intercell_network_cancer_spec[["pancan"]]
     LR_pairs <- unique(paste0(intercell_network$ligands, "_", intercell_network$receptors))
 
     new_name <- do.call(c, lapply(1:ncol(tmp), function(X) {
@@ -399,7 +399,7 @@ explore_biomarkers <- function(pathways = NULL,
     ggplot2::theme(legend.position = "right") +
     ggrepel::geom_text_repel(
       data = subset(comparison, (threshold != "notSign" & istop == TRUE)), ggplot2::aes(x = .data$signedEffect, y = -log10(.data$p_val), label = .data$variable, size = .05),
-      show.legend = NA, inherit.aes = FALSE
+      show.legend = NA, inherit.aes = FALSE, max.overlaps = 20
     )
 
   if (verbose) suppressWarnings(print(volcano_plot))

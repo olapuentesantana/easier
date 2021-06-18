@@ -1,6 +1,6 @@
 #' Compute pathway activity from gene expression using PROGENy
 #'
-#' This function infers pathway activity from gene expression in raw counts from bulk RNA-seq data
+#' Infers pathway activity from gene expression in raw counts from bulk RNA-seq data
 #' using PROGENy method from (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018).
 #'
 #' @importFrom DESeq2 DESeqDataSetFromMatrix estimateSizeFactors estimateDispersions
@@ -8,10 +8,10 @@
 #' @import progeny
 #' @importFrom stats na.exclude
 #'
-#' @param RNA_counts A data.frame containing raw counts values with HGNC symbols in rows and samples in columns.
-#' @param remove_genes_ICB_proxies A logical value indicating whether to remove signature genes involved
+#' @param RNA_counts data.frame containing raw counts values (with HGNC gene symbols as row names and samples identifiers as column names).
+#' @param remove_genes_ICB_proxies logical value indicating whether to remove signature genes involved
 #' in the derivation of hallmarks of immune response.
-#' @param verbose A logical value indicating whether to display messages about the number of pathway signature
+#' @param verbose logical value indicating whether to display messages about the number of pathway signature
 #' genes found in the gene expression data provided.
 #'
 #' @return A matrix with samples in rows and pathways in columns.

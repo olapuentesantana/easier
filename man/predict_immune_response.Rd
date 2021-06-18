@@ -2,7 +2,7 @@
 % Please edit documentation in R/predict_immune_response.R
 \name{predict_immune_response}
 \alias{predict_immune_response}
-\title{Function to compute predicted immune response}
+\title{Compute predicted immune response}
 \usage{
 predict_immune_response(
   pathways = NULL,
@@ -15,26 +15,26 @@ predict_immune_response(
 )
 }
 \arguments{
-\item{pathways}{A numeric matrix (rows = samples; columns = pathways).}
+\item{pathways}{numeric matrix with pathways activity (rows = samples; columns = pathways).}
 
-\item{immunecells}{A numeric matrix (rows = samples; columns = cell types).}
+\item{immunecells}{numeric matrix with immune cell quantification (rows = samples; columns = cell types).}
 
-\item{tfs}{A numeric matrix (rows = samples; columns = transcription factors).}
+\item{tfs}{numeric matrix with transcription factors activity (rows = samples; columns = transcription factors).}
 
-\item{lrpairs}{A numeric matrix (rows = samples; columns = ligand-receptor pairs).}
+\item{lrpairs}{numeric matrix with ligand-receptor weights (rows = samples; columns = ligand-receptor pairs).}
 
-\item{ccpairs}{A numeric matrix (rows = samples; columns = cell-cell pairs).}
+\item{ccpairs}{numeric matrix with cell-cell scores (rows = samples; columns = cell-cell pairs).}
 
-\item{cancer_type}{A character string indicating which cancer-specific model should be used to compute the predictions.}
+\item{cancer_type}{character string indicating which cancer-specific model should be used to compute the predictions.}
 
-\item{verbose}{A logical flag indicating whether to display messages about the process.}
+\item{verbose}{logical flag indicating whether to display messages about the process.}
 }
 \value{
-A list containing the predictions for each quantitative descriptor and for each task.
+list containing the predictions for each quantitative descriptor and for each task.
 Given that the model training was repeated 100 times with randomized-cross validation, a set of 100 predictions is returned.
 }
 \description{
-\code{predict_immune_response} predicts patients' immune response using regularized multi-task linear regression (RMTLR).
+Predicts patients' immune response using regularized multi-task linear regression (RMTLR).
 The predicted immune response is calculated based on the input features data and the parameters learned during model training.
 }
 \examples{
