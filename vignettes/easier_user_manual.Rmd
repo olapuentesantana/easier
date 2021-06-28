@@ -11,8 +11,14 @@ author:
 - name: Federica Eduati^[f.eduati@tue.nl]
   affiliation: Computational Biology group, Department of Biomedical Engineering, Eindhoven University of Technology ([BME, TU/e](https://www.tue.nl/en/research/research-groups/computational-biology/))<br/>
                Institute for Complex Molecular Systems, Eindhoven University of Technology ([ICMS, TU/e](https://www.tue.nl/en/research/institutes/institute-for-complex-molecular-systems/))
-
-output: rmarkdown::html_vignette
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    theme: lumen
 bibliography: references_easier.bib
 vignette: >
   %\VignetteIndexEntry{easier User Manual}
@@ -40,9 +46,9 @@ library(easier)
 
 # Introduction {#introduction} 
 
-This vignette describes how to use the easier package for a pleasant onboarding experience around the EaSIeR tool. EaSIeR is a tool to predict biomarker-based immunotherapy response providing just the patients' RNA-sequencing (RNA-seq) data as input. 
+This vignette describes how to use the easier package for a pleasant onboarding experience around the EaSIeR approach. EaSIeR is a tool to predict biomarker-based immunotherapy response providing just the patients' RNA-sequencing (RNA-seq) data as input. 
 
-RNA-seq data is integrated with different types of prior knowledge to extract quantitative descriptors of the tumor microenvironment (TME) (see table below) from several points of view, including composition of the immune repertoire, and activity of intra- and extra-cellular communications.
+RNA-seq data is integrated with different types of biological prior knowledge to extract quantitative descriptors of the tumor microenvironment (TME) from several points of view, including composition of the immune repertoire, and activity of intra- and extra-cellular communications (see table below).
 
 ```{r table1, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
 library(knitr)
@@ -58,7 +64,7 @@ table1 <- "
 cat(table1)
 ```
 
-Leveraging the data from The Cancer Genome Atlas (TCGA), multi-task machine learning is used to identify how these descriptors can simultaneously predict several state-of-the-art hallmarks of anti-cancer immune response described below.
+Leveraging the data from The Cancer Genome Atlas (TCGA), regularized multi-task linear regression was used to identify how these descriptors can simultaneously predict several state-of-the-art hallmarks of anti-cancer immune response (see table below). Here, the regularization term is used to select features that are relevant for all tasks.
 
 ```{r table2, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 table2 <- "
@@ -83,7 +89,17 @@ Cancer-specific models were built and used to identify cancer-specific systems b
 
 For detailed information about the fundamentals of EaSIeR, please refer to our original work: Lapuente-Santana et al. "Predictive systems biomarkers of response to immune checkpoint inhibitors", available in bioRxiv [doi:10.1101/2021.02.05.429977](https://www.biorxiv.org/content/10.1101/2021.02.05.429977v1).
 
-`easier` package returns:
+`easier` consists of a range of functions which are essential for the optimal use of EaSIeR pipeline. Even though all functions are well-documented within the package, we provide here a quick overview of these different functionalities: 
+
+- `compute_cell_fractions` estimates cell fractions from TPM gene expression using quanTIseq method [@Finotello2019].
+- `compute_pathways_scores` infers pathway activity from raw counts gene expression using PROGENy method [@HOLLAND2020194431; @Schubert2018].
+- `compute_TF_activity` infers transcription factor activity from TPM gene expression using DoRothEA method [@Garcia-Alonso01082019].
+- `compute_LR_pairs` quantifies ligand-receptor interactions in the TME from TPM gene expression using prior knowledge coming from ligand-receptor pair annotations from the database of @Ramilowski2015.
+- `compute_CC_pairs_grouped` scores cell-cell interactions in the TME using ligand-receptor weights as input.
+- `compute_gold_standards` computes the published transcriptomics-based hallmarks of anti-cancer immune response (so-called gold standards) as established by the user.
+- `predict_immune_response` predicts patients' immune response using the quantitative descriptors data as input features and the model parameters defined during training.
+- `assess_immune_response` evaluates the performance of the predicted immune response using a roc curve plot and a barplot showing the average (across tasks) area under the ROC curve (AUC) values.
+- `explore_biomarkers` visualizes stunning biomarkers of immune response found in the dataset (e.g. comparing non-responders and responders patients if response is known).
 
 # Getting started {#gettingstarted}
 

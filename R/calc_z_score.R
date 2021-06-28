@@ -1,8 +1,8 @@
-#' Z-score normalization
+#' Perform Z-score normalization
 #'
-#' Performs z-score normalization on a numeric matrix per column.
-#' The user can specify mean and sd values to be used to calculate z-score values,
-#' otherwise the mean and sd is calculated based on the input matrix.
+#' This functions performs z-score normalization on a numeric matrix per column.
+#' Mean and sd values to be used to calculate z-score values, otherwise they are
+#' calculated based on the input matrix.
 #'
 #' @importFrom matrixStats colSds
 #'
@@ -12,7 +12,7 @@
 #' @param mean numeric vector with mean values.
 #' @param sd numeric vector with sd values.
 #'
-#' @return Numeric matrix with values as z-scores.
+#' @return A numeric matrix with values as z-scores.
 #'
 #' @examples
 #' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)

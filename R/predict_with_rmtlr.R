@@ -1,6 +1,7 @@
 #' Collects Regularized Multi-Task Linear Regression (RMTLR) cancer-specfic model predictions
 #'
-#' Collects predicted immune response by using a cancer-specifc model learned from training with RMTLR algorithm.
+#' This function puts together predicted immune response by using a cancer-specifc model learned
+#' from training with RMTLR algorithm.
 #'
 #' @importFrom stats na.omit
 #'
@@ -9,10 +10,11 @@
 #' @param view_name character string containing the name of the input view.
 #' @param view_info character string informing about the family of the input data.
 #' @param view_data list containing the data for each input view.
-#' @param cancer_type character string indicating cancer type to specify cancer-specific optimization model to be used.
+#' @param cancer_type character string indicating cancer type to specify cancer-specific optimization model
+#' to be used.
 #' @param verbose logical flag indicating whether to display messages about the process.
 #'
-#' @return List of predictions matrices, one for each tasks (rows = samples; columns = runs).
+#' @return A lList of predictions matrices, one for each tasks (rows = samples; columns = runs).
 #'
 #' @examples
 #' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)

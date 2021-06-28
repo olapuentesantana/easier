@@ -1,17 +1,17 @@
 #' Compute cell-cell pair score
 #'
-#' Derives a score for each cell-cell pair feature.
+#' This function derives a score for each cell-cell pair feature.
 #'
 #' @export
 #'
-#' @param celltype1 string character with first cell type involved in the interaction
-#' @param celltype2 string character with second cell type involved in the interaction
-#' @param intercell_network matrix with data on cell types interaction network
-#' @param lrpairs_binary binary vector displaying LR pairs with non-zero frequency
-#' @param lr_frequency numeric vector with LR pairs frequency across the whole TCGA database
-#' @param compute_log boolean variable in order to take the log of the weighted score
+#' @param celltype1 string character with first cell type involved in the interaction.
+#' @param celltype2 string character with second cell type involved in the interaction.
+#' @param intercell_network matrix with data on cell types interaction network.
+#' @param lrpairs_binary binary vector displaying LR pairs with non-zero frequency.
+#' @param lr_frequency numeric vector with LR pairs frequency across the whole TCGA database.
+#' @param compute_log boolean variable in order to take the log of the weighted score.
 #'
-#' @return numeric vector with weighted scores
+#' @return A numeric vector with weighted scores.
 #'
 #' @examples
 #' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)

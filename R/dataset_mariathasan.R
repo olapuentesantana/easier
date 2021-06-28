@@ -1,6 +1,6 @@
 #' Processed data from IMvigor210CoreBiologies R package (Mariathasan et al., Nature, 2018)
 #'
-#' An exemplary dataset with samples from 192 patients with bladder cancer
+#' An exemplary dataset with samples from 192 patients with bladder cancer.
 #'
 #' @references Mariathasan, S., Turley, S., Nickles, D. et al. TGFβ attenuates tumour response
 #' to PD-L1 blockade by contributing to exclusion of T cells. Nature 554, 544–548 (2018).

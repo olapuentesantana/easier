@@ -1,6 +1,8 @@
 #' Compute T cell-inflamed signature (Tcell_inflamed) score
 #'
-#' Computes Tcell_inflamed score as a weighted sum of housekeeping normalized expression of its signature genes
+#' This function calculates Tcell_inflamed score as a weighted sum of housekeeping normalized expression of its signature genes.
+#' Weightes were available at Table S2B from Cristescu R, et al. Pan-tumor genomic biomarkers for PD-1 checkpoint
+#' blockade-based immunotherapy. Science. (2018) 362:eaar3593. doi: 10.1126/science.aar3593.
 #'
 #' @references Ayers, M., Lunceford, J., Nebozhyn, M., Murphy, E., Loboda, A., Kaufman, D.R., Albright,
 #' A., Cheng, J.D., Kang, S.P., Shankaran, V., et al. (2017). IFN-γ-related mRNA profile predicts clinical
@@ -8,10 +10,10 @@
 #'
 #' @importFrom stats na.omit
 #'
-#' @param RNA_tpm numeric matrix with rows=genes and columns=samples
+#' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
 #' @param verbose logical value indicating whether to display informative messages
 #'
-#' @return numeric matrix with rows=samples and columns=T cell-inflamed signaturescore
+#' @return A numeric matrix with samples in rows and Tcell_inflamed score in a column.
 #'
 #' @export
 #'

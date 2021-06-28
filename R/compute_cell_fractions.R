@@ -1,15 +1,15 @@
 #' Compute immune cell fractions from gene expression using quanTIseq
 #'
-#' This function estimates cell fractions from bulk RNA-seq data (tpm)
+#' This function estimates cell fractions from gene expression in TPM
 #' using quanTIseq method from (Finotello et al., Genome Med, 2019).
 #'
 #' @export
 #'
-#' @param RNA_tpm A data.frame containing TPM values with HGNC symbols in rows and samples in columns.
-#' @param verbose A logical value indicating whether to display messages about the number of immune cell
+#' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
+#' @param verbose logical value indicating whether to display messages about the number of immune cell
 #' signature genes found in the gene expression data provided.
 #'
-#' @return A matrix of normalized enrichment scores with samples in rows and cell types in columns.
+#' @return A numeric matrix of normalized enrichment scores with samples in rows and cell types in columns.
 #'
 #' @examples
 #' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)

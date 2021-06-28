@@ -1,9 +1,9 @@
-#' Assess performance of predicted immune response score
+#' Evaluate the predictive performance of the computed immune response score
 #'
-#' Generates a roc curve plot and a barplot showing the average
+#' This function generates a roc curve plot and a barplot showing the average
 #' (across tasks) area under the ROC curve (AUC) values for each quantitative descriptor on
-#' the patients' response provided. For comparison, a gold standard is plotted based on the
-#' average of the tasks.
+#' the patients' response provided. An ensemble model is built based on the average of the individual models.
+#' Additionally, the average of the gold standard scores is used for comparison.
 #'
 #' @importFrom ROCR prediction performance plot
 #' @importFrom grDevices pdf dev.off
@@ -20,12 +20,13 @@
 #' @param list_gold_standards character string of task names to be considered as gold standards for comparison.
 #' @param cancer_type character string indicating which cancer-specific model should be used to compute the predictions.
 #' @param TMB_values numeric vector containing patients' tumor mutational burden (TMB) values.
-#' @param easier_with_TMB logical flag indicating whether to apply refined approach using the combination of easier predictions and tumor mutational burden.
+#' @param easier_with_TMB logical flag indicating whether to apply refined approach using the combination of easier
+#' predictions and tumor mutational burden.
 #' @param verbose logical flag indicating whether to display messages about the process.
 #'
-#' @return If easier_with_TMB is set to FALSE, two figures (roc curve and bar plots) are directly saved in the path specified in output_file_path.
-#' If easier_with_TMB is set to TRUE, an additional plot is returned displaying an integrated approach that uses both immune response and tumor
-#' mutational burden (TMB) to predict patients' response.
+#' @return If easier_with_TMB is set to FALSE, two figures (roc curve and bar plots) are directly saved in the path specified
+#' in output_file_path. If easier_with_TMB is set to TRUE, an additional plot is returned displaying an integrated approach
+#' that uses both immune response and tumor mutational burden (TMB) to predict patients' response.
 #'
 #' @examples
 #' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)

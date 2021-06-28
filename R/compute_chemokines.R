@@ -1,6 +1,6 @@
 #' Compute chemokine signature (chemokines) score
 #'
-#' Computes chemokines score as the PC1 score that results from applying PCA to z-score expression of its signature genes
+#' Computes chemokines score as the PC1 score that results from applying PCA to z-score expression of its signature genes.
 #'
 #' @references Messina, J.L., Fenstermacher, D.A., Eschrich, S., Qu, X., Berglund, A.E., Lloyd, M.C., Schell, M.J.,
 #' Sondak, V.K., Weber, J.S., and Mulé, J.J. (2012). 12-Chemokine gene signature identifies lymph node-like structures
@@ -8,10 +8,10 @@
 #'
 #' @importFrom stats na.omit prcomp
 #'
-#' @param RNA_tpm numeric matrix with rows=genes and columns=samples
-#' @param verbose logical value indicating whether to display informative messages
+#' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
+#' @param verbose logical value indicating whether to display informative messages.
 #'
-#' @return numeric matrix with rows=samples and columns=chemokine score
+#' @return A numeric matrix with samples in rows and chemokines score in a column.
 #'
 #' @export
 #'

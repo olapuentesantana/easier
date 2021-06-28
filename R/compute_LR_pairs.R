@@ -1,9 +1,10 @@
-#' Compute ligand-receptor pair weights from gene expression
+#' Compute ligand-receptor pair weights from TPM bulk gene expression
 #'
 #' This function quantifies ligand-receptor interactions in the tumor microenvironment from
-#' gene expression in TPM from bulk RNA-seq data (Lapuente-Santana et al., bioRxiv, 2021), using prior knowledge
+#' TPM bulk gene expression (Lapuente-Santana et al., bioRxiv, 2021), using prior knowledge
 #' coming from ligand-receptor pair annotations from the database of (Ramilowski et al., Nat Commun, 2015).
-#' Each ligand-receptor weight is defined as the minimum of the log2(TPM+1) expression of the ligand and the receptor.
+#' Each ligand-receptor weight is defined as the minimum of the log2(TPM+1) expression of
+#' the ligand and the receptor.
 #'
 #' @importFrom stats na.exclude
 #' @importFrom utils head tail
@@ -14,7 +15,8 @@
 #' @param cancer_type A string detailing the cancer type whose ligand-receptor pairs network will be used.
 #' A pan-cancer network is selected by default, whose network represents the union of all
 #' ligand-receptor pairs present across the 18 cancer types studied in (Lapuente-Santana et al., bioRxiv, 2021).
-#' @param verbose A logical value indicating whether to display messages about the number of ligand-receptor genes found in the gene expression data provided.
+#' @param verbose A logical value indicating whether to display messages about the number of ligand-receptor
+#' genes found in the gene expression data provided.
 #'
 #' @return A matrix of weights with samples in rows and ligand-receptor pairs in columns.
 #'

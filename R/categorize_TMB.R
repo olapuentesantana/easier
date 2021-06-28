@@ -1,13 +1,14 @@
 #' Convert tumor mutational burden (TMB) to categorical.
 #'
-#' `categorize_TMB` encodes tumor mutational variable (TMB) numerical variable to categorical.
+#' This function encodes tumor mutational variable (TMB) numerical variable to categorical.
 #'
 #' @importFrom stats quantile
 #'
 #' @export
 #'
-#' @param TMB A numeric vector with tumor mutational burden values.
-#' @param thresholds A numeric vector to specify thresholds to be used. Default thresholds are low (<100), moderate (100-400) and high TMB (>400).
+#' @param TMB numeric vector with tumor mutational burden values.
+#' @param thresholds numeric vector to specify thresholds to be used. Default thresholds are low (<100),
+#'  moderate (100-400) and high TMB (>400).
 #'
 #' @return A numeric vector assigning each sample a class from 1 to 3.
 #'

@@ -1,13 +1,14 @@
-#' Compute gold standards (i.e. tasks)
+#' Compute published transcriptomics-based scores of hallmarks of anti-cancer immune response
+#' (so-called gold standards)
 #'
-#' `computation_gold_standards` computes the scores for the gold standards required by the user
+#' The function computes the gold standard scores required by the user.
 #'
 #' @export
 #'
-#' @param RNA_tpm A numeric matrix of patients' gene expression data as tpm values.
-#' @param list_gold_standards A character string of task names to be considered as gold standards for comparison.
+#' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
+#' @param list_gold_standards character string of task names to be considered as gold standards for comparison.
 #'
-#' @return A numeric matrix of patients' gold standard values (rows = samples; columns = tasks).
+#' @return A numeric matrix with samples in rows and gold standard scores in columns.
 #'
 #' @examples
 #' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)

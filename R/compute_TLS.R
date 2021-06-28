@@ -1,6 +1,6 @@
 #' Computation of tertiary lymphoid structures signature (TLS) score
 #'
-#' Computes TLS score as the geometric-mean of the expression of its signature genes.
+#' This function calculates TLS score as the geometric-mean of the expression of its signature genes.
 #'
 #' @references Cabrita, R., Lauss, M., Sanna, A., Donia, M., Skaarup Larsen, M., Mitra, S., Johansson, I., Phung, B.,
 #' Harbst, K., Vallon-Christersson, J., et al. (2020). Tertiary lymphoid structures improve immunotherapy and survival
@@ -8,10 +8,10 @@
 #'
 #' @importFrom stats na.omit
 #'
-#' @param RNA_tpm numeric matrix with rows=genes and columns=samples
-#' @param verbose logical value indicating whether to display informative messages
+#' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
+#' @param verbose logical value indicating whether to display informative messages.
 #'
-#' @return numeric matrix with rows=samples and columns=TLS signature
+#' @return A numeric matrix with samples in rows and TLS score in a column.
 #'
 #' @export
 #'

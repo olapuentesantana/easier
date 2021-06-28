@@ -1,6 +1,6 @@
 #' Compute microsatellite instability status (MSI) score
 #'
-#' Computes MSI score by logical comparison of MSI-related gene pairs expression
+#' This function calculates MSI score by logical comparison of MSI-related gene pairs expression.
 #'
 #' @references Fu, Y., Qi, L., Guo, W., Jin, L., Song, K., You, T., Zhang, S., Gu, Y., Zhao, W.,
 #' and Guo, Z. (2019). A qualitative transcriptional signature for predicting microsatellite instability
@@ -8,10 +8,10 @@
 #'
 #' @importFrom stats na.omit
 #'
-#' @param RNA_tpm numeric matrix with rows=genes and columns=samples
-#' @param verbose logical value indicating whether to display informative messages
+#' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
+#' @param verbose logical value indicating whether to display informative messages.
 #'
-#' @return numeric matrix with rows=samples and columns=MSI score
+#' @return A numeric matrix with samples in rows and MSI score in a column.
 #'
 #' @export
 #'

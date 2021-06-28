@@ -1,6 +1,6 @@
-#' Visualization of relevant biomarkers
+#' Visualization of stunning biomarkers found in the dataset
 #'
-#' Provides an overview of relevant computed features (biomarkers), comparing responders and non-responders if known.
+#' This function rovides an overview of relevant computed features (biomarkers), comparing responders and non-responders if known.
 #' Information about the features contribution to the optimal models is also included.
 #'
 #' @importFrom grDevices pdf dev.off

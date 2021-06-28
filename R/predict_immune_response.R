@@ -1,7 +1,7 @@
 #' Compute predicted immune response
 #'
-#' Predicts patients' immune response using regularized multi-task linear regression (RMTLR).
-#' The predicted immune response is calculated based on the input features data and the parameters learned during model training.
+#' This function calculates predictions of patients' immune response using the quantitative descriptors
+#' data as input features and the model parameters defined during training.
 #'
 #' @importFrom utils combn
 #' @importFrom stats na.omit
@@ -17,7 +17,7 @@
 #' @param cancer_type character string indicating which cancer-specific model should be used to compute the predictions.
 #' @param verbose logical flag indicating whether to display messages about the process.
 #'
-#' @return list containing the predictions for each quantitative descriptor and for each task.
+#' @return A list containing the predictions for each quantitative descriptor and for each task.
 #' Given that the model training was repeated 100 times with randomized-cross validation, a set of 100 predictions is returned.
 #'
 #' @examples

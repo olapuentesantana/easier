@@ -1,6 +1,6 @@
 #' Compute repressed immune resistance signature (RIR) score
 #'
-#' Calculates RIR score defined by combining a set of gene signatures associated with downregulation of T cell exclusion, post-treatment and functional resistance.
+#' This function calculates RIR score defined by combining a set of gene signatures associated with downregulation of T cell exclusion, post-treatment and functional resistance.
 #' More info can be found in original work from Jerby-Arnon et al., Cell, 2018.
 #'
 #' @references Jerby-Arnon, L., Shah, P., Cuoco, M.S., Rodman, C., Su, M.-J., Melms, J.C., Leeson, R., Kanodia, A., Mei, S., Lin, J.-R., et al. (2018).
@@ -8,10 +8,10 @@
 #'
 #' @importFrom stats na.omit
 #'
-#' @param RNA_tpm numeric matrix with gene expression data (tpm values). Genes as rows and samples as columns.
-#' @param verbose logical variable indicating whether to display informative messages
+#' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
+#' @param verbose logical variable indicating whether to display informative messages.
 #'
-#' @return Numeric matrix with computed RIR score for each sample (rows = samples; columns = RIR score)
+#' @return A numeric matrix with samples in rows and RIR score in a column.
 #'
 #' @export
 #'

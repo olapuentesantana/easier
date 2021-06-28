@@ -1,7 +1,7 @@
 #' Compute pathway activity from gene expression using PROGENy
 #'
-#' Infers pathway activity from gene expression in raw counts from bulk RNA-seq data
-#' using PROGENy method from (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018).
+#' Infers pathway activity from raw counts bulk gene expression using PROGENy method
+#' from (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018).
 #'
 #' @importFrom DESeq2 DESeqDataSetFromMatrix estimateSizeFactors estimateDispersions
 #' getVarianceStabilizedData
@@ -14,7 +14,7 @@
 #' @param verbose logical value indicating whether to display messages about the number of pathway signature
 #' genes found in the gene expression data provided.
 #'
-#' @return A matrix with samples in rows and pathways in columns.
+#' @return A matrix of activity scores with samples in rows and pathways in columns.
 #'
 #' @export
 #'

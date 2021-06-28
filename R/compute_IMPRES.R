@@ -1,6 +1,6 @@
 #' Compute Immuno-Predictive Score (IMPRES)
 #'
-#' Computes IMPRES by logical comparison of checkpoint gene pairs expression
+#' This function calculates IMPRES score by logical comparison of checkpoint gene pairs expression.
 #'
 #' @references Auslander,N.,Zhang,G.,Lee,J.S.,Frederick,D.T.,Miao,B.,Moll,T.,Tian,T.,Wei,Z., Madan, S.,
 #' Sullivan, R.J., et al. (2018). Robust prediction of response to immune checkpoint blockade therapy in
@@ -8,10 +8,10 @@
 #'
 #' @importFrom stats na.omit
 #'
-#' @param RNA_tpm numeric matrix with rows=genes and columns=samples
-#' @param verbose logical value indicating whether to display informative messages
+#' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
+#' @param verbose logical value indicating whether to display informative messages.
 #'
-#' @return numeric matrix with rows=samples and columns=IMPRES score
+#' @return A numeric matrix with samples in rows and IMPRES score in a column.
 #'
 #' @export
 #'

@@ -1,6 +1,6 @@
 #' Compute Davoli immune signature (Davoli_IS) score
 #'
-#' Computes Davoli_IS score as the average of the expression of its signature genes after applying rank normalization
+#' The function calculates Davoli_IS score as the average of the expression of its signature genes after applying rank normalization
 #'
 #' @references Davoli, T., Uno, H., Wooten, E.C., and Elledge, S.J. (2017). Tumor aneuploidy correlates
 #' with markers of immune evasion and with reduced response to immunotherapy. Science 355.
@@ -8,10 +8,10 @@
 #'
 #' @importFrom stats na.omit
 #'
-#' @param RNA_tpm numeric matrix with rows=genes and columns=samples
+#' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
 #' @param verbose logical value indicating whether to display informative messages
 #'
-#' @return numeric matrix with rows=samples and columns=Davoli immune signature
+#' @return A numeric matrix with samples in rows and Davoli_IS score in a column.
 #'
 #' @export
 #'

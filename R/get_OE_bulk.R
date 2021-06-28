@@ -1,6 +1,6 @@
 #' Compute overall expression (OE) of the immune resistance program derived in Jerby-Arnon et al., 2018.
 #'
-#' Calculates the overall expression of the immune resistance program which is based on a set of
+#' This function calculates the overall expression of the immune resistance program which is based on a set of
 #' gene signatures associated with T cell exclusion, post-treatment and functional resistance.
 #' The code was provided via Github https://github.com/livnatje/ImmuneResistance/blob/master/Code/ImmRes_OE.R.
 #'
@@ -18,7 +18,7 @@
 #' @param full_flag logical flag indicating whether to return also random scores.
 #' @param verbose logical flag indicating whether to display messages about the process.
 #'
-#' @return Numeric matrix with computed scores for each sample and subset of signatures included in the immune resistance program
+#' @return A bumeric matrix with computed scores for each sample and subset of signatures included in the immune resistance program
 #' (rows = samples; columns = gene signatures)
 #'
 #' @examples

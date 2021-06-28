@@ -1,6 +1,6 @@
 #' Compute Roh immune score (Roh_IS)
 #'
-#' Computes Roh_IS score as the geometric-mean of its signature genes.
+#' This function computes Roh_IS score as the geometric-mean of its signature genes.
 #'
 #' @references Roh, W., Chen, P.-L., Reuben, A., Spencer, C.N., Prieto, P.A., Miller, J.P., Gopalakrishnan, V.,
 #' Wang, F., Cooper, Z.A., Reddy, S.M., et al. (2017). Integrated molecular analysis of tumor biopsies on sequential
@@ -9,10 +9,10 @@
 #'
 #' @importFrom stats na.omit
 #'
-#' @param RNA_tpm numeric matrix with rows=genes and columns=samples
-#' @param verbose logical value indicating whether to display informative messages
+#' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
+#' @param verbose logical value indicating whether to display informative messages.
 #'
-#' @return numeric matrix with rows=samples and columns=Roh immune score
+#' @return A numeric matrix with samples in rows and Roh_IS score in a column.
 #'
 #' @export
 #'

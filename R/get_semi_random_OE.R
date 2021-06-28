@@ -1,22 +1,26 @@
-#' Calculate random scores used within get_OE_bulk function to compute the immune resistance program derived in Jerby-Arnon et al., 2018.
+#' Calculate random scores used within get_OE_bulk function to compute the immune resistance program
+#' derived in Jerby-Arnon et al., 2018.
 #'
-#' Calculates random scores to yield a robust estimate of the immune resistance program values. The code was provided via Github
-#' https://github.com/livnatje/ImmuneResistance/blob/master/Code/ImmRes_OE.R.
+#' This function calculates random scores to yield a robust estimate of the immune resistance program values.
+#' The code was provided via Github https://github.com/livnatje/ImmuneResistance/blob/master/Code/ImmRes_OE.R.
 #'
 #' @export
 #'
 #' @references Jerby-Arnon, L., Shah, P., Cuoco, M.S., Rodman, C., Su, M.-J., Melms, J.C., Leeson, R., Kanodia, A., Mei, S., Lin, J.-R., et al. (2018).
 #' A Cancer Cell Program Promotes T Cell Exclusion and Resistance to Checkpoint Blockade. Cell 175, 984–997.e24. https://doi.org/10.1016/j.cell.2018.09.006
 #'
-#' @param r list containing a numeric matrix with bulk RNA-Seq data (tpm values) and a character string with the available gene names.
-#' @param genes_dist_q factor variable obtained as output from the function discretize. Jerby-Arnon et al. binned genes into 50 expression bins according
+#' @param r list containing a numeric matrix with bulk RNA-Seq data (tpm values) and a character string with
+#' the available gene names.
+#' @param genes_dist_q factor variable obtained as output from the function discretize. Jerby-Arnon et al.
+#' binned genes into 50 expression bins according
 #' their average gene expression across samples.
 #' @param b_sign logical vector representing whether signature genes were found in bulk tpm matrix.
-#' @param num_rounds integer value related to the number of random gene signatures samples to be computed for normalization.
-#' Jerby-Arnon et al. found that 1000 random signatures were sufficient to yield an estimate of the expected value.
+#' @param num_rounds integer value related to the number of random gene signatures samples to be computed
+#' for normalization. Jerby-Arnon et al. found that 1000 random signatures were sufficient to yield an
+#' estimate of the expected value.
 #' @param full_flag logical flag indicating whether to return also random scores.
 #'
-#' @return Numeric vector containing the estimated random score for each sample.
+#' @return A numeric vector containing the estimated random score for each sample.
 #'
 #' @examples
 #' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)

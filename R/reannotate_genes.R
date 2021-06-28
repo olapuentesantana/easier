@@ -1,12 +1,12 @@
 #' Gene re-annotation using HGNC symbols
 #'
-#' Performs gene re-annotation using curated data by the HGNC.
+#' This function performs gene re-annotation using curated data by the HGNC.
 #'
 #' @export
 #'
 #' @param cur_genes character string containing gene HGNC symbols to be consider for re-annotation.
 #'
-#' @return Data.frame with the old gene HGNC symbol and the new corresponding gene HGNC symbol.
+#' @return A data.frame with the old gene HGNC symbol and the new corresponding gene HGNC symbol.
 #'
 #' @examples
 #' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
