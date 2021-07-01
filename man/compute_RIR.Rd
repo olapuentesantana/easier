@@ -7,15 +7,15 @@
 compute_RIR(RNA_tpm, verbose = TRUE)
 }
 \arguments{
-\item{RNA_tpm}{numeric matrix with gene expression data (tpm values). Genes as rows and samples as columns.}
+\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in rows and samples in columns.}
 
-\item{verbose}{logical variable indicating whether to display informative messages}
+\item{verbose}{logical variable indicating whether to display informative messages.}
 }
 \value{
-Numeric matrix with computed RIR score for each sample (rows = samples; columns = RIR score)
+A numeric matrix with samples in rows and RIR score in a column.
 }
 \description{
-Calculates RIR score defined by combining a set of gene signatures associated with downregulation of T cell exclusion, post-treatment and functional resistance.
+This function calculates RIR score defined by combining a set of gene signatures associated with downregulation of T cell exclusion, post-treatment and functional resistance.
 More info can be found in original work from Jerby-Arnon et al., Cell, 2018.
 }
 \examples{

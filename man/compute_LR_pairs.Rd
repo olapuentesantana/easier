@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute_LR_pairs.R
 \name{compute_LR_pairs}
 \alias{compute_LR_pairs}
-\title{Compute ligand-receptor pair weights from gene expression}
+\title{Compute ligand-receptor pair weights from TPM bulk gene expression}
 \usage{
 compute_LR_pairs(
   RNA_tpm,
@@ -21,16 +21,18 @@ in the derivation of hallmarks of immune response.}
 A pan-cancer network is selected by default, whose network represents the union of all
 ligand-receptor pairs present across the 18 cancer types studied in (Lapuente-Santana et al., bioRxiv, 2021).}
 
-\item{verbose}{A logical value indicating whether to display messages about the number of ligand-receptor genes found in the gene expression data provided.}
+\item{verbose}{A logical value indicating whether to display messages about the number of ligand-receptor
+genes found in the gene expression data provided.}
 }
 \value{
 A matrix of weights with samples in rows and ligand-receptor pairs in columns.
 }
 \description{
 This function quantifies ligand-receptor interactions in the tumor microenvironment from
-gene expression in TPM from bulk RNA-seq data (Lapuente-Santana et al., bioRxiv, 2021), using prior knowledge
+TPM bulk gene expression (Lapuente-Santana et al., bioRxiv, 2021), using prior knowledge
 coming from ligand-receptor pair annotations from the database of (Ramilowski et al., Nat Commun, 2015).
-Each ligand-receptor weight is defined as the minimum of the log2(TPM+1) expression of the ligand and the receptor.
+Each ligand-receptor weight is defined as the minimum of the log2(TPM+1) expression of
+the ligand and the receptor.
 }
 \examples{
 # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)

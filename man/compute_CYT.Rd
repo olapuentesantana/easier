@@ -7,15 +7,15 @@
 compute_CYT(RNA_tpm, verbose = TRUE)
 }
 \arguments{
-\item{RNA_tpm}{numeric matrix with rows=genes and columns=samples}
+\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in rows and samples in columns.}
 
-\item{verbose}{A logical value indicating whether to display informative messages}
+\item{verbose}{logical value indicating whether to display informative messages.}
 }
 \value{
-numeric matrix with rows=samples and columns=cytolytic activity score
+A numeric matrix with samples in rows and CTY score in a column.
 }
 \description{
-Computes CYT score as the geometric mean of its signature genes
+This function calculates the CYT score as the geometric mean of its signature genes.
 }
 \examples{
 # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)

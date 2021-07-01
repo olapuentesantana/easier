@@ -2,7 +2,8 @@
 % Please edit documentation in R/get_semi_random_OE.R
 \name{get_semi_random_OE}
 \alias{get_semi_random_OE}
-\title{Calculate random scores used within get_OE_bulk function to compute the immune resistance program derived in Jerby-Arnon et al., 2018.}
+\title{Calculate random scores used within get_OE_bulk function to compute the immune resistance program
+derived in Jerby-Arnon et al., 2018.}
 \usage{
 get_semi_random_OE(
   r,
@@ -13,24 +14,27 @@ get_semi_random_OE(
 )
 }
 \arguments{
-\item{r}{list containing a numeric matrix with bulk RNA-Seq data (tpm values) and a character string with the available gene names.}
+\item{r}{list containing a numeric matrix with bulk RNA-Seq data (tpm values) and a character string with
+the available gene names.}
 
-\item{genes_dist_q}{factor variable obtained as output from the function discretize. Jerby-Arnon et al. binned genes into 50 expression bins according
+\item{genes_dist_q}{factor variable obtained as output from the function discretize. Jerby-Arnon et al.
+binned genes into 50 expression bins according
 their average gene expression across samples.}
 
 \item{b_sign}{logical vector representing whether signature genes were found in bulk tpm matrix.}
 
-\item{num_rounds}{integer value related to the number of random gene signatures samples to be computed for normalization.
-Jerby-Arnon et al. found that 1000 random signatures were sufficient to yield an estimate of the expected value.}
+\item{num_rounds}{integer value related to the number of random gene signatures samples to be computed
+for normalization. Jerby-Arnon et al. found that 1000 random signatures were sufficient to yield an
+estimate of the expected value.}
 
 \item{full_flag}{logical flag indicating whether to return also random scores.}
 }
 \value{
-Numeric vector containing the estimated random score for each sample.
+A numeric vector containing the estimated random score for each sample.
 }
 \description{
-Calculates random scores to yield a robust estimate of the immune resistance program values. The code was provided via Github
-https://github.com/livnatje/ImmuneResistance/blob/master/Code/ImmRes_OE.R.
+This function calculates random scores to yield a robust estimate of the immune resistance program values.
+The code was provided via Github https://github.com/livnatje/ImmuneResistance/blob/master/Code/ImmRes_OE.R.
 }
 \examples{
 # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)

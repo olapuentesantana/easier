@@ -15,10 +15,10 @@ The processed data is made available via IMvigor210CoreBiologies R package
 dataset_mariathasan
 }
 \description{
-An exemplary dataset with samples from 192 patients with bladder cancer
+An exemplary dataset with samples from 192 patients with bladder cancer.
 }
 \details{
-easier ships with an example dataset with samples from 192 patients with bladder cncer.
+easier ships with an example dataset with samples from 192 patients with bladder cancer.
 The dataset easier::dataset_mariathasan contains
 \describe{
 \item{name}{cohort name related to the original work from Mariathasan et al., Nature, 2018}

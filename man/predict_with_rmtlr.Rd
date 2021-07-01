@@ -19,15 +19,17 @@ predict_with_rmtlr(
 
 \item{view_data}{list containing the data for each input view.}
 
-\item{cancer_type}{character string indicating cancer type to specify cancer-specific optimization model to be used.}
+\item{cancer_type}{character string indicating cancer type to specify cancer-specific optimization model
+to be used.}
 
 \item{verbose}{logical flag indicating whether to display messages about the process.}
 }
 \value{
-List of predictions matrices, one for each tasks (rows = samples; columns = runs).
+A lList of predictions matrices, one for each tasks (rows = samples; columns = runs).
 }
 \description{
-Collects predicted immune response by using a cancer-specifc model learned from training with RMTLR algorithm.
+This function puts together predicted immune response by using a cancer-specifc model learned
+from training with RMTLR algorithm.
 }
 \examples{
 # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)

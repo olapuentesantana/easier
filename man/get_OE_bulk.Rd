@@ -25,11 +25,11 @@ Jerby-Arnon et al. found that 1000 random signatures were sufficient to yield an
 \item{verbose}{logical flag indicating whether to display messages about the process.}
 }
 \value{
-Numeric matrix with computed scores for each sample and subset of signatures included in the immune resistance program
+A bumeric matrix with computed scores for each sample and subset of signatures included in the immune resistance program
 (rows = samples; columns = gene signatures)
 }
 \description{
-Calculates the overall expression of the immune resistance program which is based on a set of
+This function calculates the overall expression of the immune resistance program which is based on a set of
 gene signatures associated with T cell exclusion, post-treatment and functional resistance.
 The code was provided via Github https://github.com/livnatje/ImmuneResistance/blob/master/Code/ImmRes_OE.R.
 }

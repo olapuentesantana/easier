@@ -2,7 +2,7 @@
 % Please edit documentation in R/explore_biomarkers.R
 \name{explore_biomarkers}
 \alias{explore_biomarkers}
-\title{Visualization of relevant biomarkers}
+\title{Visualization of stunning biomarkers found in the dataset}
 \usage{
 explore_biomarkers(
   pathways = NULL,
@@ -45,7 +45,7 @@ explore_biomarkers(
 }
 }
 \description{
-Provides an overview of relevant computed features (biomarkers), comparing responders and non-responders if known.
+This function rovides an overview of relevant computed features (biomarkers), comparing responders and non-responders if known.
 Information about the features contribution to the optimal models is also included.
 }
 \examples{

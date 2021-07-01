@@ -6,7 +6,7 @@
 #' to PD-L1 blockade by contributing to exclusion of T cells. Nature 554, 544–548 (2018).
 #' https://doi.org/10.1038/nature25501.
 #'
-#' @details easier ships with an example dataset with samples from 192 patients with bladder cncer.
+#' @details easier ships with an example dataset with samples from 192 patients with bladder cancer.
 #' The dataset easier::dataset_mariathasan contains
 #' \describe{
 #'   \item{name}{cohort name related to the original work from Mariathasan et al., Nature, 2018}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/calc_z_score.R
 \name{calc_z_score}
 \alias{calc_z_score}
-\title{Z-score normalization}
+\title{Perform Z-score normalization}
 \usage{
 calc_z_score(X, mean, sd)
 }
@@ -14,12 +14,12 @@ calc_z_score(X, mean, sd)
 \item{sd}{numeric vector with sd values.}
 }
 \value{
-Numeric matrix with values as z-scores.
+A numeric matrix with values as z-scores.
 }
 \description{
-Performs z-score normalization on a numeric matrix per column.
-The user can specify mean and sd values to be used to calculate z-score values,
-otherwise the mean and sd is calculated based on the input matrix.
+This functions performs z-score normalization on a numeric matrix per column.
+Mean and sd values to be used to calculate z-score values, otherwise they are
+calculated based on the input matrix.
 }
 \examples{
 # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)

@@ -6,6 +6,7 @@ author:
 - name: Federico Marini^[marinif@uni-mainz.de]
   affiliation: Institute of Medical Biostatistics, Epidemiology and Informatics ([IMBEI, Mainz](https://www.unimedizin-mainz.de/imbei/imbei/welcome-page.html?L=1))
 - name: Arsenij Ustjanzew^[arsenij.ustjanzew@uni-mainz.de]
+  affiliation: Institute of Medical Biostatistics, Epidemiology and Informatics ([IMBEI, Mainz](https://www.unimedizin-mainz.de/imbei/imbei/welcome-page.html?L=1))
 - name: Francesca Finotello^[francesca.finotello@i-med.ac.at]
   affiliation: Institute of Bioinformatics, Biocenter Medical University of Innsbruck (https://icbi.i-med.ac.at/index.html)
 - name: Federica Eduati^[f.eduati@tue.nl]
@@ -107,12 +108,12 @@ Starting R, this package can be installed as follows:
 
 ```{r, eval=FALSE}
 install.packages("../easier_0.9.0.tar.gz", repos = NULL, type="source")
-````
+```
 
 Once installed, the package can be loaded and attached to your current workspace as follows:
 ```{r, eval=FALSE}
 library("easier")
-````
+```
 
 In order to use `easier` in your workflow, bulk-tumor RNA sequencing data is required as input (when available, patients' response to immunotherapy can be additionally provided):
 
@@ -128,20 +129,19 @@ This example dataset includes samples from 192 patients where both RNA-seq data 
 
 Let's first inspect the processed data provided in IMvigor210CoreBiologies from Mariathasan cohort:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 data("dataset_mariathasan")
-
-
-
-
-````
+```
 
 The computation of the five quantitative descriptors of the TME can be done as in the chunk below:
 
-```{r eval=FALSE}
+```{r eval=TRUE}
 # Obtain cell fractions
 cell_fractions <- compute_cell_fractions(RNA_tpm = dataset_mariathasan@tpm)
+head(cell_fractions)
+```
 
+```{r eval=FALSE}
 # Obtain pathway scores
 pathway_activity <- compute_pathways_scores(RNA_counts = dataset_mariathasan@counts,
                                             remove_genes_ICB_proxies = TRUE)
@@ -158,7 +158,7 @@ lrpair_weights <- compute_LR_pairs(RNA_tpm = dataset_mariathasan@tpm,
 # Obtain cell-cell interaction scores
 ccpair_scores <- compute_CC_pairs_grouped(lrpairs = lrpair_weights, 
                                           cancer_type = "pancan")
-````
+```
 
 Additionally, different published hallmarks of the immune response can also be computed using your patients' data. Nine hallmarks of the immune response are computed by default, set `list_gold_standards` to your own preferences.
 

@@ -7,15 +7,15 @@
 compute_IFNy(RNA_tpm, verbose = TRUE)
 }
 \arguments{
-\item{RNA_tpm}{numeric matrix with rows=genes and columns=samples}
+\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in rows and samples in columns.}
 
-\item{verbose}{A logical value indicating whether to display informative messages}
+\item{verbose}{logical value indicating whether to display informative messages.}
 }
 \value{
-numeric matrix with rows=samples and columns=IFNy signature score
+A numeric matrix with samples in rows and IFNy score in a column.
 }
 \description{
-Computes IFNy signature score as the average expression of its signature genes
+This function calculates IFNy signature score as the average expression of its signature genes.
 }
 \examples{
 # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)

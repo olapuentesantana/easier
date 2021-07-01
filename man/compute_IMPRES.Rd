@@ -7,15 +7,15 @@
 compute_IMPRES(RNA_tpm, verbose = TRUE)
 }
 \arguments{
-\item{RNA_tpm}{numeric matrix with rows=genes and columns=samples}
+\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in rows and samples in columns.}
 
-\item{verbose}{logical value indicating whether to display informative messages}
+\item{verbose}{logical value indicating whether to display informative messages.}
 }
 \value{
-numeric matrix with rows=samples and columns=IMPRES score
+A numeric matrix with samples in rows and IMPRES score in a column.
 }
 \description{
-Computes IMPRES by logical comparison of checkpoint gene pairs expression
+This function calculates IMPRES score by logical comparison of checkpoint gene pairs expression.
 }
 \examples{
 # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)

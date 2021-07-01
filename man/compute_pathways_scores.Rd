@@ -20,11 +20,11 @@ in the derivation of hallmarks of immune response.}
 genes found in the gene expression data provided.}
 }
 \value{
-A matrix with samples in rows and pathways in columns.
+A matrix of activity scores with samples in rows and pathways in columns.
 }
 \description{
-Infers pathway activity from gene expression in raw counts from bulk RNA-seq data
-using PROGENy method from (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018).
+Infers pathway activity from raw counts bulk gene expression using PROGENy method
+from (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018).
 }
 \examples{
 # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)

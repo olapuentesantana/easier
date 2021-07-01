@@ -35,14 +35,12 @@ Description: This package provides a workflow for the use of EaSIeR tool, develo
              in the literature and the performance of EaSIeR predictions has been validated using independent datasets
              form four different cancer types with patients treated with anti-PD1 or anti-PDL1 therapy.
 Depends:
-    R (>= 4.0)
+    R (>= 4.1.0)
 Imports: 
-    progeny, ROCR, grDevices, stats, graphics, ggplot2,
-    grid, DESeq2, utils, dorothea, dplyr, matrixStats,
-    immunedeconv, rlang, arules, BiocParallel, reshape2,
-    rstatix, ggrepel
-Remotes:
-    icbi-lab/immunedeconv
+    ROCR, grDevices, stats, graphics, ggplot2,
+    progeny, dorothea, quantiseqr, grid, DESeq2,
+    utils, dplyr, matrixStats, rlang, arules, 
+    BiocParallel, reshape2, rstatix, ggrepel
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

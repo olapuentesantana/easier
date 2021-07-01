@@ -10,10 +10,10 @@ reannotate_genes(cur_genes)
 \item{cur_genes}{character string containing gene HGNC symbols to be consider for re-annotation.}
 }
 \value{
-Data.frame with the old gene HGNC symbol and the new corresponding gene HGNC symbol.
+A data.frame with the old gene HGNC symbol and the new corresponding gene HGNC symbol.
 }
 \description{
-Performs gene re-annotation using curated data by the HGNC.
+This function performs gene re-annotation using curated data by the HGNC.
 }
 \examples{
 # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)

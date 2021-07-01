@@ -7,15 +7,15 @@
 compute_Ayers_expIS(RNA_tpm, verbose = TRUE)
 }
 \arguments{
-\item{RNA_tpm}{numeric matrix with rows=genes and columns=samples}
+\item{RNA_tpm}{numeric matrix with rows=genes and columns=samples.}
 
-\item{verbose}{logical value indicating whether to display informative messages}
+\item{verbose}{logical value indicating whether to display informative messages.}
 }
 \value{
-numeric matrix with rows=samples and columns=Expanded Immune signature score
+A numeric matrix with rows=samples and columns=Expanded Immune signature score.
 }
 \description{
-Computes Ayers_expIS score as the average expression of its signature genes
+This function calculates Ayers_expIS score as the average expression of its signature genes.
 }
 \examples{
 # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)

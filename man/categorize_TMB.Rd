@@ -7,15 +7,16 @@
 categorize_TMB(TMB, thresholds = NULL)
 }
 \arguments{
-\item{TMB}{A numeric vector with tumor mutational burden values.}
+\item{TMB}{numeric vector with tumor mutational burden values.}
 
-\item{thresholds}{A numeric vector to specify thresholds to be used. Default thresholds are low (<100), moderate (100-400) and high TMB (>400).}
+\item{thresholds}{numeric vector to specify thresholds to be used. Default thresholds are low (<100),
+moderate (100-400) and high TMB (>400).}
 }
 \value{
 A numeric vector assigning each sample a class from 1 to 3.
 }
 \description{
-\code{categorize_TMB} encodes tumor mutational variable (TMB) numerical variable to categorical.
+This function encodes tumor mutational variable (TMB) numerical variable to categorical.
 }
 \examples{
 # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)

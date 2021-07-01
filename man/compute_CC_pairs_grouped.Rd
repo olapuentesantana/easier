@@ -2,26 +2,26 @@
 % Please edit documentation in R/compute_CC_pairs_grouped.R
 \name{compute_CC_pairs_grouped}
 \alias{compute_CC_pairs_grouped}
-\title{Compute cell-cell interactions scores from gene expression}
+\title{Compute cell-cell interactions scores using computed ligand-receptor weights}
 \usage{
 compute_CC_pairs_grouped(lrpairs, cancer_type = "pancan", verbose = TRUE)
 }
 \arguments{
-\item{lrpairs}{A matrix of weights log2(TPM +1) with samples in rows and ligand-receptor pairs in columns. This data is returned by compute_LR_pairs function.}
+\item{lrpairs}{output of the compute_LR_pairs function. A matrix of log2(TPM +1) weights with
+with samples in rows and ligand-receptor pairs in columns.}
 
-\item{cancer_type}{A string detailing the cancer type whose cell-cell interaction network will be used.
+\item{cancer_type}{string detailing the cancer type whose cell-cell interaction network will be used.
 A pan-cancer network is selected by default, whose network represents the union of all
 ligand-receptor pairs present across the 18 cancer types studied in (Lapuente-Santana et al., bioRxiv, 2021).}
 
-\item{verbose}{A logical value indicating whether to display informative messages about the process.}
+\item{verbose}{logical value indicating whether to display informative messages about the process.}
 }
 \value{
 A matrix of scores with samples in rows and cell-cell pairs in columns.
 }
 \description{
-This function scores cell-cell interactions in the tumor microenvironment from
-gene expression in TPM from bulk RNA-seq data (Lapuente-Santana et al., 2021), using prior knowledge
-coming from ligand-receptor pair annotations from the database of (Ramilowski et al., Nat Commun, 2015).
+This function scores cell-cell interactions in the tumor microenvironment using
+ligand-receptor weights as input (Lapuente-Santana et al., bioRxiv, 2021).
 }
 \examples{
 # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)

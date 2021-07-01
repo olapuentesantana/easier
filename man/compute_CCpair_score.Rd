@@ -14,23 +14,23 @@ compute_CCpair_score(
 )
 }
 \arguments{
-\item{celltype1}{string character with first cell type involved in the interaction}
+\item{celltype1}{string character with first cell type involved in the interaction.}
 
-\item{celltype2}{string character with second cell type involved in the interaction}
+\item{celltype2}{string character with second cell type involved in the interaction.}
 
-\item{intercell_network}{matrix with data on cell types interaction network}
+\item{intercell_network}{matrix with data on cell types interaction network.}
 
-\item{lrpairs_binary}{binary vector displaying LR pairs with non-zero frequency}
+\item{lrpairs_binary}{binary vector displaying LR pairs with non-zero frequency.}
 
-\item{lr_frequency}{numeric vector with LR pairs frequency across the whole TCGA database}
+\item{lr_frequency}{numeric vector with LR pairs frequency across the whole TCGA database.}
 
-\item{compute_log}{boolean variable in order to take the log of the weighted score}
+\item{compute_log}{boolean variable in order to take the log of the weighted score.}
 }
 \value{
-numeric vector with weighted scores
+A numeric vector with weighted scores.
 }
 \description{
-Derives a score for each cell-cell pair feature.
+This function derives a score for each cell-cell pair feature.
 }
 \examples{
 # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)

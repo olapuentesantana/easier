@@ -7,20 +7,20 @@
 compute_TF_activity(RNA_tpm, remove_genes_ICB_proxies = FALSE, verbose = TRUE)
 }
 \arguments{
-\item{RNA_tpm}{A data.frame containing TPM values with HGNC symbols in rows and samples in columns.}
+\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in rows and samples in columns.}
 
-\item{remove_genes_ICB_proxies}{A logical value indicating whether to remove signature genes involved
+\item{remove_genes_ICB_proxies}{logical value indicating whether to remove signature genes involved
 in the derivation of hallmarks of immune response.}
 
-\item{verbose}{A logical value indicating whether to display messages about the number of regulated
+\item{verbose}{logical value indicating whether to display messages about the number of regulated
 genes found in the gene expression data provided.}
 }
 \value{
-a matrix with samples in rows and transcription factors in columns.
+A numeric matrix of activity scores with samples in rows and transcription factors in columns.
 }
 \description{
-This function infers transcription factor activity from gene expression in TPM
-from bulk RNA-seq data using DoRothEA method (Garcia-Alonso et al., Genome Res, 2019).
+This function infers transcription factor activity from TPM bulk gene expression
+using DoRothEA method (Garcia-Alonso et al., Genome Res, 2019).
 }
 \examples{
 # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)

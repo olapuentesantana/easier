@@ -2,7 +2,7 @@
 % Please edit documentation in R/assess_immune_response.R
 \name{assess_immune_response}
 \alias{assess_immune_response}
-\title{Assess performance of predicted immune response score}
+\title{Evaluate the predictive performance of the computed immune response score}
 \usage{
 assess_immune_response(
   predictions_immune_response = NULL,
@@ -31,20 +31,21 @@ assess_immune_response(
 
 \item{TMB_values}{numeric vector containing patients' tumor mutational burden (TMB) values.}
 
-\item{easier_with_TMB}{logical flag indicating whether to apply refined approach using the combination of easier predictions and tumor mutational burden.}
+\item{easier_with_TMB}{logical flag indicating whether to apply refined approach using the combination of easier
+predictions and tumor mutational burden.}
 
 \item{verbose}{logical flag indicating whether to display messages about the process.}
 }
 \value{
-If easier_with_TMB is set to FALSE, two figures (roc curve and bar plots) are directly saved in the path specified in output_file_path.
-If easier_with_TMB is set to TRUE, an additional plot is returned displaying an integrated approach that uses both immune response and tumor
-mutational burden (TMB) to predict patients' response.
+If easier_with_TMB is set to FALSE, two figures (roc curve and bar plots) are directly saved in the path specified
+in output_file_path. If easier_with_TMB is set to TRUE, an additional plot is returned displaying an integrated approach
+that uses both immune response and tumor mutational burden (TMB) to predict patients' response.
 }
 \description{
-Generates a roc curve plot and a barplot showing the average
+This function generates a roc curve plot and a barplot showing the average
 (across tasks) area under the ROC curve (AUC) values for each quantitative descriptor on
-the patients' response provided. For comparison, a gold standard is plotted based on the
-average of the tasks.
+the patients' response provided. An ensemble model is built based on the average of the individual models.
+Additionally, the average of the gold standard scores is used for comparison.
 }
 \examples{
 # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)

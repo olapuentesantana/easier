@@ -7,15 +7,17 @@
 compute_Tcell_inflamed(RNA_tpm, verbose = TRUE)
 }
 \arguments{
-\item{RNA_tpm}{numeric matrix with rows=genes and columns=samples}
+\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in rows and samples in columns.}
 
 \item{verbose}{logical value indicating whether to display informative messages}
 }
 \value{
-numeric matrix with rows=samples and columns=T cell-inflamed signaturescore
+A numeric matrix with samples in rows and Tcell_inflamed score in a column.
 }
 \description{
-Computes Tcell_inflamed score as a weighted sum of housekeeping normalized expression of its signature genes
+This function calculates Tcell_inflamed score as a weighted sum of housekeeping normalized expression of its signature genes.
+Weightes were available at Table S2B from Cristescu R, et al. Pan-tumor genomic biomarkers for PD-1 checkpoint
+blockade-based immunotherapy. Science. (2018) 362:eaar3593. doi: 10.1126/science.aar3593.
 }
 \examples{
 # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)

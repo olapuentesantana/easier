@@ -7,16 +7,16 @@
 compute_cell_fractions(RNA_tpm, verbose = TRUE)
 }
 \arguments{
-\item{RNA_tpm}{A data.frame containing TPM values with HGNC symbols in rows and samples in columns.}
+\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in rows and samples in columns.}
 
-\item{verbose}{A logical value indicating whether to display messages about the number of immune cell
+\item{verbose}{logical value indicating whether to display messages about the number of immune cell
 signature genes found in the gene expression data provided.}
 }
 \value{
-A matrix of normalized enrichment scores with samples in rows and cell types in columns.
+A numeric matrix of normalized enrichment scores with samples in rows and cell types in columns.
 }
 \description{
-This function estimates cell fractions from bulk RNA-seq data (tpm)
+This function estimates cell fractions from gene expression in TPM
 using quanTIseq method from (Finotello et al., Genome Med, 2019).
 }
 \examples{
