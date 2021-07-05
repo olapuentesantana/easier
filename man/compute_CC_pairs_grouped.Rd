@@ -2,30 +2,42 @@
 % Please edit documentation in R/compute_CC_pairs_grouped.R
 \name{compute_CC_pairs_grouped}
 \alias{compute_CC_pairs_grouped}
-\title{compute_CC_pairs_grouped}
+\title{Compute cell-cell interactions scores using computed ligand-receptor weights}
 \usage{
-compute_CC_pairs_grouped(lrpairs, cancertype)
+compute_CC_pairs_grouped(lrpairs, cancer_type = "pancan", verbose = TRUE)
 }
 \arguments{
-\item{lrpairs}{Ligand-receptor pairs weights matrix}
+\item{lrpairs}{output of the compute_LR_pairs function. A matrix of log2(TPM +1) weights with
+with samples in rows and ligand-receptor pairs in columns.}
 
-\item{cancertype}{string character}
+\item{cancer_type}{string detailing the cancer type whose cell-cell interaction network will be used.
+A pan-cancer network is selected by default, whose network represents the union of all
+ligand-receptor pairs present across the 18 cancer types studied in (Lapuente-Santana et al., bioRxiv, 2021).}
+
+\item{verbose}{logical value indicating whether to display informative messages about the process.}
 }
 \value{
-A list with the following elements:
-\describe{
-\item{score}{cell-cell interaction scores matrix with rows=samples and columns=cells}
-\item{pval}{corresponding p-values for each cell-cell pair, comparing the score with
-the null hypothesis}
-}
+A matrix of scores with samples in rows and cell-cell pairs in columns.
 }
 \description{
-Compute CC pairs grouped from transcriptomics data.
-}
-\details{
-\code{compute_CC_pairs_grouped} computes CC pairs (considering cell groups instead of individual cell types) from tpm,
-using the null model for CC interaction computed on TCGA data.
+This function scores cell-cell interactions in the tumor microenvironment using
+ligand-receptor weights as input (Lapuente-Santana et al., bioRxiv, 2021).
 }
 \examples{
-# TODOTODO
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_tpm <- dataset_mariathasan@tpm
+
+# Computation of ligand-receptor pair weights
+lrpair_weights <- compute_LR_pairs(
+  RNA_tpm = gene_tpm,
+  remove_genes_ICB_proxies = FALSE,
+  cancer_type = "pancan"
+)
+
+# Computation of cell-cell interaction scores
+ccpair_scores <- compute_CC_pairs_grouped(
+  lrpairs = lrpair_weights,
+  cancer_type = "pancan"
+)
 }

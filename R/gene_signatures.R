@@ -33,7 +33,7 @@ compute_signature <- function(RNA_tpm,
   ranks_sub_log2.RNA.tpm <- apply(sub_log2.RNA.tpm, 1, rank)
 
   # Get normalized rank by divided
-  ranks_sub_log2.RNA.tpm.norm <- (ranks_sub_log2.RNA.tpm - 1)/(nrow(ranks_sub_log2.RNA.tpm) - 1)
+  ranks_sub_log2.RNA.tpm.norm <- (ranks_sub_log2.RNA.tpm - 1) / (nrow(ranks_sub_log2.RNA.tpm) - 1)
 
   # Calculation: average of the expression value of all the genes within-sample
   score <- apply(ranks_sub_log2.RNA.tpm.norm, 1, mean)
@@ -44,31 +44,33 @@ compute_signature <- function(RNA_tpm,
   # here still returned as a vector
   ## if needed as a df, could also be handled here (could need an extra param to name the column properly! - here, as well as in the specific signature computing function)
   return(score)
-
 }
 
 
-compute.Davoli_IS_pimped <- function(RNA.tpm,
+compute_Davoli_IS_pimped <- function(RNA.tpm,
                                      sig_davoli = NULL) {
 
   #### Literature genes
   #### Davoli_IS.read <- c("CD247", "CD2", "CD3E", "GZMH", "NKG7", "PRF1", "GZMK")
 
-  if (is.null(sig_davoli))
-    sig_davoli <- easier_sigs$signature_davoli # or just the single one
+  if (is.null(sig_davoli)) {
+    sig_davoli <- easier_sigs$signature_davoli
+  } # or just the single one
   # else: keep the selection provided by the user
 
 
   match_Davoli_IS.genes <- match(sig_davoli, rownames(RNA.tpm))
 
-  if (anyNA(match_Davoli_IS.genes)){
+  if (anyNA(match_Davoli_IS.genes)) {
     warning(c("differenty named or missing signature genes : \n", paste(sig_davoli[!sig_davoli %in% rownames(RNA.tpm)], collapse = "\n")))
     match_Davoli_IS.genes <- stats::na.omit(match_Davoli_IS.genes)
   }
 
   # then using the generic function
-  score <- compute_signature(RNA_tpm = RNA.tpm,
-                             selected_signature = match_Davoli_IS.genes)
+  score <- compute_signature(
+    RNA_tpm = RNA.tpm,
+    selected_signature = match_Davoli_IS.genes
+  )
 
 
   # and then again returning the score, just as for the original version

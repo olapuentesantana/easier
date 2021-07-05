@@ -1,128 +1,89 @@
-#' Compute gold standards
+#' Compute published transcriptomics-based scores of hallmarks of anti-cancer immune response
+#' (so-called gold standards)
 #'
-#' \code{computation_gold_standards} computes the scores for the gold standards required by the user
+#' The function computes the gold standard scores required by the user.
 #'
 #' @export
 #'
-#' @param RNA.tpm numeric matrix with data, as tpm values
-#' @param list_gold_standards string with gold standards names
-#' @param cancertype string character
-#' @param output_file_path TODOTODO to define - maybe name it more specifically to the function it absolves?
+#' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
+#' @param list_gold_standards character string of task names to be considered as gold standards for comparison.
 #'
-#' @return List with the scores of all the gold standards specified.
+#' @return A numeric matrix with samples in rows and gold standard scores in columns.
 #'
 #' @examples
-#' # TODOTODO
-compute_gold_standards <- function(RNA.tpm,
-                                   list_gold_standards,
-                                   cancertype,
-                                   output_file_path){
-
-  # calculate Immune Checkpoint genes expression #
-  ICB_genes <- compute_ICB_genes(RNA.tpm)
-
-  gold.standards <- sapply(list_gold_standards, function(X){
-
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' gene_tpm <- dataset_mariathasan@tpm
+#'
+#' # Computation of different hallmarks of the immune response
+#' tasks <- c(
+#'   "CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
+#'   "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS"
+#' )
+#' tasks_values <- compute_gold_standards(
+#'   RNA_tpm = gene_tpm,
+#'   list_gold_standards = tasks
+#' )
+compute_gold_standards <- function(RNA_tpm,
+                                   list_gold_standards = c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")) {
+  gold_standards <- sapply(list_gold_standards, function(X) {
     if ("CYT" == X) {
 
       # calculate Cytolytic activity #
-      CYT <- t(compute.CYT(RNA.tpm))
-      return(list(CYT))
-
-    }else if("IPS" == X) {
-
-      # calculate Immunophenoscore #
-      # IPS <- t(compute.IPS(RNA.tpm))
-      # return(list(IPS))
-      return(NA)
-
-    }else if("IMPRES" == X) {
+      CYT <- t(compute_CYT(RNA_tpm))
+      return(CYT)
+    } else if ("IMPRES" == X) {
 
       # calculate Impres #
-      IMPRES <- t(compute.IMPRES(RNA.tpm))
-      return(list(IMPRES))
-
-    }else if("Roh_IS" == X) {
+      IMPRES <- t(compute_IMPRES(RNA_tpm))
+      return(IMPRES)
+    } else if ("Roh_IS" == X) {
 
       # calculate roh immune signature #
-      Roh_IS <- t(compute.Roh_IS(RNA.tpm))
-      return(list(Roh_IS))
-
-    }else if("chemokines" == X) {
+      Roh_IS <- t(compute_Roh_IS(RNA_tpm))
+      return(Roh_IS)
+    } else if ("chemokines" == X) {
 
       # calculate chemokine signature #
-      chemokines <- t(compute.chemokines(RNA.tpm))
-      return(list(chemokines))
-
-    }else if("Davoli_IS" == X) {
+      chemokines <- t(compute_chemokines(RNA_tpm))
+      return(chemokines)
+    } else if ("Davoli_IS" == X) {
 
       # calculate davoli cytotoxic immune signature #
-      Davoli_IS <- t(compute.Davoli_IS(RNA.tpm))
-      return(list(Davoli_IS))
-
-    }else if("IFNy" == X) {
+      Davoli_IS <- t(compute_Davoli_IS(RNA_tpm))
+      return(Davoli_IS)
+    } else if ("IFNy" == X) {
 
       # calculate ayers IFNy #
-      IFNy <- t(compute.IFNy(RNA.tpm))
-      return(list(IFNy))
-
-    }else if("Ayers_expIS" == X) {
+      IFNy <- t(compute_IFNy(RNA_tpm))
+      return(IFNy)
+    } else if ("Ayers_expIS" == X) {
 
       # calculate ayers expanded immune signature #
-      Ayers_expIS <- t(compute.Ayers_expIS(RNA.tpm))
-      return(list(Ayers_expIS))
-
-    }else if("Tcell_inflamed" == X) {
+      Ayers_expIS <- t(compute_Ayers_expIS(RNA_tpm))
+      return(Ayers_expIS)
+    } else if ("Tcell_inflamed" == X) {
 
       # calculate ayers T cell inflamed signature #
-      Tcell_inflamed <- t(compute.Tcell_inflamed(RNA.tpm))
-      return(list(Tcell_inflamed))
-
-    }else if("TIDE" == X) {
-
-      # calculate TIDE signature #
-      # TIDE <- t(compute.TIDE(RNA.tpm, cancertype, output_file_path))
-      # return(list(TIDE))
-      return(NA)
-
-    }else if("MSI" == X) {
+      Tcell_inflamed <- t(compute_Tcell_inflamed(RNA_tpm))
+      return(Tcell_inflamed)
+    } else if ("MSI" == X) {
 
       # calculate MSI signature #
-      MSI <- t(compute.MSI(RNA.tpm))
-      return(list(MSI))
-
-    }else if("RIR" == X) {
-
-      # calculate MSI signature #
-      RIR <- t(compute.RIR(RNA.tpm))
-      return(list(RIR))
-
-    }else if("TLS" == X) {
+      MSI <- t(compute_MSI(RNA_tpm))
+      return(MSI)
+    } else if ("RIR" == X) {
 
       # calculate MSI signature #
-      TLS <- t(compute.TLS(RNA.tpm))
-      return(list(TLS))
+      RIR <- t(compute_RIR(RNA_tpm))
+      return(RIR)
+    } else if ("TLS" == X) {
 
-    }else if("CTLA4" == X) {
-
-      CTLA4 <- ICB_genes$CTLA4
-      return(list(CTLA4))
-
-    }else if("PD1" == X) {
-
-      PD1 <- ICB_genes$PD1
-      return(list(PD1))
-
-    }else if("PDL1" == X) {
-
-      PDL1 <- ICB_genes$PDL1
-      return(list(PDL1))
-
+      # calculate MSI signature #
+      TLS <- t(compute_TLS(RNA_tpm))
+      return(TLS)
     }
-
   })
-
-  return(gold.standards)
-
+  rownames(gold_standards) <- colnames(RNA_tpm)
+  return(gold_standards)
 }
-

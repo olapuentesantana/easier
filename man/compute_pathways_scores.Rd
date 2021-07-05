@@ -2,26 +2,38 @@
 % Please edit documentation in R/compute_pathways_scores.R
 \name{compute_pathways_scores}
 \alias{compute_pathways_scores}
-\title{Compute pathways score}
+\title{Compute pathway activity from gene expression using PROGENy}
 \usage{
-compute_pathways_scores(RNA.counts, remove.genes.ICB_proxies = TRUE)
+compute_pathways_scores(
+  RNA_counts,
+  remove_genes_ICB_proxies = TRUE,
+  verbose = TRUE
+)
 }
 \arguments{
-\item{RNA.counts}{numeric matrix of read counts with rows=genes and columns=samples}
+\item{RNA_counts}{data.frame containing raw counts values (with HGNC gene symbols as row names and samples identifiers as column names).}
 
-\item{remove.genes.ICB_proxies}{boolean variable to remove all those genes involved in the computation of ICB proxy's of response}
+\item{remove_genes_ICB_proxies}{logical value indicating whether to remove signature genes involved
+in the derivation of hallmarks of immune response.}
+
+\item{verbose}{logical value indicating whether to display messages about the number of pathway signature
+genes found in the gene expression data provided.}
 }
 \value{
-A list with the following elements:
-\describe{
-\item{scores}{pathway activity matrix with rows=samples and columns=pathways}
-\item{transcripts_kept}{vector with available gene names}
-\item{transcripts_left}{vector with missing gene names}
-}
+A matrix of activity scores with samples in rows and pathways in columns.
 }
 \description{
-\code{compute_pathways_scores} infers pathway activity from raw counts RNAseq data.
+Infers pathway activity from raw counts bulk gene expression using PROGENy method
+from (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018).
 }
 \examples{
-# TODOTODO
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_count <- dataset_mariathasan@counts
+
+# Computation of pathway scores (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018)
+pathway_activity <- compute_pathways_scores(
+  RNA_counts = gene_count,
+  remove_genes_ICB_proxies = TRUE
+)
 }

@@ -1,79 +1,92 @@
-#' Compute transription factors activity
+#' Compute transcription factor activity from gene expression using DoRothEA
 #'
-#' \code{compute_TF_activity} infers transcription factor activity from tpm RNAseq data.
+#' This function infers transcription factor activity from TPM bulk gene expression
+#' using DoRothEA method (Garcia-Alonso et al., Genome Res, 2019).
 #'
 #' @importFrom dorothea run_viper
 #' @importFrom stats na.exclude
 #' @importFrom dplyr filter
 #'
-#' @param RNA.tpm numeric matrix of tpm values with rows=genes and columns=samples
-#' @param remove.genes.ICB_proxies boolean variable to remove all those genes involved in the computation of ICB proxy's of response
+#' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
+#' @param remove_genes_ICB_proxies logical value indicating whether to remove signature genes involved
+#' in the derivation of hallmarks of immune response.
+#' @param verbose logical value indicating whether to display messages about the number of regulated
+#' genes found in the gene expression data provided.
 #'
-#' @return A list with the following elements:
-#'         \describe{
-#'               \item{scores}{TF activity matrix with rows=samples and columns=TFs}
-#'               \item{transcripts_kept}{vector with available gene names}
-#'               \item{transcripts_left}{vector with missing gene names}
-#'         }
+#' @return A numeric matrix of activity scores with samples in rows and transcription factors in columns.
+#'
 #' @export
 #'
 #' @examples
-#' # TODOTODO
-compute_TF_activity <- function(RNA.tpm,
-                                remove.genes.ICB_proxies=FALSE){
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' gene_tpm <- dataset_mariathasan@tpm
+#'
+#' # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
+#' tf_activity <- compute_TF_activity(
+#'   RNA_tpm = gene_tpm,
+#'   remove_genes_ICB_proxies = FALSE
+#' )
+compute_TF_activity <- function(RNA_tpm,
+                                remove_genes_ICB_proxies = FALSE,
+                                verbose = TRUE) {
+  # Some checks
+  if (is.null(RNA_tpm)) stop("tpm data not found")
 
   # Gene expression data
-  tpm <- RNA.tpm
+  tpm <- RNA_tpm
   genes <- rownames(tpm)
 
   # HGNC symbols are required
-  try(if (any(grep("ENSG00000", genes))) stop("hgnc gene symbols are required", call. = FALSE))
+  if (any(grep("ENSG00000", genes))) stop("hgnc gene symbols are required", call. = FALSE)
 
   # Genes to remove according to all ICB proxy's
-  if (remove.genes.ICB_proxies) {
-    message("Removing signatures genes for proxy's of ICB response  \n")
+  if (remove_genes_ICB_proxies) {
+    if (verbose) message("Removing signatures genes for proxy's of ICB response  \n")
     idy <- stats::na.exclude(match(cor_genes_to_remove, rownames(tpm)))
-    tpm <- tpm[-idy,]
+    tpm <- tpm[-idy, ]
   }
 
   # Log transformed expression matrix (log2[tpm+1]): expression matrix scaled and recentered.
-  gene_expr <- standardization(t(tpm) , mean = TCGA.mean.pancancer, sd = TCGA.sd.pancancer)
+  gene_expr <- calc_z_score(t(tpm), mean = TCGA_mean_pancancer, sd = TCGA_sd_pancancer)
 
   # redefine gene names to match transcripts for viper
   E <- t(gene_expr)
-  newNames <- sapply(rownames(E), function(x){
+  newNames <- sapply(rownames(E), function(x) {
     # strsplit(x, "\\.")[[1]][1]
     zz_tmp <- strsplit(x, "\\.")[[1]]
-    paste0(zz_tmp[1:(length(zz_tmp)-1)], collapse = "-")
+    paste0(zz_tmp[1:(length(zz_tmp) - 1)], collapse = "-")
   })
   rownames(E) <- newNames
 
   # data extracted from publication
-  regulons <- dplyr::filter(dorothea::dorothea_hs, confidence %in% c("A", "B"))
+  regulons <- dplyr::filter(dorothea::dorothea_hs, .data$confidence %in% c("A", "B"))
   all_regulated_transcripts <- unique(regulons$target)
   all_tfs <- unique(regulons$tf)
-
-  # check what is the percentage of regulated transcripts and TF that we have in our data
-  message(" percentage of regulated transcripts = ", sum(all_regulated_transcripts %in%  rownames(E))*100/length(all_regulated_transcripts), "\n")
-  message(" percentage of TF = ", sum(all_tfs %in% rownames(E))*100/length(all_tfs), "\n")
-
-  # TF activity: run viper
-  TF_activities <- dorothea::run_viper(input = E, regulons = regulons,
-                                       options = list(method = "none", minsize = 4, eset.filter = FALSE, cores = 1, verbose=FALSE))
-
-  # Samples as rows, TFs as columns
-  TF_activities <- t(TF_activities)
 
   # check what is the percentage of genes we have in our data
   genes_kept <- intersect(rownames(E), all_regulated_transcripts)
   genes_left <- setdiff(all_regulated_transcripts, rownames(E))
 
-  # Output list:
-  TFs <- list(scores = as.data.frame(TF_activities),
-              transcripts_kept = length(genes_kept),
-              transcripts_left = length(genes_left))
+  # check what is the percentage of regulated transcripts that we have in our data
+  if (verbose) {
+    message(
+      "Regulated transcripts found in data set: ", length(genes_kept), "/",
+      length(all_regulated_transcripts), " (",
+      round(length(genes_kept) / length(all_regulated_transcripts), 3) * 100, "%)"
+    )
+  }
 
-  message("TF activities computed \n")
+  # TF activity: run viper
+  tf_activity <- dorothea::run_viper(
+    input = E, regulons = regulons,
+    options = list(method = "none", minsize = 4, eset.filter = FALSE, cores = 1, verbose = FALSE)
+  )
 
-  return(TFs)
+  # Samples as rows, TFs as columns
+  tf_activity <- t(tf_activity)
+
+  if (verbose) message("TF activity computed \n")
+
+  return(as.data.frame(tf_activity))
 }

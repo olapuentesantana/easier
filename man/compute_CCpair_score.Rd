@@ -2,39 +2,70 @@
 % Please edit documentation in R/compute_CCpair_score.R
 \name{compute_CCpair_score}
 \alias{compute_CCpair_score}
-\title{compute_CCpair_score}
+\title{Compute cell-cell pair score}
 \usage{
 compute_CCpair_score(
   celltype1,
   celltype2,
-  intercell.network,
-  lrpairs.binary,
-  lr.frequency,
-  compute.log = TRUE,
-  cancertype
+  intercell_network,
+  lrpairs_binary,
+  lr_frequency,
+  compute_log = TRUE
 )
 }
 \arguments{
-\item{celltype1}{string character with first cell type involved in the interaction}
+\item{celltype1}{string character with first cell type involved in the interaction.}
 
-\item{celltype2}{string character with second cell type involved in the interaction}
+\item{celltype2}{string character with second cell type involved in the interaction.}
 
-\item{intercell.network}{matrix with data on cell types interaction network}
+\item{intercell_network}{matrix with data on cell types interaction network.}
 
-\item{lrpairs.binary}{binary vector displaying LR pairs with non-zero frequency}
+\item{lrpairs_binary}{binary vector displaying LR pairs with non-zero frequency.}
 
-\item{lr.frequency}{numeric vector with LR pairs frequency across the whole TCGA database}
+\item{lr_frequency}{numeric vector with LR pairs frequency across the whole TCGA database.}
 
-\item{compute.log}{boolean variable in order to take the log of the weighted score}
-
-\item{cancertype}{string character}
+\item{compute_log}{boolean variable in order to take the log of the weighted score.}
 }
 \value{
-numeric vector with weighted scores
+A numeric vector with weighted scores.
 }
 \description{
-\code{compute_CCpair_score} computes the score for each cell - cell pair for all the patients.
+This function derives a score for each cell-cell pair feature.
 }
 \examples{
-# TODOTODO
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_tpm <- dataset_mariathasan@tpm
+
+# Computation of ligand-receptor pair weights
+lrpair_weights <- compute_LR_pairs(
+  RNA_tpm = gene_tpm,
+  remove_genes_ICB_proxies = FALSE,
+  cancer_type = "pancan"
+)
+
+# remove ligand receptor pairs that are always NA
+na_lrpairs <- apply(lrpair_weights, 2, function(x) {
+  all(is.na(x))
+})
+lrpair_weights <- lrpair_weights[, na_lrpairs == FALSE]
+
+# binarize the data: set a threshold to 10 TPM,
+# only pairs where both ligand and receptor have TPM > 10 are kept
+lrpairs_binary <- ifelse(lrpair_weights > log2(10 + 1), 1, 0)
+
+# keep only the LR.pairs for which I have (non-zero) frequencies in the TCGA
+lrpairs_binary <- lrpairs_binary[, colnames(lrpairs_binary) \%in\% names(easier:::lr_frequency)]
+
+# cancer type specific network
+intercell_network <- easier:::intercell_network_cancer_spec[["pancan"]]
+celltypes <- unique(c(as.character(intercell_network$cell1), as.character(intercell_network$cell2)))
+celltype1 <- celltypes[1]
+celltype2 <- celltypes[1]
+
+# compute the CC score for each patient
+CCpair_score <- compute_CCpair_score(celltype1, celltype2, intercell_network,
+  lrpairs_binary, easier:::lr_frequency,
+  compute_log = TRUE
+)
 }

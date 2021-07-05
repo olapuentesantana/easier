@@ -2,25 +2,57 @@
 % Please edit documentation in R/get_OE_bulk.R
 \name{get_OE_bulk}
 \alias{get_OE_bulk}
-\title{Calculate overall expression (OE)}
+\title{Compute overall expression (OE) of the immune resistance program derived in Jerby-Arnon et al., 2018.}
 \usage{
-get_OE_bulk(r, gene.sign = NULL, num.rounds = 1000, full.flag = FALSE)
+get_OE_bulk(
+  r,
+  gene_sign = NULL,
+  num_rounds = 1000,
+  full_flag = FALSE,
+  verbose = TRUE
+)
 }
 \arguments{
-\item{r}{list}
+\item{r}{list containing a numeric matrix with bulk RNA-Seq data (tpm values) and a character string with the available gene names.}
 
-\item{gene.sign}{string}
+\item{gene_sign}{list containing different character strings associated with subsets of the resistance program.}
 
-\item{num.rounds}{integer}
+\item{num_rounds}{integer value related to the number of random gene signatures samples to be computed for normalization.
+Jerby-Arnon et al. found that 1000 random signatures were sufficient to yield an estimate of the expected value.}
 
-\item{full.flag}{boolean}
+\item{full_flag}{logical flag indicating whether to return also random scores.}
+
+\item{verbose}{logical flag indicating whether to display messages about the process.}
 }
 \value{
-Random score
+A bumeric matrix with computed scores for each sample and subset of signatures included in the immune resistance program
+(rows = samples; columns = gene signatures)
 }
 \description{
-\code{get_OE_bulk} obtained from literature to calculate Immune resistance program  (Jerby-Arnon et al., 2018)
+This function calculates the overall expression of the immune resistance program which is based on a set of
+gene signatures associated with T cell exclusion, post-treatment and functional resistance.
+The code was provided via Github https://github.com/livnatje/ImmuneResistance/blob/master/Code/ImmRes_OE.R.
 }
 \examples{
-# TODOTODO
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_tpm <- dataset_mariathasan@tpm
+
+# Log2 transformation:
+log2_gene_tpm <- log2(gene_tpm + 1)
+
+# Prepare input data
+r <- list()
+r$tpm <- log2_gene_tpm
+r$genes <- rownames(log2_gene_tpm)
+
+# Gene signature of immune resistance program
+RIR_gene_signature <- easier:::res_sig
+
+# Apply function to calculate OE:
+res_scores <- get_OE_bulk(r, gene_sign = RIR_gene_signature, verbose = TRUE)
+}
+\references{
+Jerby-Arnon, L., Shah, P., Cuoco, M.S., Rodman, C., Su, M.-J., Melms, J.C., Leeson, R., Kanodia, A., Mei, S., Lin, J.-R., et al. (2018).
+A Cancer Cell Program Promotes T Cell Exclusion and Resistance to Checkpoint Blockade. Cell 175, 984–997.e24. https://doi.org/10.1016/j.cell.2018.09.006
 }

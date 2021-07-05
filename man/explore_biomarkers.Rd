@@ -2,54 +2,102 @@
 % Please edit documentation in R/explore_biomarkers.R
 \name{explore_biomarkers}
 \alias{explore_biomarkers}
-\title{Examination of possible relevant biomarkers in cancer dataset}
+\title{Visualization of stunning biomarkers found in the dataset}
 \usage{
 explore_biomarkers(
-  pathways,
-  immunecells,
-  lrpairs,
-  cytokinepairs,
-  tfs,
-  ccpairsgroupedscores,
-  ccpairsgroupedpval,
-  cancertype,
+  pathways = NULL,
+  immunecells = NULL,
+  tfs = NULL,
+  lrpairs = NULL,
+  ccpairs = NULL,
+  cancer_type,
   real_patient_response,
-  output_file_path
+  output_file_path,
+  TMB_values,
+  verbose = TRUE
 )
 }
 \arguments{
-\item{pathways}{numeric matrix with data}
+\item{pathways}{numeric matrix with pathways activity (rows = samples; columns = pathways).}
 
-\item{immunecells}{numeric matrix with data}
+\item{immunecells}{numeric matrix with immune cell quantification (rows = samples; columns = cell types).}
 
-\item{lrpairs}{numeric matrix with data}
+\item{tfs}{numeric matrix with transcription factors activity (rows = samples; columns = transcription factors).}
 
-\item{cytokinepairs}{numeric matrix with data}
+\item{lrpairs}{numeric matrix with ligand-receptor weights (rows = samples; columns = ligand-receptor pairs).}
 
-\item{tfs}{numeric matrix with data}
+\item{ccpairs}{numeric matrix with cell-cell scores (rows = samples; columns = cell-cell pairs).}
 
-\item{ccpairsgroupedscores}{numeric matrix with data}
+\item{cancer_type}{character string indicating which cancer-specific model should be used to compute the predictions.}
 
-\item{ccpairsgroupedpval}{numeric matrix with data}
+\item{real_patient_response}{character vector with two factors (Non-responders = NR, Responders = R).}
 
-\item{cancertype}{string character}
+\item{output_file_path}{character string pointing to a directory to save the plots returned by the function.}
 
-\item{real_patient_response}{vector with two factors (NR,R)}
+\item{TMB_values}{numeric vector containing patients' tumor mutational burden (TMB) values.}
 
-\item{output_file_path}{string with a file name}
+\item{verbose}{logical flag indicating whether to display messages about the process.}
 }
 \value{
-boxplot with features distribution
+\itemize{
+\item{Volcano plot displaying relevant biomarkers differentiating responders vs non-responders patients.}
+\item{A combined plot for each type of quantitative descriptors, showing the original distribution of the features and the importance of these features for the trained models}
+}
 }
 \description{
-\code{explore_biomarkers} provides an overview of the mechanistic signatures features distribution in
-the dataset (separating responders and non-responders if known) together with information on the
-feature contribution to the model building.
-}
-\details{
-Plot original features distribution together with the
-feature importance in the model
+This function rovides an overview of relevant computed features (biomarkers), comparing responders and non-responders if known.
+Information about the features contribution to the optimal models is also included.
 }
 \examples{
-# TODOTODO
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_count <- dataset_mariathasan@counts
+gene_tpm <- dataset_mariathasan@tpm
+
+# Computation of cell fractions
+cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
+
+# Computation of pathway scores
+pathway_activity <- compute_pathways_scores(
+  RNA_counts = gene_count,
+  remove_genes_ICB_proxies = TRUE
+)
+
+# Computation of TF activity
+tf_activity <- compute_TF_activity(
+  RNA_tpm = gene_tpm,
+  remove_genes_ICB_proxies = FALSE
+)
+
+# Computation of ligand-receptor pair weights
+lrpair_weights <- compute_LR_pairs(
+  RNA_tpm = gene_tpm,
+  remove_genes_ICB_proxies = FALSE,
+  cancer_type = "pancan"
+)
+
+# Computation of cell-cell interaction scores
+ccpair_scores <- compute_CC_pairs_grouped(
+  lrpairs = lrpair_weights,
+  cancer_type = "pancan"
+)
+
+# retrieve clinical response
+patient_response <- dataset_mariathasan@response
+
+# retrieve TMB
+TMB <- dataset_mariathasan@TMB
+
+# Investigate possible biomarkers
+explore_biomarkers(
+  pathways = pathway_activity,
+  immunecells = cell_fractions,
+  lrpairs = lrpair_weights,
+  tfs = tf_activity,
+  ccpairs = ccpair_scores,
+  cancer_type = "BLCA",
+  real_patient_response = patient_response,
+  output_file_path = "../figures",
+  TMB_values = TMB
+)
 }

@@ -4,8 +4,12 @@
 #'
 #'
 #' @importFrom stats cor
-#' @importFrom utils install.packages installed.packages
+#' @importFrom rlang .data
+#' @importFrom graphics abline lines
+#' @importFrom utils View data
 #'
 #' @name easier-pkg
 #' @docType package
 NULL
+
+globalVariables(c("feature", "istop", "threshold", "weight"))

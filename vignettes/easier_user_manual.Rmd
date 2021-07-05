@@ -1,0 +1,275 @@
+---
+title: easier User Manual
+author:
+- name: Óscar Lapuente-Santana^[o.lapuente.santana@tue.nl]
+  affiliation: Computational Biology group, Department of Biomedical Engineering, Eindhoven University of Technology ([BME, TU/e](https://www.tue.nl/en/research/research-groups/computational-biology/))
+- name: Federico Marini^[marinif@uni-mainz.de]
+  affiliation: Institute of Medical Biostatistics, Epidemiology and Informatics ([IMBEI, Mainz](https://www.unimedizin-mainz.de/imbei/imbei/welcome-page.html?L=1))
+- name: Arsenij Ustjanzew^[arsenij.ustjanzew@uni-mainz.de]
+  affiliation: Institute of Medical Biostatistics, Epidemiology and Informatics ([IMBEI, Mainz](https://www.unimedizin-mainz.de/imbei/imbei/welcome-page.html?L=1))
+- name: Francesca Finotello^[francesca.finotello@i-med.ac.at]
+  affiliation: Institute of Bioinformatics, Biocenter Medical University of Innsbruck (https://icbi.i-med.ac.at/index.html)
+- name: Federica Eduati^[f.eduati@tue.nl]
+  affiliation: Computational Biology group, Department of Biomedical Engineering, Eindhoven University of Technology ([BME, TU/e](https://www.tue.nl/en/research/research-groups/computational-biology/))<br/>
+               Institute for Complex Molecular Systems, Eindhoven University of Technology ([ICMS, TU/e](https://www.tue.nl/en/research/institutes/institute-for-complex-molecular-systems/))
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    theme: lumen
+bibliography: references_easier.bib
+vignette: >
+  %\VignetteIndexEntry{easier User Manual}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+<style type="text/css">
+.smaller {
+  font-size: 10px
+  font-style: normal
+}
+</style>
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, include = FALSE}
+library(easier)
+```
+
+# Introduction {#introduction} 
+
+This vignette describes how to use the easier package for a pleasant onboarding experience around the EaSIeR approach. EaSIeR is a tool to predict biomarker-based immunotherapy response providing just the patients' RNA-sequencing (RNA-seq) data as input. 
+
+RNA-seq data is integrated with different types of biological prior knowledge to extract quantitative descriptors of the tumor microenvironment (TME) from several points of view, including composition of the immune repertoire, and activity of intra- and extra-cellular communications (see table below).
+
+```{r table1, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+library(knitr)
+table1 <- "
+| Quantitative descriptor  | Descriptor conception  | Prior knowledge |
+| -----------------------  | ----------------------------------- | ----------------------------------- |
+| Pathway activity | @HOLLAND2020194431; @Schubert2018 | @HOLLAND2020194431; @Schubert2018 |
+| Immune cell quantification | @Finotello2019 | @Finotello2019 |
+| TF activity | @Garcia-Alonso01082019 | @Garcia-Alonso01082019 |
+| Ligand-Receptor pairs | @Lapuente-Santana2021.02.05.429977 | @Ramilowski2015 |
+| Cell-cell interaction | @Lapuente-Santana2021.02.05.429977 | @Ramilowski2015 |
+"
+cat(table1)
+```
+
+Leveraging the data from The Cancer Genome Atlas (TCGA), regularized multi-task linear regression was used to identify how these descriptors can simultaneously predict several state-of-the-art hallmarks of anti-cancer immune response (see table below). Here, the regularization term is used to select features that are relevant for all tasks.
+
+```{r table2, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+table2 <- "
+| Hallmark of the immune response | Original study |
+|-------------------------------- | -------------- |
+| Cytolytic activity (CYT) | @ROONEY201548 |
+| Roh immune score (Roh_IS) | @Roheaah3560 |
+| Chemokine signature (chemokines) | @Messina2012 |
+| Davoli immune signature (Davoli_IS) | @Davolieaaf8399 |
+| IFNy signature (IFNy) | @10.1172/JCI91190 |
+| Expanded immune signature (Ayers_expIS) | @10.1172/JCI91190 |
+| T-cell inflamed signature (Tcell_inflamed) | @10.1172/JCI91190 |
+| Repressed immune resistance (RIR) | @JERBYARNON2018984 |
+| Tertiary lymphoid structures signature (TLS) | @Cabrita2020 |
+| Immuno-predictive score (IMPRES) | @Auslander2018 |
+| Microsatellite instability status | @Fu2019 |
+"
+cat(table2)
+```
+
+Cancer-specific models were built and used to identify cancer-specific systems biomarkers of immune response. These biomarkers have been experimentally validated in the literature and the performance of EaSIeR predictions has been validated using independent datasets from four different cancer types with patients treated with anti-PD1 or anti-PDL1 therapy.
+
+For detailed information about the fundamentals of EaSIeR, please refer to our original work: Lapuente-Santana et al. "Predictive systems biomarkers of response to immune checkpoint inhibitors", available in bioRxiv [doi:10.1101/2021.02.05.429977](https://www.biorxiv.org/content/10.1101/2021.02.05.429977v1).
+
+`easier` consists of a range of functions which are essential for the optimal use of EaSIeR pipeline. Even though all functions are well-documented within the package, we provide here a quick overview of these different functionalities: 
+
+- `compute_cell_fractions` estimates cell fractions from TPM gene expression using quanTIseq method [@Finotello2019].
+- `compute_pathways_scores` infers pathway activity from raw counts gene expression using PROGENy method [@HOLLAND2020194431; @Schubert2018].
+- `compute_TF_activity` infers transcription factor activity from TPM gene expression using DoRothEA method [@Garcia-Alonso01082019].
+- `compute_LR_pairs` quantifies ligand-receptor interactions in the TME from TPM gene expression using prior knowledge coming from ligand-receptor pair annotations from the database of @Ramilowski2015.
+- `compute_CC_pairs_grouped` scores cell-cell interactions in the TME using ligand-receptor weights as input.
+- `compute_gold_standards` computes the published transcriptomics-based hallmarks of anti-cancer immune response (so-called gold standards) as established by the user.
+- `predict_immune_response` predicts patients' immune response using the quantitative descriptors data as input features and the model parameters defined during training.
+- `assess_immune_response` evaluates the performance of the predicted immune response using a roc curve plot and a barplot showing the average (across tasks) area under the ROC curve (AUC) values.
+- `explore_biomarkers` visualizes stunning biomarkers of immune response found in the dataset (e.g. comparing non-responders and responders patients if response is known).
+
+# Getting started {#gettingstarted}
+
+Starting R, this package can be installed as follows:
+
+```{r, eval=FALSE}
+install.packages("../easier_0.9.0.tar.gz", repos = NULL, type="source")
+```
+
+Once installed, the package can be loaded and attached to your current workspace as follows:
+```{r, eval=FALSE}
+library("easier")
+```
+
+In order to use `easier` in your workflow, bulk-tumor RNA sequencing data is required as input (when available, patients' response to immunotherapy can be additionally provided):
+
+- `RNA_counts`, a `data.frame` containing raw counts values (with HGNC gene symbols as row names and samples identifiers as column names).
+- `RNA_tpm`, a `data.frame` containing TPM values (with HGNC gene symbols as row names and samples identifiers as column names).
+- `real_patient_response`, a character `vector` containing clinical patients' response to immunotherapy(with non-responders labeled as NR and responders as R).
+
+# Use case for `easier`: Bladder cancer patients [@Mariathasan2018]
+
+In this section, we illustrate the main features of `easier` on a publicly available bladder cancer dataset from Mariathasan et al. "TGF-B attenuates tumour response to PD-L1 blockade by contributing to exclusion of T cells", published in Nature, 2018 [doi:10.1038/nature25501](https://doi.org/10.1038/nature25501). The processed data is made available via [`IMvigor210CoreBiologies`](http://research-pub.gene.com/IMvigor210CoreBiologies/) package under the CC-BY license. 
+
+This example dataset includes samples from 192 patients where both RNA-seq data and information on response to ICB therapy is available. Here, we consider only patients with complete response (CR) as responders and patients with progressive disease (PD) as non-responders.
+
+Let's first inspect the processed data provided in IMvigor210CoreBiologies from Mariathasan cohort:
+
+```{r, eval=TRUE}
+data("dataset_mariathasan")
+
+
+
+
+
+
+
+
+
+
+
+#################
+
+#colorectal cancer
+counts_file <- system.file("extdata/rna-seq/SRP029880.raw_counts.tsv",
+                           package = "compGenomRData")
+coldata_file <- system.file("extdata/rna-seq/SRP029880.colData.tsv",
+                            package = "compGenomRData")
+counts <- as.matrix(read.table(counts_file, header = T, sep = '\t'))
+tasks <- c("CYT", "IPS", "IMPRES", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
+           "Ayers_expIS", "Tcell_inflamed", "TIDE", "MSI", "TLS", "CTLA4", "PD1", "PDL1")
+# create a vector of gene lengths 
+geneLengths <- as.vector(subset(counts, select = c(width)))
+#find gene length normalized values 
+rpk <- apply( subset(counts, select = c(-width)), 2, 
+              function(x) x/(geneLengths/1000))
+#normalize by the sample size using rpk values
+tpm <- apply(rpk, 2, function(x) x / sum(as.numeric(x)) * 10^6)
+cancertype <- "coadread"
+output_file_path <- "ars_dir"
+#compute_gold_standards(RNA.tpm = tpm,list_gold_standards = tasks,cancertype,output_file_path)
+#selected_signatures <- c("CYT", "IMPRES", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
+# "Ayers_expIS", "Tcell_inflamed", "MSI", "TLS", "ICB_genes", "RIR", "TIDE", "IPS")
+selected_signatures <- c("CYT", "IMPRES", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
+ "Ayers_expIS", "Tcell_inflamed", "MSI", "TLS", "ICB_genes")
+easier::compute_gene_signatures(tpm, selected_signatures)
+```
+
+The computation of the five quantitative descriptors of the TME can be done as in the chunk below:
+
+```{r eval=TRUE}
+# Obtain cell fractions
+cell_fractions <- compute_cell_fractions(RNA_tpm = dataset_mariathasan@tpm)
+head(cell_fractions)
+```
+
+```{r eval=FALSE}
+# Obtain pathway scores
+pathway_activity <- compute_pathways_scores(RNA_counts = dataset_mariathasan@counts,
+                                            remove_genes_ICB_proxies = TRUE)
+
+# Obtain TF activity
+tf_activity <- compute_TF_activity(RNA_tpm = dataset_mariathasan@tpm, 
+                                   remove_genes_ICB_proxies = FALSE)
+
+# Obtain ligand-receptor pair weights
+lrpair_weights <- compute_LR_pairs(RNA_tpm = dataset_mariathasan@tpm, 
+                                   remove_genes_ICB_proxies = FALSE, 
+                                   cancer_type = "pancan")
+
+# Obtain cell-cell interaction scores
+ccpair_scores <- compute_CC_pairs_grouped(lrpairs = lrpair_weights, 
+                                          cancer_type = "pancan")
+```
+
+Additionally, different published hallmarks of the immune response can also be computed using your patients' data. Nine hallmarks of the immune response are computed by default, set `list_gold_standards` to your own preferences.
+
+```{r eval = FALSE}
+tasks <- c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
+tasks_values <- compute_gold_standards(RNA_tpm = dataset_mariathasan@tpm, 
+                                       list_gold_standards = tasks)
+```
+
+Now we use the quantitative descriptors computed previously to obtain predictions of immune response. The output of `predict_immune_response` returns predictions for each quantitative descriptor.
+
+Because models were built in a cancer-type-specific fashion, the user is required to indicate which cancer-specific model should be used for predicting the immune response. This can be done via the `cancer_type` argument.
+
+```{r eval = FALSE}
+predictions_immune_response <- predict_immune_response(pathways = pathway_activity,
+                                                       immunecells = cell_fractions,
+                                                       tfs = tf_activity,
+                                                       lrpairs = lrpair_weights,
+                                                       ccpairs = ccpair_scores,
+                                                       cancer_type = dataset_mariathasan@cancertype, 
+                                                       verbose = TRUE)
+
+```
+
+Depending on the patient's response information available, we can now think of two possible scenarios where:
+
+- `real_patient_response` is **known** and the performance of the computed predictions can be evaluated. In this case, we expect the user to provide a character `vector` containing clinical patients' response (where non-responders are labeled as NR and responders as R).
+- `real_patient_response` is **unknown** and an score is provided assessing patient-specific likelihood of response to therapy.
+
+For the first scenario, we can use the patients' response information available from Mariathasan cohort. Because patients' tumor mutational burden is also provided, we can also used to compare its performance against the quantitative descriptors. 
+
+Additionally the user can set `easier_with_TMB` to `TRUE` to apply a refined approach based on the integration of `easier` predictions with information on tumor mutational burden (TMB). 
+Since both immune response and TMB are essential for an effective immunotherapy response, we decided to conceptualize this in our predictions by either penalizing or weighting differently our scores in high- and low-TMB patients. 
+
+```{r eval = FALSE}
+assess_immune_response(predictions_immune_response = predictions_immune_response,
+                       real_patient_response = dataset_mariathasan@response,
+                       RNA_tpm = dataset_mariathasan@tpm,
+                       output_file_path = "../figures",
+                       cancer_type = dataset_mariathasan@cancertype,
+                       TMB_values = dataset_mariathasan@TMB,
+                       easier_with_TMB = TRUE)
+
+```
+
+We can go further and analyze systems biomarkers present in the user's bulk RNA-seq data. `explore_biomarkers` allows to investigate mechanisms behind patients' response to treatment through interpretable biomarkers. 
+
+In order to leverage the biomarkers information obtained during model training, you need to specify again which `cancer_type` the bulk RNA-seq data belongs.
+
+```{r eval = FALSE}
+explore_biomarkers(pathways = pathway_activity,
+                   immunecells = cell_fractions,
+                   lrpairs = lrpair_weights,
+                   tfs = tf_activity,
+                   ccpairs = ccpair_scores,
+                   cancer_type = dataset_mariathasan@cancertype,
+                   real_patient_response = dataset_mariathasan@response,
+                   output_file_path = "../figures",
+                   TMB_values = dataset_mariathasan@TMB)
+```
+
+Moving to a real-case scenario where the patients' response is not known, making treatments decision is a must and `easier` aims to assist clinicians in this regard.
+
+**Think about unique patient score**
+
+
+## Ready to go!
+
+Once you go through the full framework of `easier`, you are ready to engage in the app of `easier`. To do so, you can just launch the `easier()` app:
+
+
+# Session info {- .smaller}
+
+```{r sessioninfo}
+sessionInfo()
+```
+
+# References {-}

@@ -11,36 +11,36 @@
 #' @examples
 #' # TODOTODO
 compute_gene_signatures <- function(RNA_tpm, selected_signatures){
-
-  easier_sigs <- list(CYT=c("GZMA", "PRF1"),
-                      TLS=c("CD79B", "CD1D", "CCR6", "LAT", "SKAP1", "CETP", "EIF1AY", "RBP5", "PTGDS"),
-                      IFNy=c("IFNG", "STAT1", "CXCL9", "CXCL10", "IDO1", "HLA-DRA"),
-                      Ayers_expIS=c("GZMB", "GZMK", "CXCR6", "CXCL10", "CXCL13", "CCL5", "STAT1","CD3D", "CD3E",
-                                    "CD2", "IL2RG" , "NKG7", "HLA-E", "CIITA","HLA-DRA", "LAG3", "IDO1", "TAGAP"),
-                      Tcell_inflamed=list(
-                        Tcell_inflamed.read=c("CCL5", "CD27", "CD274", "CD276", "CD8A", "CMKLR1", "CXCL9", "CXCR6", "HLA-DQA1",
-                                              "HLA-DRB1", "HLA-E", "IDO1", "LAG3", "NKG7", "PDCD1LG2", "PSMB10", "STAT1", "TIGIT"),
-                        Housekeeping.read=c("STK11IP", "ZBTB34", "TBC1D10B", "OAZ1", "POLR2A", "G6PD", "ABCF1", "NRDE2", "UBB", "TBP", "SDHA"),
-                        weights=c(CCL5=0.008346, CD27=0.072293, CD274=0.042853, CD276=-0.0239, CD8A=0.031021 ,CMKLR1=0.151253, CXCL9=0.074135,
-                                  CXCR6=0.004313, `HLA-DQA1`=0.020091, `HLA-DRB1`=0.058806, `HLA-E`=0.07175, IDO1=0.060679, LAG3=0.123895, NKG7=0.075524, PDCD1LG2=0.003734,
-                                  PSMB10=0.032999, STAT1=0.250229, TIGIT=0.084767)),
-                      Roh_IS=c("GZMA", "GZMB", "PRF1", "GNLY", "HLA-A", "HLA-B", "HLA-C", "HLA-E", "HLA-F",
-                               "HLA-G", "HLA-H", "HLA-DMA", "HLA-DMB", "HLA-DOA", "HLA-DOB", "HLA-DPA1",
-                               "HLA-DPB1", "HLA-DQA1", "HLA-DQA2", "HLA-DQB1", "HLA-DRA", "HLA-DRB1",
-                               "IFNG", "IFNGR1", "IFNGR2", "IRF1", "STAT1", "PSMB9", "CCR5", "CCL3", "CCL4",
-                               "CCL5", "CXCL9", "CXCL10", "CXCL11", "ICAM1", "ICAM2", "ICAM3", "ICAM4", "ICAM5", "VCAM1"),
-                      Davoli_IS=c("CD247", "CD2", "CD3E", "GZMH", "NKG7", "PRF1", "GZMK"),
-                      chemokines=c("CCL2", "CCL3", "CCL4", "CCL5", "CCL8", "CCL18", "CCL19", "CCL21",
-                                   "CXCL9", "CXCL10", "CXCL11", "CXCL13"),
-                      IMPRES=list(
-                        Gene_1 = c("PDCD1", "CD27", "CTLA4", "CD40", "CD86", "CD28", "CD80",
-                                   "CD274", "CD86", "CD40", "CD86", "CD40", "CD28", "CD40", "TNFRSF14"),
-                        Gene_2 = c("TNFSF4", "PDCD1", "TNFSF4", "CD28", "TNFSF4", "CD86", "TNFSF9",
-                                   "C10orf54", "HAVCR2", "PDCD1", "CD200", "CD80", "CD276", "CD274", "CD86")),
-                      MSI=list(
-                        Gene_1 = c("HNRNPL", "MTA2", "CALR", "RASL11A", "LYG1", "STRN3", "HPSE", "PRPF39", "NOCT","AMFR"),
-                        Gene_2 = c("CDC16", "VGF", "SEC22B", "CAB39L", "DHRS12", "TMEM192", "BCAS3", "ATF6","GRM8","DUSP18")),
-                      RIR=c())
+  easier_sigs <- readRDS(file.path(system.file("extdata", "signature_genes.RDS", package = "easier_devel")))
+  # easier_sigs <- list(CYT=c("GZMA", "PRF1"),
+  #                     TLS=c("CD79B", "CD1D", "CCR6", "LAT", "SKAP1", "CETP", "EIF1AY", "RBP5", "PTGDS"),
+  #                     IFNy=c("IFNG", "STAT1", "CXCL9", "CXCL10", "IDO1", "HLA-DRA"),
+  #                     Ayers_expIS=c("GZMB", "GZMK", "CXCR6", "CXCL10", "CXCL13", "CCL5", "STAT1","CD3D", "CD3E",
+  #                                   "CD2", "IL2RG" , "NKG7", "HLA-E", "CIITA","HLA-DRA", "LAG3", "IDO1", "TAGAP"),
+  #                     Tcell_inflamed=list(
+  #                       Tcell_inflamed.read=c("CCL5", "CD27", "CD274", "CD276", "CD8A", "CMKLR1", "CXCL9", "CXCR6", "HLA-DQA1",
+  #                                             "HLA-DRB1", "HLA-E", "IDO1", "LAG3", "NKG7", "PDCD1LG2", "PSMB10", "STAT1", "TIGIT"),
+  #                       Housekeeping.read=c("STK11IP", "ZBTB34", "TBC1D10B", "OAZ1", "POLR2A", "G6PD", "ABCF1", "NRDE2", "UBB", "TBP", "SDHA"),
+  #                       weights=c(CCL5=0.008346, CD27=0.072293, CD274=0.042853, CD276=-0.0239, CD8A=0.031021 ,CMKLR1=0.151253, CXCL9=0.074135,
+  #                                 CXCR6=0.004313, `HLA-DQA1`=0.020091, `HLA-DRB1`=0.058806, `HLA-E`=0.07175, IDO1=0.060679, LAG3=0.123895, NKG7=0.075524, PDCD1LG2=0.003734,
+  #                                 PSMB10=0.032999, STAT1=0.250229, TIGIT=0.084767)),
+  #                     Roh_IS=c("GZMA", "GZMB", "PRF1", "GNLY", "HLA-A", "HLA-B", "HLA-C", "HLA-E", "HLA-F",
+  #                              "HLA-G", "HLA-H", "HLA-DMA", "HLA-DMB", "HLA-DOA", "HLA-DOB", "HLA-DPA1",
+  #                              "HLA-DPB1", "HLA-DQA1", "HLA-DQA2", "HLA-DQB1", "HLA-DRA", "HLA-DRB1",
+  #                              "IFNG", "IFNGR1", "IFNGR2", "IRF1", "STAT1", "PSMB9", "CCR5", "CCL3", "CCL4",
+  #                              "CCL5", "CXCL9", "CXCL10", "CXCL11", "ICAM1", "ICAM2", "ICAM3", "ICAM4", "ICAM5", "VCAM1"),
+  #                     Davoli_IS=c("CD247", "CD2", "CD3E", "GZMH", "NKG7", "PRF1", "GZMK"),
+  #                     chemokines=c("CCL2", "CCL3", "CCL4", "CCL5", "CCL8", "CCL18", "CCL19", "CCL21",
+  #                                  "CXCL9", "CXCL10", "CXCL11", "CXCL13"),
+  #                     IMPRES=list(
+  #                       Gene_1 = c("PDCD1", "CD27", "CTLA4", "CD40", "CD86", "CD28", "CD80",
+  #                                  "CD274", "CD86", "CD40", "CD86", "CD40", "CD28", "CD40", "TNFRSF14"),
+  #                       Gene_2 = c("TNFSF4", "PDCD1", "TNFSF4", "CD28", "TNFSF4", "CD86", "TNFSF9",
+  #                                  "C10orf54", "HAVCR2", "PDCD1", "CD200", "CD80", "CD276", "CD274", "CD86")),
+  #                     MSI=list(
+  #                       Gene_1 = c("HNRNPL", "MTA2", "CALR", "RASL11A", "LYG1", "STRN3", "HPSE", "PRPF39", "NOCT","AMFR"),
+  #                       Gene_2 = c("CDC16", "VGF", "SEC22B", "CAB39L", "DHRS12", "TMEM192", "BCAS3", "ATF6","GRM8","DUSP18")),
+  #                     RIR=c())
 
   #check for which selected signatures appropriate functions exist
   sigs <- names(easier_sigs) %in% selected_signatures

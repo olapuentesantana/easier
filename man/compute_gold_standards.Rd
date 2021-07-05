@@ -2,30 +2,38 @@
 % Please edit documentation in R/compute_gold_standards.R
 \name{compute_gold_standards}
 \alias{compute_gold_standards}
-\title{Compute gold standards}
+\title{Compute published transcriptomics-based scores of hallmarks of anti-cancer immune response
+(so-called gold standards)}
 \usage{
 compute_gold_standards(
-  RNA.tpm,
-  list_gold_standards,
-  cancertype,
-  output_file_path
+  RNA_tpm,
+  list_gold_standards = c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
+    "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
 )
 }
 \arguments{
-\item{RNA.tpm}{numeric matrix with data, as tpm values}
+\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in rows and samples in columns.}
 
-\item{list_gold_standards}{string with gold standards names}
-
-\item{cancertype}{string character}
-
-\item{output_file_path}{TODOTODO to define - maybe name it more specifically to the function it absolves?}
+\item{list_gold_standards}{character string of task names to be considered as gold standards for comparison.}
 }
 \value{
-List with the scores of all the gold standards specified.
+A numeric matrix with samples in rows and gold standard scores in columns.
 }
 \description{
-\code{computation_gold_standards} computes the scores for the gold standards required by the user
+The function computes the gold standard scores required by the user.
 }
 \examples{
-# TODOTODO
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_tpm <- dataset_mariathasan@tpm
+
+# Computation of different hallmarks of the immune response
+tasks <- c(
+  "CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
+  "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS"
+)
+tasks_values <- compute_gold_standards(
+  RNA_tpm = gene_tpm,
+  list_gold_standards = tasks
+)
 }
