@@ -2,22 +2,33 @@
 % Please edit documentation in R/compute_gene_signatures.R
 \name{compute_Ayers_expIS}
 \alias{compute_Ayers_expIS}
-\title{Compute Expanded Immune signature}
+\title{Compute Expanded Immune signature (Ayers_expIS) score}
 \usage{
-compute_Ayers_expIS(matches, RNA.tpm)
+compute_Ayers_expIS(matches, RNA_tpm, verbose)
 }
 \arguments{
-\item{matches}{TODOTODO}
+\item{matches}{numeric vector indicating the index of signature genes in \code{RNA_tpm}.}
 
-\item{RNA.tpm}{numeric matrix with rows=genes and columns=samples}
+\item{RNA_tpm}{numeric matrix with rows=genes and columns=samples.}
+
+\item{verbose}{logical value indicating whether to display informative messages.}
 }
 \value{
-numeric matrix with rows=samples and columns=Expanded Immune signature score
+A numeric matrix with rows=samples and columns=Expanded Immune signature score.
 }
 \description{
-\code{compute_Ayers_expIS} computes Expanded Immune signature score as the arithmetic mean of genes included
-in the Expanded Immune signature (Ayers et al., JCI, 2017)
+This function calculates Ayers_expIS score as the average expression of its signature genes.
 }
 \examples{
-# TODOTODO
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_tpm <- dataset_mariathasan@tpm
+
+# Compute expanded immune signature (Ayers et al., JCI, 2017)
+Ayers_expIS <- compute_Ayers_expIS(gene_tpm)
+}
+\references{
+Ayers, M., Lunceford, J., Nebozhyn, M., Murphy, E., Loboda, A., Kaufman, D.R., Albright,
+A., Cheng, J.D., Kang, S.P., Shankaran, V., et al. (2017). IFN-γ-related mRNA profile predicts clinical
+response to PD-1 blockade. J. Clin. Invest. 127, 2930–2940. https://doi.org/10.1172/JCI91190.
 }

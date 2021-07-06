@@ -144,6 +144,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     default_list_gold_standards <- c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
     if (missing(list_gold_standards)) {
       list_gold_standards <- default_list_gold_standards
+      # should be changed to compute_gene_signatures(RNA_tpm, list_gold_standards))
       gold_standards <- compute_gold_standards(RNA_tpm, list_gold_standards)
       if (verbose) message("gold standards (tasks) computed!")
     }

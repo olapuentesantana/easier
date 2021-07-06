@@ -131,42 +131,6 @@ Let's first inspect the processed data provided in IMvigor210CoreBiologies from 
 
 ```{r, eval=TRUE}
 data("dataset_mariathasan")
-
-
-
-
-
-
-
-
-
-
-
-#################
-
-#colorectal cancer
-counts_file <- system.file("extdata/rna-seq/SRP029880.raw_counts.tsv",
-                           package = "compGenomRData")
-coldata_file <- system.file("extdata/rna-seq/SRP029880.colData.tsv",
-                            package = "compGenomRData")
-counts <- as.matrix(read.table(counts_file, header = T, sep = '\t'))
-tasks <- c("CYT", "IPS", "IMPRES", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
-           "Ayers_expIS", "Tcell_inflamed", "TIDE", "MSI", "TLS", "CTLA4", "PD1", "PDL1")
-# create a vector of gene lengths 
-geneLengths <- as.vector(subset(counts, select = c(width)))
-#find gene length normalized values 
-rpk <- apply( subset(counts, select = c(-width)), 2, 
-              function(x) x/(geneLengths/1000))
-#normalize by the sample size using rpk values
-tpm <- apply(rpk, 2, function(x) x / sum(as.numeric(x)) * 10^6)
-cancertype <- "coadread"
-output_file_path <- "ars_dir"
-#compute_gold_standards(RNA.tpm = tpm,list_gold_standards = tasks,cancertype,output_file_path)
-#selected_signatures <- c("CYT", "IMPRES", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
-# "Ayers_expIS", "Tcell_inflamed", "MSI", "TLS", "ICB_genes", "RIR", "TIDE", "IPS")
-selected_signatures <- c("CYT", "IMPRES", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
- "Ayers_expIS", "Tcell_inflamed", "MSI", "TLS", "ICB_genes")
-easier::compute_gene_signatures(tpm, selected_signatures)
 ```
 
 The computation of the five quantitative descriptors of the TME can be done as in the chunk below:
@@ -199,9 +163,12 @@ ccpair_scores <- compute_CC_pairs_grouped(lrpairs = lrpair_weights,
 Additionally, different published hallmarks of the immune response can also be computed using your patients' data. Nine hallmarks of the immune response are computed by default, set `list_gold_standards` to your own preferences.
 
 ```{r eval = FALSE}
-tasks <- c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
-tasks_values <- compute_gold_standards(RNA_tpm = dataset_mariathasan@tpm, 
-                                       list_gold_standards = tasks)
+tasks <- c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR"
+           , "TLS")
+#tasks_values <- compute_gold_standards(RNA_tpm = dataset_mariathasan@tpm, 
+#                                      list_gold_standards = tasks)
+
+tasks_values <- compute_gene_signatures(dataset_mariathasan@tpm, selected_signatures=tasks, verbose=T)
 ```
 
 Now we use the quantitative descriptors computed previously to obtain predictions of immune response. The output of `predict_immune_response` returns predictions for each quantitative descriptor.

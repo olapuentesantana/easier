@@ -4,26 +4,37 @@
 \alias{compute_IMPRES_MSI}
 \title{Compute Immuno-Predictive Score (IMPRES)}
 \usage{
-compute_IMPRES_MSI(sig, len, match_F_1, match_F_2, RNA.tpm)
+compute_IMPRES_MSI(sig, len, match_F_1, match_F_2, RNA_tpm, verbose)
 }
 \arguments{
-\item{sig}{TODOTODO}
+\item{sig}{can be either 'IMPRES' or 'MSI'.}
 
-\item{len}{TODOTODO}
+\item{len}{the length of gene_1 vector.}
 
-\item{match_F_1}{TODOTODO}
+\item{match_F_1}{numeric vector indicating the index of signature genes defined in 'gene_1' in \code{RNA_tpm}.}
 
-\item{match_F_2}{TODOTODO}
+\item{match_F_2}{numeric vector indicating the index of signature genes defined in 'gene_2' in \code{RNA_tpm}.}
 
-\item{RNA.tpm}{numeric matrix with rows=genes and columns=samples}
+\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in rows and samples in columns.}
+
+\item{verbose}{logical value indicating whether to display informative messages.}
 }
 \value{
-numeric matrix with rows=samples and columns=IMPRES score
+A numeric matrix with samples in rows and IMPRES score in a column.
 }
 \description{
-\code{compute_IMPRES} computes IMPRES score by applying logical comparison of checkpoint gene pairs
-(Auslander et al., 2018).
+This function calculates IMPRES score by logical comparison of checkpoint gene pairs expression.
 }
 \examples{
-# TODOTODO
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_tpm <- dataset_mariathasan@tpm
+
+# Compute IMPRES signature (Auslander et al., Nat.Med., 2018)
+IMPRES <- compute_IMPRES(RNA_tpm = gene_tpm)
+}
+\references{
+Auslander,N.,Zhang,G.,Lee,J.S.,Frederick,D.T.,Miao,B.,Moll,T.,Tian,T.,Wei,Z., Madan, S.,
+Sullivan, R.J., et al. (2018). Robust prediction of response to immune checkpoint blockade therapy in
+metastatic melanoma. Nat. Med. 24, 1545–1549. https://doi.org/10.1038/s41591-018-0157-9.
 }

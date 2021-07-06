@@ -2,22 +2,33 @@
 % Please edit documentation in R/compute_gene_signatures.R
 \name{compute_chemokines}
 \alias{compute_chemokines}
-\title{Compute chemokine score}
+\title{Compute chemokine signature (chemokines) score}
 \usage{
-compute_chemokines(matches, RNA.tpm)
+compute_chemokines(matches, RNA_tpm, verbose)
 }
 \arguments{
-\item{matches}{TODOTODO}
+\item{matches}{numeric vector indicating the index of signature genes in \code{RNA_tpm}.}
 
-\item{RNA.tpm}{numeric matrix with rows=genes and columns=samples}
+\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in rows and samples in columns.}
+
+\item{verbose}{logical value indicating whether to display informative messages.}
 }
 \value{
-numeric matrix with rows=samples and columns=chemokine score
+A numeric matrix with samples in rows and chemokines score in a column.
 }
 \description{
-\code{compute_chemokine} computes chemoine score as the PC1 score that results from applying PCA
-to z-score expression of 12 chemokine genes (Messina et al., 2012).
+Computes chemokines score as the PC1 score that results from applying PCA to z-score expression of its signature genes.
 }
 \examples{
-# TODOTODO
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_tpm <- dataset_mariathasan@tpm
+
+# Compute chemokine signature (Messina et al., Nat. Sci. Rep., 2012)
+chemokines <- compute_chemokines(RNA_tpm = gene_tpm)
+}
+\references{
+Messina, J.L., Fenstermacher, D.A., Eschrich, S., Qu, X., Berglund, A.E., Lloyd, M.C., Schell, M.J.,
+Sondak, V.K., Weber, J.S., and Mulé, J.J. (2012). 12-Chemokine gene signature identifies lymph node-like structures
+in melanoma: potential for patient selection for immunotherapy? Sci. Rep. 2, 765. https://doi.org/10.1038/srep00765.
 }

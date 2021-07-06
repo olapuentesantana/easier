@@ -4,19 +4,38 @@
 \alias{compute_gene_signatures}
 \title{Compute gold standards}
 \usage{
-compute_gene_signatures(RNA.tpm, selected_signatures)
+compute_gene_signatures(
+  RNA_tpm,
+  selected_signatures = c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
+    "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS"),
+  verbose = TRUE
+)
 }
 \arguments{
-\item{RNA.tpm}{numeric matrix with rows=genes and columns=samples}
+\item{RNA_tpm}{numeric matrix with rows=genes and columns=samples}
 
-\item{selected_signatures}{TODOTODO}
+\item{selected_signatures}{character string of task names to be considered as gold standards for comparison. (Default scores are computed for: "CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")}
+
+\item{verbose}{logical variable indicating whether to display informative messages.}
 }
 \value{
-TODOTODO
+data.frame containing the gold standards
 }
 \description{
 \code{computation_gold_standards} computes the scores for the gold standards required by the user
 }
 \examples{
-# TODOTODO
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_tpm <- dataset_mariathasan@tpm
+
+# Computation of different hallmarks of the immune response
+tasks <- c(
+  "CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
+  "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS"
+)
+tasks_values <- compute_gold_standards(
+  RNA_tpm = gene_tpm,
+  selected_signatures = tasks
+)
 }

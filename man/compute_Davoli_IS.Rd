@@ -2,22 +2,33 @@
 % Please edit documentation in R/compute_gene_signatures.R
 \name{compute_Davoli_IS}
 \alias{compute_Davoli_IS}
-\title{Compute Davoli immune signature}
+\title{Compute Davoli immune signature (Davoli_IS) score}
 \usage{
-compute_Davoli_IS(matches, RNA.tpm)
+compute_Davoli_IS(matches, RNA_tpm, verbose)
 }
 \arguments{
-\item{matches}{TODOTODO}
+\item{matches}{numeric vector indicating the index of signature genes in \code{RNA_tpm}.}
 
-\item{RNA.tpm}{numeric matrix with rows=genes and columns=samples}
+\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in rows and samples in columns.}
+
+\item{verbose}{logical value indicating whether to display informative messages}
 }
 \value{
-numeric matrix with rows=samples and columns=Davoli immune signature
+A numeric matrix with samples in rows and Davoli_IS score in a column.
 }
 \description{
-\code{compute_davoli_IS} computes Davoli immune signature as the arithmetic mean of cytotoxic
-immune infiltrate signature genes, after rank normalization (Davoli et al., 2017).
+The function calculates Davoli_IS score as the average of the expression of its signature genes after applying rank normalization
 }
 \examples{
-# TODOTODO
+# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+data("dataset_mariathasan")
+gene_tpm <- dataset_mariathasan@tpm
+
+# Compute davoli immune signature (Davoli et al., Science 2017)
+Davoli_IS <- compute_Davoli_IS(RNA_tpm = gene_tpm)
+}
+\references{
+Davoli, T., Uno, H., Wooten, E.C., and Elledge, S.J. (2017). Tumor aneuploidy correlates
+with markers of immune evasion and with reduced response to immunotherapy. Science 355.
+https://doi.org/10.1126/science.aaf8399.
 }

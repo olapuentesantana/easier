@@ -3,48 +3,32 @@
 #' \code{computation_gold_standards} computes the scores for the gold standards required by the user
 #'
 #' @param RNA_tpm numeric matrix with rows=genes and columns=samples
-#' @param selected_signatures TODOTODO
+#' @param selected_signatures character string of task names to be considered as gold standards for comparison. (Default scores are computed for: "CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
+#' @param verbose logical variable indicating whether to display informative messages.
 #'
-#' @return TODOTODO
+#' @return data.frame containing the gold standards
 #' @export
 #'
 #' @examples
-#' # TODOTODO
-compute_gene_signatures <- function(RNA_tpm, selected_signatures){
-  easier_sigs <- readRDS(file.path(system.file("extdata", "signature_genes.RDS", package = "easier_devel")))
-  # easier_sigs <- list(CYT=c("GZMA", "PRF1"),
-  #                     TLS=c("CD79B", "CD1D", "CCR6", "LAT", "SKAP1", "CETP", "EIF1AY", "RBP5", "PTGDS"),
-  #                     IFNy=c("IFNG", "STAT1", "CXCL9", "CXCL10", "IDO1", "HLA-DRA"),
-  #                     Ayers_expIS=c("GZMB", "GZMK", "CXCR6", "CXCL10", "CXCL13", "CCL5", "STAT1","CD3D", "CD3E",
-  #                                   "CD2", "IL2RG" , "NKG7", "HLA-E", "CIITA","HLA-DRA", "LAG3", "IDO1", "TAGAP"),
-  #                     Tcell_inflamed=list(
-  #                       Tcell_inflamed.read=c("CCL5", "CD27", "CD274", "CD276", "CD8A", "CMKLR1", "CXCL9", "CXCR6", "HLA-DQA1",
-  #                                             "HLA-DRB1", "HLA-E", "IDO1", "LAG3", "NKG7", "PDCD1LG2", "PSMB10", "STAT1", "TIGIT"),
-  #                       Housekeeping.read=c("STK11IP", "ZBTB34", "TBC1D10B", "OAZ1", "POLR2A", "G6PD", "ABCF1", "NRDE2", "UBB", "TBP", "SDHA"),
-  #                       weights=c(CCL5=0.008346, CD27=0.072293, CD274=0.042853, CD276=-0.0239, CD8A=0.031021 ,CMKLR1=0.151253, CXCL9=0.074135,
-  #                                 CXCR6=0.004313, `HLA-DQA1`=0.020091, `HLA-DRB1`=0.058806, `HLA-E`=0.07175, IDO1=0.060679, LAG3=0.123895, NKG7=0.075524, PDCD1LG2=0.003734,
-  #                                 PSMB10=0.032999, STAT1=0.250229, TIGIT=0.084767)),
-  #                     Roh_IS=c("GZMA", "GZMB", "PRF1", "GNLY", "HLA-A", "HLA-B", "HLA-C", "HLA-E", "HLA-F",
-  #                              "HLA-G", "HLA-H", "HLA-DMA", "HLA-DMB", "HLA-DOA", "HLA-DOB", "HLA-DPA1",
-  #                              "HLA-DPB1", "HLA-DQA1", "HLA-DQA2", "HLA-DQB1", "HLA-DRA", "HLA-DRB1",
-  #                              "IFNG", "IFNGR1", "IFNGR2", "IRF1", "STAT1", "PSMB9", "CCR5", "CCL3", "CCL4",
-  #                              "CCL5", "CXCL9", "CXCL10", "CXCL11", "ICAM1", "ICAM2", "ICAM3", "ICAM4", "ICAM5", "VCAM1"),
-  #                     Davoli_IS=c("CD247", "CD2", "CD3E", "GZMH", "NKG7", "PRF1", "GZMK"),
-  #                     chemokines=c("CCL2", "CCL3", "CCL4", "CCL5", "CCL8", "CCL18", "CCL19", "CCL21",
-  #                                  "CXCL9", "CXCL10", "CXCL11", "CXCL13"),
-  #                     IMPRES=list(
-  #                       Gene_1 = c("PDCD1", "CD27", "CTLA4", "CD40", "CD86", "CD28", "CD80",
-  #                                  "CD274", "CD86", "CD40", "CD86", "CD40", "CD28", "CD40", "TNFRSF14"),
-  #                       Gene_2 = c("TNFSF4", "PDCD1", "TNFSF4", "CD28", "TNFSF4", "CD86", "TNFSF9",
-  #                                  "C10orf54", "HAVCR2", "PDCD1", "CD200", "CD80", "CD276", "CD274", "CD86")),
-  #                     MSI=list(
-  #                       Gene_1 = c("HNRNPL", "MTA2", "CALR", "RASL11A", "LYG1", "STRN3", "HPSE", "PRPF39", "NOCT","AMFR"),
-  #                       Gene_2 = c("CDC16", "VGF", "SEC22B", "CAB39L", "DHRS12", "TMEM192", "BCAS3", "ATF6","GRM8","DUSP18")),
-  #                     RIR=c())
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' gene_tpm <- dataset_mariathasan@tpm
+#'
+#' # Computation of different hallmarks of the immune response
+#' tasks <- c(
+#'   "CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
+#'   "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS"
+#' )
+#' tasks_values <- compute_gold_standards(
+#'   RNA_tpm = gene_tpm,
+#'   selected_signatures = tasks
+#' )
+compute_gene_signatures <- function(RNA_tpm, selected_signatures=c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS"), verbose = TRUE){
+  easier_sigs <- readRDS(file.path(system.file("extdata", "signature_genes.RDS", package = "easier")))
 
   #check for which selected signatures appropriate functions exist
   sigs <- names(easier_sigs) %in% selected_signatures
-  message(c("Following scores can be computed: \n", paste(names(easier_sigs)[sigs], collapse = "\n")))
+  if(verbose) message(c("Following scores can be computed: \n", paste(names(easier_sigs)[sigs], collapse = "\n")))
 
   result <- lapply(names(easier_sigs)[sigs], function(sig){
     tryCatch(
@@ -71,7 +55,8 @@ compute_gene_signatures <- function(RNA_tpm, selected_signatures){
               housekeeping = match_genes.housekeeping,
               predictors = match_genes.predictors,
               weights = easier_sigs$Tcell_inflamed$weights,
-              RNA_tpm = RNA_tpm
+              RNA_tpm = RNA_tpm,
+              verbose = verbose
             )
           )
         } else if (sig=="IMPRES" | sig=="MSI") {
@@ -107,16 +92,18 @@ compute_gene_signatures <- function(RNA_tpm, selected_signatures){
               len = length(easier_sigs[sig]$Gene_1),
               match_F_1 = match_F_1,
               match_F_2 = match_F_2,
-              RNA_tpm = RNA_tpm
+              RNA_tpm = RNA_tpm,
+              verbose = verbose
             )
           )
 
         } else if (sig=="RIR") {
           # TODOTODO add cancertype and file.path as arguments
           do.call(
-            paste0("compute.",sig),
+            paste0("compute_",sig),
             args = list(
-              RNA_tpm = RNA_tpm
+              RNA_tpm = RNA_tpm,
+              verbose = verbose
             )
           )
 
@@ -130,7 +117,7 @@ compute_gene_signatures <- function(RNA_tpm, selected_signatures){
             literature_matches <- literature_matches[!is.na(literature_matches)]
           }
 
-          do.call(paste0("compute_", sig), args=list(matches=literature_matches, RNA_tpm=RNA_tpm))
+          do.call(paste0("compute_", sig), args=list(matches=literature_matches, RNA_tpm=RNA_tpm, verbose=verbose))
         }
       },
       error=function(cond){
@@ -153,72 +140,97 @@ compute_gene_signatures <- function(RNA_tpm, selected_signatures){
   return(as.data.frame(result))
 }
 
-#' Compute cytolytic activity score
+#' Compute cytolytic activity (CYT) score
 #'
-#' \code{compute_CYT} computes cytolytic activity score as the geometric mean of immune cytolytic genes
-#' (Rooney et al., 2015).
+#' This function calculates the CYT score as the geometric mean of its signature genes.
+#'
+#' @references Rooney, M.S., Shukla, S.A., Wu, C.J., Getz, G., and Hacohen, N. (2015). Molecular and genetic properties
+#' of tumors associated with local immune cytolytic activity. Cell 160, 48–61. https://doi.org/10.1016/j.cell.2014.12.033.
 #'
 #' @importFrom stats na.omit
-#' @param matches TODOTODO
-#' @param RNA_tpm numeric matrix with rows=genes and columns=samples
 #'
-#' @return numeric matrix with rows=samples and columns=cytolytic activity score
+#' @param matches numeric vector indicating the index of signature genes in `RNA_tpm`.
+#' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
+#' @param verbose logical value indicating whether to display informative messages.
 #'
-#' @export
+#' @return A numeric matrix with samples in rows and CTY score in a column.
 #'
 #' @examples
-#' # TODOTODO
-compute_CYT <- function(matches, RNA_tpm){
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' gene_tpm <- dataset_mariathasan@tpm
+#'
+#' # Compute cytolytic activity (Rooney et al, Cell, 2015)
+#' CYT <- compute_CYT(RNA_tpm = gene_tpm)
+compute_CYT <- function(matches, RNA_tpm, verbose){
   # Subset RNA_tpm
   subset_RNA_tpm <- RNA_tpm[matches, ]
 
   # Calculation: geometric mean (so-called log-average) [TPM, 0.01 offset]
   score <- as.matrix(apply(subset_RNA_tpm + 0.01, 2, function(X) exp(mean(log(X)))))
 
-  message("CYT score computed")
+  if(verbose) message("CYT score computed")
   return(data.frame(CYT = score, check.names = FALSE))
 }
 
-#' Compute tertiary lymphoid structures signature
+#' Computation of tertiary lymphoid structures signature (TLS) score
 #'
-#' \code{compute_TLS} computes TLS signature as the geometric-mean of TLS signature genes
-#' (Cabrita et al., 2020).
+#' This function calculates TLS score as the geometric-mean of the expression of its signature genes.
+#'
+#' @references Cabrita, R., Lauss, M., Sanna, A., Donia, M., Skaarup Larsen, M., Mitra, S., Johansson, I., Phung, B.,
+#' Harbst, K., Vallon-Christersson, J., et al. (2020). Tertiary lymphoid structures improve immunotherapy and survival
+#' in melanoma. Nature 577, 561–565.
 #'
 #' @importFrom stats na.omit
-#' @param matches TODOTODO
-#' @param RNA_tpm numeric matrix with rows=genes and columns=samples
-#' @return numeric matrix with rows=samples and columns=TLS signature
-#' @export
+#'
+#' @param matches numeric vector indicating the index of signature genes in `RNA_tpm`.
+#' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
+#' @param verbose logical value indicating whether to display informative messages.
+#'
+#' @return A numeric matrix with samples in rows and TLS score in a column.
 #'
 #' @examples
-#' # TODOTODO
-compute_TLS <- function(matches, RNA_tpm){
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' gene_tpm <- dataset_mariathasan@tpm
+#'
+#' # compute tertiary lymphoid structures signature (Cabrita et al., Nature, 2020)
+#' TLS <- compute_TLS(RNA_tpm = gene_tpm)
+compute_TLS <- function(matches, RNA_tpm, verbose){
   # Subset RNA_tpm
   sub_gene.tpm <- RNA_tpm[matches, ]
 
   # Calculation: geometric mean (so-called log-average) [TPM, 1 offset]
   geom_mean <- apply(sub_gene.tpm, 2, function(X) exp(mean(log2(X + 1))))
 
-  message("TLS score computed")
+  if(verbose) message("TLS score computed")
   return(data.frame(TLS = geom_mean, check.names = FALSE))
 }
 
-#' Compute IFNy signature score
+#' Compute IFNy signature (IFNy) score
 #'
-#' \code{compute_IFNy} computes IFNy signature score as the arithmetic mean of genes included
-#' in the IFN-γ signature (Ayers et al., JCI, 2017)
+#' This function calculates IFNy signature score as the average expression of its signature genes.
+#'
+#' @references Ayers, M., Lunceford, J., Nebozhyn, M., Murphy, E., Loboda, A., Kaufman, D.R., Albright,
+#' A., Cheng, J.D., Kang, S.P., Shankaran, V., et al. (2017). IFN-γ-related mRNA profile predicts clinical
+#' response to PD-1 blockade. J. Clin. Invest. 127, 2930–2940. https://doi.org/10.1172/JCI91190.
 #'
 #' @importFrom stats na.omit
-#' @param matches TODOTODO
-#' @param RNA_tpm numeric matrix with rows=genes and columns=samples
 #'
-#' @return numeric matrix with rows=samples and columns=IFNy signature score
+#' @param matches numeric vector indicating the index of signature genes in `RNA_tpm`.
+#' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
+#' @param verbose logical value indicating whether to display informative messages.
 #'
-#' @export
+#' @return A numeric matrix with samples in rows and IFNy score in a column.
 #'
 #' @examples
-#' # TODOTODO
-compute_IFNy <- function(matches, RNA_tpm){
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' gene_tpm <- dataset_mariathasan@tpm
+#'
+#' # Compute IFNy signature (Ayers et al., JCI, 2017)
+#' IFNy <- compute_IFNy(RNA_tpm = gene_tpm)
+compute_IFNy <- function(matches, RNA_tpm, verbose){
   # Log2 transformation:
   log2.RNA_tpm <- log2(RNA_tpm + 1)
 
@@ -228,26 +240,34 @@ compute_IFNy <- function(matches, RNA_tpm){
   # Calculation: average of the included genes for the IFN-y signature
   score <- apply(sub_log2.RNA_tpm, 2, mean)
 
-  message("IFNy score computed")
+  if(verbose) message("IFNy score computed")
   return(data.frame(IFNy = score, check.names = FALSE))
 }
 
-#' Compute Expanded Immune signature
+#' Compute Expanded Immune signature (Ayers_expIS) score
 #'
-#' \code{compute_Ayers_expIS} computes Expanded Immune signature score as the arithmetic mean of genes included
-#' in the Expanded Immune signature (Ayers et al., JCI, 2017)
+#' This function calculates Ayers_expIS score as the average expression of its signature genes.
+#'
+#' @references Ayers, M., Lunceford, J., Nebozhyn, M., Murphy, E., Loboda, A., Kaufman, D.R., Albright,
+#' A., Cheng, J.D., Kang, S.P., Shankaran, V., et al. (2017). IFN-γ-related mRNA profile predicts clinical
+#' response to PD-1 blockade. J. Clin. Invest. 127, 2930–2940. https://doi.org/10.1172/JCI91190.
 #'
 #' @importFrom stats na.omit
-#' @param matches TODOTODO
-#' @param RNA_tpm numeric matrix with rows=genes and columns=samples
 #'
-#' @return numeric matrix with rows=samples and columns=Expanded Immune signature score
+#' @param matches numeric vector indicating the index of signature genes in `RNA_tpm`.
+#' @param RNA_tpm numeric matrix with rows=genes and columns=samples.
+#' @param verbose logical value indicating whether to display informative messages.
 #'
-#' @export
+#' @return A numeric matrix with rows=samples and columns=Expanded Immune signature score.
 #'
 #' @examples
-#' # TODOTODO
-compute_Ayers_expIS <- function(matches, RNA_tpm){
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' gene_tpm <- dataset_mariathasan@tpm
+#'
+#' # Compute expanded immune signature (Ayers et al., JCI, 2017)
+#' Ayers_expIS <- compute_Ayers_expIS(gene_tpm)
+compute_Ayers_expIS <- function(matches, RNA_tpm, verbose){
   # Log2 transformation:
   log2.RNA_tpm <- log2(RNA_tpm + 1)
 
@@ -257,26 +277,35 @@ compute_Ayers_expIS <- function(matches, RNA_tpm){
   # Calculation: average of the included genes for Expanded Immune signature
   score <- apply(sub_log2.RNA_tpm, 2, mean)
 
-  message("Ayers_expIS score computed")
+  if(verbose) message("Ayers_expIS score computed")
   return(data.frame(Ayers_expIS = score, check.names = FALSE))
 }
 
-#' Compute Roh immune score
+#' Compute Roh immune score (Roh_IS)
 #'
-#' \code{compute_roh_IS} computes Roh immune score as the geometric-mean of immune score genes
-#' (Roh et al., 2017).
+#' This function computes Roh_IS score as the geometric-mean of its signature genes.
+#'
+#' @references Roh, W., Chen, P.-L., Reuben, A., Spencer, C.N., Prieto, P.A., Miller, J.P., Gopalakrishnan, V.,
+#' Wang, F., Cooper, Z.A., Reddy, S.M., et al. (2017). Integrated molecular analysis of tumor biopsies on sequential
+#' CTLA-4 and PD-1 blockade reveals markers of response and resistance. Sci. Transl. Med. 9.
+#' https://doi.org/10.1126/scitranslmed.aah3560.
 #'
 #' @importFrom stats na.omit
-#' @param matches TODOTODO
-#' @param RNA_tpm numeric matrix with rows=genes and columns=samples
 #'
-#' @return numeric matrix with rows=samples and columns=Roh immune score
+#' @param matches numeric vector indicating the index of signature genes in `RNA_tpm`.
+#' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
+#' @param verbose logical value indicating whether to display informative messages.
 #'
-#' @export
+#' @return A numeric matrix with samples in rows and Roh_IS score in a column.
 #'
 #' @examples
-#' # TODOTODO
-compute_Roh_IS <- function(matches, RNA_tpm){
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' gene_tpm <- dataset_mariathasan@tpm
+#'
+#' # compute Roh immune score (Roh et al., Sci. Transl. Med., 2017)
+#' Roh_IS <- compute_Roh_IS(RNA_tpm = gene_tpm)
+compute_Roh_IS <- function(matches, RNA_tpm, verbose){
   # Subset RNA_tpm
   sub_gene.tpm <- RNA_tpm[matches, ]
 
@@ -289,26 +318,34 @@ compute_Roh_IS <- function(matches, RNA_tpm){
   # Calculation: geometric mean (so-called log-average) [TPM, 0.01 offset]
   score <- apply(sub_gene.tpm, 2, function(X) exp(mean(log(X))))
 
-  message("Roh_IS computed score")
+  if(verbose) message("Roh_IS computed score")
   return(data.frame(Roh_IS = score, check.names = FALSE))
 }
 
-#' Compute Davoli immune signature
+#' Compute Davoli immune signature (Davoli_IS) score
 #'
-#' \code{compute_davoli_IS} computes Davoli immune signature as the arithmetic mean of cytotoxic
-#' immune infiltrate signature genes, after rank normalization (Davoli et al., 2017).
+#' The function calculates Davoli_IS score as the average of the expression of its signature genes after applying rank normalization
+#'
+#' @references Davoli, T., Uno, H., Wooten, E.C., and Elledge, S.J. (2017). Tumor aneuploidy correlates
+#' with markers of immune evasion and with reduced response to immunotherapy. Science 355.
+#' https://doi.org/10.1126/science.aaf8399.
 #'
 #' @importFrom stats na.omit
-#' @param matches TODOTODO
-#' @param RNA_tpm numeric matrix with rows=genes and columns=samples
 #'
-#' @return numeric matrix with rows=samples and columns=Davoli immune signature
+#' @param matches numeric vector indicating the index of signature genes in `RNA_tpm`.
+#' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
+#' @param verbose logical value indicating whether to display informative messages
 #'
-#' @export
+#' @return A numeric matrix with samples in rows and Davoli_IS score in a column.
 #'
 #' @examples
-#' # TODOTODO
-compute_Davoli_IS <- function(matches, RNA_tpm){
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' gene_tpm <- dataset_mariathasan@tpm
+#'
+#' # Compute davoli immune signature (Davoli et al., Science 2017)
+#' Davoli_IS <- compute_Davoli_IS(RNA_tpm = gene_tpm)
+compute_Davoli_IS <- function(matches, RNA_tpm, verbose){
   # Log2 transformation:
   log2.RNA_tpm <- log2(RNA_tpm + 1)
 
@@ -324,26 +361,34 @@ compute_Davoli_IS <- function(matches, RNA_tpm){
   # Calculation: average of the expression value of all the genes within-sample
   score <- apply(ranks_sub_log2.RNA_tpm.norm, 1, mean)
 
-  message("Davoli_IS score computed")
+  if(verbose) message("Davoli_IS score computed")
   return(data.frame(Davoli_IS = score, check.names = FALSE))
 }
 
-#' Compute chemokine score
+#' Compute chemokine signature (chemokines) score
 #'
-#' \code{compute_chemokine} computes chemoine score as the PC1 score that results from applying PCA
-#' to z-score expression of 12 chemokine genes (Messina et al., 2012).
+#' Computes chemokines score as the PC1 score that results from applying PCA to z-score expression of its signature genes.
+#'
+#' @references Messina, J.L., Fenstermacher, D.A., Eschrich, S., Qu, X., Berglund, A.E., Lloyd, M.C., Schell, M.J.,
+#' Sondak, V.K., Weber, J.S., and Mulé, J.J. (2012). 12-Chemokine gene signature identifies lymph node-like structures
+#' in melanoma: potential for patient selection for immunotherapy? Sci. Rep. 2, 765. https://doi.org/10.1038/srep00765.
 #'
 #' @importFrom stats na.omit prcomp
-#' @param matches TODOTODO
-#' @param RNA_tpm numeric matrix with rows=genes and columns=samples
 #'
-#' @return numeric matrix with rows=samples and columns=chemokine score
+#' @param matches numeric vector indicating the index of signature genes in `RNA_tpm`.
+#' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
+#' @param verbose logical value indicating whether to display informative messages.
 #'
-#' @export
+#' @return A numeric matrix with samples in rows and chemokines score in a column.
 #'
 #' @examples
-#' # TODOTODO
-compute_chemokines <- function(matches, RNA_tpm){
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' gene_tpm <- dataset_mariathasan@tpm
+#'
+#' # Compute chemokine signature (Messina et al., Nat. Sci. Rep., 2012)
+#' chemokines <- compute_chemokines(RNA_tpm = gene_tpm)
+compute_chemokines <- function(matches, RNA_tpm, verbose){
   # Log2 transformation:
   log2.RNA_tpm <- log2(RNA_tpm + 1)
 
@@ -354,29 +399,38 @@ compute_chemokines <- function(matches, RNA_tpm){
   chemokine.pca <- stats::prcomp(t(sub_log2.RNA_tpm), center = TRUE, scale = TRUE)
   score <- chemokine.pca$x[, 1]
 
-  message("Chemokines score computed")
+  if(verbose) message("Chemokines score computed")
   return(data.frame(chemokines = score, check.names = FALSE))
 }
 
-#' Compute T cell-inflamed signature score
+#' Compute T cell-inflamed signature (Tcell_inflamed) score
 #'
-#' \code{compute_ayersTcellInfl} computes T cell-inflamed signature score by taking a weighted sum of
-#'  the housekeeping normalized values of the T cell-inflamed signature genes
+#' This function calculates Tcell_inflamed score as a weighted sum of housekeeping normalized expression of its signature genes.
+#' Weightes were available at Table S2B from Cristescu R, et al. Pan-tumor genomic biomarkers for PD-1 checkpoint
+#' blockade-based immunotherapy. Science. (2018) 362:eaar3593. doi: 10.1126/science.aar3593.
+#'
+#' @references Ayers, M., Lunceford, J., Nebozhyn, M., Murphy, E., Loboda, A., Kaufman, D.R., Albright,
+#' A., Cheng, J.D., Kang, S.P., Shankaran, V., et al. (2017). IFN-γ-related mRNA profile predicts clinical
+#' response to PD-1 blockade. J. Clin. Invest. 127, 2930–2940. https://doi.org/10.1172/JCI91190.
 #'
 #' @importFrom stats na.omit
 #'
-#' @param RNA_tpm numeric matrix with rows=genes and columns=samples
-#' @param housekeeping TODOTODO
-#' @param predictors TODOTODO
-#' @param weights TODOTODO
+#' @param housekeeping numeric vector indicating the index of houskeeping genes in `RNA_tpm`.
+#' @param predictors numeric vector indicating the index of predictor genes in `RNA_tpm`.
+#' @param weights numeric vector containing the weights.
+#' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
+#' @param verbose logical value indicating whether to display informative messages
 #'
-#' @return numeric matrix with rows=samples and columns=T cell-inflamed signature score
-#'
-#' @export
+#' @return A numeric matrix with samples in rows and Tcell_inflamed score in a column.
 #'
 #' @examples
-#' # TODOTODO
-compute_Tcell_inflamed <- function(housekeeping, predictors, weights, RNA_tpm){
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' gene_tpm <- dataset_mariathasan@tpm
+#'
+#' # compute T-cell inflamed signature (Ayers et al., JCI, 2017)
+#' Tcell_inflamed <- compute_Tcell_inflamed(RNA_tpm = gene_tpm)
+compute_Tcell_inflamed <- function(housekeeping, predictors, weights, RNA_tpm, verbose){
   # Log2 transformation:
   log2.RNA_tpm <- log2(RNA_tpm + 1)
 
@@ -398,30 +452,37 @@ compute_Tcell_inflamed <- function(housekeeping, predictors, weights, RNA_tpm){
   weights <- matrix(weights, ncol = 1, dimnames = list(names(weights)))
   score <- t(log2.RNA_tpm.predictors.norm[tidy,]) %*% weights
 
-  message("Tcell_inflamed score computed")
+  if(verbose) message("Tcell_inflamed score computed")
   return(data.frame( Tcell_inflamed = score, check.names = FALSE))
 }
 
 #' Compute Immuno-Predictive Score (IMPRES)
 #'
-#' \code{compute_IMPRES} computes IMPRES score by applying logical comparison of checkpoint gene pairs
-#' (Auslander et al., 2018).
+#' This function calculates IMPRES score by logical comparison of checkpoint gene pairs expression.
+#'
+#' @references Auslander,N.,Zhang,G.,Lee,J.S.,Frederick,D.T.,Miao,B.,Moll,T.,Tian,T.,Wei,Z., Madan, S.,
+#' Sullivan, R.J., et al. (2018). Robust prediction of response to immune checkpoint blockade therapy in
+#' metastatic melanoma. Nat. Med. 24, 1545–1549. https://doi.org/10.1038/s41591-018-0157-9.
 #'
 #' @importFrom stats na.omit
 #'
-#' @param RNA_tpm numeric matrix with rows=genes and columns=samples
-#' @param sig TODOTODO
-#' @param len TODOTODO
-#' @param match_F_1 TODOTODO
-#' @param match_F_2 TODOTODO
+#' @param sig can be either 'IMPRES' or 'MSI'.
+#' @param len the length of gene_1 vector.
+#' @param match_F_1 numeric vector indicating the index of signature genes defined in 'gene_1' in `RNA_tpm`.
+#' @param match_F_2 numeric vector indicating the index of signature genes defined in 'gene_2' in `RNA_tpm`.
+#' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
+#' @param verbose logical value indicating whether to display informative messages.
 #'
-#' @return numeric matrix with rows=samples and columns=IMPRES score
-#'
-#' @export
+#' @return A numeric matrix with samples in rows and IMPRES score in a column.
 #'
 #' @examples
-#' # TODOTODO
-compute_IMPRES_MSI <- function(sig, len, match_F_1, match_F_2, RNA_tpm){
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' gene_tpm <- dataset_mariathasan@tpm
+#'
+#' # Compute IMPRES signature (Auslander et al., Nat.Med., 2018)
+#' IMPRES <- compute_IMPRES(RNA_tpm = gene_tpm)
+compute_IMPRES_MSI <- function(sig, len, match_F_1, match_F_2, RNA_tpm, verbose){
   # Initialize variables
   F_pair_expr_A <- F_pair_expr_B <- IMPRES.matrix <- matrix(0, len, ncol(RNA_tpm))
   colnames(IMPRES.matrix) <- colnames(RNA_tpm)
@@ -447,7 +508,7 @@ compute_IMPRES_MSI <- function(sig, len, match_F_1, match_F_2, RNA_tpm){
     score <- colSums(IMPRES.matrix)
   }
 
-  message(paste(sig,"score computed"))
+  if(verbose) message(paste(sig,"score computed"))
   df <- data.frame(score, check.names = FALSE)
   names(df)[1] <- sig
 
