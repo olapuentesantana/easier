@@ -4,27 +4,26 @@
 \alias{compute_RIR}
 \title{Compute repressed immune resistance signature (RIR) score}
 \usage{
-compute_RIR(RNA_tpm, verbose = TRUE)
+compute_RIR(RNA_tpm, RIR_program)
 }
 \arguments{
 \item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in rows and samples in columns.}
 
-\item{verbose}{logical variable indicating whether to display informative messages.}
+\item{RIR_program}{list with gene signatures included in the immune resistance program from Jerby-Arnon et al., 2018.}
 }
 \value{
 A numeric matrix with samples in rows and RIR score in a column.
 }
 \description{
-This function calculates RIR score defined by combining a set of gene signatures associated with downregulation of T cell exclusion, post-treatment and functional resistance.
+This function calculates RIR score defined by combining a set of gene signatures associated
+with downregulation of T cell exclusion, post-treatment and functional resistance.
 More info can be found in original work from Jerby-Arnon et al., Cell, 2018.
 }
 \examples{
 # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
 data("dataset_mariathasan")
 gene_tpm <- dataset_mariathasan@tpm
-
-# compute RIR signature score
-RIR <- compute_RIR(RNA_tpm = gene_tpm)
+# Example does not matter as function will no be exported
 }
 \references{
 Jerby-Arnon, L., Shah, P., Cuoco, M.S., Rodman, C., Su, M.-J., Melms, J.C., Leeson, R., Kanodia, A., Mei, S., Lin, J.-R., et al. (2018).

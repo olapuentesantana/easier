@@ -1,6 +1,6 @@
 #' Compute pathway activity from gene expression using PROGENy
 #'
-#' Infers pathway activity from counts bulk gene expression using PROGENy method
+#' This function infers pathway activity from counts bulk gene expression using PROGENy method
 #' from (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018).
 #'
 #' @importFrom DESeq2 DESeqDataSetFromMatrix estimateSizeFactors estimateDispersions

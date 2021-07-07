@@ -1,6 +1,7 @@
 #' Compute repressed immune resistance signature (RIR) score
 #'
-#' This function calculates RIR score defined by combining a set of gene signatures associated with downregulation of T cell exclusion, post-treatment and functional resistance.
+#' This function calculates RIR score defined by combining a set of gene signatures associated
+#' with downregulation of T cell exclusion, post-treatment and functional resistance.
 #' More info can be found in original work from Jerby-Arnon et al., Cell, 2018.
 #'
 #' @references Jerby-Arnon, L., Shah, P., Cuoco, M.S., Rodman, C., Su, M.-J., Melms, J.C., Leeson, R., Kanodia, A., Mei, S., Lin, J.-R., et al. (2018).
@@ -9,7 +10,7 @@
 #' @importFrom stats na.omit
 #'
 #' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
-#' @param RIR_signature list with gene signatures included in the immune resistance program from Jerby-Arnon et al., 2018.
+#' @param RIR_program list with gene signatures included in the immune resistance program from Jerby-Arnon et al., 2018.
 #'
 #' @return A numeric matrix with samples in rows and RIR score in a column.
 #'
@@ -17,13 +18,9 @@
 #' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
 #' data("dataset_mariathasan")
 #' gene_tpm <- dataset_mariathasan@tpm
-#'
-#' scores_sigs <- readRDS(file.path(system.file("extdata", "signature_genes.RDS", package = "easier")))
-#'
-#' # compute RIR signature score
-#' RIR <- compute_RIR(RNA_tpm = gene_tpm, RIR_signature = scores_sigs[["RIR"]])
+#' # Example does not matter as function will no be exported
 compute_RIR <- function(RNA_tpm,
-                        RIR_signature) {
+                        RIR_program) {
 
   # Log2 transformation:
   log2_RNA_tpm <- log2(RNA_tpm + 1)
@@ -34,7 +31,7 @@ compute_RIR <- function(RNA_tpm,
   r$genes <- rownames(log2_RNA_tpm)
 
   # Apply function to calculate OE:
-  res_scores <- get_OE_bulk(r, gene_sign = RIR_signature, verbose = TRUE)
+  res_scores <- get_OE_bulk(r, gene_sign = RIR_program, verbose = TRUE)
 
   # Merge as recommend by authors
   res <- cbind.data.frame(

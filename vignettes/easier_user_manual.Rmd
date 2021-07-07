@@ -228,9 +228,9 @@ explore_biomarkers(pathways = pathway_activities,
 Additionally different published hallmarks of the immune response can also be computed using TPM data from RNA-seq. By default, the following hallmarks of the immune response are computed: cytolytic activity (CYT) [@ROONEY201548], Roh immune score (Roh_IS) [@Roheaah3560], chemokine signature (chemokines) [@Messina2012], Davoli immune signature (Davoli_IS) [@Davolieaaf8399], IFNy signature (IFNy) [@10.1172/JCI91190], Expanded immune signature (Ayers_expIS) [@10.1172/JCI91190], T-cell inflamed signature (Tcell_inflamed) [@10.1172/JCI91190], Repressed immune resistance (RIR) [@JERBYARNON2018984] and Tertiary lymphoid structures signature (TLS) [@Cabrita2020]. Otherwise, set `hallmarks_of_immune_response` to your own preferences.
 
 ```{r}
-list_hallmarks_of_immune_response <- c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
-immune_response_scores <- compute_hallmarks_immune_response(RNA_tpm = dataset_mariathasan@tpm, 
-                                                            list_hallmarks_of_immune_response = list_hallmarks_of_immune_response)
+hallmarks_of_immune_response <- c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
+immune_response_scores <- compute_scores_immune_response(RNA_tpm = dataset_mariathasan@tpm, 
+                                                         selected_scores = hallmarks_of_immune_response)
 head(immune_response_scores)
 ```
 

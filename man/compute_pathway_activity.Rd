@@ -23,7 +23,7 @@ genes found in the gene expression data provided.}
 A matrix of activity scores with samples in rows and pathways in columns.
 }
 \description{
-Infers pathway activity from counts bulk gene expression using PROGENy method
+This function infers pathway activity from counts bulk gene expression using PROGENy method
 from (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018).
 }
 \examples{
