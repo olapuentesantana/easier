@@ -1,6 +1,6 @@
-#' Compute gold standards
+#' compute_gene_signatures
 #'
-#' \code{computation_gold_standards} computes the scores for the gold standards required by the user
+#' \code{compute_gene_signatures} computes the scores for the gold standards required by the user
 #'
 #' @param RNA_tpm numeric matrix with rows=genes and columns=samples
 #' @param selected_signatures character string of task names to be considered as gold standards for comparison. (Default scores are computed for: "CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
@@ -19,16 +19,17 @@
 #'   "CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
 #'   "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS"
 #' )
-#' tasks_values <- compute_gold_standards(
+#' tasks_values <- compute_gene_signatures(
 #'   RNA_tpm = gene_tpm,
 #'   selected_signatures = tasks
 #' )
 compute_gene_signatures <- function(RNA_tpm, selected_signatures=c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS"), verbose = TRUE){
-  easier_sigs <- readRDS(file.path(system.file("extdata", "signature_genes.RDS", package = "easier")))
+  #easier_sigs <- readRDS(file.path(system.file("extdata", "signature_genes.RDS", package = "easier")))
+  easier_sigs <- readRDS("inst/extdata/signature_genes.RDS")
 
   #check for which selected signatures appropriate functions exist
   sigs <- names(easier_sigs) %in% selected_signatures
-  if(verbose) message(c("Following scores can be computed: \n", paste(names(easier_sigs)[sigs], collapse = "\n")))
+  if(verbose) message(c("Following scores can be computed: \n", paste(names(easier_sigs)[sigs], collapse = ", ")), "\n")
 
   result <- lapply(names(easier_sigs)[sigs], function(sig){
     tryCatch(
@@ -45,9 +46,10 @@ compute_gene_signatures <- function(RNA_tpm, selected_signatures=c("CYT", "Roh_I
 
           if (anyNA(c(match_genes.housekeeping, match_genes.predictors))){
             tmp <- c(easier_sigs$Tcell_inflamed$Housekeeping.read, easier_sigs$Tcell_inflamed$Tcell_inflamed.read)
-            message(c(paste0("Differenty named or missing signature genes for ",sig,": \n"), paste(tmp[!tmp %in% rownames(RNA_tpm)], collapse = "\n")))
+            message(c(paste0("Differenty named or missing signature genes for ",sig,": \n"), paste(tmp[!tmp %in% rownames(RNA_tpm)], collapse = "\n")), "\n")
             match_genes.housekeeping <- match_genes.housekeeping[!is.na(match_genes.housekeeping)]
             match_genes.predictors <- match_genes.housekeeping[!is.na(match_genes.housekeeping)]
+
           }
           do.call(
             paste0("compute_", sig),
@@ -55,8 +57,7 @@ compute_gene_signatures <- function(RNA_tpm, selected_signatures=c("CYT", "Roh_I
               housekeeping = match_genes.housekeeping,
               predictors = match_genes.predictors,
               weights = easier_sigs$Tcell_inflamed$weights,
-              RNA_tpm = RNA_tpm,
-              verbose = verbose
+              RNA_tpm = RNA_tpm
             )
           )
         } else if (sig=="IMPRES" | sig=="MSI") {
@@ -65,13 +66,13 @@ compute_gene_signatures <- function(RNA_tpm, selected_signatures=c("CYT", "Roh_I
           # EQUIVALENT : "VISTA" = "C10orf54", "PDL-1" = "CD274", "TIM-3" = "HAVCR2",
           # "PD-1" = "PDCD1", "HVEM" = "TNFRSF14", "OX40L" = "TNFSF4", "CD137L" = "TNFSF9"
 
-          # Some genes might have other name: case for "C10orf54", it's called "VSIR", be carefull
+          # Some genes might have other name: case for "C10orf54", it's called "VSIR", be careful
           if (any(rownames(RNA_tpm) %in% "VSIR") & sig == "IMPRES"){
             message("Gene name changed: C10orf54 instead of VSIR","\n")
             rownames(RNA_tpm)[rownames(RNA_tpm) %in% "VSIR"] <- "C10orf54"
           }
 
-          # Some genes might have other name: case for "CCRN4L", it's called "NOCT", be carefull
+          # Some genes might have other name: case for "CCRN4L", it's called "NOCT", be careful
           if (any(rownames(RNA_tpm) %in% "CCRN4L") & sig == "MSI"){
             message("Gene name changed: NOCT is approved symbol, not CCRN4L","\n")
             rownames(RNA_tpm)[rownames(RNA_tpm) %in% "CCRN4L"] <- "NOCT"
@@ -97,27 +98,43 @@ compute_gene_signatures <- function(RNA_tpm, selected_signatures=c("CYT", "Roh_I
             )
           )
 
-        } else if (sig=="RIR") {
-          # TODOTODO add cancertype and file.path as arguments
-          do.call(
-            paste0("compute_",sig),
-            args = list(
-              RNA_tpm = RNA_tpm,
-              verbose = verbose
-            )
-          )
-
         } else {
+          easier_spec_sig <- unlist(easier_sigs[[sig]])
+
           # Literature genes
-          literature_matches <- match(easier_sigs[[sig]], rownames(RNA_tpm))
+          literature_matches <- match(easier_spec_sig, rownames(RNA_tpm))
 
           if (anyNA(literature_matches)){
             message(c(paste0("Differenty named or missing signature genes for ",sig,": \n"),
-                      paste(easier_sigs[[sig]][!easier_sigs[[sig]] %in% rownames(RNA_tpm)], collapse = "\n")))
+                      paste(easier_spec_sig[!easier_spec_sig %in% rownames(RNA_tpm)], collapse = ", ")), "\n")
+
+            # Re-annotate genes not found
+            out_annot <- reannotate_genes(easier_spec_sig[!easier_spec_sig %in% rownames(RNA_tpm)])
+            easier_spec_sig[match(out_annot$old_names[!is.na(out_annot$new_names)], easier_spec_sig)] <- out_annot$new_names[!is.na(out_annot$new_names)]
+            message("After gene re-annotation, differently named or missing signature genes for ",sig,": \n",
+                    paste(easier_spec_sig[!easier_spec_sig %in% rownames(RNA_tpm)], collapse = ", "), "\n")
+
+            literature_matches <- match(easier_spec_sig, rownames(RNA_tpm))
             literature_matches <- literature_matches[!is.na(literature_matches)]
           }
 
-          do.call(paste0("compute_", sig), args=list(matches=literature_matches, RNA_tpm=RNA_tpm, verbose=verbose))
+          if (sig=="RIR") {
+
+            # Modify new RIR_sig
+            tmp_RIR_sig <- sapply(names(easier_sigs[[sig]]), function(X) {
+              if (any(is.na(match(out_annot$old_names, easier_sigs[[sig]][[X]])) == FALSE)) {
+                easier_sigs[[sig]][[X]][stats::na.omit(match(out_annot$old_names, easier_sigs[[sig]][[X]]))] <- out_annot$new_names[!is.na(match(out_annot$old_names, easier_sigs[[sig]][[X]]))]
+              }
+              return(easier_sigs[[sig]][[X]])
+            })
+            easier_sigs[[sig]] <- tmp_RIR_sig
+
+            do.call(paste0("compute_",sig), args = list(RNA_tpm = RNA_tpm, RIR_signature = easier_sigs[[sig]]))
+
+          }else{
+            do.call(paste0("compute_", sig), args=list(matches=literature_matches, RNA_tpm=RNA_tpm))
+          }
+
         }
       },
       error=function(cond){
@@ -151,7 +168,6 @@ compute_gene_signatures <- function(RNA_tpm, selected_signatures=c("CYT", "Roh_I
 #'
 #' @param matches numeric vector indicating the index of signature genes in `RNA_tpm`.
 #' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
-#' @param verbose logical value indicating whether to display informative messages.
 #'
 #' @return A numeric matrix with samples in rows and CTY score in a column.
 #'
@@ -162,14 +178,13 @@ compute_gene_signatures <- function(RNA_tpm, selected_signatures=c("CYT", "Roh_I
 #'
 #' # Compute cytolytic activity (Rooney et al, Cell, 2015)
 #' CYT <- compute_CYT(RNA_tpm = gene_tpm)
-compute_CYT <- function(matches, RNA_tpm, verbose){
+compute_CYT <- function(matches, RNA_tpm){
   # Subset RNA_tpm
   subset_RNA_tpm <- RNA_tpm[matches, ]
 
   # Calculation: geometric mean (so-called log-average) [TPM, 0.01 offset]
   score <- as.matrix(apply(subset_RNA_tpm + 0.01, 2, function(X) exp(mean(log(X)))))
 
-  if(verbose) message("CYT score computed")
   return(data.frame(CYT = score, check.names = FALSE))
 }
 
@@ -185,7 +200,6 @@ compute_CYT <- function(matches, RNA_tpm, verbose){
 #'
 #' @param matches numeric vector indicating the index of signature genes in `RNA_tpm`.
 #' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
-#' @param verbose logical value indicating whether to display informative messages.
 #'
 #' @return A numeric matrix with samples in rows and TLS score in a column.
 #'
@@ -196,14 +210,13 @@ compute_CYT <- function(matches, RNA_tpm, verbose){
 #'
 #' # compute tertiary lymphoid structures signature (Cabrita et al., Nature, 2020)
 #' TLS <- compute_TLS(RNA_tpm = gene_tpm)
-compute_TLS <- function(matches, RNA_tpm, verbose){
+compute_TLS <- function(matches, RNA_tpm){
   # Subset RNA_tpm
   sub_gene.tpm <- RNA_tpm[matches, ]
 
   # Calculation: geometric mean (so-called log-average) [TPM, 1 offset]
   geom_mean <- apply(sub_gene.tpm, 2, function(X) exp(mean(log2(X + 1))))
 
-  if(verbose) message("TLS score computed")
   return(data.frame(TLS = geom_mean, check.names = FALSE))
 }
 
@@ -219,7 +232,6 @@ compute_TLS <- function(matches, RNA_tpm, verbose){
 #'
 #' @param matches numeric vector indicating the index of signature genes in `RNA_tpm`.
 #' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
-#' @param verbose logical value indicating whether to display informative messages.
 #'
 #' @return A numeric matrix with samples in rows and IFNy score in a column.
 #'
@@ -230,7 +242,7 @@ compute_TLS <- function(matches, RNA_tpm, verbose){
 #'
 #' # Compute IFNy signature (Ayers et al., JCI, 2017)
 #' IFNy <- compute_IFNy(RNA_tpm = gene_tpm)
-compute_IFNy <- function(matches, RNA_tpm, verbose){
+compute_IFNy <- function(matches, RNA_tpm){
   # Log2 transformation:
   log2.RNA_tpm <- log2(RNA_tpm + 1)
 
@@ -240,7 +252,6 @@ compute_IFNy <- function(matches, RNA_tpm, verbose){
   # Calculation: average of the included genes for the IFN-y signature
   score <- apply(sub_log2.RNA_tpm, 2, mean)
 
-  if(verbose) message("IFNy score computed")
   return(data.frame(IFNy = score, check.names = FALSE))
 }
 
@@ -256,7 +267,6 @@ compute_IFNy <- function(matches, RNA_tpm, verbose){
 #'
 #' @param matches numeric vector indicating the index of signature genes in `RNA_tpm`.
 #' @param RNA_tpm numeric matrix with rows=genes and columns=samples.
-#' @param verbose logical value indicating whether to display informative messages.
 #'
 #' @return A numeric matrix with rows=samples and columns=Expanded Immune signature score.
 #'
@@ -267,7 +277,7 @@ compute_IFNy <- function(matches, RNA_tpm, verbose){
 #'
 #' # Compute expanded immune signature (Ayers et al., JCI, 2017)
 #' Ayers_expIS <- compute_Ayers_expIS(gene_tpm)
-compute_Ayers_expIS <- function(matches, RNA_tpm, verbose){
+compute_Ayers_expIS <- function(matches, RNA_tpm){
   # Log2 transformation:
   log2.RNA_tpm <- log2(RNA_tpm + 1)
 
@@ -277,7 +287,6 @@ compute_Ayers_expIS <- function(matches, RNA_tpm, verbose){
   # Calculation: average of the included genes for Expanded Immune signature
   score <- apply(sub_log2.RNA_tpm, 2, mean)
 
-  if(verbose) message("Ayers_expIS score computed")
   return(data.frame(Ayers_expIS = score, check.names = FALSE))
 }
 
@@ -294,7 +303,6 @@ compute_Ayers_expIS <- function(matches, RNA_tpm, verbose){
 #'
 #' @param matches numeric vector indicating the index of signature genes in `RNA_tpm`.
 #' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
-#' @param verbose logical value indicating whether to display informative messages.
 #'
 #' @return A numeric matrix with samples in rows and Roh_IS score in a column.
 #'
@@ -305,7 +313,7 @@ compute_Ayers_expIS <- function(matches, RNA_tpm, verbose){
 #'
 #' # compute Roh immune score (Roh et al., Sci. Transl. Med., 2017)
 #' Roh_IS <- compute_Roh_IS(RNA_tpm = gene_tpm)
-compute_Roh_IS <- function(matches, RNA_tpm, verbose){
+compute_Roh_IS <- function(matches, RNA_tpm){
   # Subset RNA_tpm
   sub_gene.tpm <- RNA_tpm[matches, ]
 
@@ -318,7 +326,6 @@ compute_Roh_IS <- function(matches, RNA_tpm, verbose){
   # Calculation: geometric mean (so-called log-average) [TPM, 0.01 offset]
   score <- apply(sub_gene.tpm, 2, function(X) exp(mean(log(X))))
 
-  if(verbose) message("Roh_IS computed score")
   return(data.frame(Roh_IS = score, check.names = FALSE))
 }
 
@@ -334,7 +341,6 @@ compute_Roh_IS <- function(matches, RNA_tpm, verbose){
 #'
 #' @param matches numeric vector indicating the index of signature genes in `RNA_tpm`.
 #' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
-#' @param verbose logical value indicating whether to display informative messages
 #'
 #' @return A numeric matrix with samples in rows and Davoli_IS score in a column.
 #'
@@ -345,7 +351,7 @@ compute_Roh_IS <- function(matches, RNA_tpm, verbose){
 #'
 #' # Compute davoli immune signature (Davoli et al., Science 2017)
 #' Davoli_IS <- compute_Davoli_IS(RNA_tpm = gene_tpm)
-compute_Davoli_IS <- function(matches, RNA_tpm, verbose){
+compute_Davoli_IS <- function(matches, RNA_tpm){
   # Log2 transformation:
   log2.RNA_tpm <- log2(RNA_tpm + 1)
 
@@ -361,7 +367,6 @@ compute_Davoli_IS <- function(matches, RNA_tpm, verbose){
   # Calculation: average of the expression value of all the genes within-sample
   score <- apply(ranks_sub_log2.RNA_tpm.norm, 1, mean)
 
-  if(verbose) message("Davoli_IS score computed")
   return(data.frame(Davoli_IS = score, check.names = FALSE))
 }
 
@@ -377,7 +382,6 @@ compute_Davoli_IS <- function(matches, RNA_tpm, verbose){
 #'
 #' @param matches numeric vector indicating the index of signature genes in `RNA_tpm`.
 #' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
-#' @param verbose logical value indicating whether to display informative messages.
 #'
 #' @return A numeric matrix with samples in rows and chemokines score in a column.
 #'
@@ -388,7 +392,7 @@ compute_Davoli_IS <- function(matches, RNA_tpm, verbose){
 #'
 #' # Compute chemokine signature (Messina et al., Nat. Sci. Rep., 2012)
 #' chemokines <- compute_chemokines(RNA_tpm = gene_tpm)
-compute_chemokines <- function(matches, RNA_tpm, verbose){
+compute_chemokines <- function(matches, RNA_tpm){
   # Log2 transformation:
   log2.RNA_tpm <- log2(RNA_tpm + 1)
 
@@ -399,7 +403,6 @@ compute_chemokines <- function(matches, RNA_tpm, verbose){
   chemokine.pca <- stats::prcomp(t(sub_log2.RNA_tpm), center = TRUE, scale = TRUE)
   score <- chemokine.pca$x[, 1]
 
-  if(verbose) message("Chemokines score computed")
   return(data.frame(chemokines = score, check.names = FALSE))
 }
 
@@ -419,7 +422,6 @@ compute_chemokines <- function(matches, RNA_tpm, verbose){
 #' @param predictors numeric vector indicating the index of predictor genes in `RNA_tpm`.
 #' @param weights numeric vector containing the weights.
 #' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
-#' @param verbose logical value indicating whether to display informative messages
 #'
 #' @return A numeric matrix with samples in rows and Tcell_inflamed score in a column.
 #'
@@ -430,7 +432,7 @@ compute_chemokines <- function(matches, RNA_tpm, verbose){
 #'
 #' # compute T-cell inflamed signature (Ayers et al., JCI, 2017)
 #' Tcell_inflamed <- compute_Tcell_inflamed(RNA_tpm = gene_tpm)
-compute_Tcell_inflamed <- function(housekeeping, predictors, weights, RNA_tpm, verbose){
+compute_Tcell_inflamed <- function(housekeeping, predictors, weights, RNA_tpm){
   # Log2 transformation:
   log2.RNA_tpm <- log2(RNA_tpm + 1)
 
@@ -448,11 +450,10 @@ compute_Tcell_inflamed <- function(housekeeping, predictors, weights, RNA_tpm, v
   # Calculation: weighted sum of the normalized predictor gene values
   tidy <- match(rownames(log2.RNA_tpm.predictors.norm), names(weights))
 
-  #transform vector to matrix
+  # Transform vector to matrix
   weights <- matrix(weights, ncol = 1, dimnames = list(names(weights)))
   score <- t(log2.RNA_tpm.predictors.norm[tidy,]) %*% weights
 
-  if(verbose) message("Tcell_inflamed score computed")
   return(data.frame( Tcell_inflamed = score, check.names = FALSE))
 }
 
@@ -471,7 +472,6 @@ compute_Tcell_inflamed <- function(housekeeping, predictors, weights, RNA_tpm, v
 #' @param match_F_1 numeric vector indicating the index of signature genes defined in 'gene_1' in `RNA_tpm`.
 #' @param match_F_2 numeric vector indicating the index of signature genes defined in 'gene_2' in `RNA_tpm`.
 #' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
-#' @param verbose logical value indicating whether to display informative messages.
 #'
 #' @return A numeric matrix with samples in rows and IMPRES score in a column.
 #'
@@ -482,7 +482,7 @@ compute_Tcell_inflamed <- function(housekeeping, predictors, weights, RNA_tpm, v
 #'
 #' # Compute IMPRES signature (Auslander et al., Nat.Med., 2018)
 #' IMPRES <- compute_IMPRES(RNA_tpm = gene_tpm)
-compute_IMPRES_MSI <- function(sig, len, match_F_1, match_F_2, RNA_tpm, verbose){
+compute_IMPRES_MSI <- function(sig, len, match_F_1, match_F_2, RNA_tpm){
   # Initialize variables
   F_pair_expr_A <- F_pair_expr_B <- IMPRES.matrix <- matrix(0, len, ncol(RNA_tpm))
   colnames(IMPRES.matrix) <- colnames(RNA_tpm)
@@ -508,11 +508,68 @@ compute_IMPRES_MSI <- function(sig, len, match_F_1, match_F_2, RNA_tpm, verbose)
     score <- colSums(IMPRES.matrix)
   }
 
-  if(verbose) message(paste(sig,"score computed"))
   df <- data.frame(score, check.names = FALSE)
   names(df)[1] <- sig
 
   return(df)
 }
 
+#' Compute repressed immune resistance signature (RIR) score
+#'
+#' This function calculates RIR score defined by combining a set of gene signatures associated with downregulation of T cell exclusion, post-treatment and functional resistance.
+#' More info can be found in original work from Jerby-Arnon et al., Cell, 2018.
+#'
+#' @references Jerby-Arnon, L., Shah, P., Cuoco, M.S., Rodman, C., Su, M.-J., Melms, J.C., Leeson, R., Kanodia, A., Mei, S., Lin, J.-R., et al. (2018).
+#' A Cancer Cell Program Promotes T Cell Exclusion and Resistance to Checkpoint Blockade. Cell 175, 984–997.e24. https://doi.org/10.1016/j.cell.2018.09.006.
+#'
+#' @importFrom stats na.omit
+#'
+#' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
+#' @param RIR_signature list with gene signatures included in the immune resistance program from Jerby-Arnon et al., 2018.
+#'
+#' @return A numeric matrix with samples in rows and RIR score in a column.
+#'
+#' @examples
+#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
+#' data("dataset_mariathasan")
+#' gene_tpm <- dataset_mariathasan@tpm
+#'
+#' # compute RIR signature score
+#' RIR <- compute_RIR(RNA_tpm = gene_tpm, RIR_signature = easier_sig[["RIR"]])
+compute_RIR <- function(RNA_tpm,
+                        RIR_signature) {
+
+  # Log2 transformation:
+  log2_RNA_tpm <- log2(RNA_tpm + 1)
+
+  # Prepare input data
+  r <- list()
+  r$tpm <- log2_RNA_tpm
+  r$genes <- rownames(log2_RNA_tpm)
+
+  # Apply function to calculate OE:
+  res_scores <- get_OE_bulk(r, gene_sign = RIR_signature, verbose = TRUE)
+
+  # Merge as recommend by authors
+  res <- cbind.data.frame(
+    excF.up = rowMeans(res_scores[, c("exc.up", "exc.seed.up")]),
+    excF.down = rowMeans(res_scores[, c("exc.down", "exc.seed.down")]),
+    res.up = rowMeans(res_scores[, c("trt.up", "exc.up", "exc.seed.up")]),
+    res.down = rowMeans(res_scores[, c("trt.down", "exc.down", "exc.seed.down")]),
+    res_scores
+  )
+
+  res <- cbind.data.frame(
+    resF.up = res[, "res.up"] + res[, "fnc.up"],
+    resF.down = res[, "res.down"] + res[, "fnc.down"],
+    res
+  )
+
+  # Keep that signature considered to be relevant
+  keep_sig <- c("resF.down")
+  score <- as.matrix(res[, colnames(res) %in% keep_sig])
+  rownames(score) <- colnames(log2_RNA_tpm)
+
+  return(data.frame(RIR = score, check.names = FALSE))
+}
 
