@@ -8,8 +8,6 @@
 #' @importFrom dplyr filter
 #'
 #' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
-#' @param remove_genes_ICB_proxies logical value indicating whether to remove signature genes involved
-#' in the derivation of hallmarks of immune response.
 #' @param verbose logical value indicating whether to display messages about the number of regulated
 #' genes found in the gene expression data provided.
 #'
@@ -24,11 +22,9 @@
 #'
 #' # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
 #' tf_activity <- compute_TF_activity(
-#'   RNA_tpm = gene_tpm,
-#'   remove_genes_ICB_proxies = FALSE
+#'   RNA_tpm = gene_tpm
 #' )
 compute_TF_activity <- function(RNA_tpm,
-                                remove_genes_ICB_proxies = FALSE,
                                 verbose = TRUE) {
   # Some checks
   if (is.null(RNA_tpm)) stop("tpm data not found")
@@ -39,13 +35,6 @@ compute_TF_activity <- function(RNA_tpm,
 
   # HGNC symbols are required
   if (any(grep("ENSG00000", genes))) stop("hgnc gene symbols are required", call. = FALSE)
-
-  # Genes to remove according to all ICB proxy's
-  if (remove_genes_ICB_proxies) {
-    if (verbose) message("Removing signatures genes for proxy's of ICB response  \n")
-    idy <- stats::na.exclude(match(cor_genes_to_remove, rownames(tpm)))
-    tpm <- tpm[-idy, ]
-  }
 
   # Log transformed expression matrix (log2[tpm+1]): expression matrix scaled and recentered.
   gene_expr <- calc_z_score(t(tpm), mean = TCGA_mean_pancancer, sd = TCGA_sd_pancancer)
@@ -86,7 +75,7 @@ compute_TF_activity <- function(RNA_tpm,
   # Samples as rows, TFs as columns
   tf_activity <- t(tf_activity)
 
-  if (verbose) message("TF activity computed \n")
+  if (verbose) message("TF activity computed! \n")
 
   return(as.data.frame(tf_activity))
 }

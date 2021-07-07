@@ -21,17 +21,16 @@
 #'
 #' # Computation of ligand-receptor pair weights
 #' lrpair_weights <- compute_LR_pairs(
-#'   RNA_tpm = gene_tpm,
-#'   remove_genes_ICB_proxies = FALSE,
+#'   RNA_tpm = gene_tpm
 #'   cancer_type = "pancan"
 #' )
 #'
 #' # Computation of cell-cell interaction scores
-#' ccpair_scores <- compute_CC_pairs_grouped(
+#' ccpair_scores <- compute_CC_pairs(
 #'   lrpairs = lrpair_weights,
 #'   cancer_type = "pancan"
 #' )
-compute_CC_pairs_grouped <- function(lrpairs,
+compute_CC_pairs <- function(lrpairs,
                                      cancer_type = "pancan",
                                      verbose = TRUE) {
   # Some checks

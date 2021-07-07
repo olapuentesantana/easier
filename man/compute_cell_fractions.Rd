@@ -16,7 +16,7 @@ signature genes found in the gene expression data provided.}
 A numeric matrix of normalized enrichment scores with samples in rows and cell types in columns.
 }
 \description{
-This function estimates cell fractions from gene expression in TPM
+This function estimates cell fractions from TPM bulk gene expression
 using quanTIseq method from (Finotello et al., Genome Med, 2019).
 }
 \examples{

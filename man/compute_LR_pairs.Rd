@@ -4,18 +4,10 @@
 \alias{compute_LR_pairs}
 \title{Compute ligand-receptor pair weights from TPM bulk gene expression}
 \usage{
-compute_LR_pairs(
-  RNA_tpm,
-  remove_genes_ICB_proxies = FALSE,
-  cancer_type = "pancan",
-  verbose = TRUE
-)
+compute_LR_pairs(RNA_tpm, cancer_type = "pancan", verbose = TRUE)
 }
 \arguments{
 \item{RNA_tpm}{A data.frame containing TPM values with HGNC symbols in rows and samples in columns.}
-
-\item{remove_genes_ICB_proxies}{a logical value indicating whether to remove signature genes involved
-in the derivation of hallmarks of immune response.}
 
 \item{cancer_type}{A string detailing the cancer type whose ligand-receptor pairs network will be used.
 A pan-cancer network is selected by default, whose network represents the union of all
@@ -42,7 +34,6 @@ gene_tpm <- dataset_mariathasan@tpm
 # Computation of ligand-receptor pair weights
 lrpair_weights <- compute_LR_pairs(
   RNA_tpm = gene_tpm,
-  remove_genes_ICB_proxies = FALSE,
   cancer_type = "pancan"
 )
 lrpair_weights[1:5, 1:5]

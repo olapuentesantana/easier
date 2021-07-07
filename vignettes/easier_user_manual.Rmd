@@ -42,14 +42,18 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup, include = FALSE}
-library(easier)
+library("easier")
 ```
 
 # Introduction {#introduction} 
 
-This vignette describes how to use the easier package for a pleasant onboarding experience around the EaSIeR approach. EaSIeR is a tool to predict biomarker-based immunotherapy response providing just the patients' RNA-sequencing (RNA-seq) data as input. 
+<img src="/Users/Oscar/ownCloud2/SystemsImmunoOncology/easier_project/easier_image.png" width="500" height="500" />
 
-RNA-seq data is integrated with different types of biological prior knowledge to extract quantitative descriptors of the tumor microenvironment (TME) from several points of view, including composition of the immune repertoire, and activity of intra- and extra-cellular communications (see table below).
+This vignette describes how to use the easier package for a pleasant onboarding experience around the EaSIeR approach [@LAPUENTESANTANA2021100293]. EaSIeR is a tool to predict biomarker-based immunotherapy response providing just the patients' bulk RNA-sequencing (RNA-seq) data as input. 
+
+How is EaSIeR built? 
+
+* RNA-seq data is integrated with different types of biological prior knowledge to extract quantitative descriptors of the tumor microenvironment (TME) from several points of view, including composition of the immune repertoire, and activity of intra- and extra-cellular communications (see table below).
 
 ```{r table1, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
 library(knitr)
@@ -59,13 +63,12 @@ table1 <- "
 | Pathway activity | @HOLLAND2020194431; @Schubert2018 | @HOLLAND2020194431; @Schubert2018 |
 | Immune cell quantification | @Finotello2019 | @Finotello2019 |
 | TF activity | @Garcia-Alonso01082019 | @Garcia-Alonso01082019 |
-| Ligand-Receptor pairs | @Lapuente-Santana2021.02.05.429977 | @Ramilowski2015 |
-| Cell-cell interaction | @Lapuente-Santana2021.02.05.429977 | @Ramilowski2015 |
+| Ligand-Receptor pairs | @LAPUENTESANTANA2021100293 | @Ramilowski2015 |
+| Cell-cell interaction | @LAPUENTESANTANA2021100293 | @Ramilowski2015 |
 "
 cat(table1)
 ```
-
-Leveraging the data from The Cancer Genome Atlas (TCGA), regularized multi-task linear regression was used to identify how these descriptors can simultaneously predict several state-of-the-art hallmarks of anti-cancer immune response (see table below). Here, the regularization term is used to select features that are relevant for all tasks.
+* Transcriptome-based predictors of anti-cancer immune responses are associated with different hallmarks of response to immunotherapy (see table below). 
 
 ```{r table2, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
 table2 <- "
@@ -86,18 +89,20 @@ table2 <- "
 cat(table2)
 ```
 
-Cancer-specific models were built and used to identify cancer-specific systems biomarkers of immune response. These biomarkers have been experimentally validated in the literature and the performance of EaSIeR predictions has been validated using independent datasets from four different cancer types with patients treated with anti-PD1 or anti-PDL1 therapy.
+* Leveraging the data from The Cancer Genome Atlas (TCGA), regularized multi-task linear regression was used to identify how the quantitative descriptors can simultaneously predict several hallmarks of anti-cancer immune response. Here, the regularization is applied to select features that are relevant for all tasks.
 
-For detailed information about the fundamentals of EaSIeR, please refer to our original work: Lapuente-Santana et al. "Predictive systems biomarkers of response to immune checkpoint inhibitors", available in bioRxiv [doi:10.1101/2021.02.05.429977](https://www.biorxiv.org/content/10.1101/2021.02.05.429977v1).
+* Cancer-specific models were learned and used to identify cancer-specific systems biomarkers of immune response. These biomarkers have been experimentally validated in the literature and the performance of EaSIeR predictions has been validated using independent datasets from four different cancer types with patients treated with anti-PD1 or anti-PD-L1 therapy.
+
+For detailed information about the fundamentals of EaSIeR, please refer to our original work: Lapuente-Santana et al. "Interpretable systems biomarkers predict response to immune-checkpoint inhibitors". Patterns, 2021 [doi:10.1016/j.patter.2021.100293](https://doi.org/10.1016/j.patter.2021.100293).
 
 `easier` consists of a range of functions which are essential for the optimal use of EaSIeR pipeline. Even though all functions are well-documented within the package, we provide here a quick overview of these different functionalities: 
 
 - `compute_cell_fractions` estimates cell fractions from TPM gene expression using quanTIseq method [@Finotello2019].
-- `compute_pathways_scores` infers pathway activity from raw counts gene expression using PROGENy method [@HOLLAND2020194431; @Schubert2018].
+- `compute_pathway_activity` infers pathway activity from raw counts gene expression using PROGENy method [@HOLLAND2020194431; @Schubert2018].
 - `compute_TF_activity` infers transcription factor activity from TPM gene expression using DoRothEA method [@Garcia-Alonso01082019].
 - `compute_LR_pairs` quantifies ligand-receptor interactions in the TME from TPM gene expression using prior knowledge coming from ligand-receptor pair annotations from the database of @Ramilowski2015.
-- `compute_CC_pairs_grouped` scores cell-cell interactions in the TME using ligand-receptor weights as input.
-- `compute_gold_standards` computes the published transcriptomics-based hallmarks of anti-cancer immune response (so-called gold standards) as established by the user.
+- `compute_CC_pairs` scores cell-cell interactions in the TME using ligand-receptor weights as input.
+- `compute_hallmarks_immune_response` computes the published transcriptomics-based hallmarks of anti-cancer immune response (so-called gold standards) as established by the user.
 - `predict_immune_response` predicts patients' immune response using the quantitative descriptors data as input features and the model parameters defined during training.
 - `assess_immune_response` evaluates the performance of the predicted immune response using a roc curve plot and a barplot showing the average (across tasks) area under the ROC curve (AUC) values.
 - `explore_biomarkers` visualizes stunning biomarkers of immune response found in the dataset (e.g. comparing non-responders and responders patients if response is known).
@@ -107,7 +112,7 @@ For detailed information about the fundamentals of EaSIeR, please refer to our o
 Starting R, this package can be installed as follows:
 
 ```{r, eval=FALSE}
-install.packages("../easier_0.9.0.tar.gz", repos = NULL, type="source")
+install.packages("../../easier_0.9.0.tar.gz", repos = NULL, type="source")
 ```
 
 Once installed, the package can be loaded and attached to your current workspace as follows:
@@ -127,58 +132,55 @@ In this section, we illustrate the main features of `easier` on a publicly avail
 
 This example dataset includes samples from 192 patients where both RNA-seq data and information on response to ICB therapy is available. Here, we consider only patients with complete response (CR) as responders and patients with progressive disease (PD) as non-responders.
 
-Let's first inspect the processed data provided in IMvigor210CoreBiologies from Mariathasan cohort:
-
+Let's inspect the processed data provided in IMvigor210CoreBiologies from Mariathasan cohort:
 ```{r, eval=TRUE}
 data("dataset_mariathasan")
+
 ```
+We are going to use the bulk RNA-seq data to derive, for each patient, the five quantitative descriptors of the TME described above.
 
-The computation of the five quantitative descriptors of the TME can be done as in the chunk below:
-
-```{r eval=TRUE}
-# Obtain cell fractions
+- By applying quanTIseq [@Finotello2019] method to TPM data from RNA-seq, the quantification of different cell fractions can be done as follows:
+```{r}
 cell_fractions <- compute_cell_fractions(RNA_tpm = dataset_mariathasan@tpm)
 head(cell_fractions)
 ```
-
-```{r eval=FALSE}
-# Obtain pathway scores
-pathway_activity <- compute_pathways_scores(RNA_counts = dataset_mariathasan@counts,
-                                            remove_genes_ICB_proxies = TRUE)
-
-# Obtain TF activity
-tf_activity <- compute_TF_activity(RNA_tpm = dataset_mariathasan@tpm, 
-                                   remove_genes_ICB_proxies = FALSE)
-
-# Obtain ligand-receptor pair weights
-lrpair_weights <- compute_LR_pairs(RNA_tpm = dataset_mariathasan@tpm, 
-                                   remove_genes_ICB_proxies = FALSE, 
+- By applying PROGENy [@HOLLAND2020194431; @Schubert2018] method to count data from RNA-seq, the activity of 14 signaling pathways
+can be inferred as in the chunk below. Since the activity of these pathways is computed as a linear transformation of gene expression
+data, those pathway signature genes that were also used to compute hallmarks of immune response were excluded, `remove_sig_genes_immune_response` is set to `TRUE`.
+```{r}
+pathway_activities <- compute_pathway_activity(RNA_counts = dataset_mariathasan@counts,
+                                               remove_sig_genes_immune_response = TRUE)
+head(pathway_activities)
+```
+- By applying DoRothEA [@Garcia-Alonso01082019] method to TPM data from RNA-seq, the activity of 118 TFs can be inferred as follows:
+```{r}
+tf_activities <- compute_TF_activity(RNA_tpm = dataset_mariathasan@tpm)
+head(tf_activities[,1:5])
+```
+- Based on ligand-receptor pair annotations from the Ramilowski database [@Ramilowski2015] and filtering for those potentially present in the TME,
+the quantification of 867 ligand-receptor pairs can be done as in the chunk below. Via `cancer_type`, a cancer-specific ligand-receptor pairs network
+can be chosen. With `cancer_type` set to `pancan`, a pan-cancer network will be used and it is based on the union of all ligand-receptor pairs present across the 18 cancer-specific networks. 
+```{r}
+lrpair_weights <- compute_LR_pairs(RNA_tpm = dataset_mariathasan@tpm,
                                    cancer_type = "pancan")
-
-# Obtain cell-cell interaction scores
-ccpair_scores <- compute_CC_pairs_grouped(lrpairs = lrpair_weights, 
-                                          cancer_type = "pancan")
+head(lrpair_weights[,1:5])
+```
+- Using the ligand-receptor weights obtained before, 169 cell-cell interaction scores can be derived as follows. As before, `cancer_type` set to `pancan` (default). 
+The same `cancer_type` network used to quantify ligand-receptor pairs should be designated here.
+```{r}
+ccpair_scores <- compute_CC_pairs(lrpairs = lrpair_weights, 
+                                  cancer_type = "pancan")
+head(ccpair_scores[,1:5])
 ```
 
-Additionally, different published hallmarks of the immune response can also be computed using your patients' data. Nine hallmarks of the immune response are computed by default, set `list_gold_standards` to your own preferences.
-
-```{r eval = FALSE}
-tasks <- c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR"
-           , "TLS")
-#tasks_values <- compute_gold_standards(RNA_tpm = dataset_mariathasan@tpm, 
-#                                      list_gold_standards = tasks)
-
-tasks_values <- compute_gene_signatures(dataset_mariathasan@tpm, selected_signatures=tasks, verbose=T)
-```
-
-Now we use the quantitative descriptors computed previously to obtain predictions of immune response. The output of `predict_immune_response` returns predictions for each quantitative descriptor.
+Now we use the quantitative descriptors computed previously to obtain predictions of anti-tumor immune responses. The output of `predict_immune_response` returns predictions for each quantitative descriptor.
 
 Because models were built in a cancer-type-specific fashion, the user is required to indicate which cancer-specific model should be used for predicting the immune response. This can be done via the `cancer_type` argument.
 
-```{r eval = FALSE}
-predictions_immune_response <- predict_immune_response(pathways = pathway_activity,
+```{r}
+predictions_immune_response <- predict_immune_response(pathways = pathway_activities,
                                                        immunecells = cell_fractions,
-                                                       tfs = tf_activity,
+                                                       tfs = tf_activities,
                                                        lrpairs = lrpair_weights,
                                                        ccpairs = ccpair_scores,
                                                        cancer_type = dataset_mariathasan@cancertype, 
@@ -196,7 +198,7 @@ For the first scenario, we can use the patients' response information available 
 Additionally the user can set `easier_with_TMB` to `TRUE` to apply a refined approach based on the integration of `easier` predictions with information on tumor mutational burden (TMB). 
 Since both immune response and TMB are essential for an effective immunotherapy response, we decided to conceptualize this in our predictions by either penalizing or weighting differently our scores in high- and low-TMB patients. 
 
-```{r eval = FALSE}
+```{r}
 assess_immune_response(predictions_immune_response = predictions_immune_response,
                        real_patient_response = dataset_mariathasan@response,
                        RNA_tpm = dataset_mariathasan@tpm,
@@ -209,19 +211,29 @@ assess_immune_response(predictions_immune_response = predictions_immune_response
 
 We can go further and analyze systems biomarkers present in the user's bulk RNA-seq data. `explore_biomarkers` allows to investigate mechanisms behind patients' response to treatment through interpretable biomarkers. 
 
-In order to leverage the biomarkers information obtained during model training, you need to specify again which `cancer_type` the bulk RNA-seq data belongs.
+In order to leverage the biomarkers information obtained during model training, you need to specify again which `cancer_type` the bulk RNA-seq data belongs to.
 
-```{r eval = FALSE}
-explore_biomarkers(pathways = pathway_activity,
+```{r}
+explore_biomarkers(pathways = pathway_activities,
                    immunecells = cell_fractions,
                    lrpairs = lrpair_weights,
-                   tfs = tf_activity,
+                   tfs = tf_activities,
                    ccpairs = ccpair_scores,
                    cancer_type = dataset_mariathasan@cancertype,
                    real_patient_response = dataset_mariathasan@response,
                    output_file_path = "../figures",
                    TMB_values = dataset_mariathasan@TMB)
 ```
+
+Additionally different published hallmarks of the immune response can also be computed using TPM data from RNA-seq. By default, the following hallmarks of the immune response are computed: cytolytic activity (CYT) [@ROONEY201548], Roh immune score (Roh_IS) [@Roheaah3560], chemokine signature (chemokines) [@Messina2012], Davoli immune signature (Davoli_IS) [@Davolieaaf8399], IFNy signature (IFNy) [@10.1172/JCI91190], Expanded immune signature (Ayers_expIS) [@10.1172/JCI91190], T-cell inflamed signature (Tcell_inflamed) [@10.1172/JCI91190], Repressed immune resistance (RIR) [@JERBYARNON2018984] and Tertiary lymphoid structures signature (TLS) [@Cabrita2020]. Otherwise, set `hallmarks_of_immune_response` to your own preferences.
+
+```{r}
+list_hallmarks_of_immune_response <- c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
+immune_response_scores <- compute_hallmarks_immune_response(RNA_tpm = dataset_mariathasan@tpm, 
+                                                            list_hallmarks_of_immune_response = list_hallmarks_of_immune_response)
+head(immune_response_scores)
+```
+
 
 Moving to a real-case scenario where the patients' response is not known, making treatments decision is a must and `easier` aims to assist clinicians in this regard.
 

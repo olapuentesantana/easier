@@ -1,6 +1,6 @@
 #' Compute immune cell fractions from gene expression using quanTIseq
 #'
-#' This function estimates cell fractions from gene expression in TPM
+#' This function estimates cell fractions from TPM bulk gene expression
 #' using quanTIseq method from (Finotello et al., Genome Med, 2019).
 #'
 #' @importFrom quantiseqr run_quantiseq
@@ -26,10 +26,10 @@ compute_cell_fractions <- function(RNA_tpm,
 ) {
 
   # Some checks
-  if (is.null(RNA_tpm)) stop("tpm data not found")
+  if (is.null(RNA_tpm)) stop("Gene tpm data not found")
 
   # HGNC symbols are required
-  if (any(grep("ENSG00000", rownames(RNA_tpm)))) stop("hgnc gene symbols are required", call. = FALSE)
+  if (any(grep("ENSG00000", rownames(RNA_tpm)))) stop("Hgnc gene symbols are required", call. = FALSE)
 
   # Cell fractions: run deconvolute
   cell_fractions <- quantiseqr::run_quantiseq(
@@ -44,6 +44,6 @@ compute_cell_fractions <- function(RNA_tpm,
   colnames(cell_fractions) <- new_cellnames
   cell_fractions[, "CD4 T"] <- cell_fractions[, "CD4 T"] + cell_fractions[, "Treg"]
 
-  if (verbose) message("Cell fractions computed \n")
+  if (verbose) message("Cell fractions computed! \n")
   return(cell_fractions)
 }

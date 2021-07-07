@@ -4,13 +4,10 @@
 \alias{compute_TF_activity}
 \title{Compute transcription factor activity from gene expression using DoRothEA}
 \usage{
-compute_TF_activity(RNA_tpm, remove_genes_ICB_proxies = FALSE, verbose = TRUE)
+compute_TF_activity(RNA_tpm, verbose = TRUE)
 }
 \arguments{
 \item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in rows and samples in columns.}
-
-\item{remove_genes_ICB_proxies}{logical value indicating whether to remove signature genes involved
-in the derivation of hallmarks of immune response.}
 
 \item{verbose}{logical value indicating whether to display messages about the number of regulated
 genes found in the gene expression data provided.}
@@ -29,7 +26,6 @@ gene_tpm <- dataset_mariathasan@tpm
 
 # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
 tf_activity <- compute_TF_activity(
-  RNA_tpm = gene_tpm,
-  remove_genes_ICB_proxies = FALSE
+  RNA_tpm = gene_tpm
 )
 }

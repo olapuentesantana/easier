@@ -6,7 +6,7 @@
 #' @importFrom grDevices pdf dev.off
 #' @importFrom stats aggregate
 #' @importFrom reshape2 melt
-#' @importFrom rstatix wilcox_test wilcox_effsize
+#' @import rstatix
 #' @importFrom ggrepel geom_text_repel
 #' @import ggplot2
 #' @importFrom grid unit.pmax grid.newpage grid.draw
@@ -39,26 +39,24 @@
 #' cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
 #'
 #' # Computation of pathway scores
-#' pathway_activity <- compute_pathways_scores(
+#' pathway_activity <- compute_pathway_activity(
 #'   RNA_counts = gene_count,
-#'   remove_genes_ICB_proxies = TRUE
+#'   remove_sig_genes_immune_response = TRUE
 #' )
 #'
 #' # Computation of TF activity
 #' tf_activity <- compute_TF_activity(
-#'   RNA_tpm = gene_tpm,
-#'   remove_genes_ICB_proxies = FALSE
+#'   RNA_tpm = gene_tpm
 #' )
 #'
 #' # Computation of ligand-receptor pair weights
 #' lrpair_weights <- compute_LR_pairs(
-#'   RNA_tpm = gene_tpm,
-#'   remove_genes_ICB_proxies = FALSE,
+#'   RNA_tpm = gene_tpm
 #'   cancer_type = "pancan"
 #' )
 #'
 #' # Computation of cell-cell interaction scores
-#' ccpair_scores <- compute_CC_pairs_grouped(
+#' ccpair_scores <- compute_CC_pairs(
 #'   lrpairs = lrpair_weights,
 #'   cancer_type = "pancan"
 #' )
@@ -138,7 +136,7 @@ explore_biomarkers <- function(pathways = NULL,
   get_biomarkers_features <- function(view, cancer_type, verbose = TRUE) {
     view_info <- view_combinations[[view]]
     view_name <- paste(names(view_info), collapse = "_")
-    if (verbose) message("examining ", view_name, " biomarkers \n")
+    if (verbose) message("Examining ", view_name, " biomarkers \n")
     # ---------- #
     # Features #
     # ---------- #
@@ -233,8 +231,8 @@ explore_biomarkers <- function(pathways = NULL,
       ggplot2::geom_bar(stat = "identity", color = "white") +
       ggplot2::scale_fill_manual(
         name = "Association sign",
-        labels = levels(biomarkers_weights_sort$cor),
-        values = c("-" = "#BB4444", "+" = "#4477AA", "0" = "gray")
+        labels = c("+", "-", "0"),
+        values = c("+" = "#4477AA", "-" = "#BB4444", "0" = "gray")
       ) +
       ggplot2::theme(panel.grid = ggplot2::element_blank()) +
       ggplot2::theme(
@@ -398,7 +396,7 @@ explore_biomarkers <- function(pathways = NULL,
     ggplot2::theme(axis.text = ggplot2::element_text(color = "black"), axis.ticks = ggplot2::element_line(color = "black")) +
     ggplot2::theme(legend.position = "right") +
     ggrepel::geom_text_repel(
-      data = subset(comparison, (threshold != "notSign" & istop == TRUE)), ggplot2::aes(x = .data$signedEffect, y = -log10(.data$p_val), label = .data$variable, size = .05),
+      data = subset(comparison, (threshold != "notSign")), ggplot2::aes(x = .data$signedEffect, y = -log10(.data$p_val), label = .data$variable, size = .05),
       show.legend = NA, inherit.aes = FALSE, max.overlaps = 20
     )
 

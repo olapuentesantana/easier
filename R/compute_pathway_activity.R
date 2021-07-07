@@ -1,6 +1,6 @@
 #' Compute pathway activity from gene expression using PROGENy
 #'
-#' Infers pathway activity from raw counts bulk gene expression using PROGENy method
+#' Infers pathway activity from counts bulk gene expression using PROGENy method
 #' from (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018).
 #'
 #' @importFrom DESeq2 DESeqDataSetFromMatrix estimateSizeFactors estimateDispersions
@@ -9,7 +9,7 @@
 #' @importFrom stats na.exclude
 #'
 #' @param RNA_counts data.frame containing raw counts values (with HGNC gene symbols as row names and samples identifiers as column names).
-#' @param remove_genes_ICB_proxies logical value indicating whether to remove signature genes involved
+#' @param remove_sig_genes_immune_response logical value indicating whether to remove signature genes involved
 #' in the derivation of hallmarks of immune response.
 #' @param verbose logical value indicating whether to display messages about the number of pathway signature
 #' genes found in the gene expression data provided.
@@ -23,27 +23,27 @@
 #' data("dataset_mariathasan")
 #' gene_count <- dataset_mariathasan@counts
 #'
-#' # Computation of pathway scores (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018)
-#' pathway_activity <- compute_pathways_scores(
+#' # Computation of pathway activity (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018)
+#' pathway_activity <- compute_pathway_activity(
 #'   RNA_counts = gene_count,
-#'   remove_genes_ICB_proxies = TRUE
+#'   remove_sig_genes_immune_response = TRUE
 #' )
-compute_pathways_scores <- function(RNA_counts,
-                                    remove_genes_ICB_proxies = TRUE,
+compute_pathway_activity <- function(RNA_counts,
+                                    remove_sig_genes_immune_response = TRUE,
                                     verbose = TRUE) {
   # Some checks
-  if (is.null(RNA_counts)) stop("raw counts data not found")
+  if (is.null(RNA_counts)) stop("Gene counts data not found")
 
   # Gene expression data
   raw_counts <- RNA_counts
   genes <- rownames(raw_counts)
 
   # HGNC symbols are required
-  if (any(grep("ENSG00000", genes))) stop("hgnc gene symbols are required", call. = FALSE)
+  if (any(grep("ENSG00000", genes))) stop("Hgnc gene symbols are required", call. = FALSE)
 
   # Remove list of genes used to build proxy's of ICB response
-  if (remove_genes_ICB_proxies) {
-    if (verbose) message("Removing signatures genes for proxy's of ICB response  \n")
+  if (remove_sig_genes_immune_response) {
+    if (verbose) message("Removing signature genes of hallmarks of immune response \n")
     idy <- stats::na.exclude(match(cor_genes_to_remove, rownames(raw_counts)))
     raw_counts <- raw_counts[-idy, ]
   }
@@ -62,7 +62,7 @@ compute_pathways_scores <- function(RNA_counts,
   # Column data:
   colData <- data.frame(id = colnames(raw_counts_integer))
 
-  if (verbose) message("DESeq2 normalization -->\n")
+  if (verbose) message("Gene counts normalization with DESeq2:")
   # Construction a DESeqDataSet: (Forced all to be data.frames($ operator))
   dset <- DESeq2::DESeqDataSetFromMatrix(
     countData = raw_counts_integer,
@@ -90,6 +90,6 @@ compute_pathways_scores <- function(RNA_counts,
   total_genes <- length(genes_left) + length(genes_kept)
   if (verbose) message("Pathway signature genes found in data set: ", length(genes_kept), "/", total_genes, " (", round(length(genes_kept) / total_genes, 3) * 100, "%)")
 
-  if (verbose) message("\nPathway scores computed \n")
+  if (verbose) message("\nPathway activity scores computed! \n")
   return(as.data.frame(pathway_activity))
 }
