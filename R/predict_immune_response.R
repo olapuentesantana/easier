@@ -29,26 +29,24 @@
 #' cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
 #'
 #' # Computation of pathway scores (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018)
-#' pathway_activity <- compute_pathways_scores(
+#' pathway_activity <- compute_pathway_activity(
 #'   RNA_counts = gene_count,
-#'   remove_genes_ICB_proxies = TRUE
+#'   remove_sig_genes_immune_response = TRUE
 #' )
 #'
 #' # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
 #' tf_activity <- compute_TF_activity(
-#'   RNA_tpm = gene_tpm,
-#'   remove_genes_ICB_proxies = FALSE
+#'   RNA_tpm = gene_tpm
 #' )
 #'
 #' # Computation of ligand-receptor pair weights
 #' lrpair_weights <- compute_LR_pairs(
-#'   RNA_tpm = gene_tpm,
-#'   remove_genes_ICB_proxies = FALSE,
+#'   RNA_tpm = gene_tpm
 #'   cancer_type = "pancan"
 #' )
 #'
 #' # Computation of cell-cell interaction scores
-#' ccpair_scores <- compute_CC_pairs_grouped(
+#' ccpair_scores <- compute_CC_pairs(
 #'   lrpairs = lrpair_weights,
 #'   cancer_type = "pancan"
 #' )

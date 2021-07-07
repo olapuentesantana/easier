@@ -10,8 +10,6 @@
 #' @importFrom utils head tail
 #'
 #' @param RNA_tpm A data.frame containing TPM values with HGNC symbols in rows and samples in columns.
-#' @param remove_genes_ICB_proxies a logical value indicating whether to remove signature genes involved
-#' in the derivation of hallmarks of immune response.
 #' @param cancer_type A string detailing the cancer type whose ligand-receptor pairs network will be used.
 #' A pan-cancer network is selected by default, whose network represents the union of all
 #' ligand-receptor pairs present across the 18 cancer types studied in (Lapuente-Santana et al., bioRxiv, 2021).
@@ -30,12 +28,10 @@
 #' # Computation of ligand-receptor pair weights
 #' lrpair_weights <- compute_LR_pairs(
 #'   RNA_tpm = gene_tpm,
-#'   remove_genes_ICB_proxies = FALSE,
 #'   cancer_type = "pancan"
 #' )
 #' lrpair_weights[1:5, 1:5]
 compute_LR_pairs <- function(RNA_tpm,
-                             remove_genes_ICB_proxies = FALSE,
                              cancer_type = "pancan",
                              verbose = TRUE) {
 
@@ -44,14 +40,7 @@ compute_LR_pairs <- function(RNA_tpm,
   genes <- rownames(gene_expr)
 
   # HGNC symbols are required
-  if (any(grep("ENSG00000", genes))) stop("hgnc gene symbols are required", call. = FALSE)
-
-  # Genes to remove according to all ICB proxy's
-  if (remove_genes_ICB_proxies) {
-    if (verbose) message("Removing signatures genes for hallmarks of immune response \n")
-    idy <- stats::na.exclude(match(cor_genes_to_remove, rownames(gene_expr)))
-    gene_expr <- gene_expr[-idy, ]
-  }
+  if (any(grep("ENSG00000", genes))) stop("Hgnc gene symbols are required", call. = FALSE)
 
   gene_expr <- as.data.frame(gene_expr)
 
@@ -68,7 +57,7 @@ compute_LR_pairs <- function(RNA_tpm,
   message("LR signature genes found in data set: ", length(genes_kept), "/", length(all_lrpairs_genes), " (", round(length(genes_kept) / length(all_lrpairs_genes), 3) * 100, "%)")
 
   # Compute L-R pairs
-  LR.pairs.computed <- do.call(rbind, lapply(1:length(LR_pairs), function(x) {
+  LR_pairs_computed <- do.call(rbind, lapply(1:length(LR_pairs), function(x) {
     ligand <- sapply(strsplit(LR_pairs[x], split = "_", fixed = TRUE), head, 1)
     receptor <- sapply(strsplit(LR_pairs[x], split = "_", fixed = TRUE), tail, 1)
 
@@ -78,7 +67,7 @@ compute_LR_pairs <- function(RNA_tpm,
     rownames(by_patient) <- LR_pairs[x]
     return(by_patient)
   }))
-  LR.pairs.computed <- t(LR.pairs.computed)
+  LR_pairs_computed <- t(LR_pairs_computed)
 
   # Apply grouping to LRpairs data
   for (X in 1:length(grouping_lrpairs_info)) {
@@ -86,13 +75,13 @@ compute_LR_pairs <- function(RNA_tpm,
     remove <- unique(grouping_lrpairs_info[[X]]$involved_pairs)
     combo_name <- unique(grouping_lrpairs_info[[X]]$combo_name)
 
-    pos_remove <- match(remove, colnames(LR.pairs.computed))
-    pos_keep <- match(keep, colnames(LR.pairs.computed))
+    pos_remove <- match(remove, colnames(LR_pairs_computed))
+    pos_keep <- match(keep, colnames(LR_pairs_computed))
 
-    colnames(LR.pairs.computed)[pos_keep] <- combo_name
-    LR.pairs.computed <- LR.pairs.computed[, -pos_remove]
+    colnames(LR_pairs_computed)[pos_keep] <- combo_name
+    LR_pairs_computed <- LR_pairs_computed[, -pos_remove]
   }
 
-  if (verbose) message("LR pairs computed \n")
-  return(as.data.frame(LR.pairs.computed))
+  if (verbose) message("Ligand-Receptor pair weights computed \n")
+  return(as.data.frame(LR_pairs_computed))
 }

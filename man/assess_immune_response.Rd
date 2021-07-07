@@ -9,7 +9,7 @@ assess_immune_response(
   real_patient_response,
   RNA_tpm,
   output_file_path,
-  list_gold_standards,
+  list_hallmarks_of_immune_response,
   cancer_type,
   TMB_values,
   easier_with_TMB = FALSE,
@@ -25,7 +25,7 @@ assess_immune_response(
 
 \item{output_file_path}{character string pointing to a directory to save the plots returned by the function.}
 
-\item{list_gold_standards}{character string of task names to be considered as gold standards for comparison.}
+\item{list_hallmarks_of_immune_response}{character string of task names to be considered as gold standards for comparison.}
 
 \item{cancer_type}{character string indicating which cancer-specific model should be used to compute the predictions.}
 
@@ -57,35 +57,33 @@ gene_tpm <- dataset_mariathasan@tpm
 cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
 
 # Computation of pathway scores (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018)
-pathway_activity <- compute_pathways_scores(
+pathway_activities <- compute_pathway_activity(
   RNA_counts = gene_count,
-  remove_genes_ICB_proxies = TRUE
+  remove_sig_genes_immune_response = TRUE
 )
 
 # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
-tf_activity <- compute_TF_activity(
-  RNA_tpm = gene_tpm,
-  remove_genes_ICB_proxies = FALSE
+tf_activities <- compute_TF_activity(
+  RNA_tpm = gene_tpm
 )
 
 # Computation of ligand-receptor pair weights
 lrpair_weights <- compute_LR_pairs(
-  RNA_tpm = gene_tpm,
-  remove_genes_ICB_proxies = FALSE,
+  RNA_tpm = gene_tpm
   cancer_type = "pancan"
 )
 
 # Computation of cell-cell interaction scores
-ccpair_scores <- compute_CC_pairs_grouped(
+ccpair_scores <- compute_CC_pairs(
   lrpairs = lrpair_weights,
   cancer_type = "pancan"
 )
 
 # Predict patients' immune response
 predictions_immune_response <- predict_immune_response(
-  pathways = pathway_activity,
+  pathways = pathway_activities,
   immunecells = cell_fractions,
-  tfs = tf_activity,
+  tfs = tf_activities,
   lrpairs = lrpair_weights,
   ccpairs = ccpair_scores,
   cancer_type = "SKCM",

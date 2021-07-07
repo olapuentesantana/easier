@@ -17,7 +17,7 @@
 #' @param real_patient_response character vector with two factors (Non-responders = NR, Responders = R).
 #' @param RNA_tpm numeric matrix of patients' gene expression data as tpm values.
 #' @param output_file_path character string pointing to a directory to save the plots returned by the function.
-#' @param list_gold_standards character string of task names to be considered as gold standards for comparison.
+#' @param list_hallmarks_of_immune_response character string of task names to be considered as gold standards for comparison.
 #' @param cancer_type character string indicating which cancer-specific model should be used to compute the predictions.
 #' @param TMB_values numeric vector containing patients' tumor mutational burden (TMB) values.
 #' @param easier_with_TMB logical flag indicating whether to apply refined approach using the combination of easier
@@ -38,35 +38,33 @@
 #' cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
 #'
 #' # Computation of pathway scores (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018)
-#' pathway_activity <- compute_pathways_scores(
+#' pathway_activities <- compute_pathway_activity(
 #'   RNA_counts = gene_count,
-#'   remove_genes_ICB_proxies = TRUE
+#'   remove_sig_genes_immune_response = TRUE
 #' )
 #'
 #' # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
-#' tf_activity <- compute_TF_activity(
-#'   RNA_tpm = gene_tpm,
-#'   remove_genes_ICB_proxies = FALSE
+#' tf_activities <- compute_TF_activity(
+#'   RNA_tpm = gene_tpm
 #' )
 #'
 #' # Computation of ligand-receptor pair weights
 #' lrpair_weights <- compute_LR_pairs(
-#'   RNA_tpm = gene_tpm,
-#'   remove_genes_ICB_proxies = FALSE,
+#'   RNA_tpm = gene_tpm
 #'   cancer_type = "pancan"
 #' )
 #'
 #' # Computation of cell-cell interaction scores
-#' ccpair_scores <- compute_CC_pairs_grouped(
+#' ccpair_scores <- compute_CC_pairs(
 #'   lrpairs = lrpair_weights,
 #'   cancer_type = "pancan"
 #' )
 #'
 #' # Predict patients' immune response
 #' predictions_immune_response <- predict_immune_response(
-#'   pathways = pathway_activity,
+#'   pathways = pathway_activities,
 #'   immunecells = cell_fractions,
-#'   tfs = tf_activity,
+#'   tfs = tf_activities,
 #'   lrpairs = lrpair_weights,
 #'   ccpairs = ccpair_scores,
 #'   cancer_type = "SKCM",
@@ -93,22 +91,24 @@ assess_immune_response <- function(predictions_immune_response = NULL,
                                    real_patient_response,
                                    RNA_tpm,
                                    output_file_path,
-                                   list_gold_standards,
+                                   list_hallmarks_of_immune_response,
                                    cancer_type,
                                    TMB_values,
                                    easier_with_TMB = FALSE,
                                    verbose = TRUE) {
-  if (missing(cancer_type)) stop("cancer type needs to be specified")
-  if (is.null(predictions_immune_response)) stop("none predictions found")
+  if (missing(cancer_type)) stop("Cancer type needs to be specified")
+  if (is.null(predictions_immune_response)) stop("None predictions found")
+
   if (missing(TMB_values)) {
     TMB_available <- FALSE
     easier_with_TMB <- FALSE
   } else {
     TMB_available <- TRUE
     if (anyNA(TMB_values)) warning("NA values were found in TMB data, patients with NA values are removed from the analysis")
-    message(paste0("\nconsidering ", length(TMB_values[!is.na(TMB_values)]), " patients out of ", length(TMB_values)))
+    message(paste0("\nConsidering ", length(TMB_values[!is.na(TMB_values)]), " patients out of ", length(TMB_values), " with available TMB"))
     patients_to_keep <- names(TMB_values[!is.na(TMB_values)])
-    TMB_values <- TMB_values[patients_to_keep]
+    if (is.numeric(TMB_values)) warning("Converting TMB values into numeric")
+    TMB_values <- as.numeric(TMB_values[patients_to_keep]); names(TMB_values) <- patients_to_keep
     real_patient_response <- real_patient_response[patients_to_keep]
     RNA_tpm <- RNA_tpm[, patients_to_keep]
   }
@@ -141,14 +141,14 @@ assess_immune_response <- function(predictions_immune_response = NULL,
       stop("real_patient_response factor levels are not NR and R")
     }
     # Compute gold standards
-    default_list_gold_standards <- c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
-    if (missing(list_gold_standards)) {
-      list_gold_standards <- default_list_gold_standards
-      gold_standards <- compute_gold_standards(RNA_tpm, list_gold_standards)
-      if (verbose) message("gold standards (tasks) computed!")
+    default_list_hallmarks_immune_response <- c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
+    if (missing(list_hallmarks_of_immune_response)) {
+      list_hallmarks_of_immune_response <- default_list_hallmarks_immune_response
+      gold_standards <- compute_hallmarks_immune_response(RNA_tpm, list_hallmarks_of_immune_response)
+      if (verbose) message("Hallmarks of immune response computed!")
     }
     # Assess correlation between chemokines and the other correlated tasks
-    cor_tasks <- list_gold_standards[!list_gold_standards %in% c("IMPRES", "MSI")]
+    cor_tasks <- list_hallmarks_of_immune_response[!list_hallmarks_of_immune_response %in% c("IMPRES", "MSI")]
     cor_tasks <- cor_tasks[!cor_tasks %in% c("Ock_IS")] # Unfeasible computation
     tasks_values <- gold_standards[, cor_tasks]
     tasks_cormatrix <- cor(tasks_values)
@@ -164,7 +164,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     ROC_pred <- lapply(views, function(spec_view) {
       ROC_pred <- sapply(tasks, function(spec_task) {
         df <- predictions_immune_response[[spec_view]][[spec_task]]
-        if (TMB_available) df[patients_to_keep, ]
+        if (TMB_available) df <- df[patients_to_keep, ]
         # check patients match
         df <- df[match(rownames(labels), rownames(df)), ]
         df_runs <- rowMeans(df)
@@ -196,7 +196,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     ensemble_df <- lapply(views, function(spec_view) {
       ensemble_df <- sapply(tasks, function(spec_task) {
         df <- predictions_immune_response[[spec_view]][[spec_task]]
-        if (TMB_available) df[patients_to_keep, ]
+        if (TMB_available) df <- df[patients_to_keep, ]
         df_runs <- rowMeans(df)
       })
       return(ensemble_df)
@@ -311,12 +311,12 @@ assess_immune_response <- function(predictions_immune_response = NULL,
         ggplot2::scale_fill_manual(values = c(
           as.vector(all_color_views), as.vector(color_ensemble),
           as.vector(color_gold_standard), as.vector(color_TMB)
-        ), guide = FALSE)
+        ), guide = "none")
       } else {
         ggplot2::scale_fill_manual(values = c(
           as.vector(all_color_views), as.vector(color_ensemble),
           as.vector(color_gold_standard)
-        ), guide = FALSE)
+        ), guide = "none")
       }
     gg + ggplot2::scale_x_discrete(labels = c(
       "ensemble" = "Ensemble",

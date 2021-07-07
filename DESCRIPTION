@@ -5,7 +5,7 @@ Authors@R:
     c(
         person(
             given = "Oscar", family = "Lapuente-Santana", role = c("aut", "cre"), 
-            email = "o.lapuente.santana@tue.nl", comment = c(ORCID = "0000-0003-1995-8393")
+            email = "oscar.lapuente.santana@gmail.com", comment = c(ORCID = "0000-0003-1995-8393")
         ),
         person(
             given = "Federico", family = "Marini", role = "aut", 
@@ -37,10 +37,27 @@ Description: This package provides a workflow for the use of EaSIeR tool, develo
 Depends:
     R (>= 4.1.0)
 Imports: 
-    ROCR, grDevices, stats, graphics, ggplot2,
-    progeny, dorothea, quantiseqr, grid, DESeq2,
-    utils, dplyr, matrixStats, rlang, arules, 
-    BiocParallel, reshape2, rstatix, ggrepel
+    progeny,
+    dorothea,
+    quantiseqr,
+    ROCR,
+    grDevices, 
+    stats,
+    graphics,
+    ggplot2,
+    grid,
+    DESeq2,
+    utils,
+    dplyr,
+    matrixStats,
+    rlang,
+    arules, 
+    BiocParallel,
+    reshape2,
+    rstatix,
+    ggrepel
+Remotes: 
+    saezlab/progeny
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -50,6 +67,6 @@ Suggests:
     knitr, rmarkdown, BiocStyle, testthat
 VignetteBuilder: knitr
 biocViews:
-    GeneExpression, Software, Transcription, Transcriptomics,Pathways, 
+    GeneExpression, Software, Transcription, SystemsBiology,Pathways, 
     GeneSetEnrichment, ImmunoOncology, Epigenetics, Classification, 
     BiomedicalInformatics, Regression, ExperimentHubSoftware

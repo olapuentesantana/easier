@@ -6,7 +6,7 @@
 #' @export
 #'
 #' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
-#' @param list_gold_standards character string of task names to be considered as gold standards for comparison.
+#' @param list_hallmarks_of_immune_response character string of task names to be considered as gold standards for comparison.
 #'
 #' @return A numeric matrix with samples in rows and gold standard scores in columns.
 #'
@@ -16,17 +16,17 @@
 #' gene_tpm <- dataset_mariathasan@tpm
 #'
 #' # Computation of different hallmarks of the immune response
-#' tasks <- c(
+#' list_hallmarks_of_immune_response <- c(
 #'   "CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
 #'   "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS"
 #' )
-#' tasks_values <- compute_gold_standards(
+#' tasks_values <- compute_hallmarks_immune_response(
 #'   RNA_tpm = gene_tpm,
-#'   list_gold_standards = tasks
+#'   list_hallmarks_of_immune_response = list_hallmarks_of_immune_response
 #' )
-compute_gold_standards <- function(RNA_tpm,
-                                   list_gold_standards = c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")) {
-  gold_standards <- sapply(list_gold_standards, function(X) {
+compute_hallmarks_immune_response <- function(RNA_tpm,
+                                              list_hallmarks_of_immune_response = c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")) {
+  hallmarks_immune_response <- sapply(list_hallmarks_of_immune_response, function(X) {
     if ("CYT" == X) {
 
       # calculate Cytolytic activity #
@@ -84,6 +84,6 @@ compute_gold_standards <- function(RNA_tpm,
       return(TLS)
     }
   })
-  rownames(gold_standards) <- colnames(RNA_tpm)
-  return(gold_standards)
+  rownames(hallmarks_immune_response) <- colnames(RNA_tpm)
+  return(hallmarks_immune_response)
 }
