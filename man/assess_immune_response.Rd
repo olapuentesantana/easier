@@ -9,7 +9,6 @@ assess_immune_response(
   real_patient_response,
   RNA_tpm,
   output_file_path,
-  list_hallmarks_of_immune_response,
   cancer_type,
   TMB_values,
   easier_with_TMB = FALSE,
@@ -24,8 +23,6 @@ assess_immune_response(
 \item{RNA_tpm}{numeric matrix of patients' gene expression data as tpm values.}
 
 \item{output_file_path}{character string pointing to a directory to save the plots returned by the function.}
-
-\item{list_hallmarks_of_immune_response}{character string of task names to be considered as gold standards for comparison.}
 
 \item{cancer_type}{character string indicating which cancer-specific model should be used to compute the predictions.}
 

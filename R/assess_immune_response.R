@@ -17,7 +17,6 @@
 #' @param real_patient_response character vector with two factors (Non-responders = NR, Responders = R).
 #' @param RNA_tpm numeric matrix of patients' gene expression data as tpm values.
 #' @param output_file_path character string pointing to a directory to save the plots returned by the function.
-#' @param list_hallmarks_of_immune_response character string of task names to be considered as gold standards for comparison.
 #' @param cancer_type character string indicating which cancer-specific model should be used to compute the predictions.
 #' @param TMB_values numeric vector containing patients' tumor mutational burden (TMB) values.
 #' @param easier_with_TMB logical flag indicating whether to apply refined approach using the combination of easier
@@ -91,7 +90,6 @@ assess_immune_response <- function(predictions_immune_response = NULL,
                                    real_patient_response,
                                    RNA_tpm,
                                    output_file_path,
-                                   list_hallmarks_of_immune_response,
                                    cancer_type,
                                    TMB_values,
                                    easier_with_TMB = FALSE,
@@ -140,17 +138,11 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     if (all(levels(as.factor(real_patient_response)) %in% c("NR", "R")) == FALSE) {
       stop("real_patient_response factor levels are not NR and R")
     }
-    # Compute gold standards
-    default_list_hallmarks_immune_response <- c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
-    if (missing(list_hallmarks_of_immune_response)) {
-      list_hallmarks_of_immune_response <- default_list_hallmarks_immune_response
-      gold_standards <- compute_hallmarks_immune_response(RNA_tpm, list_hallmarks_of_immune_response)
-      if (verbose) message("Hallmarks of immune response computed!")
-    }
+    # Compute scores of immune response and consider them as gold standards
+    tasks_values <- compute_scores_immune_response(RNA_tpm)
+      if (verbose) message("Scores of immune response computed!")
+
     # Assess correlation between chemokines and the other correlated tasks
-    cor_tasks <- list_hallmarks_of_immune_response[!list_hallmarks_of_immune_response %in% c("IMPRES", "MSI")]
-    cor_tasks <- cor_tasks[!cor_tasks %in% c("Ock_IS")] # Unfeasible computation
-    tasks_values <- gold_standards[, cor_tasks]
     tasks_cormatrix <- cor(tasks_values)
     cor_sign <- sign(tasks_cormatrix[, "chemokines"])
     cor_sign <- cor_sign[names(cor_sign) != "chemokines"]
