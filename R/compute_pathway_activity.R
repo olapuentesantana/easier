@@ -77,10 +77,10 @@ compute_pathway_activity <- function(RNA_counts,
   rownames(gene_expr) <- rownames(raw_counts_integer)
 
   # Pathways activity
-  pathway_activity <- remotes::progeny(gene_expr, scale = FALSE, organism = "Human", verbose = verbose)
+  pathway_activity <- progeny::progeny(gene_expr, scale = FALSE, organism = "Human", verbose = verbose)
 
   # check what is the percentage of genes we have in our data
-  model_pathways <- remotes::progeny::getModel(organism = "Human", top = 100)
+  model_pathways <- progeny::getModel(organism = "Human", top = 100)
   full_pathway_sig <- unique(unlist(lapply(colnames(model_pathways), function(pathway) {
     top_genes_pathway <- rownames(model_pathways)[apply(model_pathways, 2, function(X) X != 0)[, pathway]]
     return(top_genes_pathway)
