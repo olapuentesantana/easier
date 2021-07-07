@@ -9,41 +9,21 @@
 #' @importFrom stats na.omit
 #'
 #' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
-#' @param verbose logical variable indicating whether to display informative messages.
+#' @param RIR_signature list with gene signatures included in the immune resistance program from Jerby-Arnon et al., 2018.
 #'
 #' @return A numeric matrix with samples in rows and RIR score in a column.
-#'
-#' @export
 #'
 #' @examples
 #' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
 #' data("dataset_mariathasan")
 #' gene_tpm <- dataset_mariathasan@tpm
 #'
+#' scores_sigs <- readRDS(file.path(system.file("extdata", "signature_genes.RDS", package = "easier")))
+#'
 #' # compute RIR signature score
-#' RIR <- compute_RIR(RNA_tpm = gene_tpm)
+#' RIR <- compute_RIR(RNA_tpm = gene_tpm, RIR_signature = scores_sigs[["RIR"]])
 compute_RIR <- function(RNA_tpm,
-                        verbose = TRUE) {
-
-  # Literature signature
-  sig_read <- unique(unlist(res_sig))
-  match_sig_read <- match(sig_read, rownames(RNA_tpm))
-
-  if (anyNA(match_sig_read)) {
-    warning("differently named or missing signature genes : \n", paste(sig_read[!sig_read %in% rownames(RNA_tpm)], collapse = "\n"), "\n")
-    match_sig_read <- stats::na.omit(match_sig_read)
-    # re-annotate genes not found
-    out <- reannotate_genes(sig_read[!sig_read %in% rownames(RNA_tpm)])
-    sig_read[match(out$old_names[!is.na(out$new_names)], sig_read)] <- out$new_names[!is.na(out$new_names)]
-    warning("after gene re-annotation, differently named or missing signature genes : \n", paste(sig_read[!sig_read %in% rownames(RNA_tpm)], collapse = "\n"), "\n")
-  }
-
-  new_res_sig <- sapply(names(res_sig), function(X) {
-    if (any(is.na(match(out$old_names, res_sig[[X]])) == FALSE)) {
-      res_sig[[X]][stats::na.omit(match(out$old_names, res_sig[[X]]))] <- out$new_names[!is.na(match(out$old_names, res_sig[[X]]))]
-    }
-    return(res_sig[[X]])
-  })
+                        RIR_signature) {
 
   # Log2 transformation:
   log2_RNA_tpm <- log2(RNA_tpm + 1)
@@ -54,7 +34,7 @@ compute_RIR <- function(RNA_tpm,
   r$genes <- rownames(log2_RNA_tpm)
 
   # Apply function to calculate OE:
-  res_scores <- get_OE_bulk(r, gene_sign = new_res_sig, verbose = TRUE)
+  res_scores <- get_OE_bulk(r, gene_sign = RIR_signature, verbose = TRUE)
 
   # Merge as recommend by authors
   res <- cbind.data.frame(
@@ -76,6 +56,5 @@ compute_RIR <- function(RNA_tpm,
   score <- as.matrix(res[, colnames(res) %in% keep_sig])
   rownames(score) <- colnames(log2_RNA_tpm)
 
-  if (verbose) message("RIR score computed")
   return(data.frame(RIR = score, check.names = FALSE))
 }
