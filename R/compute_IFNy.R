@@ -16,7 +16,7 @@
 #' @examples
 #'
 #' # Example does not matter as function will no be exported
-compute_IFNy <- function(matches, RNA_tpm){
+compute_IFNy <- function(matches, RNA_tpm) {
   # Log2 transformation:
   log2.RNA_tpm <- log2(RNA_tpm + 1)
 

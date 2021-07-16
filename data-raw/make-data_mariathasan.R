@@ -64,24 +64,27 @@ preprocess_mariathasan <- function(cds,
 # ****************************
 # Retrieve data from package
 
-if (!requireNamespace("BiocManager", quietly = TRUE))
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
   install.packages("BiocManager")
+}
 
-BiocManager::install(c("biomaRt",
-                       "circlize",
-                       "ComplexHeatmap",
-                       "corrplot",
-                       "DESeq2",
-                       "dplyr",
-                       "DT",
-                       "edgeR",
-                       "ggplot2",
-                       "limma",
-                       "lsmeans",
-                       "reshape2",
-                       "spatstat",
-                       "survival",
-                       "plyr"))
+BiocManager::install(c(
+  "biomaRt",
+  "circlize",
+  "ComplexHeatmap",
+  "corrplot",
+  "DESeq2",
+  "dplyr",
+  "DT",
+  "edgeR",
+  "ggplot2",
+  "limma",
+  "lsmeans",
+  "reshape2",
+  "spatstat",
+  "survival",
+  "plyr"
+))
 
 install.packages("path/to/IMvigor210CoreBiologies_1.0.0.tar.gz", repos = NULL)
 library(IMvigor210CoreBiologies)
@@ -94,25 +97,24 @@ rm(cds)
 # retrieve clinical response
 clinical_data <- mariathasan_data$clinical
 patient_response <- clinical_data[, "Best Confirmed Overall Response"]
-patient_response <- gsub("CR","R", patient_response)
-patient_response <- gsub("PD","NR", patient_response)
+patient_response <- gsub("CR", "R", patient_response)
+patient_response <- gsub("PD", "NR", patient_response)
 names(patient_response) <- rownames(clinical_data)
 
 # retrieve Tumor Mutational Burden
 TumorMutationalBurden <- clinical_data[, "FMOne mutation burden per MB"]
 names(TumorMutationalBurden) <- rownames(clinical_data)
 # Create a external dataset object
-setClass("DatasetExample", slots=list(name="character", counts="data.frame", tpm="data.frame", response="character", TMB="numeric", cancertype="character"))
+setClass("DatasetExample", slots = list(name = "character", counts = "data.frame", tpm = "data.frame", response = "character", TMB = "numeric", cancertype = "character"))
 
 dataset_mariathasan <- new("DatasetExample",
-                           name="Mariathasan",
-                           counts=mariathasan_data$counts,
-                           tpm=mariathasan_data$tpm,
-                           response=patient_response,
-                           TMB=TumorMutationalBurden,
-                           cancertype="BLCA"
+  name = "Mariathasan",
+  counts = mariathasan_data$counts,
+  tpm = mariathasan_data$tpm,
+  response = patient_response,
+  TMB = TumorMutationalBurden,
+  cancertype = "BLCA"
 )
 
 # save object
 save(dataset_mariathasan, file = "./data/dataset_mariathasan.rda")
-

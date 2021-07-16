@@ -2,7 +2,7 @@
 % Please edit documentation in R/explore_biomarkers.R
 \name{explore_biomarkers}
 \alias{explore_biomarkers}
-\title{Visualization of stunning biomarkers found in the dataset}
+\title{Visualization of stunning biomarkers}
 \usage{
 explore_biomarkers(
   pathways = NULL,
@@ -11,9 +11,8 @@ explore_biomarkers(
   lrpairs = NULL,
   ccpairs = NULL,
   cancer_type,
-  real_patient_response,
+  patient_response,
   output_file_path,
-  TMB_values,
   verbose = TRUE
 )
 }
@@ -30,11 +29,9 @@ explore_biomarkers(
 
 \item{cancer_type}{character string indicating which cancer-specific model should be used to compute the predictions.}
 
-\item{real_patient_response}{character vector with two factors (Non-responders = NR, Responders = R).}
+\item{patient_response}{character vector with two factors (Non-responders = NR, Responders = R).}
 
 \item{output_file_path}{character string pointing to a directory to save the plots returned by the function.}
-
-\item{TMB_values}{numeric vector containing patients' tumor mutational burden (TMB) values.}
 
 \item{verbose}{logical flag indicating whether to display messages about the process.}
 }
@@ -45,7 +42,7 @@ explore_biomarkers(
 }
 }
 \description{
-This function rovides an overview of relevant computed features (biomarkers), comparing responders and non-responders if known.
+This function provides an overview of relevant computed features (biomarkers), comparing responders and non-responders if known.
 Information about the features contribution to the optimal models is also included.
 }
 \examples{
@@ -70,7 +67,7 @@ tf_activity <- compute_TF_activity(
 
 # Computation of ligand-receptor pair weights
 lrpair_weights <- compute_LR_pairs(
-  RNA_tpm = gene_tpm
+  RNA_tpm = gene_tpm,
   cancer_type = "pancan"
 )
 
@@ -83,9 +80,6 @@ ccpair_scores <- compute_CC_pairs(
 # retrieve clinical response
 patient_response <- dataset_mariathasan@response
 
-# retrieve TMB
-TMB <- dataset_mariathasan@TMB
-
 # Investigate possible biomarkers
 explore_biomarkers(
   pathways = pathway_activity,
@@ -94,8 +88,7 @@ explore_biomarkers(
   tfs = tf_activity,
   ccpairs = ccpair_scores,
   cancer_type = "BLCA",
-  real_patient_response = patient_response,
+  patient_response = patient_response,
   output_file_path = "../figures",
-  TMB_values = TMB
 )
 }

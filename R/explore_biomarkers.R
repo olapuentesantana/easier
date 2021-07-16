@@ -1,6 +1,6 @@
-#' Visualization of stunning biomarkers found in the dataset
+#' Visualization of stunning biomarkers
 #'
-#' This function rovides an overview of relevant computed features (biomarkers), comparing responders and non-responders if known.
+#' This function provides an overview of relevant computed features (biomarkers), comparing responders and non-responders if known.
 #' Information about the features contribution to the optimal models is also included.
 #'
 #' @importFrom grDevices pdf dev.off
@@ -19,9 +19,8 @@
 #' @param lrpairs numeric matrix with ligand-receptor weights (rows = samples; columns = ligand-receptor pairs).
 #' @param ccpairs numeric matrix with cell-cell scores (rows = samples; columns = cell-cell pairs).
 #' @param cancer_type character string indicating which cancer-specific model should be used to compute the predictions.
-#' @param real_patient_response character vector with two factors (Non-responders = NR, Responders = R).
+#' @param patient_response character vector with two factors (Non-responders = NR, Responders = R).
 #' @param output_file_path character string pointing to a directory to save the plots returned by the function.
-#' @param TMB_values numeric vector containing patients' tumor mutational burden (TMB) values.
 #' @param verbose logical flag indicating whether to display messages about the process.
 #'
 #' @return \itemize{
@@ -51,7 +50,7 @@
 #'
 #' # Computation of ligand-receptor pair weights
 #' lrpair_weights <- compute_LR_pairs(
-#'   RNA_tpm = gene_tpm
+#'   RNA_tpm = gene_tpm,
 #'   cancer_type = "pancan"
 #' )
 #'
@@ -64,9 +63,6 @@
 #' # retrieve clinical response
 #' patient_response <- dataset_mariathasan@response
 #'
-#' # retrieve TMB
-#' TMB <- dataset_mariathasan@TMB
-#'
 #' # Investigate possible biomarkers
 #' explore_biomarkers(
 #'   pathways = pathway_activity,
@@ -75,9 +71,8 @@
 #'   tfs = tf_activity,
 #'   ccpairs = ccpair_scores,
 #'   cancer_type = "BLCA",
-#'   real_patient_response = patient_response,
+#'   patient_response = patient_response,
 #'   output_file_path = "../figures",
-#'   TMB_values = TMB
 #' )
 explore_biomarkers <- function(pathways = NULL,
                                immunecells = NULL,
@@ -85,22 +80,14 @@ explore_biomarkers <- function(pathways = NULL,
                                lrpairs = NULL,
                                ccpairs = NULL,
                                cancer_type,
-                               real_patient_response,
+                               patient_response,
                                output_file_path,
-                               TMB_values,
                                verbose = TRUE) {
   if (missing(cancer_type)) stop("cancer type needs to be specified")
+  if (missing(patient_response)) stop("patient response needs to be specified")
+
   if (all(is.null(pathways), is.null(immunecells), is.null(tfs), is.null(lrpairs), is.null(ccpairs))) stop("none signature specified")
-  if (missing(TMB_values)) {
-    TMB_available <- FALSE
-  } else {
-    TMB_available <- TRUE
-    if (anyNA(TMB_values)) warning("NA values were found in TMB data, patients with NA values are removed from the analysis")
-    message(paste0("considering ", length(TMB_values[!is.na(TMB_values)]), " patients out of ", length(TMB_values)))
-    patients_to_keep <- names(TMB_values[!is.na(TMB_values)])
-    TMB_values <- TMB_values[patients_to_keep]
-    real_patient_response <- real_patient_response[patients_to_keep]
-  }
+
   # Check that folder exists, create folder otherwise
   if (dir.exists(output_file_path) == FALSE) {
     dir.create(file.path(output_file_path), showWarnings = FALSE)
@@ -142,9 +129,9 @@ explore_biomarkers <- function(pathways = NULL,
     # ---------- #
     features <- as.matrix(get(view_name))
     features_z <- calc_z_score(features)
-    patients <- intersect(names(real_patient_response), rownames(features))
+    patients <- intersect(names(patient_response), rownames(features))
     # add response labels
-    response <- real_patient_response[patients]
+    response <- patient_response[patients]
     response_df <- data.frame(sample = names(response), label = response)
     features <- features[patients, ]
     features_z <- features_z[patients, ]
@@ -297,8 +284,9 @@ explore_biomarkers <- function(pathways = NULL,
 
     grid::grid.newpage()
     grDevices::pdf(paste0(output_file_path, "/box_barplot_for_", names(view_combinations[[ii]]), ".pdf"), width = 12, height = 8)
-    grid::grid.draw(g)
+    if (verbose) suppressWarnings(grid::grid.draw(g))
     grDevices::dev.off()
+
 
     features_names <- levels(features$feature)
     datatype_comparison <- do.call(rbind, lapply(features_names, function(x) {
@@ -400,6 +388,7 @@ explore_biomarkers <- function(pathways = NULL,
       show.legend = NA, inherit.aes = FALSE, max.overlaps = 20
     )
 
+  # print Rmarkdown
   if (verbose) suppressWarnings(print(volcano_plot))
 
   ggplot2::ggsave(file.path(output_file_path, "volcano_plot.pdf"), width = 7, height = 7)

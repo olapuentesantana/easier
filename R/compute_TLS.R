@@ -16,7 +16,7 @@
 #' @examples
 #'
 #' # Example does not matter as function will no be exported
-compute_TLS <- function(matches, RNA_tpm){
+compute_TLS <- function(matches, RNA_tpm) {
   # Subset RNA_tpm
   sub_gene.tpm <- RNA_tpm[matches, ]
 

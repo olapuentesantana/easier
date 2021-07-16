@@ -30,7 +30,7 @@ gene_tpm <- dataset_mariathasan@tpm
 
 # Computation of ligand-receptor pair weights
 lrpair_weights <- compute_LR_pairs(
-  RNA_tpm = gene_tpm
+  RNA_tpm = gene_tpm,
   cancer_type = "pancan"
 )
 

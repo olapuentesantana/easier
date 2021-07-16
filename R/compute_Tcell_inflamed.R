@@ -20,7 +20,7 @@
 #' @examples
 #'
 #' # Example does not matter as function will no be exported
-compute_Tcell_inflamed <- function(housekeeping, predictors, weights, RNA_tpm){
+compute_Tcell_inflamed <- function(housekeeping, predictors, weights, RNA_tpm) {
   # Log2 transformation:
   log2.RNA_tpm <- log2(RNA_tpm + 1)
 
@@ -40,7 +40,7 @@ compute_Tcell_inflamed <- function(housekeeping, predictors, weights, RNA_tpm){
 
   # Transform vector to matrix
   weights <- matrix(weights, ncol = 1, dimnames = list(names(weights)))
-  score <- t(log2.RNA_tpm.predictors.norm[tidy,]) %*% weights
+  score <- t(log2.RNA_tpm.predictors.norm[tidy, ]) %*% weights
 
-  return(data.frame( Tcell_inflamed = score, check.names = FALSE))
+  return(data.frame(Tcell_inflamed = score, check.names = FALSE))
 }

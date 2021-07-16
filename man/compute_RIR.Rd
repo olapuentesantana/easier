@@ -16,8 +16,9 @@ A numeric matrix with samples in rows and RIR score in a column.
 }
 \description{
 This function calculates RIR score defined by combining a set of gene signatures associated
-with downregulation of T cell exclusion, post-treatment and functional resistance.
-More info can be found in original work from Jerby-Arnon et al., Cell, 2018.
+with downregulation of T cell exclusion, post-treatment and functional resistance. These gene
+signatures were obtained from:
+https://github.com/livnatje/ImmuneResistance/blob/master/Results/Signatures/resistance.program.RData.
 }
 \examples{
 # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)

@@ -301,17 +301,14 @@ opt_xtrain_stats$NSCLC <- opt_xtrain_stats_NSCLC$NSCLC
 
 setwd("~/ownCloud2/SystemsImmunoOncology/easier_project/easier_devel/")
 usethis::use_data(cor_genes_to_remove,
-                  TCGA_mean_pancancer,
-                  TCGA_sd_pancancer,
-                  res_sig,
-                  grouping_lrpairs_info,
-                  intercell_network_cancer_spec,
-                  lr_frequency,
-                  opt_models,
-                  opt_xtrain_stats,
-                  HGNC,
-                  internal = TRUE, overwrite = TRUE, compress = "xz"
+  TCGA_mean_pancancer,
+  TCGA_sd_pancancer,
+  res_sig,
+  grouping_lrpairs_info,
+  intercell_network_cancer_spec,
+  lr_frequency,
+  opt_models,
+  opt_xtrain_stats,
+  HGNC,
+  internal = TRUE, overwrite = TRUE, compress = "xz"
 )
-
-
-

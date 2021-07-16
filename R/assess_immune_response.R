@@ -10,14 +10,14 @@
 #' @importFrom stats aggregate median sd
 #' @importFrom graphics legend par title abline lines
 #' @import ggplot2
+#' @importFrom pryr %<a-%
 #'
 #' @export
 #'
 #' @param predictions_immune_response list containing the predictions for each quantitative descriptor and for each task.
-#' @param real_patient_response character vector with two factors (Non-responders = NR, Responders = R).
+#' @param patient_response character vector with two factors (Non-responders = NR, Responders = R).
 #' @param RNA_tpm numeric matrix of patients' gene expression data as tpm values.
 #' @param output_file_path character string pointing to a directory to save the plots returned by the function.
-#' @param cancer_type character string indicating which cancer-specific model should be used to compute the predictions.
 #' @param TMB_values numeric vector containing patients' tumor mutational burden (TMB) values.
 #' @param easier_with_TMB logical flag indicating whether to apply refined approach using the combination of easier
 #' predictions and tumor mutational burden.
@@ -49,7 +49,7 @@
 #'
 #' # Computation of ligand-receptor pair weights
 #' lrpair_weights <- compute_LR_pairs(
-#'   RNA_tpm = gene_tpm
+#'   RNA_tpm = gene_tpm,
 #'   cancer_type = "pancan"
 #' )
 #'
@@ -79,22 +79,19 @@
 #' # Assess patient-specific likelihood of response to ICB therapy
 #' assess_immune_response(
 #'   predictions_immune_response = predictions_immune_response,
-#'   real_patient_response = patient_response,
+#'   patient_response = patient_response,
 #'   RNA_tpm = gene_tpm,
 #'   output_file_path = "../figures",
-#'   cancer_type = "BLCA",
 #'   TMB_values = TMB,
 #'   easier_with_TMB = TRUE
 #' )
 assess_immune_response <- function(predictions_immune_response = NULL,
-                                   real_patient_response,
+                                   patient_response,
                                    RNA_tpm,
                                    output_file_path,
-                                   cancer_type,
                                    TMB_values,
                                    easier_with_TMB = FALSE,
                                    verbose = TRUE) {
-  if (missing(cancer_type)) stop("Cancer type needs to be specified")
   if (is.null(predictions_immune_response)) stop("None predictions found")
 
   if (missing(TMB_values)) {
@@ -106,8 +103,9 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     message(paste0("\nConsidering ", length(TMB_values[!is.na(TMB_values)]), " patients out of ", length(TMB_values), " with available TMB"))
     patients_to_keep <- names(TMB_values[!is.na(TMB_values)])
     if (is.numeric(TMB_values)) warning("Converting TMB values into numeric")
-    TMB_values <- as.numeric(TMB_values[patients_to_keep]); names(TMB_values) <- patients_to_keep
-    real_patient_response <- real_patient_response[patients_to_keep]
+    TMB_values <- as.numeric(TMB_values[patients_to_keep])
+    names(TMB_values) <- patients_to_keep
+    patient_response <- patient_response[patients_to_keep]
     RNA_tpm <- RNA_tpm[, patients_to_keep]
   }
   # Check that folder exists, create folder otherwise
@@ -129,18 +127,18 @@ assess_immune_response <- function(predictions_immune_response = NULL,
   )
   names(all_color_views) <- views
   # Patient response labels
-  labels <- matrix(real_patient_response,
-    nrow = length(real_patient_response), ncol = length(tasks),
+  labels <- matrix(patient_response,
+    nrow = length(patient_response), ncol = length(tasks),
     dimnames = list(colnames(RNA_tpm), tasks)
   )
   # AUC predictions (when response available)
-  if (missing(real_patient_response) == FALSE) {
-    if (all(levels(as.factor(real_patient_response)) %in% c("NR", "R")) == FALSE) {
-      stop("real_patient_response factor levels are not NR and R")
+  if (missing(patient_response) == FALSE) {
+    if (all(levels(as.factor(patient_response)) %in% c("NR", "R")) == FALSE) {
+      stop("patient_response factor levels are not NR and R")
     }
     # Compute scores of immune response and consider them as gold standards
     tasks_values <- compute_scores_immune_response(RNA_tpm)
-      if (verbose) message("Scores of immune response computed!")
+    if (verbose) message("Scores of immune response computed!")
 
     # Assess correlation between chemokines and the other correlated tasks
     tasks_cormatrix <- cor(tasks_values)
@@ -292,8 +290,8 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     # *******************************************
     # Plot AUC values using barplot
     # *******************************************
-    n_R <- table(real_patient_response)[["R"]]
-    n_NR <- table(real_patient_response)[["NR"]]
+    n_R <- table(patient_response)[["R"]]
+    n_NR <- table(patient_response)[["NR"]]
 
     if (verbose) message("Saving barplot displaying AUC performance in ", file.path(output_file_path), "\n")
 
@@ -310,7 +308,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
           as.vector(color_gold_standard)
         ), guide = "none")
       }
-    gg + ggplot2::scale_x_discrete(labels = c(
+    ggg <- gg + ggplot2::scale_x_discrete(labels = c(
       "ensemble" = "Ensemble",
       "immunecells" = "Cell fractions",
       "pathways" = "Pathways",
@@ -333,8 +331,10 @@ assess_immune_response <- function(predictions_immune_response = NULL,
         legend.box.background = ggplot2::element_rect(color = "black", size = 0.3),
         legend.box.margin = ggplot2::margin(0.5, 0.5, 0.5, 0.5)
       ) +
-      ggplot2::labs(title = paste0(" n=", length(real_patient_response), " (R=", n_R, "; ", "NR=", n_NR, ")"))
+      ggplot2::labs(title = paste0(" n=", length(patient_response), " (R=", n_R, "; ", "NR=", n_NR, ")"))
 
+    # print Rmarkdown
+    if (verbose) suppressWarnings(print(ggg))
     ggplot2::ggsave(file.path(output_file_path, "auc_barplot.pdf"), width = 7, height = 5)
 
     # *******************************************
@@ -342,95 +342,95 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     # *******************************************
     if (verbose) message("Saving ROC curves in ", file.path(output_file_path), "\n")
 
-    grDevices::pdf(file.path(output_file_path, "roc_curve.pdf"), width = 8, height = 8)
-    graphics::par(cex.axis = 1.6, mar = c(5, 5, 5, 5), col.lab = "black")
+    pryr::`%<a-%`(ROC_plot, {
+      graphics::par(cex.axis = 1.6, mar = c(5, 5, 5, 5), col.lab = "black")
 
-    # Single views
-    ROCR::plot(ROC_all_run_tasks$pathways$Curve[[1]],
-      avg = "threshold", col = all_color_views["pathways"], lwd = 3, type = "S",
-      cex.lab = 1.6, ylab = "True Positive Rate", xlab = "False Positive Rate"
-    )
+      # Single views
+      ROCR::plot(ROC_all_run_tasks$pathways$Curve[[1]],
+        avg = "threshold", col = all_color_views["pathways"], lwd = 3, type = "S",
+        cex.lab = 1.6, ylab = "True Positive Rate", xlab = "False Positive Rate"
+      )
+      ROCR::plot(ROC_all_run_tasks$immunecells$Curve[[1]],
+        avg = "threshold", col = all_color_views["immunecells"], lwd = 3, type = "S",
+        cex.lab = 1.6, ylab = "True Positive Rate", xlab = "False Positive Rate", add = TRUE
+      )
+      ROCR::plot(ROC_all_run_tasks$tfs$Curve[[1]],
+        avg = "threshold", col = all_color_views["tfs"], lwd = 3, type = "S",
+        cex.lab = 1.6, ylab = "True Positive Rate", xlab = "False Positive Rate", add = TRUE
+      )
+      ROCR::plot(ROC_all_run_tasks$lrpairs$Curve[[1]],
+        avg = "threshold", col = all_color_views["lrpairs"], lwd = 3, type = "S",
+        cex.lab = 1.6, ylab = "True Positive Rate", xlab = "False Positive Rate", add = TRUE
+      )
+      ROCR::plot(ROC_all_run_tasks$ccpairs$Curve[[1]],
+        avg = "threshold", col = all_color_views["ccpairs"], lwd = 3, type = "S",
+        cex.lab = 1.6, ylab = "True Positive Rate", xlab = "False Positive Rate", add = TRUE
+      )
 
-    ROCR::plot(ROC_all_run_tasks$immunecells$Curve[[1]],
-      avg = "threshold", col = all_color_views["immunecells"], lwd = 3, type = "S",
-      cex.lab = 1.6, ylab = "True Positive Rate", xlab = "False Positive Rate", add = TRUE
-    )
-
-    ROCR::plot(ROC_all_run_tasks$tfs$Curve[[1]],
-      avg = "threshold", col = all_color_views["tfs"], lwd = 3, type = "S",
-      cex.lab = 1.6, ylab = "True Positive Rate", xlab = "False Positive Rate", add = TRUE
-    )
-
-    ROCR::plot(ROC_all_run_tasks$lrpairs$Curve[[1]],
-      avg = "threshold", col = all_color_views["lrpairs"], lwd = 3, type = "S",
-      cex.lab = 1.6, ylab = "True Positive Rate", xlab = "False Positive Rate", add = TRUE
-    )
-
-    ROCR::plot(ROC_all_run_tasks$ccpairs$Curve[[1]],
-      avg = "threshold", col = all_color_views["ccpairs"], lwd = 3, type = "S",
-      cex.lab = 1.6, ylab = "True Positive Rate", xlab = "False Positive Rate", add = TRUE
-    )
-
-    # ensemble
-    ROCR::plot(ROC_all_run_tasks$ensemble$Curve[[1]],
-      avg = "threshold", col = color_ensemble, lwd = 3, type = "S",
-      lty = 1, add = TRUE
-    )
-
-    # gold standard
-    ROCR::plot(ROC_all_run_tasks$gold_standard$Curve[[1]],
-      avg = "threshold", col = color_gold_standard, lwd = 3, type = "S",
-      lty = 1, add = TRUE
-    )
-
-    # TMB
-    if (TMB_available) {
-      ROCR::plot(ROC_all_run_tasks$TMB$Curve[[1]],
-        col = color_TMB, lwd = 3, type = "S",
+      # ensemble
+      ROCR::plot(ROC_all_run_tasks$ensemble$Curve[[1]],
+        avg = "threshold", col = color_ensemble, lwd = 3, type = "S",
         lty = 1, add = TRUE
       )
 
-      graphics::legend(
-        x = 0.65, y = 0.27,
-        legend = c(
-          paste0("Pathways", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "pathways")$AUC.mean, 2), ")"),
-          paste0("Cell fractions", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "immunecells")$AUC.mean, 2), ")"),
-          paste0("TFs", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "tfs")$AUC.mean, 2), ")"),
-          paste0("LR pairs", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "lrpairs")$AUC.mean, 2), ")"),
-          paste0("CC pairs", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "ccpairs")$AUC.mean, 2), ")"),
-          paste0("Ensemble", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "ensemble")$AUC.mean, 2), ")"),
-          paste0("Tasks", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "gold_standard")$AUC.mean, 2), ")"),
-          paste0("TMB", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "TMB")$AUC.mean, 2), ")")
-        ),
-        col = c(
-          all_color_views, as.vector(color_ensemble), as.vector(color_gold_standard), color_TMB
-        ), lty = 1, lwd = 3, cex = 0.9, bty = "n"
+      # gold standard
+      ROCR::plot(ROC_all_run_tasks$gold_standard$Curve[[1]],
+        avg = "threshold", col = color_gold_standard, lwd = 3, type = "S",
+        lty = 1, add = TRUE
       )
-    } else {
-      graphics::legend(
-        x = 0.65, y = 0.27,
-        legend = c(
-          paste0("Pathways", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "pathways")$AUC.mean, 2), ")"),
-          paste0("Cell fractions", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "immunecells")$AUC.mean, 2), ")"),
-          paste0("TFs", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "tfs")$AUC.mean, 2), ")"),
-          paste0("LR pairs", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "lrpairs")$AUC.mean, 2), ")"),
-          paste0("CC pairs", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "ccpairs")$AUC.mean, 2), ")"),
-          paste0("Ensemble", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "ensemble")$AUC.mean, 2), ")"),
-          paste0("Tasks", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "gold_standard")$AUC.mean, 2), ")")
-        ),
-        col = c(
-          all_color_views, as.vector(color_ensemble), as.vector(color_gold_standard)
-        ), lty = 1, lwd = 3, cex = 0.9, bty = "n"
-      )
-    }
-    graphics::title(main = paste0("n=", length(real_patient_response), " (R=", n_R, "; ", "NR=", n_NR, ")"))
+
+      # TMB
+      if (TMB_available) {
+        ROCR::plot(ROC_all_run_tasks$TMB$Curve[[1]],
+          col = color_TMB, lwd = 3, type = "S",
+          lty = 1, add = TRUE
+        )
+        graphics::legend(
+          x = 0.65, y = 0.27,
+          legend = c(
+            paste0("Pathways", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "pathways")$AUC.mean, 2), ")"),
+            paste0("Cell fractions", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "immunecells")$AUC.mean, 2), ")"),
+            paste0("TFs", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "tfs")$AUC.mean, 2), ")"),
+            paste0("LR pairs", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "lrpairs")$AUC.mean, 2), ")"),
+            paste0("CC pairs", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "ccpairs")$AUC.mean, 2), ")"),
+            paste0("Ensemble", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "ensemble")$AUC.mean, 2), ")"),
+            paste0("Tasks", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "gold_standard")$AUC.mean, 2), ")"),
+            paste0("TMB", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "TMB")$AUC.mean, 2), ")")
+          ),
+          col = c(
+            all_color_views, as.vector(color_ensemble), as.vector(color_gold_standard), color_TMB
+          ), lty = 1, lwd = 3, cex = 0.9, bty = "n"
+        )
+      } else {
+        graphics::legend(
+          x = 0.65, y = 0.27,
+          legend = c(
+            paste0("Pathways", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "pathways")$AUC.mean, 2), ")"),
+            paste0("Cell fractions", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "immunecells")$AUC.mean, 2), ")"),
+            paste0("TFs", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "tfs")$AUC.mean, 2), ")"),
+            paste0("LR pairs", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "lrpairs")$AUC.mean, 2), ")"),
+            paste0("CC pairs", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "ccpairs")$AUC.mean, 2), ")"),
+            paste0("Ensemble", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "ensemble")$AUC.mean, 2), ")"),
+            paste0("Tasks", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "gold_standard")$AUC.mean, 2), ")")
+          ),
+          col = c(
+            all_color_views, as.vector(color_ensemble), as.vector(color_gold_standard)
+          ), lty = 1, lwd = 3, cex = 0.9, bty = "n"
+        )
+      }
+      graphics::title(main = paste0("n=", length(patient_response), " (R=", n_R, "; ", "NR=", n_NR, ")"))
+    })
+
+    grDevices::pdf(file.path(output_file_path, "roc_curve.pdf"), width = 8, height = 8)
+    if (verbose) suppressWarnings(ROC_plot)
     grDevices::dev.off()
+
     # *******************************************
     # Integrated score
     # *******************************************
     if (easier_with_TMB == TRUE) {
       rp_df <- data.frame(
-        response = real_patient_response,
+        response = patient_response,
         prediction_easier = apply(overall_df, 1, mean),
         TMB = TMB_values
       )
@@ -468,55 +468,165 @@ assess_immune_response <- function(predictions_immune_response = NULL,
 
       if (verbose) message("Saving integrated score (easier & TMB) plot in ", file.path(output_file_path), "\n")
 
+      pryr::`%<a-%`(combo_plot, {
+        graphics::par(cex.axis = 1.6, mar = c(5, 5, 5, 5), col.lab = "black")
+        plot(seq(from = 0, to = 1, by = 0.1), AUC_combined_v, xlab = "Penalty or Relative weight", ylab = "Area under the curve (AUC)", type = "b", col = "#c15050", lty = 1, pch = 19, lwd = 3, ylim = c(0.5, 1), cex.lab = 1.6)
+        graphics::lines(seq(from = 0, to = 1, by = 0.1), AUC_averaged_v, xlab = "Penalty or Relative weight", ylab = "Area under the curve (AUC)", type = "b", col = "#693c72", lty = 1, pch = 19, lwd = 3, ylim = c(0.5, 1), cex.lab = 1.6)
+        # TMB
+        graphics::abline(h = AUC_mean_sd_TMB_run_tasks$AUC.mean, col = color_TMB)
+        # easier (ensemble)
+        graphics::abline(h = AUC_mean_sd_ensemble_run_tasks$AUC.mean, col = color_ensemble)
+        graphics::legend(
+          x = 0.55, y = 1,
+          legend = c("Penalized score", "Weighted average", "EaSIeR", "TMB"),
+          col = c(
+            "#c15050", "#693c72", as.vector(color_ensemble), color_TMB
+          ), lty = 1, lwd = 3, cex = 1.3, bty = "n"
+        )
+      })
+
       grDevices::pdf(file.path(output_file_path, "easier_tmb_combo_auc.pdf"), width = 8, height = 8)
-      graphics::par(cex.axis = 1.6, mar = c(5, 5, 5, 5), col.lab = "black")
-
-      plot(seq(from = 0, to = 1, by = 0.1), AUC_combined_v, xlab = "Penalty or Relative weight", ylab = "Area under the curve (AUC)", type = "b", col = "#c15050", lty = 1, pch = 19, lwd = 3, ylim = c(0.5, 1), cex.lab = 1.6)
-      graphics::lines(seq(from = 0, to = 1, by = 0.1), AUC_averaged_v, xlab = "Penalty or Relative weight", ylab = "Area under the curve (AUC)", type = "b", col = "#693c72", lty = 1, pch = 19, lwd = 3, ylim = c(0.5, 1), cex.lab = 1.6)
-      # TMB
-      graphics::abline(h = AUC_mean_sd_TMB_run_tasks$AUC.mean, col = color_TMB)
-      # easier (ensemble)
-      graphics::abline(h = AUC_mean_sd_ensemble_run_tasks$AUC.mean, col = color_ensemble)
-
-      graphics::legend(
-        x = 0.55, y = 1,
-        legend = c("Penalized score", "Weighted average", "EaSIeR", "TMB"),
-        col = c(
-          "#c15050", "#693c72", as.vector(color_ensemble), color_TMB
-        ), lty = 1, lwd = 3, cex = 1.3, bty = "n"
-      )
+      if (verbose) suppressWarnings(combo_plot)
       grDevices::dev.off()
     }
   } else {
-    stop("No patients' response provided")
-    # all_scores_df <- data.frame(weighted_average = pred_averaged,
-    #                             penalized_score = pred_combined,
-    #                             patient = names(TMB_values))
-    # all_scores_df <- reshape2::melt(all_scores_df)
-    # names(all_scores_df) <- c("patient", "approach", "pred")
-    #
-    # all_scores_df$approach <- factor(all_scores_df$approach, levels = c("penalized_score", "weighted_average"))
-    #
-    # ggplot2::ggplot(all_scores_df, ggplot2::aes(x=pred, y=patient, fill = approach, color = approach)) +
-    #   ggplot2::geom_point(size = 2) +
-    #   ggplot2::scale_fill_manual(name = "Approach",
-    #                              labels = as.character(unique(all_scores_df$approach)),
-    #                              values = c("#c15050", "#693c72")) +
-    #   ggplot2::scale_color_manual(name = "Approach",
-    #                               labels = as.character(unique(all_scores_df$approach)),
-    #                               values = c("#c15050", "#693c72")) +
-    #   ggplot2::theme(panel.grid = ggplot2::element_blank(), panel.background = ggplot2::element_rect(fill = NA)) +
-    #   ggplot2::geom_vline(xintercept = 0) +
-    #   ggplot2::theme_linedraw() +
-    #   #ggplot2::xlim(-3, 3) +
-    #   ggplot2::theme(axis.text.x = ggplot2::element_text(size=10,face="bold", angle = 0, vjust = 0.5, hjust=0.5, color = "black"), axis.title.x = ggplot2::element_blank(),
-    #                  axis.text.y = ggplot2::element_text(size=10), axis.ticks.y = ggplot2::element_blank(),
-    #                  axis.title.y = ggplot2::element_blank(), panel.background = ggplot2::element_rect(fill = "white"),
-    #                  legend.position = "right", legend.direction = "vertical", panel.grid.major.y = ggplot2::element_line(linetype = 1, colour = "gray"),
-    #                  legend.text = ggplot2::element_text(size=10), legend.title = ggplot2::element_text(size = 10, face="bold", vjust = 0.5),
-    #                  strip.background = ggplot2::element_rect(fill = "white", colour = "white"), strip.text = ggplot2::element_text(size=10)) +
-    #   ggplot2::labs(x = "prediction", y = "patients", title = "Scoring patients")
-    #
-    # ggsave(paste0("/Users/Oscar/Desktop/Kim_patient_score_original.pdf"), width = 12, height = 10)
+
+    # *******************************************
+    # what if patients' response is not provided
+    # *******************************************
+    if (verbose) message("Scoring patients' as real response is not provided\n")
+
+    rp_df <- data.frame(
+      response = patient_response,
+      prediction_easier = apply(overall_df, 1, mean),
+      patient = rownames(rp_df)
+    )
+
+    color_response <- rp_df$response
+    names(color_response) <- rp_df$patient
+    color_response <- gsub("NR", "red", color_response)
+    color_response <- gsub("R", "blue", color_response)
+
+    all_scores_df <- reshape2::melt(rp_df)
+    names(all_scores_df) <- c("response", "patient", "approach", "pred")
+    all_scores_df$approach <- factor(all_scores_df$approach, levels = c("prediction_easier"))
+    colors_approach <- c("#ff7a4a")
+
+    all_scores_df$patient <- factor(all_scores_df$patient, levels = names(color_response))
+
+    score_plot <- ggplot2::ggplot(all_scores_df, ggplot2::aes(x = pred, y = patient, fill = approach, color = approach, shape = approach)) +
+      ggplot2::geom_point(size = 2) +
+      ggplot2::scale_fill_manual(
+        name = "Approach",
+        labels = as.character(unique(all_scores_df$approach)),
+        values = colors_approach
+      ) +
+      ggplot2::scale_color_manual(
+        name = "Approach",
+        labels = as.character(unique(all_scores_df$approach)),
+        values = colors_approach
+      ) +
+      ggplot2::theme(panel.grid = ggplot2::element_blank(), panel.background = ggplot2::element_rect(fill = NA)) +
+      # ggplot2::geom_vline(xintercept = 0) +
+      ggplot2::theme_linedraw() +
+      # ggplot2::xlim(-3, 3) +
+      ggplot2::theme(
+        axis.text.x = ggplot2::element_text(size = 10, face = "bold", angle = 0, vjust = 0.5, hjust = 0.5, color = "black"), axis.title.x = ggplot2::element_blank(),
+        axis.text.y = ggplot2::element_text(size = 6, color = color_response), axis.ticks.y = ggplot2::element_blank(),
+        axis.title.y = ggplot2::element_blank(), panel.background = ggplot2::element_rect(fill = "white"),
+        legend.position = "right", legend.direction = "vertical", panel.grid.major.y = ggplot2::element_line(linetype = 1, colour = "gray"),
+        legend.text = ggplot2::element_text(size = 10), legend.title = ggplot2::element_text(size = 10, face = "bold", vjust = 0.5),
+        strip.background = ggplot2::element_rect(fill = "white", colour = "white"), strip.text = ggplot2::element_text(size = 10)
+      ) +
+      ggplot2::labs(x = "prediction", y = "patients", title = "easier score") +
+      ggplot2::guides(fill = "none", color = "none", shape = "none")
+
+    # print Rmarkdown
+    if (verbose) suppressWarnings(print(score_plot))
+    ggplot2::ggsave(file.path(output_file_path, "easier_score.pdf"), width = 10, height = 10)
+
+    if (easier_with_TMB == TRUE) {
+
+      # Add TMB #
+      rp_df$TMB <- TMB_values
+
+      # Categorize TMB #
+      if (length(unique(rp_df$TMB)) > 3) {
+        rp_df$TMBcat <- categorize_TMB(rp_df$TMB)
+        # rp.df$TMB <- categorize_TMB(rp.df$TMB, thresholds = c(100,400)) # if I want specify the thresholds
+      }
+
+      # Compute the integrated score for different penalties #
+      pred_combined <- rp_df$prediction_easier
+      names(pred_combined) <- rp_df$patient
+      pred_combined_rf <- sapply(seq(from = 0, to = 1, by = 0.1), function(p) {
+        pred_combined[rp_df$TMBcat == 1] <- pred_combined[rp_df$TMBcat == 1] - p
+        pred_combined[rp_df$TMBcat == 3] <- pred_combined[rp_df$TMBcat == 3] + p
+      })
+
+      # Compute the integrated score as weighted average #
+      linear_func <- function(x) {
+        min_x <- min(x)
+        max_x <- max(x)
+        x01 <- (x - min_x) / (max_x - min_x)
+        return(x01)
+      }
+      pred_lin <- linear_func(rp_df$prediction_easier)
+      names(pred_lin) <- rp_df$patient
+      TMB_lin <- linear_func(rp_df$TMB)
+      names(TMB_lin) <- rp_df$patient
+
+      pred_averaged_rf <- sapply(seq(from = 0, to = 1, by = 0.1), function(p) {
+        pred_averaged <- apply(cbind((1 - p) * pred_lin, (p) * TMB_lin), 1, mean)
+      })
+
+      rp_df$weighted_average <- pred_averaged_rf[, 6] # penalty 0.5
+      rp_df$penalized_score <- NA
+      rp_df$penalized_score[match(rownames(pred_combined_rf), rp_df$patient)] <- pred_combined_rf[, 6] # penalty 0.5
+      rp_df$patient <- paste0(rownames(rp_df), " (TMBcat=", rp_df$TMBcat, ")")
+      rp_df$TMB <- NULL
+      rp_df$TMBcat <- NULL
+      rp_df$penalized_score <- NULL
+      rp_df$prediction_easier <- NULL
+
+      all_scores_df <- reshape2::melt(rp_df)
+      names(all_scores_df) <- c("response", "patient", "approach", "pred")
+      colors_approach <- c("#0c6017")
+      all_scores_df$patient <- factor(all_scores_df$patient, levels = unique(all_scores_df$patient))
+
+      color_response <- color_response[match(sapply(strsplit(levels(all_scores_df$patient), split = " "), head, 1), names(color_response))]
+      names(color_response) <- levels(all_scores_df$patient)
+
+      ref_score_plot <- ggplot2::ggplot(all_scores_df, ggplot2::aes(x = pred, y = patient, fill = approach, color = approach)) +
+        ggplot2::geom_point(size = 2) +
+        ggplot2::scale_fill_manual(
+          name = "Approach",
+          labels = as.character(unique(all_scores_df$approach)),
+          values = colors_approach
+        ) +
+        ggplot2::scale_color_manual(
+          name = "Approach",
+          labels = as.character(unique(all_scores_df$approach)),
+          values = colors_approach
+        ) +
+        ggplot2::theme(panel.grid = ggplot2::element_blank(), panel.background = ggplot2::element_rect(fill = NA)) +
+        # ggplot2::geom_vline(xintercept = 0) +
+        ggplot2::theme_linedraw() +
+        # ggplot2::xlim(-3, 3) +
+        ggplot2::theme(
+          axis.text.x = ggplot2::element_text(size = 10, face = "bold", angle = 0, vjust = 0.5, hjust = 0.5, color = "black"), axis.title.x = ggplot2::element_blank(),
+          axis.text.y = ggplot2::element_text(size = 6, color = color_response), axis.ticks.y = ggplot2::element_blank(),
+          axis.title.y = ggplot2::element_blank(), panel.background = ggplot2::element_rect(fill = "white"),
+          legend.position = "right", legend.direction = "vertical", panel.grid.major.y = ggplot2::element_line(linetype = 1, colour = "gray"),
+          legend.text = ggplot2::element_text(size = 10), legend.title = ggplot2::element_text(size = 10, face = "bold", vjust = 0.5),
+          strip.background = ggplot2::element_rect(fill = "white", colour = "white"), strip.text = ggplot2::element_text(size = 10)
+        ) +
+        ggplot2::labs(x = "prediction", y = "patients", title = "easier with TMB integrated score") +
+        ggplot2::guides(fill = "none", color = "none")
+
+      # print Rmarkdown
+      if (verbose) suppressWarnings(print(ref_score_plot))
+      ggplot2::ggsave(file.path(output_file_path, "easier_with_TMB_integrated_score.pdf"), width = 10, height = 10)
+    }
   }
 }

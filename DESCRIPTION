@@ -55,7 +55,9 @@ Imports:
     BiocParallel,
     reshape2,
     rstatix,
-    ggrepel
+    ggrepel,
+    pryr,
+    remotes
 Remotes: 
     saezlab/progeny
 License: MIT + file LICENSE

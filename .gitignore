@@ -1,4 +1,4 @@
-# Mac OS X files 
+# Mac OS X files
 .DS_Store
 
 # History files
@@ -22,4 +22,7 @@ R/sysdata.rda
 # Model optimization parameters (heavy data file)
 inst/extdata/easierData.rda
 inst/extdata/Mariathasan2018_PDL1_treatment.rda
+
+# Results
+figures/*
 

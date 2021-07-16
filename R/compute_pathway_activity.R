@@ -5,8 +5,8 @@
 #'
 #' @importFrom DESeq2 DESeqDataSetFromMatrix estimateSizeFactors estimateDispersions
 #' getVarianceStabilizedData
-#' @importFrom remotes install_github
 #' @importFrom stats na.exclude
+#' @import progeny
 #'
 #' @param RNA_counts data.frame containing raw counts values (with HGNC gene symbols as row names and samples identifiers as column names).
 #' @param remove_sig_genes_immune_response logical value indicating whether to remove signature genes involved
@@ -29,8 +29,8 @@
 #'   remove_sig_genes_immune_response = TRUE
 #' )
 compute_pathway_activity <- function(RNA_counts,
-                                    remove_sig_genes_immune_response = TRUE,
-                                    verbose = TRUE) {
+                                     remove_sig_genes_immune_response = TRUE,
+                                     verbose = TRUE) {
   # Some checks
   if (is.null(RNA_counts)) stop("Gene counts data not found")
 

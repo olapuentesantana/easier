@@ -6,10 +6,9 @@
 \usage{
 assess_immune_response(
   predictions_immune_response = NULL,
-  real_patient_response,
+  patient_response,
   RNA_tpm,
   output_file_path,
-  cancer_type,
   TMB_values,
   easier_with_TMB = FALSE,
   verbose = TRUE
@@ -18,13 +17,11 @@ assess_immune_response(
 \arguments{
 \item{predictions_immune_response}{list containing the predictions for each quantitative descriptor and for each task.}
 
-\item{real_patient_response}{character vector with two factors (Non-responders = NR, Responders = R).}
+\item{patient_response}{character vector with two factors (Non-responders = NR, Responders = R).}
 
 \item{RNA_tpm}{numeric matrix of patients' gene expression data as tpm values.}
 
 \item{output_file_path}{character string pointing to a directory to save the plots returned by the function.}
-
-\item{cancer_type}{character string indicating which cancer-specific model should be used to compute the predictions.}
 
 \item{TMB_values}{numeric vector containing patients' tumor mutational burden (TMB) values.}
 
@@ -66,7 +63,7 @@ tf_activities <- compute_TF_activity(
 
 # Computation of ligand-receptor pair weights
 lrpair_weights <- compute_LR_pairs(
-  RNA_tpm = gene_tpm
+  RNA_tpm = gene_tpm,
   cancer_type = "pancan"
 )
 
@@ -96,10 +93,9 @@ TMB <- dataset_mariathasan@TMB
 # Assess patient-specific likelihood of response to ICB therapy
 assess_immune_response(
   predictions_immune_response = predictions_immune_response,
-  real_patient_response = patient_response,
+  patient_response = patient_response,
   RNA_tpm = gene_tpm,
   output_file_path = "../figures",
-  cancer_type = "BLCA",
   TMB_values = TMB,
   easier_with_TMB = TRUE
 )

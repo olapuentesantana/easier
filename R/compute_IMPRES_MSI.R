@@ -26,7 +26,7 @@
 #' @examples
 #'
 #' # Example does not matter as function will no be exported
-compute_IMPRES_MSI <- function(sig, len, match_F_1, match_F_2, RNA_tpm){
+compute_IMPRES_MSI <- function(sig, len, match_F_1, match_F_2, RNA_tpm) {
   # Initialize variables
   F_pair_expr_A <- F_pair_expr_B <- IMPRES.matrix <- matrix(0, len, ncol(RNA_tpm))
   colnames(IMPRES.matrix) <- colnames(RNA_tpm)
@@ -40,15 +40,15 @@ compute_IMPRES_MSI <- function(sig, len, match_F_1, match_F_2, RNA_tpm){
   F_pair_expr_A <- log2.RNA_tpm[match_F_1, ]
   F_pair_expr_B <- log2.RNA_tpm[match_F_2, ]
 
-  if(anyNA(F_pair_expr_A + F_pair_expr_B)) {
+  if (anyNA(F_pair_expr_A + F_pair_expr_B)) {
     remove_pairs <- as.vector(which(is.na(rowSums(F_pair_expr_A + F_pair_expr_B) == TRUE)))
   }
 
   IMPRES.matrix <- F_pair_expr_A > F_pair_expr_B
-  if(anyNA(IMPRES.matrix)){
+  if (anyNA(IMPRES.matrix)) {
     score <- colSums(IMPRES.matrix, na.rm = TRUE)
     score <- (score * nrow(IMPRES.matrix)) / (nrow(IMPRES.matrix) - length(remove_pairs))
-  }else{
+  } else {
     score <- colSums(IMPRES.matrix)
   }
 
