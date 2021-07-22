@@ -27,29 +27,30 @@
 #'
 #' # Example does not matter as function will no be exported
 compute_IMPRES_MSI <- function(sig, len, match_F_1, match_F_2, RNA_tpm) {
+
   # Initialize variables
-  F_pair_expr_A <- F_pair_expr_B <- IMPRES.matrix <- matrix(0, len, ncol(RNA_tpm))
-  colnames(IMPRES.matrix) <- colnames(RNA_tpm)
+  F_pair_expr_A <- F_pair_expr_B <- SCORE_matrix <- matrix(0, len, ncol(RNA_tpm))
+  colnames(SCORE_matrix) <- colnames(RNA_tpm)
   score <- vector("numeric", length = ncol(RNA_tpm))
   names(score) <- colnames(RNA_tpm)
 
   # Log2 transformation:
-  log2.RNA_tpm <- as.data.frame(log2(RNA_tpm + 1))
+  log2_RNA_tpm <- as.data.frame(log2(RNA_tpm + 1))
 
   # Calculation:
-  F_pair_expr_A <- log2.RNA_tpm[match_F_1, ]
-  F_pair_expr_B <- log2.RNA_tpm[match_F_2, ]
+  F_pair_expr_A <- log2_RNA_tpm[match_F_1, ]
+  F_pair_expr_B <- log2_RNA_tpm[match_F_2, ]
 
   if (anyNA(F_pair_expr_A + F_pair_expr_B)) {
     remove_pairs <- as.vector(which(is.na(rowSums(F_pair_expr_A + F_pair_expr_B) == TRUE)))
   }
 
-  IMPRES.matrix <- F_pair_expr_A > F_pair_expr_B
-  if (anyNA(IMPRES.matrix)) {
-    score <- colSums(IMPRES.matrix, na.rm = TRUE)
-    score <- (score * nrow(IMPRES.matrix)) / (nrow(IMPRES.matrix) - length(remove_pairs))
+  SCORE_matrix <- F_pair_expr_A > F_pair_expr_B
+  if (anyNA(SCORE_matrix)) {
+    score <- colSums(SCORE_matrix, na.rm = TRUE)
+    score <- (score * nrow(SCORE_matrix)) / (nrow(SCORE_matrix) - length(remove_pairs))
   } else {
-    score <- colSums(IMPRES.matrix)
+    score <- colSums(SCORE_matrix)
   }
 
   df <- data.frame(score, check.names = FALSE)

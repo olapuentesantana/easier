@@ -11,21 +11,25 @@ calc_z_score(X, mean, sd)
 
 \item{mean}{numeric vector with mean values.}
 
-\item{sd}{numeric vector with sd values.}
+\item{sd}{numeric vector with standard deviation values.}
 }
 \value{
 A numeric matrix with values as z-scores.
 }
 \description{
-This functions performs z-score normalization on a numeric matrix per column.
-Mean and sd values to be used to calculate z-score values, otherwise they are
+This function performs z-score normalization on a numeric matrix per column.
+Mean and standard deviation values to be used to calculate z-score values, otherwise they are
 calculated based on the input matrix.
 }
 \examples{
-# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
-data("dataset_mariathasan")
-gene_tpm <- dataset_mariathasan@tpm
+# Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+# Original processed data is available from IMvigor210CoreBiologies package.
+library("ExperimentHub")
+eh <- ExperimentHub()
+easierdata_eh <- query(eh, c("easierData"))
+dataset_mariathasan <- easierdata_eh[["EH6677"]]
+RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 
 # apply z-score normalization
-tpm_zscore <- calc_z_score(t(gene_tpm))
+tpm_zscore <- calc_z_score(t(RNA_tpm))
 }

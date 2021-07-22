@@ -6,18 +6,16 @@
 #' Additionally, the average of the gold standard scores is used for comparison.
 #'
 #' @importFrom ROCR prediction performance plot
-#' @importFrom grDevices pdf dev.off
+#' @importFrom grDevices recordPlot
 #' @importFrom stats aggregate median sd
-#' @importFrom graphics legend par title abline lines
+#' @importFrom graphics legend par title abline lines plot.new
 #' @import ggplot2
-#' @importFrom pryr %<a-%
 #'
 #' @export
 #'
 #' @param predictions_immune_response list containing the predictions for each quantitative descriptor and for each task.
 #' @param patient_response character vector with two factors (Non-responders = NR, Responders = R).
 #' @param RNA_tpm numeric matrix of patients' gene expression data as tpm values.
-#' @param output_file_path character string pointing to a directory to save the plots returned by the function.
 #' @param TMB_values numeric vector containing patients' tumor mutational burden (TMB) values.
 #' @param easier_with_TMB logical flag indicating whether to apply refined approach using the combination of easier
 #' predictions and tumor mutational burden.
@@ -28,28 +26,33 @@
 #' that uses both immune response and tumor mutational burden (TMB) to predict patients' response.
 #'
 #' @examples
-#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
-#' data("dataset_mariathasan")
-#' gene_count <- dataset_mariathasan@counts
-#' gene_tpm <- dataset_mariathasan@tpm
+#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+#' # Original processed data is available from IMvigor210CoreBiologies package.
+#' library("ExperimentHub")
+#' eh <- ExperimentHub()
+#' easierdata_eh <- query(eh, c("easierData"))
+#' dataset_mariathasan <- easierdata_eh[["EH6677"]]
+#' RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
+#' RNA_counts <- dataset_mariathasan@assays@data@listData[["counts"]]
+#' cancer_type <- dataset_mariathasan@metadata$cancertype
 #'
 #' # Computation of cell fractions  (Finotello et al., Genome Med, 2019)
-#' cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
+#' cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
 #'
 #' # Computation of pathway scores (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018)
 #' pathway_activities <- compute_pathway_activity(
-#'   RNA_counts = gene_count,
+#'   RNA_counts = RNA_counts,
 #'   remove_sig_genes_immune_response = TRUE
 #' )
 #'
 #' # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
 #' tf_activities <- compute_TF_activity(
-#'   RNA_tpm = gene_tpm
+#'   RNA_tpm = RNA_tpm
 #' )
 #'
 #' # Computation of ligand-receptor pair weights
 #' lrpair_weights <- compute_LR_pairs(
-#'   RNA_tpm = gene_tpm,
+#'   RNA_tpm = RNA_tpm,
 #'   cancer_type = "pancan"
 #' )
 #'
@@ -66,34 +69,33 @@
 #'   tfs = tf_activities,
 #'   lrpairs = lrpair_weights,
 #'   ccpairs = ccpair_scores,
-#'   cancer_type = "SKCM",
+#'   cancer_type = cancer_type,
 #'   verbose = TRUE
 #' )
 #'
 #' # retrieve clinical response
-#' patient_response <- dataset_mariathasan@response
+#' patient_ICBresponse <- dataset_mariathasan@colData$BOR
+#' names(patient_ICBresponse) <- dataset_mariathasan@colData$pat_id
 #'
 #' # retrieve TMB
-#' TMB <- dataset_mariathasan@TMB
+#' TMB <- dataset_mariathasan@colData$TMB
+#' names(TMB) <- dataset_mariathasan@colData$pat_id
 #'
 #' # Assess patient-specific likelihood of response to ICB therapy
 #' assess_immune_response(
 #'   predictions_immune_response = predictions_immune_response,
-#'   patient_response = patient_response,
-#'   RNA_tpm = gene_tpm,
-#'   output_file_path = "../figures",
+#'   patient_response = patient_ICBresponse,
+#'   RNA_tpm = RNA_tpm,
 #'   TMB_values = TMB,
 #'   easier_with_TMB = TRUE
 #' )
 assess_immune_response <- function(predictions_immune_response = NULL,
                                    patient_response,
                                    RNA_tpm,
-                                   output_file_path,
                                    TMB_values,
                                    easier_with_TMB = FALSE,
                                    verbose = TRUE) {
   if (is.null(predictions_immune_response)) stop("None predictions found")
-
   if (missing(TMB_values)) {
     TMB_available <- FALSE
     easier_with_TMB <- FALSE
@@ -108,14 +110,6 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     patient_response <- patient_response[patients_to_keep]
     RNA_tpm <- RNA_tpm[, patients_to_keep]
   }
-  # Check that folder exists, create folder otherwise
-  if (dir.exists(output_file_path) == FALSE) {
-    dir.create(file.path(output_file_path), showWarnings = FALSE)
-    warning(paste0(
-      sapply(strsplit(output_file_path, "/", fixed = TRUE), tail, 1),
-      " folder does not exist, creating ", sapply(strsplit(output_file_path, "/", fixed = TRUE), tail, 1), " folder"
-    ))
-  }
   # Initialize variables
   views <- names(predictions_immune_response)
   tasks <- names(predictions_immune_response[[1]])
@@ -126,6 +120,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     "#5b3788", "#72a646"
   )
   names(all_color_views) <- views
+  all_color_views <- all_color_views[views]
   # Patient response labels
   labels <- matrix(patient_response,
     nrow = length(patient_response), ncol = length(tasks),
@@ -287,14 +282,12 @@ assess_immune_response <- function(predictions_immune_response = NULL,
       color_TMB <- "salmon"
       names(color_TMB) <- "salmon"
     }
+    plot_list <- list()
     # *******************************************
     # Plot AUC values using barplot
     # *******************************************
     n_R <- table(patient_response)[["R"]]
     n_NR <- table(patient_response)[["NR"]]
-
-    if (verbose) message("Saving barplot displaying AUC performance in ", file.path(output_file_path), "\n")
-
     gg <- ggplot2::ggplot(AUC_mean_sd_all_run_tasks, ggplot2::aes(x = .data$View, y = round(.data$AUC.mean, 2), fill = .data$View)) +
       ggplot2::geom_bar(stat = "identity", position = ggplot2::position_dodge(), color = "white") +
       if (TMB_available) {
@@ -333,97 +326,63 @@ assess_immune_response <- function(predictions_immune_response = NULL,
       ) +
       ggplot2::labs(title = paste0(" n=", length(patient_response), " (R=", n_R, "; ", "NR=", n_NR, ")"))
 
-    # print Rmarkdown
-    if (verbose) suppressWarnings(print(ggg))
-    ggplot2::ggsave(file.path(output_file_path, "auc_barplot.pdf"), width = 7, height = 5)
+    plot_list[[1]] <- print(ggg)
+    #ggplot2::ggsave(file.path(output_file_path, "auc_barplot.pdf"), width = 7, height = 5)
 
     # *******************************************
     # Plot ROC curve
     # *******************************************
-    if (verbose) message("Saving ROC curves in ", file.path(output_file_path), "\n")
+    all_colors <- c(all_color_views, color_ensemble, color_gold_standard)
+    graphics::par(cex.axis = 1, mar = c(4, 4, 4, 4), col.lab = "black")
 
-    pryr::`%<a-%`(ROC_plot, {
-      graphics::par(cex.axis = 1.6, mar = c(5, 5, 5, 5), col.lab = "black")
+    # Single views & Gold Standard
+    ROCR::plot(ROC_all_run_tasks[[1]]$Curve[[1]],
+               avg = "threshold", col = all_colors[1], lwd = 3, type = "S",
+               cex.lab = 1.3, ylab = "True Positive Rate", xlab = "False Positive Rate"
+    )
 
+    sapply(setdiff(names(ROC_all_run_tasks)[2:length(names(ROC_all_run_tasks))], "TMB"), function(descriptor){
       # Single views
-      ROCR::plot(ROC_all_run_tasks$pathways$Curve[[1]],
-        avg = "threshold", col = all_color_views["pathways"], lwd = 3, type = "S",
-        cex.lab = 1.6, ylab = "True Positive Rate", xlab = "False Positive Rate"
+      ROCR::plot(ROC_all_run_tasks[[descriptor]]$Curve[[1]],
+                 avg = "threshold", col = all_colors[descriptor], lwd = 3, type = "S",
+                 cex.lab = 1.3, ylab = "True Positive Rate", xlab = "False Positive Rate", add = TRUE
       )
-      ROCR::plot(ROC_all_run_tasks$immunecells$Curve[[1]],
-        avg = "threshold", col = all_color_views["immunecells"], lwd = 3, type = "S",
-        cex.lab = 1.6, ylab = "True Positive Rate", xlab = "False Positive Rate", add = TRUE
-      )
-      ROCR::plot(ROC_all_run_tasks$tfs$Curve[[1]],
-        avg = "threshold", col = all_color_views["tfs"], lwd = 3, type = "S",
-        cex.lab = 1.6, ylab = "True Positive Rate", xlab = "False Positive Rate", add = TRUE
-      )
-      ROCR::plot(ROC_all_run_tasks$lrpairs$Curve[[1]],
-        avg = "threshold", col = all_color_views["lrpairs"], lwd = 3, type = "S",
-        cex.lab = 1.6, ylab = "True Positive Rate", xlab = "False Positive Rate", add = TRUE
-      )
-      ROCR::plot(ROC_all_run_tasks$ccpairs$Curve[[1]],
-        avg = "threshold", col = all_color_views["ccpairs"], lwd = 3, type = "S",
-        cex.lab = 1.6, ylab = "True Positive Rate", xlab = "False Positive Rate", add = TRUE
-      )
-
-      # ensemble
-      ROCR::plot(ROC_all_run_tasks$ensemble$Curve[[1]],
-        avg = "threshold", col = color_ensemble, lwd = 3, type = "S",
-        lty = 1, add = TRUE
-      )
-
-      # gold standard
-      ROCR::plot(ROC_all_run_tasks$gold_standard$Curve[[1]],
-        avg = "threshold", col = color_gold_standard, lwd = 3, type = "S",
-        lty = 1, add = TRUE
-      )
-
-      # TMB
-      if (TMB_available) {
-        ROCR::plot(ROC_all_run_tasks$TMB$Curve[[1]],
-          col = color_TMB, lwd = 3, type = "S",
-          lty = 1, add = TRUE
-        )
-        graphics::legend(
-          x = 0.65, y = 0.27,
-          legend = c(
-            paste0("Pathways", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "pathways")$AUC.mean, 2), ")"),
-            paste0("Cell fractions", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "immunecells")$AUC.mean, 2), ")"),
-            paste0("TFs", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "tfs")$AUC.mean, 2), ")"),
-            paste0("LR pairs", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "lrpairs")$AUC.mean, 2), ")"),
-            paste0("CC pairs", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "ccpairs")$AUC.mean, 2), ")"),
-            paste0("Ensemble", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "ensemble")$AUC.mean, 2), ")"),
-            paste0("Tasks", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "gold_standard")$AUC.mean, 2), ")"),
-            paste0("TMB", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "TMB")$AUC.mean, 2), ")")
-          ),
-          col = c(
-            all_color_views, as.vector(color_ensemble), as.vector(color_gold_standard), color_TMB
-          ), lty = 1, lwd = 3, cex = 0.9, bty = "n"
-        )
-      } else {
-        graphics::legend(
-          x = 0.65, y = 0.27,
-          legend = c(
-            paste0("Pathways", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "pathways")$AUC.mean, 2), ")"),
-            paste0("Cell fractions", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "immunecells")$AUC.mean, 2), ")"),
-            paste0("TFs", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "tfs")$AUC.mean, 2), ")"),
-            paste0("LR pairs", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "lrpairs")$AUC.mean, 2), ")"),
-            paste0("CC pairs", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "ccpairs")$AUC.mean, 2), ")"),
-            paste0("Ensemble", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "ensemble")$AUC.mean, 2), ")"),
-            paste0("Tasks", " (", round(subset(AUC_mean_sd_all_run_tasks, View == "gold_standard")$AUC.mean, 2), ")")
-          ),
-          col = c(
-            all_color_views, as.vector(color_ensemble), as.vector(color_gold_standard)
-          ), lty = 1, lwd = 3, cex = 0.9, bty = "n"
-        )
-      }
-      graphics::title(main = paste0("n=", length(patient_response), " (R=", n_R, "; ", "NR=", n_NR, ")"))
     })
 
-    grDevices::pdf(file.path(output_file_path, "roc_curve.pdf"), width = 8, height = 8)
-    if (verbose) suppressWarnings(ROC_plot)
-    grDevices::dev.off()
+    legend_text <- do.call(c, lapply(setdiff(names(ROC_all_run_tasks)[1:length(names(ROC_all_run_tasks))], "TMB"), function(descriptor){
+      paste(descriptor, "(", round(subset(AUC_mean_sd_all_run_tasks, View == descriptor)$AUC.mean, 2), ")")
+    }))
+
+    # TMB
+    if (TMB_available) {
+      ROCR::plot(ROC_all_run_tasks$TMB$Curve[[1]],
+                 col = color_TMB, lwd = 3, type = "S", cex.lab = 1.3,
+                 lty = 1, add = TRUE
+      )
+
+      legend_text <- do.call(c, lapply(names(ROC_all_run_tasks)[1:length(names(ROC_all_run_tasks))], function(descriptor){
+        paste(descriptor, "(", round(subset(AUC_mean_sd_all_run_tasks, View == descriptor)$AUC.mean, 2), ")")
+      }))
+
+      graphics::legend(
+        x = 0.65, y = 0.47,
+        legend = legend_text,
+        col = c(all_colors, color_TMB), lty = 1, lwd = 3, cex = 0.9, bty = "n"
+      )
+
+    } else {
+
+      graphics::legend(
+        x = 0.65, y = 0.47,
+        legend = legend_text,
+        col = all_colors, lty = 1, lwd = 3, cex = 0.9, bty = "n"
+      )
+    }
+
+    graphics::title(main = paste0("n=", length(patient_response), " (R=", n_R, "; ", "NR=", n_NR, ")"))
+    #grDevices::pdf(file.path(output_file_path, "roc_curve.pdf"), width = 8, height = 8)
+    #grDevices::dev.off()
+    plot_list[[2]] <- grDevices::recordPlot()
 
     # *******************************************
     # Integrated score
@@ -458,37 +417,29 @@ assess_immune_response <- function(predictions_immune_response = NULL,
       }
       pred_lin <- linear_func(rp_df$prediction_easier)
       TMB_lin <- linear_func(rp_df$TMB)
-
       AUC_averaged_v <- sapply(seq(from = 0, to = 1, by = 0.1), function(p) {
         pred_averaged <- apply(cbind((1 - p) * pred_lin, (p) * TMB_lin), 1, mean)
         pred <- ROCR::prediction(pred_averaged, rp_df$response)
         AUC_averaged <- ROCR::performance(pred, measure = "auc")
         AUC_averaged_v <- AUC_averaged@y.values[[1]]
       })
-
-      if (verbose) message("Saving integrated score (easier & TMB) plot in ", file.path(output_file_path), "\n")
-
-      pryr::`%<a-%`(combo_plot, {
-        graphics::par(cex.axis = 1.6, mar = c(5, 5, 5, 5), col.lab = "black")
-        plot(seq(from = 0, to = 1, by = 0.1), AUC_combined_v, xlab = "Penalty or Relative weight", ylab = "Area under the curve (AUC)", type = "b", col = "#c15050", lty = 1, pch = 19, lwd = 3, ylim = c(0.5, 1), cex.lab = 1.6)
-        graphics::lines(seq(from = 0, to = 1, by = 0.1), AUC_averaged_v, xlab = "Penalty or Relative weight", ylab = "Area under the curve (AUC)", type = "b", col = "#693c72", lty = 1, pch = 19, lwd = 3, ylim = c(0.5, 1), cex.lab = 1.6)
-        # TMB
-        graphics::abline(h = AUC_mean_sd_TMB_run_tasks$AUC.mean, col = color_TMB)
-        # easier (ensemble)
-        graphics::abline(h = AUC_mean_sd_ensemble_run_tasks$AUC.mean, col = color_ensemble)
-        graphics::legend(
-          x = 0.55, y = 1,
-          legend = c("Penalized score", "Weighted average", "EaSIeR", "TMB"),
-          col = c(
-            "#c15050", "#693c72", as.vector(color_ensemble), color_TMB
-          ), lty = 1, lwd = 3, cex = 1.3, bty = "n"
-        )
-      })
-
-      grDevices::pdf(file.path(output_file_path, "easier_tmb_combo_auc.pdf"), width = 8, height = 8)
-      if (verbose) suppressWarnings(combo_plot)
-      grDevices::dev.off()
+      graphics::par(cex.axis = 1, mar = c(4, 4, 4, 4), col.lab = "black")
+      plot(seq(from = 0, to = 1, by = 0.1), AUC_combined_v, xlab = "Penalty or Relative weight", ylab = "Area under the curve (AUC)", type = "b", col = "#c15050", lty = 1, pch = 19, lwd = 3, ylim = c(0.5, 1), cex.lab = 1.6)
+      graphics::lines(seq(from = 0, to = 1, by = 0.1), AUC_averaged_v, xlab = "Penalty or Relative weight", ylab = "Area under the curve (AUC)", type = "b", col = "#693c72", lty = 1, pch = 19, lwd = 3, ylim = c(0.5, 1), cex.lab = 1.6)
+      # TMB
+      graphics::abline(h = AUC_mean_sd_TMB_run_tasks$AUC.mean, col = color_TMB)
+      # easier (ensemble)
+      graphics::abline(h = AUC_mean_sd_ensemble_run_tasks$AUC.mean, col = color_ensemble)
+      graphics::legend(
+        x = 0.6, y = 1,
+        legend = c("Penalized score", "Weighted average", "EaSIeR", "TMB"),
+        col = c(
+          "#c15050", "#693c72", as.vector(color_ensemble), color_TMB
+        ), lty = 1, lwd = 3, cex =  0.9, bty = "n"
+      )
+      plot_list[[3]] <- grDevices::recordPlot()
     }
+    return(plot_list)
   } else {
 
     # *******************************************
@@ -542,8 +493,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
       ggplot2::guides(fill = "none", color = "none", shape = "none")
 
     # print Rmarkdown
-    if (verbose) suppressWarnings(print(score_plot))
-    ggplot2::ggsave(file.path(output_file_path, "easier_score.pdf"), width = 10, height = 10)
+    plot_list[[1]] <- print(score_plot)
 
     if (easier_with_TMB == TRUE) {
 
@@ -597,7 +547,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
       color_response <- color_response[match(sapply(strsplit(levels(all_scores_df$patient), split = " "), head, 1), names(color_response))]
       names(color_response) <- levels(all_scores_df$patient)
 
-      ref_score_plot <- ggplot2::ggplot(all_scores_df, ggplot2::aes(x = pred, y = patient, fill = approach, color = approach)) +
+      rf_score_plot <- ggplot2::ggplot(all_scores_df, ggplot2::aes(x = pred, y = patient, fill = approach, color = approach)) +
         ggplot2::geom_point(size = 2) +
         ggplot2::scale_fill_manual(
           name = "Approach",
@@ -624,9 +574,9 @@ assess_immune_response <- function(predictions_immune_response = NULL,
         ggplot2::labs(x = "prediction", y = "patients", title = "easier with TMB integrated score") +
         ggplot2::guides(fill = "none", color = "none")
 
-      # print Rmarkdown
-      if (verbose) suppressWarnings(print(ref_score_plot))
-      ggplot2::ggsave(file.path(output_file_path, "easier_with_TMB_integrated_score.pdf"), width = 10, height = 10)
+      plot_list[[2]] <- print(rf_score_plot)
+      #ggplot2::ggsave(file.path(output_file_path, "easier_with_TMB_integrated_score.pdf"), width = 10, height = 10)
     }
+    return(plot_list)
   }
 }

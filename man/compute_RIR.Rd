@@ -21,9 +21,7 @@ signatures were obtained from:
 https://github.com/livnatje/ImmuneResistance/blob/master/Results/Signatures/resistance.program.RData.
 }
 \examples{
-# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
-data("dataset_mariathasan")
-gene_tpm <- dataset_mariathasan@tpm
+
 # Example does not matter as function will no be exported
 }
 \references{

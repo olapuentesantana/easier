@@ -16,9 +16,13 @@ A data.frame with the old gene HGNC symbol and the new corresponding gene HGNC s
 This function performs gene re-annotation using curated data by the HGNC.
 }
 \examples{
-# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
-data("dataset_mariathasan")
-gene_tpm <- dataset_mariathasan@tpm
+# Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+# Original processed data is available from IMvigor210CoreBiologies package.
+library("ExperimentHub")
+eh <- ExperimentHub()
+easierdata_eh <- query(eh, c("easierData"))
+dataset_mariathasan <- easierdata_eh[["EH6677"]]
+RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 
-genes_info <- reannotate_genes(cur_genes = rownames(gene_tpm))
+genes_info <- reannotate_genes(cur_genes = rownames(RNA_tpm))
 }

@@ -34,20 +34,25 @@ gene signatures associated with T cell exclusion, post-treatment and functional 
 The code was provided via Github https://github.com/livnatje/ImmuneResistance/blob/master/Code/ImmRes_OE.R.
 }
 \examples{
-# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
-data("dataset_mariathasan")
-gene_tpm <- dataset_mariathasan@tpm
+# Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+# Original processed data is available from IMvigor210CoreBiologies package.
+library("ExperimentHub")
+eh <- ExperimentHub()
+easierdata_eh <- query(eh, c("easierData"))
+dataset_mariathasan <- easierdata_eh[["EH6677"]]
+RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 
 # Log2 transformation:
-log2_gene_tpm <- log2(gene_tpm + 1)
+log2_RNA_tpm <- log2(RNA_tpm + 1)
 
 # Prepare input data
 r <- list()
-r$tpm <- log2_gene_tpm
-r$genes <- rownames(log2_gene_tpm)
+r$tpm <- log2_RNA_tpm
+r$genes <- rownames(log2_RNA_tpm)
 
 # Gene signature of immune resistance program
-RIR_gene_signature <- easier:::res_sig
+score_signature_genes <- easierdata_eh[["EH6687"]]
+RIR_gene_signature <- score_signature_genes$RIR
 
 # Apply function to calculate OE:
 res_scores <- get_OE_bulk(r, gene_sign = RIR_gene_signature, verbose = TRUE)

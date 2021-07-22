@@ -26,9 +26,13 @@ A numeric matrix with samples in rows and gold standard scores in columns.
 This function computes the scores of immune response as indicated by the user.
 }
 \examples{
-# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
-data("dataset_mariathasan")
-gene_tpm <- dataset_mariathasan@tpm
+# Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+# Original processed data is available from IMvigor210CoreBiologies package.
+library("ExperimentHub")
+eh <- ExperimentHub()
+easierdata_eh <- query(eh, c("easierData"))
+dataset_mariathasan <- easierdata_eh[["EH6677"]]
+RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 
 # Computation of different hallmarks of anti-cancer immune responses
 hallmarks_of_immune_response <- c(
@@ -36,7 +40,7 @@ hallmarks_of_immune_response <- c(
   "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS"
 )
 scores_immune_response <- compute_scores_immune_response(
-  RNA_tpm = gene_tpm,
+  RNA_tpm = RNA_tpm,
   selected_scores = hallmarks_of_immune_response
 )
 }

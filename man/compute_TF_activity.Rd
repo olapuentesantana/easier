@@ -20,12 +20,16 @@ This function infers transcription factor activity from TPM bulk gene expression
 using DoRothEA method (Garcia-Alonso et al., Genome Res, 2019).
 }
 \examples{
-# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
-data("dataset_mariathasan")
-gene_tpm <- dataset_mariathasan@tpm
+# Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+# Original processed data is available from IMvigor210CoreBiologies package.
+library("ExperimentHub")
+eh <- ExperimentHub()
+easierdata_eh <- query(eh, c("easierData"))
+dataset_mariathasan <- easierdata_eh[["EH6677"]]
+RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 
 # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
 tf_activity <- compute_TF_activity(
-  RNA_tpm = gene_tpm
+  RNA_tpm = RNA_tpm
 )
 }

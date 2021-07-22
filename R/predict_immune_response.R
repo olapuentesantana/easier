@@ -6,6 +6,8 @@
 #' @importFrom utils combn
 #' @importFrom stats na.omit
 #' @importFrom BiocParallel register bplapply MulticoreParam
+#' @import ExperimentHub
+#' @importFrom AnnotationHub query
 #'
 #' @export
 #'
@@ -21,27 +23,33 @@
 #' Given that the model training was repeated 100 times with randomized-cross validation, a set of 100 predictions is returned.
 #'
 #' @examples
-#' data("dataset_mariathasan")
-#' gene_count <- dataset_mariathasan@counts
-#' gene_tpm <- dataset_mariathasan@tpm
+#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+#' # Original processed data is available from IMvigor210CoreBiologies package.
+#' library("ExperimentHub")
+#' eh <- ExperimentHub()
+#' easierdata_eh <- query(eh, c("easierData"))
+#' dataset_mariathasan <- easierdata_eh[["EH6677"]]
+#' RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
+#' RNA_counts <- dataset_mariathasan@assays@data@listData[["counts"]]
+#' cancer_type <- dataset_mariathasan@metadata$cancertype
 #'
 #' # Computation of cell fractions (Finotello et al., Genome Med, 2019)
-#' cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
+#' cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
 #'
 #' # Computation of pathway scores (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018)
 #' pathway_activity <- compute_pathway_activity(
-#'   RNA_counts = gene_count,
+#'   RNA_counts = RNA_counts,
 #'   remove_sig_genes_immune_response = TRUE
 #' )
 #'
 #' # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
 #' tf_activity <- compute_TF_activity(
-#'   RNA_tpm = gene_tpm
+#'   RNA_tpm = RNA_tpm
 #' )
 #'
 #' # Computation of ligand-receptor pair weights
 #' lrpair_weights <- compute_LR_pairs(
-#'   RNA_tpm = gene_tpm,
+#'   RNA_tpm = RNA_tpm,
 #'   cancer_type = "pancan"
 #' )
 #'
@@ -58,7 +66,7 @@
 #'   tfs = tf_activity,
 #'   lrpairs = lrpair_weights,
 #'   ccpairs = ccpair_scores,
-#'   cancer_type = "BLCA"
+#'   cancer_type = cancer_type
 #' )
 predict_immune_response <- function(pathways = NULL,
                                     immunecells = NULL,
@@ -97,26 +105,41 @@ predict_immune_response <- function(pathways = NULL,
   # All corresponding views
   view_combinations <- view_simples
 
-  compute_prediction <- function(view, verbose) {
+  # Retrieve internal data
+  opt_models <- suppressMessages(easierdata_eh[["EH6678"]])
+  opt_xtrain_stats <- suppressMessages(easierdata_eh[["EH6679"]])
+
+  compute_prediction <- function(view, verbose, opt_models, opt_xtrain_stats, cancer_type) {
     view_info <- view_combinations[[view]]
     view_name <- paste(names(view_info), collapse = "_")
     view_data <- lapply(tolower(names(view_info)), function(x) as.data.frame(get(x)))
     names(view_data) <- names(view_info)
     if (verbose) message("Computing predictions using ", view_name, "...\n")
 
+    # Initialize variables
+    opt_model_cancer_view_spec <- lapply(view_name, function(X) {
+      return(opt_models[[cancer_type]][[X]])
+    })
+    names(opt_model_cancer_view_spec) <- view_name
+    opt_xtrain_stats_cancer_view_spec <- lapply(view_name, function(X) {
+      return(opt_xtrain_stats[[cancer_type]][[X]])
+    })
+    names(opt_xtrain_stats_cancer_view_spec) <- view_name
+
     # Predict immune response using RMTLR model parameters
     prediction_view <- predict_with_rmtlr(
       view_name = view_name,
       view_info = view_info,
       view_data = view_data,
-      cancer_type = cancer_type
+      opt_model_cancer_view_spec = opt_model_cancer_view_spec,
+      opt_xtrain_stats_cancer_view_spec = opt_xtrain_stats_cancer_view_spec
     )
 
     return(prediction_view)
   }
   # Parallelize views model predictions
   BiocParallel::register(BiocParallel::MulticoreParam(workers = 2))
-  all_predictions <- BiocParallel::bplapply(1:length(view_combinations), FUN = compute_prediction, verbose = verbose)
+  all_predictions <- BiocParallel::bplapply(1:length(view_combinations), FUN = compute_prediction, verbose = verbose, opt_models, opt_xtrain_stats, cancer_type)
 
   names(all_predictions) <- sapply(1:length(view_combinations), function(X) {
     paste(names(view_combinations[[X]]), collapse = "_")

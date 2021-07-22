@@ -18,13 +18,13 @@
 #' # Example does not matter as function will no be exported
 compute_Ayers_expIS <- function(matches, RNA_tpm) {
   # Log2 transformation:
-  log2.RNA_tpm <- log2(RNA_tpm + 1)
+  log2_RNA_tpm <- log2(RNA_tpm + 1)
 
   # Subset log2.RNA_tpm
-  sub_log2.RNA_tpm <- log2.RNA_tpm[matches, ]
+  sub_log2_RNA_tpm<- log2_RNA_tpm[matches, ]
 
   # Calculation: average of the included genes for Expanded Immune signature
-  score <- apply(sub_log2.RNA_tpm, 2, mean)
+  score <- apply(sub_log2_RNA_tpm, 2, mean)
 
   return(data.frame(Ayers_expIS = score, check.names = FALSE))
 }

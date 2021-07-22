@@ -17,20 +17,21 @@
 #'
 #' # Example does not matter as function will no be exported
 compute_Davoli_IS <- function(matches, RNA_tpm) {
+
   # Log2 transformation:
-  log2.RNA_tpm <- log2(RNA_tpm + 1)
+  log2_RNA_tpm <- log2(RNA_tpm + 1)
 
   # Subset log2.RNA_tpm
-  sub_log2.RNA_tpm <- log2.RNA_tpm[matches, ]
+  sub_log2_RNA_tpm <- log2_RNA_tpm[matches, ]
 
   # Calculate rank position for each gene across samples
-  ranks_sub_log2.RNA_tpm <- apply(sub_log2.RNA_tpm, 1, rank)
+  ranks_sub_log2_RNA_tpm <- apply(sub_log2_RNA_tpm, 1, rank)
 
   # Get normalized rank by divided
-  ranks_sub_log2.RNA_tpm.norm <- (ranks_sub_log2.RNA_tpm - 1) / (nrow(ranks_sub_log2.RNA_tpm) - 1)
+  ranks_sub_log2_RNA_tpm_norm <- (ranks_sub_log2_RNA_tpm - 1) / (nrow(ranks_sub_log2_RNA_tpm) - 1)
 
   # Calculation: average of the expression value of all the genes within-sample
-  score <- apply(ranks_sub_log2.RNA_tpm.norm, 1, mean)
+  score <- apply(ranks_sub_log2_RNA_tpm_norm, 1, mean)
 
   return(data.frame(Davoli_IS = score, check.names = FALSE))
 }

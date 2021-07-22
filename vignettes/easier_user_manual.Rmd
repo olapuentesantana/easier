@@ -109,7 +109,7 @@ This vignette describes how to use the easier package for a pleasant onboarding 
 Starting R, this package can be installed as follows:
 
 ```{r, eval=TRUE}
-install.packages("../../easier_0.9.0.tar.gz", repos = NULL, type="source")
+install.packages("../easier_0.9.0.tar.gz", repos = NULL, type="source")
 ```
 
 Once installed, the package can be loaded and attached to your current workspace as follows:
@@ -136,13 +136,15 @@ library("ExperimentHub")
 eh <- ExperimentHub()
 easierdata_eh <- query(eh, c("easierData"))
 easierdata_eh
-
 dataset_mariathasan <- easierdata_eh[["EH6677"]]
 
+# patient response
 patient_ICBresponse <- dataset_mariathasan@colData$BOR; names(patient_ICBresponse) <- dataset_mariathasan@colData$pat_id
+# tumor mutational burden
 TMB <- dataset_mariathasan@colData$TMB; names(TMB) <- dataset_mariathasan@colData$pat_id
+# dataset cancer type 
 cancer_type <- dataset_mariathasan@metadata$cancertype
-
+# gene expression data
 RNA_counts <- dataset_mariathasan@assays@data@listData[["counts"]]
 RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 
@@ -238,12 +240,16 @@ Since both immune response and TMB are essential for an effective immunotherapy 
 Evaluation of patients' immunotherapy response can be done via `assess_immune_response` function:
 
 ```{r, eval=TRUE}
-assess_immune_response(predictions_immune_response = predictions_immune_response,
-                       patient_response = patient_ICBresponse,
-                       RNA_tpm = RNA_tpm,
-                       output_file_path = "../figures",
-                       TMB_values = TMB,
-                       easier_with_TMB = TRUE)
+output_evaluation <- assess_immune_response(predictions_immune_response = predictions_immune_response,
+                                            patient_response = patient_ICBresponse,
+                                            RNA_tpm = RNA_tpm,
+                                            TMB_values = TMB,
+                                            easier_with_TMB = TRUE)
+
+# inspect output
+# output_evaluation[[1]]
+# output_evaluation[[2]]
+# output_evaluation[[3]]
 ```
 
 The output `assess_immune_response` returns two figures informing about the accuracy of easier predictions on patients' response to ICB therapy.
@@ -258,14 +264,21 @@ We can go further and analyze systems biomarkers present in patients' bulk RNA-s
 In order to leverage the biomarker weights assigned during model training, you need to specify again which `cancer_type` the bulk RNA-seq data belongs to.
 
 ```{r, eval=TRUE}
-explore_biomarkers(pathways = pathway_activities,
-                   immunecells = cell_fractions,
-                   lrpairs = lrpair_weights,
-                   tfs = tf_activities,
-                   ccpairs = ccpair_scores,
-                   cancer_type = cancer_type,
-                   patient_response = patient_ICBresponse,
-                   output_file_path = "../figures")
+output_biomarkers <- explore_biomarkers(pathways = pathway_activities,
+                                        immunecells = cell_fractions,
+                                        lrpairs = lrpair_weights,
+                                        tfs = tf_activities,
+                                        ccpairs = ccpair_scores,
+                                        cancer_type = cancer_type,
+                                        patient_response = patient_ICBresponse)
+
+# inspect output
+#output_biomarkers[[1]]
+#output_biomarkers[[2]]
+#output_biomarkers[[3]]
+#output_biomarkers[[4]]
+#output_biomarkers[[5]]
+#output_biomarkers[[6]]
 ```
 
 The output of `explore_biomarkers` returns multiple figures identifying mechanisms used by patients' tumors to resist or succumb to ICB treatment.
@@ -279,7 +292,6 @@ To deal with this, assigning each patient an score of likelihood of immune respo
 ```{r, eval=FALSE}
 assess_immune_response(predictions_immune_response = predictions_immune_response,
                        RNA_tpm = RNA_tpm,
-                       output_file_path = "../figures",
                        cancer_type = cancer_type,
                        TMB_values = TMB,
                        easier_with_TMB = TRUE)

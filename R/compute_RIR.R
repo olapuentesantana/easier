@@ -16,9 +16,7 @@
 #' @return A numeric matrix with samples in rows and RIR score in a column.
 #'
 #' @examples
-#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
-#' data("dataset_mariathasan")
-#' gene_tpm <- dataset_mariathasan@tpm
+#'
 #' # Example does not matter as function will no be exported
 compute_RIR <- function(RNA_tpm,
                         RIR_program) {

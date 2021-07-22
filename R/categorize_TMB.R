@@ -4,21 +4,25 @@
 #'
 #' @importFrom stats quantile
 #'
-#' @export
-#'
 #' @param TMB numeric vector with tumor mutational burden values.
 #' @param thresholds numeric vector to specify thresholds to be used. Default thresholds are low (<100),
 #'  moderate (100-400) and high TMB (>400).
 #'
 #' @return A numeric vector assigning each sample a class from 1 to 3.
 #'
+#' @export
+#'
 #' @examples
-#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
-#' data("dataset_mariathasan")
-#' TumorMutationalBurden <- dataset_mariathasan@TMB
+#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+#' # Original processed data is available from IMvigor210CoreBiologies package.
+#' library("ExperimentHub")
+#' eh <- ExperimentHub()
+#' easierdata_eh <- query(eh, c("easierData"))
+#' dataset_mariathasan <- easierdata_eh[["EH6677"]]
+#' TMB <- dataset_mariathasan@colData$TMB; names(TMB) <- dataset_mariathasan@colData$pat_id
 #'
 #' # Convert TMB continous values into categories
-#' TMB_cat <- categorize_TMB(TMB = TumorMutationalBurden)
+#' TMB_cat <- categorize_TMB(TMB = TMB)
 categorize_TMB <- function(TMB, thresholds = NULL) {
   vTert <- stats::quantile(TMB, probs = c(0:3 / 3), na.rm = TRUE)
   if (is.null(thresholds)) {

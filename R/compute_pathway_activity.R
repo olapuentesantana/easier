@@ -6,7 +6,7 @@
 #' @importFrom DESeq2 DESeqDataSetFromMatrix estimateSizeFactors estimateDispersions
 #' getVarianceStabilizedData
 #' @importFrom stats na.exclude
-#' @import progeny
+#' @importFrom progeny progeny getModel
 #'
 #' @param RNA_counts data.frame containing raw counts values (with HGNC gene symbols as row names and samples identifiers as column names).
 #' @param remove_sig_genes_immune_response logical value indicating whether to remove signature genes involved
@@ -19,20 +19,27 @@
 #' @export
 #'
 #' @examples
-#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
-#' data("dataset_mariathasan")
-#' gene_count <- dataset_mariathasan@counts
+#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+#' # Original processed data is available from IMvigor210CoreBiologies package.
+#' library("ExperimentHub")
+#' eh <- ExperimentHub()
+#' easierdata_eh <- query(eh, c("easierData"))
+#' dataset_mariathasan <- easierdata_eh[["EH6677"]]
+#' RNA_counts <- dataset_mariathasan@assays@data@listData[["counts"]]
 #'
 #' # Computation of pathway activity (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018)
 #' pathway_activity <- compute_pathway_activity(
-#'   RNA_counts = gene_count,
+#'   RNA_counts = RNA_counts,
 #'   remove_sig_genes_immune_response = TRUE
 #' )
 compute_pathway_activity <- function(RNA_counts,
                                      remove_sig_genes_immune_response = TRUE,
                                      verbose = TRUE) {
   # Some checks
-  if (is.null(RNA_counts)) stop("Gene counts data not found")
+  if (is.null(RNA_tpm)) stop("Counts gene expression data not found")
+
+  # Retrieve internal data
+  cor_scores_genes <- suppressMessages(easierdata_eh[["EH6682"]])
 
   # Gene expression data
   raw_counts <- RNA_counts
@@ -44,7 +51,7 @@ compute_pathway_activity <- function(RNA_counts,
   # Remove list of genes used to build proxy's of ICB response
   if (remove_sig_genes_immune_response) {
     if (verbose) message("Removing signature genes of hallmarks of immune response \n")
-    idy <- stats::na.exclude(match(cor_genes_to_remove, rownames(raw_counts)))
+    idy <- stats::na.exclude(match(cor_scores_genes, rownames(raw_counts)))
     raw_counts <- raw_counts[-idy, ]
   }
 

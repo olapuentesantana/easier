@@ -24,13 +24,17 @@ This function scores cell-cell interactions in the tumor microenvironment using
 ligand-receptor weights as input (Lapuente-Santana et al., bioRxiv, 2021).
 }
 \examples{
-# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
-data("dataset_mariathasan")
-gene_tpm <- dataset_mariathasan@tpm
+# Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+# Original processed data is available from IMvigor210CoreBiologies package.
+library("ExperimentHub")
+eh <- ExperimentHub()
+easierdata_eh <- query(eh, c("easierData"))
+dataset_mariathasan <- easierdata_eh[["EH6677"]]
+RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 
 # Computation of ligand-receptor pair weights
 lrpair_weights <- compute_LR_pairs(
-  RNA_tpm = gene_tpm,
+  RNA_tpm = RNA_tpm,
   cancer_type = "pancan"
 )
 

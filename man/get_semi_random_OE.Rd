@@ -37,19 +37,25 @@ This function calculates random scores to yield a robust estimate of the immune 
 The code was provided via Github https://github.com/livnatje/ImmuneResistance/blob/master/Code/ImmRes_OE.R.
 }
 \examples{
-# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
-data("dataset_mariathasan")
-gene_tpm <- dataset_mariathasan@tpm
+# Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+# Original processed data is available from IMvigor210CoreBiologies package.
+library("ExperimentHub")
+eh <- ExperimentHub()
+easierdata_eh <- query(eh, c("easierData"))
+dataset_mariathasan <- easierdata_eh[["EH6677"]]
+RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 
 # Log2 transformation:
-log2_gene_tpm <- log2(gene_tpm + 1)
+log2_RNA_tpm <- log2(RNA_tpm + 1)
+
 # Prepare input data
 r <- list()
-r$tpm <- log2_gene_tpm
-r$genes <- rownames(log2_gene_tpm)
+r$tpm <- log2_RNA_tpm
+r$genes <- rownames(log2_RNA_tpm)
 
-# Gene signature for Immune Resistance Program from Jerby-Arnon et al., 2018.
-RIR_gene_signature <- easier:::res_sig
+# Gene signature of immune resistance program
+score_signature_genes <- easierdata_eh[["EH6687"]]
+RIR_gene_signature <- score_signature_genes$RIR
 
 # Compute gene average expression across samples
 r$genes_dist <- r$genes_mean <- rowMeans(r$tpm)

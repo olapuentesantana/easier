@@ -6,6 +6,8 @@
 #' @importFrom dorothea run_viper
 #' @importFrom stats na.exclude
 #' @importFrom dplyr filter
+#' @import ExperimentHub
+#' @importFrom AnnotationHub query
 #'
 #' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
 #' @param verbose logical value indicating whether to display messages about the number of regulated
@@ -16,18 +18,26 @@
 #' @export
 #'
 #' @examples
-#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
-#' data("dataset_mariathasan")
-#' gene_tpm <- dataset_mariathasan@tpm
+#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+#' # Original processed data is available from IMvigor210CoreBiologies package.
+#' library("ExperimentHub")
+#' eh <- ExperimentHub()
+#' easierdata_eh <- query(eh, c("easierData"))
+#' dataset_mariathasan <- easierdata_eh[["EH6677"]]
+#' RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 #'
 #' # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
 #' tf_activity <- compute_TF_activity(
-#'   RNA_tpm = gene_tpm
+#'   RNA_tpm = RNA_tpm
 #' )
 compute_TF_activity <- function(RNA_tpm,
                                 verbose = TRUE) {
   # Some checks
-  if (is.null(RNA_tpm)) stop("tpm data not found")
+  if (is.null(RNA_tpm)) stop("TPM gene expression data not found")
+
+  # Retrieve internal data
+  TCGA_mean_pancancer <- suppressMessages(easierdata_eh[["EH6680"]])
+  TCGA_sd_pancancer <- suppressMessages(easierdata_eh[["EH6681"]])
 
   # Gene expression data
   tpm <- RNA_tpm

@@ -8,7 +8,6 @@ assess_immune_response(
   predictions_immune_response = NULL,
   patient_response,
   RNA_tpm,
-  output_file_path,
   TMB_values,
   easier_with_TMB = FALSE,
   verbose = TRUE
@@ -20,8 +19,6 @@ assess_immune_response(
 \item{patient_response}{character vector with two factors (Non-responders = NR, Responders = R).}
 
 \item{RNA_tpm}{numeric matrix of patients' gene expression data as tpm values.}
-
-\item{output_file_path}{character string pointing to a directory to save the plots returned by the function.}
 
 \item{TMB_values}{numeric vector containing patients' tumor mutational burden (TMB) values.}
 
@@ -42,28 +39,33 @@ the patients' response provided. An ensemble model is built based on the average
 Additionally, the average of the gold standard scores is used for comparison.
 }
 \examples{
-# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
-data("dataset_mariathasan")
-gene_count <- dataset_mariathasan@counts
-gene_tpm <- dataset_mariathasan@tpm
+# Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+# Original processed data is available from IMvigor210CoreBiologies package.
+library("ExperimentHub")
+eh <- ExperimentHub()
+easierdata_eh <- query(eh, c("easierData"))
+dataset_mariathasan <- easierdata_eh[["EH6677"]]
+RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
+RNA_counts <- dataset_mariathasan@assays@data@listData[["counts"]]
+cancer_type <- dataset_mariathasan@metadata$cancertype
 
 # Computation of cell fractions  (Finotello et al., Genome Med, 2019)
-cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
+cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
 
 # Computation of pathway scores (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018)
 pathway_activities <- compute_pathway_activity(
-  RNA_counts = gene_count,
+  RNA_counts = RNA_counts,
   remove_sig_genes_immune_response = TRUE
 )
 
 # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
 tf_activities <- compute_TF_activity(
-  RNA_tpm = gene_tpm
+  RNA_tpm = RNA_tpm
 )
 
 # Computation of ligand-receptor pair weights
 lrpair_weights <- compute_LR_pairs(
-  RNA_tpm = gene_tpm,
+  RNA_tpm = RNA_tpm,
   cancer_type = "pancan"
 )
 
@@ -80,22 +82,23 @@ predictions_immune_response <- predict_immune_response(
   tfs = tf_activities,
   lrpairs = lrpair_weights,
   ccpairs = ccpair_scores,
-  cancer_type = "SKCM",
+  cancer_type = cancer_type,
   verbose = TRUE
 )
 
 # retrieve clinical response
-patient_response <- dataset_mariathasan@response
+patient_ICBresponse <- dataset_mariathasan@colData$BOR
+names(patient_ICBresponse) <- dataset_mariathasan@colData$pat_id
 
 # retrieve TMB
-TMB <- dataset_mariathasan@TMB
+TMB <- dataset_mariathasan@colData$TMB
+names(TMB) <- dataset_mariathasan@colData$pat_id
 
 # Assess patient-specific likelihood of response to ICB therapy
 assess_immune_response(
   predictions_immune_response = predictions_immune_response,
-  patient_response = patient_response,
-  RNA_tpm = gene_tpm,
-  output_file_path = "../figures",
+  patient_response = patient_ICBresponse,
+  RNA_tpm = RNA_tpm,
   TMB_values = TMB,
   easier_with_TMB = TRUE
 )

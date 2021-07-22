@@ -2,6 +2,9 @@
 #'
 #' This function computes the scores of immune response as indicated by the user.
 #'
+#' @import ExperimentHub
+#' @importFrom AnnotationHub query
+#'
 #' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
 #' @param selected_scores character string with names of scores of immune response to be computed.
 #' Default scores are computed for: "CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS".
@@ -11,9 +14,13 @@
 #' @export
 #'
 #' @examples
-#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
-#' data("dataset_mariathasan")
-#' gene_tpm <- dataset_mariathasan@tpm
+#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+#' # Original processed data is available from IMvigor210CoreBiologies package.
+#' library("ExperimentHub")
+#' eh <- ExperimentHub()
+#' easierdata_eh <- query(eh, c("easierData"))
+#' dataset_mariathasan <- easierdata_eh[["EH6677"]]
+#' RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 #'
 #' # Computation of different hallmarks of anti-cancer immune responses
 #' hallmarks_of_immune_response <- c(
@@ -21,11 +28,16 @@
 #'   "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS"
 #' )
 #' scores_immune_response <- compute_scores_immune_response(
-#'   RNA_tpm = gene_tpm,
+#'   RNA_tpm = RNA_tpm,
 #'   selected_scores = hallmarks_of_immune_response
 #' )
 compute_scores_immune_response <- function(RNA_tpm, selected_scores = c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS"), verbose = TRUE) {
-  easier_sigs <- readRDS(file.path(system.file("extdata", "signature_genes.RDS", package = "easier")))
+
+  # Some checks
+  if (is.null(RNA_tpm)) stop("TPM gene expression data not found")
+
+  # Retrieve internal data
+  easier_sigs <- suppressMessages(easierdata_eh[["EH6687"]])
 
   # Check for which selected signatures appropriate functions exist
   sigs <- names(easier_sigs) %in% selected_scores
@@ -41,20 +53,20 @@ compute_scores_immune_response <- function(RNA_tpm, selected_scores = c("CYT", "
           }
 
           # Subset RNA_tpm
-          match_genes.housekeeping <- match(easier_sigs$Tcell_inflamed$Housekeeping.read, rownames(RNA_tpm))
-          match_genes.predictors <- match(easier_sigs$Tcell_inflamed$Tcell_inflamed.read, rownames(RNA_tpm))
+          match_genes_housekeeping <- match(easier_sigs$Tcell_inflamed$Housekeeping.read, rownames(RNA_tpm))
+          match_genes_predictors <- match(easier_sigs$Tcell_inflamed$Tcell_inflamed.read, rownames(RNA_tpm))
 
-          if (anyNA(c(match_genes.housekeeping, match_genes.predictors))) {
+          if (anyNA(c(match_genes_housekeeping, match_genes_predictors))) {
             tmp <- c(easier_sigs$Tcell_inflamed$Housekeeping.read, easier_sigs$Tcell_inflamed$Tcell_inflamed.read)
             message(c(paste0("Differenty named or missing signature genes for ", sig, ": \n"), paste(tmp[!tmp %in% rownames(RNA_tpm)], collapse = "\n")), "\n")
-            match_genes.housekeeping <- match_genes.housekeeping[!is.na(match_genes.housekeeping)]
-            match_genes.predictors <- match_genes.housekeeping[!is.na(match_genes.housekeeping)]
+            match_genes_housekeeping <- match_genes_housekeeping[!is.na(match_genes_housekeeping)]
+            match_genes_predictors <- match_genes_predictors[!is.na(match_genes_predictors)]
           }
           do.call(
             paste0("compute_", sig),
             args = list(
-              housekeeping = match_genes.housekeeping,
-              predictors = match_genes.predictors,
+              housekeeping = match_genes_housekeeping,
+              predictors = match_genes_predictors,
               weights = easier_sigs$Tcell_inflamed$weights,
               RNA_tpm = RNA_tpm
             )
@@ -115,7 +127,6 @@ compute_scores_immune_response <- function(RNA_tpm, selected_scores = c("CYT", "
               "After gene re-annotation, differently named or missing signature genes for ", sig, ": \n",
               paste(easier_spec_sig[!easier_spec_sig %in% rownames(RNA_tpm)], collapse = ", "), "\n"
             )
-
             literature_matches <- match(easier_spec_sig, rownames(RNA_tpm))
             literature_matches <- literature_matches[!is.na(literature_matches)]
           }
@@ -143,15 +154,17 @@ compute_scores_immune_response <- function(RNA_tpm, selected_scores = c("CYT", "
         df <- data.frame(rep(NA, ncol(RNA_tpm)), row.names = colnames(RNA_tpm))
         names(df)[1] <- sig
         return(df)
-      },
-      warning = function(cond) {
-        message(paste("The following warning occurred while computing sinature of", sig, ":"))
-        message(paste(cond, collapse = "/n"))
-        df <- data.frame(rep(NA, ncol(RNA_tpm)), row.names = colnames(RNA_tpm))
-        names(df)[1] <- sig
-        return(df)
       }
+      #,
+      #warning = function(cond) {
+        #message(paste("The following warning occurred while computing sinature of", sig, ":"))
+        #message(paste(cond, collapse = "/n"))
+        #df <- data.frame(rep(NA, ncol(RNA_tpm)), row.names = colnames(RNA_tpm))
+        #names(df)[1] <- sig
+        #return(df)
+      #}
     )
-  })
+   }
+  )
   return(as.data.frame(result))
 }

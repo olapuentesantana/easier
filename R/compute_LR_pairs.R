@@ -8,6 +8,8 @@
 #'
 #' @importFrom stats na.exclude
 #' @importFrom utils head tail
+#' @import ExperimentHub
+#' @importFrom AnnotationHub query
 #'
 #' @param RNA_tpm A data.frame containing TPM values with HGNC symbols in rows and samples in columns.
 #' @param cancer_type A string detailing the cancer type whose ligand-receptor pairs network will be used.
@@ -21,19 +23,29 @@
 #' @export
 #'
 #' @examples
-#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
-#' data("dataset_mariathasan")
-#' gene_tpm <- dataset_mariathasan@tpm
+#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+#' # Original processed data is available from IMvigor210CoreBiologies package.
+#' library("ExperimentHub")
+#' eh <- ExperimentHub()
+#' easierdata_eh <- query(eh, c("easierData"))
+#' dataset_mariathasan <- easierdata_eh[["EH6677"]]
+#' RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 #'
 #' # Computation of ligand-receptor pair weights
 #' lrpair_weights <- compute_LR_pairs(
-#'   RNA_tpm = gene_tpm,
+#'   RNA_tpm = RNA_tpm,
 #'   cancer_type = "pancan"
 #' )
 #' lrpair_weights[1:5, 1:5]
 compute_LR_pairs <- function(RNA_tpm,
                              cancer_type = "pancan",
                              verbose = TRUE) {
+  # Some checks
+  if (is.null(RNA_tpm)) stop("TPM gene expression data not found")
+
+  # Retrieve internal data
+  intercell_networks <- suppressMessages(easierdata_eh[["EH6683"]])
+  group_lrpairs <- suppressMessages(easierdata_eh[["EH6685"]])
 
   # Gene expression data (log2 transformed)
   gene_expr <- log2(RNA_tpm + 1)
@@ -45,7 +57,7 @@ compute_LR_pairs <- function(RNA_tpm,
   gene_expr <- as.data.frame(gene_expr)
 
   # Cancer-specific LR pairs network
-  intercell_network <- intercell_network_cancer_spec[[cancer_type]]
+  intercell_network <- intercell_networks[[cancer_type]]
   LR_pairs <- unique(paste0(intercell_network$ligands, "_", intercell_network$receptors))
 
   # check what is the percentage of genes we have in our data
@@ -70,10 +82,10 @@ compute_LR_pairs <- function(RNA_tpm,
   LR_pairs_computed <- t(LR_pairs_computed)
 
   # Apply grouping to LRpairs data
-  for (X in 1:length(grouping_lrpairs_info)) {
-    keep <- unique(grouping_lrpairs_info[[X]]$main)
-    remove <- unique(grouping_lrpairs_info[[X]]$involved_pairs)
-    combo_name <- unique(grouping_lrpairs_info[[X]]$combo_name)
+  for (X in 1:length(group_lrpairs)) {
+    keep <- unique(group_lrpairs[[X]]$main)
+    remove <- unique(group_lrpairs[[X]]$involved_pairs)
+    combo_name <- unique(group_lrpairs[[X]]$combo_name)
 
     pos_remove <- match(remove, colnames(LR_pairs_computed))
     pos_keep <- match(keep, colnames(LR_pairs_computed))

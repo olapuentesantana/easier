@@ -3,7 +3,8 @@
 #' This function scores cell-cell interactions in the tumor microenvironment using
 #' ligand-receptor weights as input (Lapuente-Santana et al., bioRxiv, 2021).
 #'
-#' @export
+#' @import ExperimentHub
+#' @importFrom AnnotationHub query
 #'
 #' @param lrpairs output of the compute_LR_pairs function. A matrix of log2(TPM +1) weights with
 #' with samples in rows and ligand-receptor pairs in columns.
@@ -14,14 +15,20 @@
 #'
 #' @return A matrix of scores with samples in rows and cell-cell pairs in columns.
 #'
+#' @export
+#'
 #' @examples
-#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
-#' data("dataset_mariathasan")
-#' gene_tpm <- dataset_mariathasan@tpm
+#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+#' # Original processed data is available from IMvigor210CoreBiologies package.
+#' library("ExperimentHub")
+#' eh <- ExperimentHub()
+#' easierdata_eh <- query(eh, c("easierData"))
+#' dataset_mariathasan <- easierdata_eh[["EH6677"]]
+#' RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 #'
 #' # Computation of ligand-receptor pair weights
 #' lrpair_weights <- compute_LR_pairs(
-#'   RNA_tpm = gene_tpm,
+#'   RNA_tpm = RNA_tpm,
 #'   cancer_type = "pancan"
 #' )
 #'
@@ -31,10 +38,14 @@
 #'   cancer_type = "pancan"
 #' )
 compute_CC_pairs <- function(lrpairs,
-                                     cancer_type = "pancan",
-                                     verbose = TRUE) {
+                             cancer_type = "pancan",
+                             verbose = TRUE) {
   # Some checks
   if (is.null(lrpairs)) stop("ligand-receptor pair weights not found")
+
+  # Retrieve internal data
+  lr_frequency <- suppressMessages(easierdata_eh[["EH6684"]])
+  intercell_networks <- suppressMessages(easierdata_eh[["EH6683"]])
 
   # remove ligand receptor pairs that are always NA
   na_lrpairs <- apply(lrpairs, 2, function(x) {
@@ -51,7 +62,7 @@ compute_CC_pairs <- function(lrpairs,
   lrpairs_binary <- lrpairs_binary[, colnames(lrpairs_binary) %in% names(lr_frequency)]
 
   # cancer type specific network
-  intercell_network <- intercell_network_cancer_spec[[cancer_type]]
+  intercell_network <- intercell_networks[[cancer_type]]
 
   # compute the CC score for each patient
   celltypes <- unique(c(as.character(intercell_network$cell1), as.character(intercell_network$cell2)))

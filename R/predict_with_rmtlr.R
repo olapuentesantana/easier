@@ -10,19 +10,24 @@
 #' @param view_name character string containing the name of the input view.
 #' @param view_info character string informing about the family of the input data.
 #' @param view_data list containing the data for each input view.
-#' @param cancer_type character string indicating cancer type to specify cancer-specific optimization model
-#' to be used.
+#' @param opt_model_cancer_view_spec cancer-view-specific model feature parameters learned during training.
+#' @param opt_xtrain_stats_cancer_view_spec cancer-view-specific features mean and standard deviation of the training set.
 #' @param verbose logical flag indicating whether to display messages about the process.
 #'
-#' @return A lList of predictions matrices, one for each tasks (rows = samples; columns = runs).
+#' @return A lList of predictions matrices, one for each tasks (rows = samples; columns = [runs).
 #'
 #' @examples
-#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
-#' data("dataset_mariathasan")
-#' gene_tpm <- dataset_mariathasan@tpm
+#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+#' # Original processed data is available from IMvigor210CoreBiologies package.
+#' library("ExperimentHub")
+#' eh <- ExperimentHub()
+#' easierdata_eh <- query(eh, c("easierData"))
+#' dataset_mariathasan <- easierdata_eh[["EH6677"]]
+#' RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
+#' cancer_type <- dataset_mariathasan@metadata$cancertype
 #'
 #' # Computation of cell fractions
-#' cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
+#' cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
 #'
 #' view_name <- "immunecells"
 #' view_info <- c(immunecells = "gaussian")
@@ -33,24 +38,16 @@
 #'   view_name = view_name,
 #'   view_info = view_info,
 #'   view_data = view_data,
-#'   cancer_type = "SKCM"
+#'   cancer_type = cancer_type
 #' )
 predict_with_rmtlr <- function(view_name,
                                view_info,
                                view_data,
-                               cancer_type,
+                               opt_model_cancer_view_spec,
+                               opt_xtrain_stats_cancer_view_spec,
                                verbose = TRUE) {
 
-  # Initialize variables
-  opt_model_cancer_view_spec <- lapply(view_name, function(X) {
-    return(opt_models[[cancer_type]][[X]])
-  })
-  names(opt_model_cancer_view_spec) <- view_name
-  opt_xtrain_stats_cancer_view_spec <- lapply(view_name, function(X) {
-    return(opt_xtrain_stats[[cancer_type]][[X]])
-  })
-  names(opt_xtrain_stats_cancer_view_spec) <- view_name
-
+  # initialize variables
   P <- length(view_info)
   K <- ncol(opt_model_cancer_view_spec[[1]][[1]])
   standardize_any <- TRUE

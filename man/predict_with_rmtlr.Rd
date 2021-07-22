@@ -8,7 +8,8 @@ predict_with_rmtlr(
   view_name,
   view_info,
   view_data,
-  cancer_type,
+  opt_model_cancer_view_spec,
+  opt_xtrain_stats_cancer_view_spec,
   verbose = TRUE
 )
 }
@@ -19,25 +20,31 @@ predict_with_rmtlr(
 
 \item{view_data}{list containing the data for each input view.}
 
-\item{cancer_type}{character string indicating cancer type to specify cancer-specific optimization model
-to be used.}
+\item{opt_model_cancer_view_spec}{cancer-view-specific model feature parameters learned during training.}
+
+\item{opt_xtrain_stats_cancer_view_spec}{cancer-view-specific features mean and standard deviation of the training set.}
 
 \item{verbose}{logical flag indicating whether to display messages about the process.}
 }
 \value{
-A lList of predictions matrices, one for each tasks (rows = samples; columns = runs).
+A lList of predictions matrices, one for each tasks (rows = samples; columns = [runs).
 }
 \description{
 This function puts together predicted immune response by using a cancer-specifc model learned
 from training with RMTLR algorithm.
 }
 \examples{
-# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
-data("dataset_mariathasan")
-gene_tpm <- dataset_mariathasan@tpm
+# Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+# Original processed data is available from IMvigor210CoreBiologies package.
+library("ExperimentHub")
+eh <- ExperimentHub()
+easierdata_eh <- query(eh, c("easierData"))
+dataset_mariathasan <- easierdata_eh[["EH6677"]]
+RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
+cancer_type <- dataset_mariathasan@metadata$cancertype
 
 # Computation of cell fractions
-cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
+cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
 
 view_name <- "immunecells"
 view_info <- c(immunecells = "gaussian")
@@ -48,6 +55,6 @@ prediction_view <- predict_with_rmtlr(
   view_name = view_name,
   view_info = view_info,
   view_data = view_data,
-  cancer_type = "SKCM"
+  cancer_type = cancer_type
 )
 }

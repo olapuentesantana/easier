@@ -56,8 +56,9 @@ Imports:
     reshape2,
     rstatix,
     ggrepel,
-    pryr,
-    remotes
+    remotes,
+    ExperimentHub,
+    AnnotationHub
 Remotes: 
     saezlab/progeny
 License: MIT + file LICENSE

@@ -14,19 +14,21 @@
 #' @export
 #'
 #' @examples
-#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
-#' data("dataset_mariathasan")
-#' gene_tpm <- dataset_mariathasan@tpm
+#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+#' # Original processed data is available from IMvigor210CoreBiologies package.
+#' library("ExperimentHub")
+#' eh <- ExperimentHub()
+#' easierdata_eh <- query(eh, c("easierData"))
+#' dataset_mariathasan <- easierdata_eh[["EH6677"]]
+#' RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 #'
 #' # Computation of cell fractions (Finotello et al., Genome Med, 2019)
-#' cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
+#' cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
 compute_cell_fractions <- function(RNA_tpm,
                                    verbose = TRUE
-                                   # TODOTODO; do we need an ellipsis here?
 ) {
-
   # Some checks
-  if (is.null(RNA_tpm)) stop("Gene tpm data not found")
+  if (is.null(RNA_tpm)) stop("TPM gene expression data not found")
 
   # HGNC symbols are required
   if (any(grep("ENSG00000", rownames(RNA_tpm)))) stop("Hgnc gene symbols are required", call. = FALSE)

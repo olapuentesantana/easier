@@ -27,13 +27,17 @@ This function infers pathway activity from counts bulk gene expression using PRO
 from (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018).
 }
 \examples{
-# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
-data("dataset_mariathasan")
-gene_count <- dataset_mariathasan@counts
+# Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+# Original processed data is available from IMvigor210CoreBiologies package.
+library("ExperimentHub")
+eh <- ExperimentHub()
+easierdata_eh <- query(eh, c("easierData"))
+dataset_mariathasan <- easierdata_eh[["EH6677"]]
+RNA_counts <- dataset_mariathasan@assays@data@listData[["counts"]]
 
 # Computation of pathway activity (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018)
 pathway_activity <- compute_pathway_activity(
-  RNA_counts = gene_count,
+  RNA_counts = RNA_counts,
   remove_sig_genes_immune_response = TRUE
 )
 }

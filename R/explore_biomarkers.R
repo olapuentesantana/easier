@@ -3,15 +3,15 @@
 #' This function provides an overview of relevant computed features (biomarkers), comparing responders and non-responders if known.
 #' Information about the features contribution to the optimal models is also included.
 #'
-#' @importFrom grDevices pdf dev.off
 #' @importFrom stats aggregate
 #' @importFrom reshape2 melt
 #' @import rstatix
 #' @importFrom ggrepel geom_text_repel
 #' @import ggplot2
 #' @importFrom grid unit.pmax grid.newpage grid.draw
+#' @import ExperimentHub
+#' @importFrom AnnotationHub query
 #'
-#' @export
 #'
 #' @param pathways numeric matrix with pathways activity (rows = samples; columns = pathways).
 #' @param immunecells numeric matrix with immune cell quantification (rows = samples; columns = cell types).
@@ -20,7 +20,6 @@
 #' @param ccpairs numeric matrix with cell-cell scores (rows = samples; columns = cell-cell pairs).
 #' @param cancer_type character string indicating which cancer-specific model should be used to compute the predictions.
 #' @param patient_response character vector with two factors (Non-responders = NR, Responders = R).
-#' @param output_file_path character string pointing to a directory to save the plots returned by the function.
 #' @param verbose logical flag indicating whether to display messages about the process.
 #'
 #' @return \itemize{
@@ -28,29 +27,36 @@
 #' \item{A combined plot for each type of quantitative descriptors, showing the original distribution of the features and the importance of these features for the trained models}
 #' }
 #'
+#' @export
+#'
 #' @examples
-#' # use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
-#' data("dataset_mariathasan")
-#' gene_count <- dataset_mariathasan@counts
-#' gene_tpm <- dataset_mariathasan@tpm
+#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+#' # Original processed data is available from IMvigor210CoreBiologies package.
+#' library("ExperimentHub")
+#' eh <- ExperimentHub()
+#' easierdata_eh <- query(eh, c("easierData"))
+#' dataset_mariathasan <- easierdata_eh[["EH6677"]]
+#' RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
+#' RNA_counts <- dataset_mariathasan@assays@data@listData[["counts"]]
+#' cancer_type <- dataset_mariathasan@metadata$cancertype
 #'
 #' # Computation of cell fractions
-#' cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
+#' cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
 #'
 #' # Computation of pathway scores
 #' pathway_activity <- compute_pathway_activity(
-#'   RNA_counts = gene_count,
+#'   RNA_counts = RNA_counts,
 #'   remove_sig_genes_immune_response = TRUE
 #' )
 #'
 #' # Computation of TF activity
 #' tf_activity <- compute_TF_activity(
-#'   RNA_tpm = gene_tpm
+#'   RNA_tpm = RNA_tpm
 #' )
 #'
 #' # Computation of ligand-receptor pair weights
 #' lrpair_weights <- compute_LR_pairs(
-#'   RNA_tpm = gene_tpm,
+#'   RNA_tpm = RNA_tpm,
 #'   cancer_type = "pancan"
 #' )
 #'
@@ -61,7 +67,8 @@
 #' )
 #'
 #' # retrieve clinical response
-#' patient_response <- dataset_mariathasan@response
+#' patient_ICBresponse <- dataset_mariathasan@colData$BOR
+#' names(patient_ICBresponse) <- dataset_mariathasan@colData$pat_id
 #'
 #' # Investigate possible biomarkers
 #' explore_biomarkers(
@@ -70,9 +77,8 @@
 #'   lrpairs = lrpair_weights,
 #'   tfs = tf_activity,
 #'   ccpairs = ccpair_scores,
-#'   cancer_type = "BLCA",
-#'   patient_response = patient_response,
-#'   output_file_path = "../figures",
+#'   cancer_type = cancer_type,
+#'   patient_response = patient_ICBresponse
 #' )
 explore_biomarkers <- function(pathways = NULL,
                                immunecells = NULL,
@@ -81,21 +87,13 @@ explore_biomarkers <- function(pathways = NULL,
                                ccpairs = NULL,
                                cancer_type,
                                patient_response,
-                               output_file_path,
                                verbose = TRUE) {
   if (missing(cancer_type)) stop("cancer type needs to be specified")
   if (missing(patient_response)) stop("patient response needs to be specified")
-
   if (all(is.null(pathways), is.null(immunecells), is.null(tfs), is.null(lrpairs), is.null(ccpairs))) stop("none signature specified")
-
-  # Check that folder exists, create folder otherwise
-  if (dir.exists(output_file_path) == FALSE) {
-    dir.create(file.path(output_file_path), showWarnings = FALSE)
-    warning(paste0(
-      sapply(strsplit(output_file_path, "/", fixed = TRUE), tail, 1),
-      " folder does not exist, creating ", sapply(strsplit(output_file_path, "/", fixed = TRUE), tail, 1), " folder"
-    ))
-  }
+  # Retrieve internal data
+  opt_models <- suppressMessages(easierdata_eh[["EH6678"]])
+  intercell_networks <- suppressMessages(easierdata_eh[["EH6683"]])
   # Initialize variables
   views <- c(
     pathways = "gaussian",
@@ -164,6 +162,7 @@ explore_biomarkers <- function(pathways = NULL,
     return(list(weights = my_coefs_median, features = features_df))
   }
 
+  plot_list <- list()
   comparison <- do.call(rbind, lapply(1:length(view_combinations), function(ii) {
     biomarkers_weights_features <- get_biomarkers_features(ii, cancer_type)
     biomarkers_weights <- biomarkers_weights_features$weights
@@ -233,7 +232,9 @@ explore_biomarkers <- function(pathways = NULL,
         panel.border = ggplot2::element_blank(), panel.background = ggplot2::element_blank(),
         plot.margin = ggplot2::unit(c(0, 0, 0.2, 0.2), "cm"), axis.line.y = ggplot2::element_line(colour = "black")
       ) +
-      ggplot2::labs(y = "Biomarker weight")
+      ggplot2::labs(y = "Biomarker weight") +
+      ggplot2::labs(title = paste0(" Quantitative descriptor: ", unique(biomarkers_weights_sort$datatype)))
+
 
     features_boxplot <- subset(features, feature %in% unique(biomarkers_weights_sort$variable))
     features_boxplot$feature <- factor(as.character(features_boxplot$feature), levels = unique(biomarkers_weights_sort$variable))
@@ -273,9 +274,6 @@ explore_biomarkers <- function(pathways = NULL,
     } else {
       boxplot <- boxplot + ggplot2::theme(axis.text.y = ggplot2::element_text(size = 12))
     }
-
-    if (verbose) message("Saving biomarkers box-barplot for ", names(view_combinations[[ii]]), " in ", file.path(output_file_path), "\n")
-
     # Combine plots
     g1 <- ggplot2::ggplotGrob(boxplot)
     g2 <- ggplot2::ggplotGrob(barplot)
@@ -283,10 +281,8 @@ explore_biomarkers <- function(pathways = NULL,
     g$widths <- grid::unit.pmax(g1$widths, g2$widths)
 
     grid::grid.newpage()
-    grDevices::pdf(paste0(output_file_path, "/box_barplot_for_", names(view_combinations[[ii]]), ".pdf"), width = 12, height = 8)
-    if (verbose) suppressWarnings(grid::grid.draw(g))
-    grDevices::dev.off()
-
+    suppressWarnings(grid::grid.draw(g))
+    plot_list[[ii]] <- recordPlot()
 
     features_names <- levels(features$feature)
     datatype_comparison <- do.call(rbind, lapply(features_names, function(x) {
@@ -333,7 +329,7 @@ explore_biomarkers <- function(pathways = NULL,
     })
 
     # LR pairs network
-    intercell_network <- intercell_network_cancer_spec[["pancan"]]
+    intercell_network <- intercell_networks[["pancan"]]
     LR_pairs <- unique(paste0(intercell_network$ligands, "_", intercell_network$receptors))
 
     new_name <- do.call(c, lapply(1:ncol(tmp), function(X) {
@@ -360,9 +356,6 @@ explore_biomarkers <- function(pathways = NULL,
     comparison$variable[which(comparison$datatype %in% c("lrpairs", "ccpairs"))] <- new_name
   }
 
-  # VOLCANO PLOT #
-  if (verbose) message("Saving biomarkers volcano plot for all views in ", file.path(output_file_path), "\n")
-
   xminmax <- max(abs(comparison$signedEffect))
   xminmax <- xminmax + xminmax * 0.01
   ymax <- max(-log10(comparison$p_val))
@@ -386,10 +379,10 @@ explore_biomarkers <- function(pathways = NULL,
     ggrepel::geom_text_repel(
       data = subset(comparison, (threshold != "notSign")), ggplot2::aes(x = .data$signedEffect, y = -log10(.data$p_val), label = .data$variable, size = .05),
       show.legend = NA, inherit.aes = FALSE, max.overlaps = 20
-    )
+    ) +
+    ggplot2::labs(title = paste0(" All quantitative descriptor at once"))
 
-  # print Rmarkdown
-  if (verbose) suppressWarnings(print(volcano_plot))
 
-  ggplot2::ggsave(file.path(output_file_path, "volcano_plot.pdf"), width = 7, height = 7)
+  plot_list[[length(view_combinations)+1]] <- suppressWarnings(print(volcano_plot))
+  return(plot_list)
 }

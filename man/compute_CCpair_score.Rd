@@ -33,13 +33,17 @@ A numeric vector with weighted scores.
 This function derives a score for each cell-cell pair feature.
 }
 \examples{
-# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
-data("dataset_mariathasan")
-gene_tpm <- dataset_mariathasan@tpm
+# Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+# Original processed data is available from IMvigor210CoreBiologies package.
+library("ExperimentHub")
+eh <- ExperimentHub()
+easierdata_eh <- query(eh, c("easierData"))
+dataset_mariathasan <- easierdata_eh[["EH6677"]]
+RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 
 # Computation of ligand-receptor pair weights
 lrpair_weights <- compute_LR_pairs(
-  RNA_tpm = gene_tpm,
+  RNA_tpm = RNA_tpm,
   cancer_type = "pancan"
 )
 
@@ -54,17 +58,19 @@ lrpair_weights <- lrpair_weights[, na_lrpairs == FALSE]
 lrpairs_binary <- ifelse(lrpair_weights > log2(10 + 1), 1, 0)
 
 # keep only the LR.pairs for which I have (non-zero) frequencies in the TCGA
-lrpairs_binary <- lrpairs_binary[, colnames(lrpairs_binary) \%in\% names(easier:::lr_frequency)]
+lr_frequency <- easierdata_eh[["EH6684"]]
+lrpairs_binary <- lrpairs_binary[, colnames(lrpairs_binary) \%in\% names(lr_frequency)]
 
 # cancer type specific network
-intercell_network <- easier:::intercell_network_cancer_spec[["pancan"]]
+intercell_networks <- easierdata_eh[["EH6683"]]
+intercell_network <- intercell_networks[["pancan"]]
 celltypes <- unique(c(as.character(intercell_network$cell1), as.character(intercell_network$cell2)))
 celltype1 <- celltypes[1]
 celltype2 <- celltypes[1]
 
 # compute the CC score for each patient
 CCpair_score <- compute_CCpair_score(celltype1, celltype2, intercell_network,
-  lrpairs_binary, easier:::lr_frequency,
+  lrpairs_binary, lr_frequency,
   compute_log = TRUE
 )
 }

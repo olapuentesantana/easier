@@ -12,7 +12,6 @@ explore_biomarkers(
   ccpairs = NULL,
   cancer_type,
   patient_response,
-  output_file_path,
   verbose = TRUE
 )
 }
@@ -31,8 +30,6 @@ explore_biomarkers(
 
 \item{patient_response}{character vector with two factors (Non-responders = NR, Responders = R).}
 
-\item{output_file_path}{character string pointing to a directory to save the plots returned by the function.}
-
 \item{verbose}{logical flag indicating whether to display messages about the process.}
 }
 \value{
@@ -46,28 +43,33 @@ This function provides an overview of relevant computed features (biomarkers), c
 Information about the features contribution to the optimal models is also included.
 }
 \examples{
-# use example dataset from IMvigor210CoreBiologies package (Mariathasan et al., Nature, 2018)
-data("dataset_mariathasan")
-gene_count <- dataset_mariathasan@counts
-gene_tpm <- dataset_mariathasan@tpm
+# Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+# Original processed data is available from IMvigor210CoreBiologies package.
+library("ExperimentHub")
+eh <- ExperimentHub()
+easierdata_eh <- query(eh, c("easierData"))
+dataset_mariathasan <- easierdata_eh[["EH6677"]]
+RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
+RNA_counts <- dataset_mariathasan@assays@data@listData[["counts"]]
+cancer_type <- dataset_mariathasan@metadata$cancertype
 
 # Computation of cell fractions
-cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
+cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
 
 # Computation of pathway scores
 pathway_activity <- compute_pathway_activity(
-  RNA_counts = gene_count,
+  RNA_counts = RNA_counts,
   remove_sig_genes_immune_response = TRUE
 )
 
 # Computation of TF activity
 tf_activity <- compute_TF_activity(
-  RNA_tpm = gene_tpm
+  RNA_tpm = RNA_tpm
 )
 
 # Computation of ligand-receptor pair weights
 lrpair_weights <- compute_LR_pairs(
-  RNA_tpm = gene_tpm,
+  RNA_tpm = RNA_tpm,
   cancer_type = "pancan"
 )
 
@@ -78,7 +80,8 @@ ccpair_scores <- compute_CC_pairs(
 )
 
 # retrieve clinical response
-patient_response <- dataset_mariathasan@response
+patient_ICBresponse <- dataset_mariathasan@colData$BOR
+names(patient_ICBresponse) <- dataset_mariathasan@colData$pat_id
 
 # Investigate possible biomarkers
 explore_biomarkers(
@@ -87,8 +90,7 @@ explore_biomarkers(
   lrpairs = lrpair_weights,
   tfs = tf_activity,
   ccpairs = ccpair_scores,
-  cancer_type = "BLCA",
-  patient_response = patient_response,
-  output_file_path = "../figures",
+  cancer_type = cancer_type,
+  patient_response = patient_ICBresponse
 )
 }

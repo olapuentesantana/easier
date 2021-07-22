@@ -38,27 +38,33 @@ This function calculates predictions of patients' immune response using the quan
 data as input features and the model parameters defined during training.
 }
 \examples{
-data("dataset_mariathasan")
-gene_count <- dataset_mariathasan@counts
-gene_tpm <- dataset_mariathasan@tpm
+# Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+# Original processed data is available from IMvigor210CoreBiologies package.
+library("ExperimentHub")
+eh <- ExperimentHub()
+easierdata_eh <- query(eh, c("easierData"))
+dataset_mariathasan <- easierdata_eh[["EH6677"]]
+RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
+RNA_counts <- dataset_mariathasan@assays@data@listData[["counts"]]
+cancer_type <- dataset_mariathasan@metadata$cancertype
 
 # Computation of cell fractions (Finotello et al., Genome Med, 2019)
-cell_fractions <- compute_cell_fractions(RNA_tpm = gene_tpm)
+cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
 
 # Computation of pathway scores (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018)
 pathway_activity <- compute_pathway_activity(
-  RNA_counts = gene_count,
+  RNA_counts = RNA_counts,
   remove_sig_genes_immune_response = TRUE
 )
 
 # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
 tf_activity <- compute_TF_activity(
-  RNA_tpm = gene_tpm
+  RNA_tpm = RNA_tpm
 )
 
 # Computation of ligand-receptor pair weights
 lrpair_weights <- compute_LR_pairs(
-  RNA_tpm = gene_tpm,
+  RNA_tpm = RNA_tpm,
   cancer_type = "pancan"
 )
 
@@ -75,6 +81,6 @@ predictions_immune_response <- predict_immune_response(
   tfs = tf_activity,
   lrpairs = lrpair_weights,
   ccpairs = ccpair_scores,
-  cancer_type = "BLCA"
+  cancer_type = cancer_type
 )
 }
