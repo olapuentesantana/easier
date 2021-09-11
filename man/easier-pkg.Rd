@@ -3,7 +3,7 @@
 \docType{package}
 \name{easier-pkg}
 \alias{easier-pkg}
-\title{Estimate Systems Immune Response}
+\title{easier package}
 \description{
 pkg description
 }

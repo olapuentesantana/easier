@@ -6,8 +6,7 @@
 #' @importFrom utils combn
 #' @importFrom stats na.omit
 #' @importFrom BiocParallel register bplapply MulticoreParam
-#' @import ExperimentHub
-#' @importFrom AnnotationHub query
+#' @importFrom easierData get_opt_models get_opt_xtrain_stats
 #'
 #' @export
 #'
@@ -23,12 +22,10 @@
 #' Given that the model training was repeated 100 times with randomized-cross validation, a set of 100 predictions is returned.
 #'
 #' @examples
-#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from easierData.
 #' # Original processed data is available from IMvigor210CoreBiologies package.
-#' library("ExperimentHub")
-#' eh <- ExperimentHub()
-#' easierdata_eh <- query(eh, c("easierData"))
-#' dataset_mariathasan <- easierdata_eh[["EH6677"]]
+#' library("easierData")
+#' dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 #' RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 #' RNA_counts <- dataset_mariathasan@assays@data@listData[["counts"]]
 #' cancer_type <- dataset_mariathasan@metadata$cancertype
@@ -106,8 +103,8 @@ predict_immune_response <- function(pathways = NULL,
   view_combinations <- view_simples
 
   # Retrieve internal data
-  opt_models <- suppressMessages(easierdata_eh[["EH6678"]])
-  opt_xtrain_stats <- suppressMessages(easierdata_eh[["EH6679"]])
+  opt_models <- suppressMessages(easierData::get_opt_models())
+  opt_xtrain_stats <- suppressMessages(easierData::get_opt_xtrain_stats())
 
   compute_prediction <- function(view, verbose, opt_models, opt_xtrain_stats, cancer_type) {
     view_info <- view_combinations[[view]]

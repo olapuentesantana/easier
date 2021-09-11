@@ -6,7 +6,7 @@
 \usage{
 assess_immune_response(
   predictions_immune_response = NULL,
-  patient_response,
+  patient_response = NULL,
   RNA_tpm,
   TMB_values,
   easier_with_TMB = FALSE,
@@ -39,12 +39,10 @@ the patients' response provided. An ensemble model is built based on the average
 Additionally, the average of the gold standard scores is used for comparison.
 }
 \examples{
-# Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+# Load exemplary dataset (Mariathasan et al., Nature, 2018) from easierData.
 # Original processed data is available from IMvigor210CoreBiologies package.
-library("ExperimentHub")
-eh <- ExperimentHub()
-easierdata_eh <- query(eh, c("easierData"))
-dataset_mariathasan <- easierdata_eh[["EH6677"]]
+library("easierData")
+dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 RNA_counts <- dataset_mariathasan@assays@data@listData[["counts"]]
 cancer_type <- dataset_mariathasan@metadata$cancertype

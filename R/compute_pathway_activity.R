@@ -7,6 +7,7 @@
 #' getVarianceStabilizedData
 #' @importFrom stats na.exclude
 #' @importFrom progeny progeny getModel
+#' @importFrom easierData get_cor_scores_genes
 #'
 #' @param RNA_counts data.frame containing raw counts values (with HGNC gene symbols as row names and samples identifiers as column names).
 #' @param remove_sig_genes_immune_response logical value indicating whether to remove signature genes involved
@@ -19,12 +20,10 @@
 #' @export
 #'
 #' @examples
-#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from easierData.
 #' # Original processed data is available from IMvigor210CoreBiologies package.
-#' library("ExperimentHub")
-#' eh <- ExperimentHub()
-#' easierdata_eh <- query(eh, c("easierData"))
-#' dataset_mariathasan <- easierdata_eh[["EH6677"]]
+#' library("easierData")
+#' dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 #' RNA_counts <- dataset_mariathasan@assays@data@listData[["counts"]]
 #'
 #' # Computation of pathway activity (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018)
@@ -39,7 +38,7 @@ compute_pathway_activity <- function(RNA_counts,
   if (is.null(RNA_tpm)) stop("Counts gene expression data not found")
 
   # Retrieve internal data
-  cor_scores_genes <- suppressMessages(easierdata_eh[["EH6682"]])
+  cor_scores_genes <- suppressMessages(easierData::get_cor_scores_genes())
 
   # Gene expression data
   raw_counts <- RNA_counts

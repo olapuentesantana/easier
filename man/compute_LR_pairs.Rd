@@ -27,12 +27,10 @@ Each ligand-receptor weight is defined as the minimum of the log2(TPM+1) express
 the ligand and the receptor.
 }
 \examples{
-# Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+# Load exemplary dataset (Mariathasan et al., Nature, 2018) from easierData.
 # Original processed data is available from IMvigor210CoreBiologies package.
-library("ExperimentHub")
-eh <- ExperimentHub()
-easierdata_eh <- query(eh, c("easierData"))
-dataset_mariathasan <- easierdata_eh[["EH6677"]]
+library("easierData")
+dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 
 # Computation of ligand-receptor pair weights

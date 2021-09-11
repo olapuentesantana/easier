@@ -56,11 +56,10 @@ Imports:
     reshape2,
     rstatix,
     ggrepel,
-    remotes,
-    ExperimentHub,
-    AnnotationHub
+    remotes
 Remotes: 
     saezlab/progeny
+    olapuentesantana/easierData
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

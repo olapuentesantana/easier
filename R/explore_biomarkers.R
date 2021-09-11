@@ -9,9 +9,7 @@
 #' @importFrom ggrepel geom_text_repel
 #' @import ggplot2
 #' @importFrom grid unit.pmax grid.newpage grid.draw
-#' @import ExperimentHub
-#' @importFrom AnnotationHub query
-#'
+#' @importFrom easierData get_opt_models get_intercell_networks
 #'
 #' @param pathways numeric matrix with pathways activity (rows = samples; columns = pathways).
 #' @param immunecells numeric matrix with immune cell quantification (rows = samples; columns = cell types).
@@ -32,10 +30,8 @@
 #' @examples
 #' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
 #' # Original processed data is available from IMvigor210CoreBiologies package.
-#' library("ExperimentHub")
-#' eh <- ExperimentHub()
-#' easierdata_eh <- query(eh, c("easierData"))
-#' dataset_mariathasan <- easierdata_eh[["EH6677"]]
+#' library("easierData")
+#' dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 #' RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 #' RNA_counts <- dataset_mariathasan@assays@data@listData[["counts"]]
 #' cancer_type <- dataset_mariathasan@metadata$cancertype
@@ -92,8 +88,8 @@ explore_biomarkers <- function(pathways = NULL,
   if (missing(patient_response)) stop("patient response needs to be specified")
   if (all(is.null(pathways), is.null(immunecells), is.null(tfs), is.null(lrpairs), is.null(ccpairs))) stop("none signature specified")
   # Retrieve internal data
-  opt_models <- suppressMessages(easierdata_eh[["EH6678"]])
-  intercell_networks <- suppressMessages(easierdata_eh[["EH6683"]])
+  opt_models <- suppressMessages(easierData::get_opt_models())
+  intercell_networks <- suppressMessages(easierData::get_intercell_networks())
   # Initialize variables
   views <- c(
     pathways = "gaussian",
@@ -381,7 +377,6 @@ explore_biomarkers <- function(pathways = NULL,
       show.legend = NA, inherit.aes = FALSE, max.overlaps = 20
     ) +
     ggplot2::labs(title = paste0(" All quantitative descriptor at once"))
-
 
   plot_list[[length(view_combinations)+1]] <- suppressWarnings(print(volcano_plot))
   return(plot_list)

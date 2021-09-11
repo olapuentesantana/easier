@@ -4,8 +4,6 @@
 #' gene signatures associated with T cell exclusion, post-treatment and functional resistance.
 #' The code was provided via Github https://github.com/livnatje/ImmuneResistance/blob/master/Code/ImmRes_OE.R.
 #'
-#' @export
-#'
 #' @references Jerby-Arnon, L., Shah, P., Cuoco, M.S., Rodman, C., Su, M.-J., Melms, J.C., Leeson, R., Kanodia, A., Mei, S., Lin, J.-R., et al. (2018).
 #' A Cancer Cell Program Promotes T Cell Exclusion and Resistance to Checkpoint Blockade. Cell 175, 984–997.e24. https://doi.org/10.1016/j.cell.2018.09.006
 #'
@@ -22,12 +20,10 @@
 #' (rows = samples; columns = gene signatures)
 #'
 #' @examples
-#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from easierData.
 #' # Original processed data is available from IMvigor210CoreBiologies package.
-#' library("ExperimentHub")
-#' eh <- ExperimentHub()
-#' easierdata_eh <- query(eh, c("easierData"))
-#' dataset_mariathasan <- easierdata_eh[["EH6677"]]
+#' library("easierData")
+#' dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 #' RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 #'
 #' # Log2 transformation:
@@ -39,7 +35,7 @@
 #' r$genes <- rownames(log2_RNA_tpm)
 #'
 #' # Gene signature of immune resistance program
-#' score_signature_genes <- easierdata_eh[["EH6687"]]
+#' score_signature_genes <- suppressMessages(easierData::get_scores_signature_genes())
 #' RIR_gene_signature <- score_signature_genes$RIR
 #'
 #' # Apply function to calculate OE:

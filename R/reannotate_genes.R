@@ -2,8 +2,7 @@
 #'
 #' This function performs gene re-annotation using curated data by the HGNC.
 #'
-#' @import ExperimentHub
-#' @importFrom AnnotationHub query
+#' @importFrom easierData get_HGNC_annotation
 #'
 #' @param cur_genes character string containing gene HGNC symbols to be consider for re-annotation.
 #'
@@ -12,12 +11,10 @@
 #' @export
 #'
 #' @examples
-#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from easierData.
 #' # Original processed data is available from IMvigor210CoreBiologies package.
-#' library("ExperimentHub")
-#' eh <- ExperimentHub()
-#' easierdata_eh <- query(eh, c("easierData"))
-#' dataset_mariathasan <- easierdata_eh[["EH6677"]]
+#' library("easierData")
+#' dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 #' RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 #'
 #' genes_info <- reannotate_genes(cur_genes = rownames(RNA_tpm))
@@ -27,7 +24,7 @@ reannotate_genes <- function(cur_genes) {
   if (is.null(cur_genes)) stop("Character string with gene names not found")
 
   # Retrieve internal data
-  HGNC <- suppressMessages(easierdata_eh[["EH6686"]])
+  HGNC <- suppressMessages(easierData::get_HGNC_annotation())
 
   # cur_genes <- rownames(gene_expr)
   new_genes <- rep(NA, length(cur_genes))

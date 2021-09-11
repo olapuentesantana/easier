@@ -1,4 +1,4 @@
-#' Estimate Systems Immune Response
+#' easier package
 #'
 #' pkg description
 #'

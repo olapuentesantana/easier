@@ -8,8 +8,7 @@
 #'
 #' @importFrom stats na.exclude
 #' @importFrom utils head tail
-#' @import ExperimentHub
-#' @importFrom AnnotationHub query
+#' @importFrom easierData get_intercell_networks get_group_lrpairs
 #'
 #' @param RNA_tpm A data.frame containing TPM values with HGNC symbols in rows and samples in columns.
 #' @param cancer_type A string detailing the cancer type whose ligand-receptor pairs network will be used.
@@ -23,12 +22,10 @@
 #' @export
 #'
 #' @examples
-#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from easierData.
 #' # Original processed data is available from IMvigor210CoreBiologies package.
-#' library("ExperimentHub")
-#' eh <- ExperimentHub()
-#' easierdata_eh <- query(eh, c("easierData"))
-#' dataset_mariathasan <- easierdata_eh[["EH6677"]]
+#' library("easierData")
+#' dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 #' RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 #'
 #' # Computation of ligand-receptor pair weights
@@ -44,8 +41,8 @@ compute_LR_pairs <- function(RNA_tpm,
   if (is.null(RNA_tpm)) stop("TPM gene expression data not found")
 
   # Retrieve internal data
-  intercell_networks <- suppressMessages(easierdata_eh[["EH6683"]])
-  group_lrpairs <- suppressMessages(easierdata_eh[["EH6685"]])
+  intercell_networks <- suppressMessages(easierData::get_intercell_networks())
+  group_lrpairs <- suppressMessages(easierData::get_group_lrpairs())
 
   # Gene expression data (log2 transformed)
   gene_expr <- log2(RNA_tpm + 1)

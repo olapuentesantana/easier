@@ -2,8 +2,7 @@
 #'
 #' This function computes the scores of immune response as indicated by the user.
 #'
-#' @import ExperimentHub
-#' @importFrom AnnotationHub query
+#' @importFrom easierData get_scores_signature_genes
 #'
 #' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and samples in columns.
 #' @param selected_scores character string with names of scores of immune response to be computed.
@@ -14,12 +13,10 @@
 #' @export
 #'
 #' @examples
-#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from easierData.
 #' # Original processed data is available from IMvigor210CoreBiologies package.
-#' library("ExperimentHub")
-#' eh <- ExperimentHub()
-#' easierdata_eh <- query(eh, c("easierData"))
-#' dataset_mariathasan <- easierdata_eh[["EH6677"]]
+#' library("easierData")
+#' dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 #' RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 #'
 #' # Computation of different hallmarks of anti-cancer immune responses
@@ -37,7 +34,7 @@ compute_scores_immune_response <- function(RNA_tpm, selected_scores = c("CYT", "
   if (is.null(RNA_tpm)) stop("TPM gene expression data not found")
 
   # Retrieve internal data
-  easier_sigs <- suppressMessages(easierdata_eh[["EH6687"]])
+  easier_sigs <- suppressMessages(easierData::get_scores_signature_genes())
 
   # Check for which selected signatures appropriate functions exist
   sigs <- names(easier_sigs) %in% selected_scores

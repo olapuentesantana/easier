@@ -3,8 +3,7 @@
 #' This function scores cell-cell interactions in the tumor microenvironment using
 #' ligand-receptor weights as input (Lapuente-Santana et al., bioRxiv, 2021).
 #'
-#' @import ExperimentHub
-#' @importFrom AnnotationHub query
+#' @importFrom easierData get_lr_frequency_TCGA get_intercell_networks
 #'
 #' @param lrpairs output of the compute_LR_pairs function. A matrix of log2(TPM +1) weights with
 #' with samples in rows and ligand-receptor pairs in columns.
@@ -18,12 +17,10 @@
 #' @export
 #'
 #' @examples
-#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from easierData.
 #' # Original processed data is available from IMvigor210CoreBiologies package.
-#' library("ExperimentHub")
-#' eh <- ExperimentHub()
-#' easierdata_eh <- query(eh, c("easierData"))
-#' dataset_mariathasan <- easierdata_eh[["EH6677"]]
+#' library("easierData")
+#' dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 #' RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 #'
 #' # Computation of ligand-receptor pair weights
@@ -44,8 +41,8 @@ compute_CC_pairs <- function(lrpairs,
   if (is.null(lrpairs)) stop("ligand-receptor pair weights not found")
 
   # Retrieve internal data
-  lr_frequency <- suppressMessages(easierdata_eh[["EH6684"]])
-  intercell_networks <- suppressMessages(easierdata_eh[["EH6683"]])
+  lr_frequency <- suppressMessages(easierData::get_lr_frequency_TCGA())
+  intercell_networks <- suppressMessages(easierData::get_intercell_networks())
 
   # remove ligand receptor pairs that are always NA
   na_lrpairs <- apply(lrpairs, 2, function(x) {

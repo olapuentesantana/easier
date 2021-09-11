@@ -19,12 +19,10 @@ A numeric vector assigning each sample a class from 1 to 3.
 This function encodes tumor mutational variable (TMB) numerical variable to categorical.
 }
 \examples{
-# Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
+# Load exemplary dataset (Mariathasan et al., Nature, 2018) from easierData.
 # Original processed data is available from IMvigor210CoreBiologies package.
-library("ExperimentHub")
-eh <- ExperimentHub()
-easierdata_eh <- query(eh, c("easierData"))
-dataset_mariathasan <- easierdata_eh[["EH6677"]]
+library("easierData")
+dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 TMB <- dataset_mariathasan@colData$TMB; names(TMB) <- dataset_mariathasan@colData$pat_id
 
 # Convert TMB continous values into categories
