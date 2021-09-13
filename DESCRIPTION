@@ -58,7 +58,7 @@ Imports:
     ggrepel,
     remotes
 Remotes: 
-    saezlab/progeny
+    saezlab/progeny,
     olapuentesantana/easierData
 License: MIT + file LICENSE
 Encoding: UTF-8
