@@ -17,8 +17,8 @@
 #' @param patient_response character vector with two factors (Non-responders = NR, Responders = R).
 #' @param RNA_tpm numeric matrix of patients' gene expression data as tpm values.
 #' @param TMB_values numeric vector containing patients' tumor mutational burden (TMB) values.
-#' @param easier_with_TMB logical flag indicating whether to apply refined approach using the combination of easier
-#' predictions and tumor mutational burden.
+#' @param easier_with_TMB logical flag indicating whether to combine both easier and TMB scores based on a weighted
+#' average or penalized score (a weight, penalty of 0.5 is used).
 #' @param verbose logical flag indicating whether to display messages about the process.
 #'
 #' @return If easier_with_TMB is set to FALSE, two figures (roc curve and bar plots) are directly saved in the path specified
@@ -195,7 +195,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     # Average across tasks
     AUC_mean_sd_run_tasks <- do.call(
       data.frame,
-      aggregate(AUC ~ View, data = AUC_data, FUN = function(x) c(mean = mean(x), sd = sd(x)))
+      stats::aggregate(AUC ~ View, data = AUC_data, FUN = function(x) c(mean = mean(x), sd = stats::sd(x)))
     )
     # ---------------------------#
     # Predictions ensemble view #
@@ -216,7 +216,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     # Average across tasks
     AUC_mean_sd_ensemble_run_tasks <- do.call(
       data.frame,
-      aggregate(AUC ~ View, data = AUC_data_ensemble, FUN = function(x) c(mean = mean(x), sd = sd(x)))
+      stats::aggregate(AUC ~ View, data = AUC_data_ensemble, FUN = function(x) c(mean = mean(x), sd = stats::sd(x)))
     )
     # ---------------------------#
     # Predictions gold standards #
@@ -237,7 +237,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     # Average across tasks
     AUC_mean_sd_goldstandard_run_tasks <- do.call(
       data.frame,
-      aggregate(AUC ~ View, data = AUC_data_goldstandard, FUN = function(x) c(mean = mean(x), sd = sd(x)))
+      stats::aggregate(AUC ~ View, data = AUC_data_goldstandard, FUN = function(x) c(mean = mean(x), sd = stats::sd(x)))
     )
     # ------------------------------------------------------#
     # Combine single views, ensemble and gold standard
@@ -274,7 +274,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
       # Average across tasks
       AUC_mean_sd_TMB_run_tasks <- do.call(
         data.frame,
-        aggregate(AUC ~ View, data = AUC_data_TMB, FUN = function(x) c(mean = mean(x), sd = sd(x)))
+        stats::aggregate(AUC ~ View, data = AUC_data_TMB, FUN = function(x) c(mean = mean(x), sd = stats::sd(x)))
       )
       AUC_mean_sd_all_run_tasks <- rbind(AUC_mean_sd_all_run_tasks, AUC_mean_sd_TMB_run_tasks)
       ROC_all_run_tasks <- c(ROC_all_run_tasks, TMB_ROC_pred)
@@ -353,20 +353,20 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     })
 
     legend_text <- do.call(c, lapply(setdiff(names(ROC_all_run_tasks)[1:length(names(ROC_all_run_tasks))], "TMB"), function(descriptor) {
-      paste0(descriptor," (AUC=", round(subset(AUC_mean_sd_all_run_tasks, View == descriptor)$AUC.mean, 2),")")
+      paste0(descriptor," (", round(subset(AUC_mean_sd_all_run_tasks, View == descriptor)$AUC.mean, 2),")")
     }))
 
-    # Ensemble along different tasks
-    ROCR::plot(ROC_all_run_tasks[["ensemble"]]$Curve[[1]],
-               avg = "threshold", col = all_colors["ensemble"], lwd = 2, type = "S", lty=1,
-               cex.lab = 1.3, ylab = "True Positive Rate", xlab = "False Positive Rate", add=TRUE
-    )
-
-    # Gold standard along different tasks
-    ROCR::plot(ROC_all_run_tasks[["gold_standard"]]$Curve[[1]],
-              col = all_colors["gold_standard"], lwd = 2, type = "S", lty = 3,
-               cex.lab = 1.3, ylab = "True Positive Rate", xlab = "False Positive Rate", add=TRUE
-    )
+    # # Ensemble along different tasks
+    # ROCR::plot(ROC_all_run_tasks[["ensemble"]]$Curve[[1]],
+    #            col = all_colors["ensemble"], lwd = 2, type = "S", lty = 3,
+    #            cex.lab = 1.3, ylab = "True Positive Rate", xlab = "False Positive Rate", add=TRUE
+    # )
+    #
+    # # Gold standard along different tasks
+    # ROCR::plot(ROC_all_run_tasks[["gold_standard"]]$Curve[[1]],
+    #            col = all_colors["gold_standard"], lwd = 2, type = "S", lty = 3,
+    #            cex.lab = 1.3, ylab = "True Positive Rate", xlab = "False Positive Rate", add=TRUE
+    # )
 
     # TMB
     if (TMB_available) {
@@ -376,7 +376,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
       )
 
       legend_text <- do.call(c, lapply(names(ROC_all_run_tasks)[1:length(names(ROC_all_run_tasks))], function(descriptor) {
-        paste(descriptor, "(", round(subset(AUC_mean_sd_all_run_tasks, View == descriptor)$AUC.mean, 2), ")")
+        paste0(descriptor," (", round(subset(AUC_mean_sd_all_run_tasks, View == descriptor)$AUC.mean, 2),")")
       }))
       graphics::legend(
         x = "topleft",
@@ -490,15 +490,15 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     all_scores_df$approach <- factor(all_scores_df$approach, levels = tasks)
     #colors_approach <- c("#ff7a4a")
     # sort patients
-    easier <- aggregate(pred ~ patient, data = all_scores_df, FUN = "median")
+    easier <- stats::aggregate(pred ~ patient, data = all_scores_df, FUN = "median")
     easier <- easier[match(sort(easier$pred, decreasing = TRUE), easier$pred), ]
     all_scores_df$patient <- factor(all_scores_df$patient, levels = as.character(easier$patient))
     ordering <- all_scores_df$patient
 
-    score_plot <- ggplot2::ggplot(all_scores_df, ggplot2::aes(x = pred, y = patient)) +
+    score_plot <- ggplot2::ggplot(all_scores_df, ggplot2::aes(x = .data$pred, y = .data$patient)) +
       ggplot2::geom_boxplot() +
       ggplot2::theme(panel.grid = ggplot2::element_blank(), panel.background = ggplot2::element_rect(fill = NA)) +
-      ggplot2::geom_vline(xintercept = 0) +
+      #ggplot2::geom_vline(xintercept = 0) +
       ggplot2::theme(
         axis.text.x = ggplot2::element_text(size = 12, face = "bold", angle = 0, vjust = 0.5, hjust = 0.5, color = "black"),
         axis.title =  ggplot2::element_text(size = 14),
@@ -548,9 +548,10 @@ assess_immune_response <- function(predictions_immune_response = NULL,
         pred_averaged <- apply(cbind((1 - p) * pred_lin, (p) * TMB_lin), 1, mean)
       })
 
-      rp_df$weighted_average <- pred_averaged_rf[, 6] # penalty 0.5
+      # By default, weight or penalty of 0.5.
+      rp_df$weighted_average <- pred_averaged_rf[, 6]
       rp_df$penalized_score <- NA
-      rp_df$penalized_score[match(rownames(pred_combined_rf), rp_df$patient)] <- pred_combined_rf[, 6] # penalty 0.5
+      rp_df$penalized_score[match(rownames(pred_combined_rf), rp_df$patient)] <- pred_combined_rf[, 6]
       rp_df$patient <- paste0(rownames(rp_df), " (TMBcat=", rp_df$TMBcat, ")")
       rp_df$TMB <- NULL
       rp_df$TMBcat <- NULL
@@ -563,13 +564,14 @@ assess_immune_response <- function(predictions_immune_response = NULL,
       colors_approach <- c("#cc8100", "#00bc93", "#ff5b61")
 
       # sort patients
-      all_scores_df$patient <- factor(all_scores_df$patient, levels = all_scores_df$patient[match(levels(ordering), sapply(strsplit(all_scores_df$patient, split = " "), head, 1))])
+      all_scores_df$patient <- factor(all_scores_df$patient,
+                                      levels = all_scores_df$patient[match(levels(ordering), sapply(strsplit(all_scores_df$patient, split = " "), head, 1))])
 
       # color_response <- color_response[match(sapply(strsplit(levels(all_scores_df$patient), split = " "), head, 1), names(color_response))]
       # names(color_response) <- levels(all_scores_df$patient)
 
-      rf_score_plot <- ggplot2::ggplot(all_scores_df, ggplot2::aes(x = pred, y = patient, shape = approach)) +
-        ggplot2::geom_point(ggplot2::aes(fill = approach, colour = approach), size = 3) +
+      rf_score_plot <- ggplot2::ggplot(all_scores_df, ggplot2::aes(x = pred, y = .data$patient, shape = .data$approach)) +
+        ggplot2::geom_point(ggplot2::aes(fill = .data$approach, colour = .data$approach), size = 2) +
         ggplot2::scale_fill_manual(
           name = "Approach",
           labels = as.character(unique(all_scores_df$approach)),
@@ -586,7 +588,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
           values = colors_approach
         ) +
         ggplot2::theme(panel.grid = ggplot2::element_blank(), panel.background = ggplot2::element_rect(fill = NA)) +
-        ggplot2::geom_vline(xintercept = 0) +
+        #ggplot2::geom_vline(xintercept = 0) +
         #ggplot2::theme_linedraw() +
         # ggplot2::xlim(-3, 3) +
         ggplot2::theme(

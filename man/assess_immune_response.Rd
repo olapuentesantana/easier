@@ -22,8 +22,8 @@ assess_immune_response(
 
 \item{TMB_values}{numeric vector containing patients' tumor mutational burden (TMB) values.}
 
-\item{easier_with_TMB}{logical flag indicating whether to apply refined approach using the combination of easier
-predictions and tumor mutational burden.}
+\item{easier_with_TMB}{logical flag indicating whether to combine both easier and TMB scores based on a weighted
+average or penalized score (a weight, penalty of 0.5 is used).}
 
 \item{verbose}{logical flag indicating whether to display messages about the process.}
 }

@@ -17,7 +17,7 @@
 #' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from easierData.
 #' # Original processed data is available from IMvigor210CoreBiologies package.
 #' library("easierData")
-#' dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
+#' dataset_mariathasan <- suppressMessages(easierData::get_Mariathasan2018_PDL1_treatment())
 #' RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 #'
 #' # Computation of ligand-receptor pair weights
@@ -37,18 +37,19 @@
 #' lrpairs_binary <- ifelse(lrpair_weights > log2(10 + 1), 1, 0)
 #'
 #' # keep only the LR.pairs for which I have (non-zero) frequencies in the TCGA
-#' lr_frequency <- easierdata_eh[["EH6684"]]
+#' lr_frequency <- suppressMessages(easierData::get_lr_frequency_TCGA())
 #' lrpairs_binary <- lrpairs_binary[, colnames(lrpairs_binary) %in% names(lr_frequency)]
 #'
 #' # cancer type specific network
-#' intercell_networks <- easierdata_eh[["EH6683"]]
-#' intercell_network <- intercell_networks[["pancan"]]
-#' celltypes <- unique(c(as.character(intercell_network$cell1), as.character(intercell_network$cell2)))
+#' intercell_networks <- suppressMessages(easierData::get_intercell_networks())
+#' intercell_network_pancan <- intercell_networks[["pancan"]]
+#' celltypes <- unique(c(as.character(intercell_network_pancan$cell1),
+#'  as.character(intercell_network_pancan$cell2)))
 #' celltype1 <- celltypes[1]
 #' celltype2 <- celltypes[1]
 #'
 #' # compute the CC score for each patient
-#' CCpair_score <- compute_CCpair_score(celltype1, celltype2, intercell_network,
+#' CCpair_score <- compute_CCpair_score(celltype1, celltype2, intercell_network_pancan,
 #'   lrpairs_binary, lr_frequency,
 #'   compute_log = TRUE
 #' )
