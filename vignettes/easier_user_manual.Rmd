@@ -109,8 +109,12 @@ This vignette describes how to use the easier package for a pleasant onboarding 
 
 Starting R, this package can be installed as follows:
 
-```{r, eval=TRUE}
-install.packages("../easier_0.9.0.tar.gz", repos = NULL, type="source")
+```{r, eval=FALSE}
+BiocManager::install("easier")
+# to install also the dependencies used in the vignettes and in the examples:
+BiocManager::install("easier", dependencies = TRUE)
+# to download and install the development version from GitHub, you can use
+BiocManager::install("olapuentesantana/easier_devel")
 ```
 
 Once installed, the package can be loaded and attached to your current workspace as follows:
@@ -137,7 +141,7 @@ We first install and load the required packages.
 suppressPackageStartupMessages({
   library("easier")
   library("remotes")
-  remotes::install_github("olapuentesantana/easierData")
+  # remotes::install_github("olapuentesantana/easierData")
   library("easierData")
 })
 ```
