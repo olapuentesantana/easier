@@ -103,7 +103,7 @@ This vignette describes how to use the easier package for a pleasant onboarding 
 - Identify system biomarkers of immune response
 
 <center>
-![](/Users/Oscar/ownCloud2/SystemsImmunoOncology/easier_project/easier_image.png)
+![](easier_image.png)
 </center>  
 # Getting started {#gettingstarted}
 
