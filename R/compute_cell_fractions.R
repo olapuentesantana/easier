@@ -44,7 +44,6 @@ compute_cell_fractions <- function(RNA_tpm,
 
   cell_fractions$Sample <- NULL
   # Samples as rows, immune cells as columns
-  old_cellnames <- colnames(cell_fractions)
   new_cellnames <- c("B", "M1", "M2", "Monocyte", "Neutrophil", "NK", "CD4 T", "CD8+ T", "Treg", "DC", "Other")
   colnames(cell_fractions) <- new_cellnames
   cell_fractions[, "CD4 T"] <- cell_fractions[, "CD4 T"] + cell_fractions[, "Treg"]

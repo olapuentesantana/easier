@@ -53,11 +53,25 @@ view_name <- "immunecells"
 view_info <- c(immunecells = "gaussian")
 view_data <- list(immunecells = as.data.frame(cell_fractions))
 
+ # Retrieve internal data
+ opt_models <- suppressMessages(easierData::get_opt_models())
+ opt_xtrain_stats <- suppressMessages(easierData::get_opt_xtrain_stats())
+
+ opt_model_cancer_view_spec <- lapply(view_name, function(X) {
+ return(opt_models[[cancer_type]][[X]])
+ })
+ names(opt_model_cancer_view_spec) <- view_name
+ opt_xtrain_stats_cancer_view_spec <- lapply(view_name, function(X) {
+ return(opt_xtrain_stats[[cancer_type]][[X]])
+ })
+ names(opt_xtrain_stats_cancer_view_spec) <- view_name
+
 # Predict using rmtlr
 prediction_view <- predict_with_rmtlr(
   view_name = view_name,
   view_info = view_info,
   view_data = view_data,
-  cancer_type = cancer_type
+  opt_model_cancer_view_spec = opt_model_cancer_view_spec,
+  opt_xtrain_stats_cancer_view_spec = opt_xtrain_stats_cancer_view_spec
 )
 }

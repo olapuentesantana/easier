@@ -27,9 +27,9 @@
 #' # RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 #'
 #' # Select a subset of patients to reduce vignette building time.
-#' set.seed(1234)
-#' subset <- sample(colnames(RNA_tpm), size = 30)
-#' RNA_tpm <- RNA_tpm[, subset]
+#' #set.seed(1234)
+#' #subset <- sample(colnames(RNA_tpm), size = 30)
+#' #RNA_tpm <- RNA_tpm[, subset]
 #'
 #' # Log2 transformation:
 #' # log2_RNA_tpm <- log2(RNA_tpm + 1)
