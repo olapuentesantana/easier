@@ -387,15 +387,15 @@ assess_immune_response <- function(predictions_immune_response = NULL,
         paste0(descriptor," (", round(subset(AUC_mean_sd_all_run_tasks, View == descriptor)$AUC.mean, 2),")")
       }))
       graphics::legend(
-        x = "topright", inset = c(-0.4,0),
+        x = "topright", inset = c(-0.5,0),
         legend = legend_text,
-        col = c(all_colors, color_TMB), lty = 1, lwd = 2, cex = 0.7, bty = "n"
+        col = c(all_colors, color_TMB), lty = 1, lwd = 2, cex = 0.8, bty = "n"
       )
     } else {
       graphics::legend(
-        x = "topright", inset = c(-0.4,0),
+        x = "topright", inset = c(-0.5,0),
         legend = legend_text,
-        col = all_colors, lty = 1, lwd = 2, cex = 0.7, bty = "n"
+        col = all_colors, lty = 1, lwd = 2, cex = 0.8, bty = "n"
       )
     }
     plot_list[[2]] <- grDevices::recordPlot()
@@ -462,11 +462,11 @@ assess_immune_response <- function(predictions_immune_response = NULL,
       #graphics::abline(h = AUC_easier_v, col = color_ensemble)
       graphics::segments(x0=0, y0=AUC_easier_v, x1=1, y1=AUC_easier_v, col = color_ensemble)
       graphics::legend(
-        x = "topright", inset = c(-0.4,0),
+        x = "topright", inset = c(-0.5,0),
         legend = c("Penalized score", "Weighted average", "EaSIeR", "TMB"),
         col = c(
           "#c15050", "#693c72", as.vector(color_ensemble), color_TMB
-        ), lty = 1, lwd = 2, cex = 0.7, bty = "n"
+        ), lty = 1, lwd = 2, cex = 0.8, bty = "n"
       )
       plot_list[[3]] <- grDevices::recordPlot()
     }
