@@ -8,7 +8,7 @@
 #' @importFrom ROCR prediction performance plot
 #' @importFrom grDevices recordPlot
 #' @importFrom stats aggregate median sd
-#' @importFrom graphics legend par title abline lines plot.new
+#' @importFrom graphics legend par title segments lines
 #' @import ggplot2
 #'
 #' @export
@@ -33,6 +33,12 @@
 #' RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 #' RNA_counts <- dataset_mariathasan@assays@data@listData[["counts"]]
 #' cancer_type <- dataset_mariathasan@metadata$cancertype
+#'
+#' # Select a subset of patients to reduce vignette building time.
+#' set.seed(1234)
+#' subset <- sample(colnames(RNA_tpm), size = 30)
+#' RNA_counts <- RNA_counts[, subset]
+#' RNA_tpm <- RNA_tpm[, subset]
 #'
 #' # Computation of cell fractions  (Finotello et al., Genome Med, 2019)
 #' cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
@@ -61,7 +67,7 @@
 #' )
 #'
 #' # Predict patients' immune response
-#' predictions_immune_response <- predict_immune_response(
+#' predictions <- predict_immune_response(
 #'   pathways = pathway_activities,
 #'   immunecells = cell_fractions,
 #'   tfs = tf_activities,
@@ -79,9 +85,12 @@
 #' TMB <- dataset_mariathasan@colData$TMB
 #' names(TMB) <- dataset_mariathasan@colData$pat_id
 #'
+#' patient_ICBresponse <- patient_ICBresponse[subset]
+#' TMB <- TMB[subset]
+#'
 #' # Assess patient-specific likelihood of response to ICB therapy
 #' assess_immune_response(
-#'   predictions_immune_response = predictions_immune_response,
+#'   predictions_immune_response = predictions,
 #'   patient_response = patient_ICBresponse,
 #'   RNA_tpm = RNA_tpm,
 #'   TMB_values = TMB,
@@ -336,12 +345,12 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     # Plot ROC curve
     # *******************************************
     all_colors <- c(all_color_views, color_ensemble, color_gold_standard)
-    graphics::par(cex.axis = 1.3, mar = c(5, 4, 2, 2), col.lab = "black", pty="s")
+    graphics::par(cex.axis = 1.3, mar = c(5, 4, 2, 12), col.lab = "black", pty="s", xpd=TRUE)
 
     # Single views & Gold Standard
     ROCR::plot(ROC_all_run_tasks[[1]]$Curve[[1]],
       avg = "threshold", col = all_colors[1], lwd = 2, type = "S",
-      cex.lab = 1.3, ylab = "True Positive Rate", xlab = "False Positive Rate"
+      cex.lab = 1.3, ylab = "True Positive Rate", xlab = "False Positive Rate", bty = "L"
     )
 
     sapply(setdiff(names(ROC_all_run_tasks)[2:length(names(ROC_all_run_tasks))], "TMB"), function(descriptor) {
@@ -374,20 +383,19 @@ assess_immune_response <- function(predictions_immune_response = NULL,
         col = color_TMB, lwd = 2, type = "S", cex.lab = 1.3,
         lty = 1, add = TRUE
       )
-
       legend_text <- do.call(c, lapply(names(ROC_all_run_tasks)[1:length(names(ROC_all_run_tasks))], function(descriptor) {
         paste0(descriptor," (", round(subset(AUC_mean_sd_all_run_tasks, View == descriptor)$AUC.mean, 2),")")
       }))
       graphics::legend(
-        x = "topleft",
+        x = "topright", inset = c(-0.4,0),
         legend = legend_text,
-        col = c(all_colors, color_TMB), lty = 1, lwd = 2, cex = 0.6, bty = "n"
+        col = c(all_colors, color_TMB), lty = 1, lwd = 2, cex = 0.7, bty = "n"
       )
     } else {
       graphics::legend(
-        x = "topleft",
+        x = "topright", inset = c(-0.4,0),
         legend = legend_text,
-        col = all_colors, lty = 1, lwd = 2, cex = 0.6, bty = "n"
+        col = all_colors, lty = 1, lwd = 2, cex = 0.7, bty = "n"
       )
     }
     plot_list[[2]] <- grDevices::recordPlot()
@@ -437,25 +445,28 @@ assess_immune_response <- function(predictions_immune_response = NULL,
       AUC_easier <- ROCR::performance(pred, measure = "auc")
       AUC_easier_v <- AUC_easier@y.values[[1]]
 
-      graphics::par(cex.axis = 1.3, mar = c(5, 4, 2, 2), col.lab = "black", pty="s")
+      graphics::par(cex.axis = 1.3, mar = c(5, 4, 2, 8), col.lab = "black", pty="s", xpd=TRUE)
       plot(seq(from = 0, to = 1, by = 0.1), AUC_combined_v,
            xlab = "Penalty or Relative weight", ylab = "Area under the curve (AUC)",
            type = "b", col = "#c15050", lty = 1, pch = 19, lwd = 2, ylim = c(0, 1),
-           cex.lab = 1.3)
+           xlim = c(0, 1), cex.lab = 1.3)
       graphics::lines(seq(from = 0, to = 1, by = 0.1), AUC_averaged_v,
             xlab = "Penalty or Relative weight", ylab = "Area under the curve (AUC)",
             type = "b", col = "#693c72", lty = 1, pch = 19, lwd = 2, ylim = c(0, 1),
-            cex.lab = 1.3)
+            xlim = c(0, 1), cex.lab = 1.3)
       # TMB
-      graphics::abline(h = AUC_mean_sd_TMB_run_tasks$AUC.mean, col = color_TMB)
+      #graphics::abline(h = AUC_mean_sd_TMB_run_tasks$AUC.mean, col = color_TMB)
+      graphics::segments(x0=0, y0=AUC_mean_sd_TMB_run_tasks$AUC.mean, x1=1,
+                         y1=AUC_mean_sd_TMB_run_tasks$AUC.mean, col = color_TMB)
       # easier (ensemble)
-      graphics::abline(h = AUC_easier_v, col = color_ensemble)
+      #graphics::abline(h = AUC_easier_v, col = color_ensemble)
+      graphics::segments(x0=0, y0=AUC_easier_v, x1=1, y1=AUC_easier_v, col = color_ensemble)
       graphics::legend(
-        x = "topright",
+        x = "topright", inset = c(-0.4,0),
         legend = c("Penalized score", "Weighted average", "EaSIeR", "TMB"),
         col = c(
           "#c15050", "#693c72", as.vector(color_ensemble), color_TMB
-        ), lty = 1, lwd = 2, cex = 0.6, bty = "n"
+        ), lty = 1, lwd = 2, cex = 0.7, bty = "n"
       )
       plot_list[[3]] <- grDevices::recordPlot()
     }

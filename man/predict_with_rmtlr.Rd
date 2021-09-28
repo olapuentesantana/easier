@@ -41,6 +41,11 @@ dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 cancer_type <- dataset_mariathasan@metadata$cancertype
 
+# Select a subset of patients to reduce vignette building time.
+set.seed(1234)
+subset <- sample(colnames(RNA_tpm), size = 30)
+RNA_tpm <- RNA_tpm[, subset]
+
 # Computation of cell fractions
 cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
 

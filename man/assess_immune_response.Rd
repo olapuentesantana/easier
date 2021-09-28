@@ -47,6 +47,12 @@ RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 RNA_counts <- dataset_mariathasan@assays@data@listData[["counts"]]
 cancer_type <- dataset_mariathasan@metadata$cancertype
 
+# Select a subset of patients to reduce vignette building time.
+set.seed(1234)
+subset <- sample(colnames(RNA_tpm), size = 30)
+RNA_counts <- RNA_counts[, subset]
+RNA_tpm <- RNA_tpm[, subset]
+
 # Computation of cell fractions  (Finotello et al., Genome Med, 2019)
 cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
 
@@ -74,7 +80,7 @@ ccpair_scores <- compute_CC_pairs(
 )
 
 # Predict patients' immune response
-predictions_immune_response <- predict_immune_response(
+predictions <- predict_immune_response(
   pathways = pathway_activities,
   immunecells = cell_fractions,
   tfs = tf_activities,
@@ -92,9 +98,12 @@ names(patient_ICBresponse) <- dataset_mariathasan@colData$pat_id
 TMB <- dataset_mariathasan@colData$TMB
 names(TMB) <- dataset_mariathasan@colData$pat_id
 
+patient_ICBresponse <- patient_ICBresponse[subset]
+TMB <- TMB[subset]
+
 # Assess patient-specific likelihood of response to ICB therapy
 assess_immune_response(
-  predictions_immune_response = predictions_immune_response,
+  predictions_immune_response = predictions,
   patient_response = patient_ICBresponse,
   RNA_tpm = RNA_tpm,
   TMB_values = TMB,

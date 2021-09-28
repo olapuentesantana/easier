@@ -32,6 +32,11 @@ library("easierData")
 dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 
+# Select a subset of patients to reduce vignette building time.
+set.seed(1234)
+subset <- sample(colnames(RNA_tpm), size = 30)
+RNA_tpm <- RNA_tpm[, subset]
+
 # Computation of different hallmarks of anti-cancer immune responses
 hallmarks_of_immune_response <- c(
   "CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",

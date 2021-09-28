@@ -17,6 +17,11 @@
 #' dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 #' RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 #'
+#' # Select a subset of patients to reduce vignette building time.
+#' set.seed(1234)
+#' subset <- sample(colnames(RNA_tpm), size = 30)
+#' RNA_tpm <- RNA_tpm[, subset]
+#'
 #' genes_info <- reannotate_genes(cur_genes = rownames(RNA_tpm))
 reannotate_genes <- function(cur_genes) {
 

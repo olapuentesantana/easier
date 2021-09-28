@@ -24,6 +24,11 @@
 #' RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 #' cancer_type <- dataset_mariathasan@metadata$cancertype
 #'
+#' # Select a subset of patients to reduce vignette building time.
+#' set.seed(1234)
+#' subset <- sample(colnames(RNA_tpm), size = 30)
+#' RNA_tpm <- RNA_tpm[, subset]
+#'
 #' # Computation of cell fractions
 #' cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
 #'
@@ -69,7 +74,7 @@ predict_with_rmtlr <- function(view_name,
   if (standardize_any == TRUE) {
     for (m in 1:P) {
 
-      # Check features availability
+      # Check features availability (we account for mismatches in new releases of progeny, dorothea or quantiseqr)
       keep_pos <- stats::na.omit(match(colnames(prediction_X[[m]]), rownames(opt_xtrain_stats_cancer_view_spec[[m]]$mean)))
       keep_names <- intersect(colnames(prediction_X[[m]]), rownames(opt_xtrain_stats_cancer_view_spec[[m]]$mean))
       prediction_X[[m]] <- prediction_X[[m]][, keep_names]

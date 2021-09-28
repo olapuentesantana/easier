@@ -33,6 +33,11 @@ library("easierData")
 dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 RNA_counts <- dataset_mariathasan@assays@data@listData[["counts"]]
 
+# Select a subset of patients to reduce vignette building time.
+set.seed(1234)
+subset <- sample(colnames(RNA_counts), size = 30)
+RNA_counts <- RNA_counts[, subset]
+
 # Computation of pathway activity (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018)
 pathway_activity <- compute_pathway_activity(
   RNA_counts = RNA_counts,

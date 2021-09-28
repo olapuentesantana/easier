@@ -164,12 +164,13 @@ cancer_type <- dataset_mariathasan@metadata$cancertype
 RNA_counts <- dataset_mariathasan@assays@data@listData[["counts"]]
 RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 
-# Select a subset of patients to reduce computational time.
-n <- 20
-patient_ICBresponse <- patient_ICBresponse[1:n]
-TMB <- TMB[1:n]
-RNA_counts <- RNA_counts[,1:n]
-RNA_tpm <- RNA_tpm[,1:n]
+# Select a subset of patients to reduce vignette building time.
+set.seed(1234)
+subset <- sample(names(patient_ICBresponse), size = 30)
+patient_ICBresponse <- patient_ICBresponse[subset]
+TMB <- TMB[subset]
+RNA_counts <- RNA_counts[, subset]
+RNA_tpm <- RNA_tpm[, subset]
 ```
 
 ## Compute hallmarks of immune response
@@ -234,13 +235,13 @@ Again, `cancer_type` is set to `pancan` (default). The same `cancer_type` networ
 Now we use the quantitative descriptors computed previously as input features to predict anti-tumor immune responses based on the model parameters defined during training. The output of `predict_immune_response` returns predictions of patients' immune response for each quantitative descriptor. Because models were built in a cancer-type-specific fashion, the user is required to indicate which cancer-specific model should be used for predicting the immune response. This can be done via the `cancer_type` argument.
 
 ```{r, eval=TRUE}
-predictions_immune_response <- predict_immune_response(pathways = pathway_activities,
-                                                       immunecells = cell_fractions,
-                                                       tfs = tf_activities,
-                                                       lrpairs = lrpair_weights,
-                                                       ccpairs = ccpair_scores,
-                                                       cancer_type = cancer_type, 
-                                                       verbose = TRUE)
+predictions <- predict_immune_response(pathways = pathway_activities,
+                                       immunecells = cell_fractions,
+                                       tfs = tf_activities,
+                                       lrpairs = lrpair_weights,
+                                       ccpairs = ccpair_scores,
+                                       cancer_type = cancer_type, 
+                                       verbose = TRUE)
 ```
 
 Once we obtained patients' predicted immune response, two different scenarios can be considered in which:
@@ -263,7 +264,7 @@ Since both immune response and TMB are essential for an effective immunotherapy 
 
 
 ```{r, eval=TRUE}
-output_eval_with_resp <- assess_immune_response(predictions_immune_response = predictions_immune_response,
+output_eval_with_resp <- assess_immune_response(predictions_immune_response = predictions,
                                                 patient_response = patient_ICBresponse,
                                                 RNA_tpm = RNA_tpm,
                                                 TMB_values = TMB,
@@ -274,13 +275,13 @@ Top figure. Area under the curve (AUC) values of patients' predictions based on 
 
 Bottom figure. ROC curves were computed as the average of the ROC curves obtained for each score of immune response.
 
-`output_evaluation_with_resp` stores the plots from above, and they can be inspect in R as follows:
+`output_evaluation_with_resp` stores the plots from above, and they can be inspected in R as follows:
 
 ```{r, eval=FALSE}
 # inspect output
-output_evaluation_with_resp[[1]]
-output_evaluation_with_resp[[2]]
-output_evaluation_with_resp[[3]]
+output_eval_with_resp[[1]]
+output_eval_with_resp[[2]]
+output_eval_with_resp[[3]]
 ```
 
 ## What if I have an immunotherapy dataset where patients' response is not available?
@@ -290,7 +291,7 @@ This is a usual case where we might have a cancer dataset with bulk RNA-seq data
 In this likely scenario, an score of likelihood of immune response can be assigned to each patient by omitting the argument `patient_response` within the function `assess_immune_response`.
 
 ```{r, eval=TRUE}
-output_eval_no_resp <- assess_immune_response(predictions_immune_response = predictions_immune_response,
+output_eval_no_resp <- assess_immune_response(predictions_immune_response = predictions,
                                               RNA_tpm = RNA_tpm,
                                               TMB_values = TMB,
                                               easier_with_TMB = TRUE)
@@ -300,19 +301,21 @@ Top figure. Boxplot of patients' easier score showing its distribution across th
 
 Bottom figure. Scatterplot of patients' prediction when combining easier score with tumor mutational burden  showing its distribution across the 10 different tasks.
 
-`output_evaluation_no_resp` stores the plots from above, and they can be inspect in R as follows:
+`output_evaluation_no_resp` stores the plots from above, and they can be inspected in R as follows:
 
 ```{r, eval=FALSE}
 # inspect output
-output_evaluation_no_resp[[1]]
-output_evaluation_no_resp[[2]]
+output_eval_no_resp[[1]]
+output_eval_no_resp[[2]]
 ```
 
 ## Interpret response to immunotherapy through systems biomarkers {#biomarkers}
 
-We can go further and analyze systems biomarkers present in patients' bulk RNA-seq data. Via `explore_biomarkers`, we can visualize stunning biomarkers of immune response and investigate possible mechanisms behind patients' response to treatment (e.g. comparing non-responders and responders patients if response is known).
+Identifying mechanisms used by patients' tumors to resist or succumb to ICB treatment is of paramount importance. Via `explore_biomarkers`, we can visualize stunning biomarkers of immune response and shed light into possible mechanisms responsible for the patients' response to treatment. 
 
-In order to leverage the biomarker weights assigned during model training, you need to specify again which `cancer_type` the bulk RNA-seq data belongs to.
+As before, the option `patient_response` should be provided with a character string containing patients' clinical response (where non-responders are labeled as NR and responders as R). 
+
+In order to leverage the cancer-specific biomarker weights inferred from model training, you need to specify again which `cancer_type` the bulk RNA-seq data belongs to.
 
 ```{r, eval=TRUE}
 output_biomarkers <- explore_biomarkers(pathways = pathway_activities,
@@ -322,6 +325,15 @@ output_biomarkers <- explore_biomarkers(pathways = pathway_activities,
                                         ccpairs = ccpair_scores,
                                         cancer_type = cancer_type,
                                         patient_response = patient_ICBresponse)
+```
+
+The output of `explore_biomarkers` returns, for each quantitative descriptor, feature's z-score values comparing responders (R) and non-responders (NR) patients with the corresponding feature's model weights (only top 15 biomarkers are shown for tfs, lrpairs and ccpairs descriptors). 
+
+Additionally, a volcano plot integrating systems biomarkers from all quantitative descriptors comparing NR and R patients (two-sided Wilcoxon rank-sum test). Significant biomarkers (p < 0.05) are shown in blue. Biomarkers are drawn according to their corresponding sign (shape) and weight (size) obtained during model training. Labels are reported for the top 15 biomarkers (based on the association with the tasks) that are significantly different between R and NR.
+
+`output_biomarkers` stores the plots from above, and they can be inspected in R as follows:
+
+```{r, eval=FALSE}
 # inspect output
 #output_biomarkers[[1]]
 #output_biomarkers[[2]]
@@ -330,9 +342,6 @@ output_biomarkers <- explore_biomarkers(pathways = pathway_activities,
 #output_biomarkers[[5]]
 #output_biomarkers[[6]]
 ```
-
-The output of `explore_biomarkers` returns multiple figures identifying mechanisms used by patients' tumors to resist or succumb to ICB treatment.
-
 
 # Session info {- .smaller}
 

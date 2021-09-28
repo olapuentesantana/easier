@@ -51,6 +51,12 @@ RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
 RNA_counts <- dataset_mariathasan@assays@data@listData[["counts"]]
 cancer_type <- dataset_mariathasan@metadata$cancertype
 
+# Select a subset of patients to reduce vignette building time.
+set.seed(1234)
+subset <- sample(colnames(RNA_tpm), size = 30)
+RNA_counts <- RNA_counts[, subset]
+RNA_tpm <- RNA_tpm[, subset]
+
 # Computation of cell fractions
 cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
 
@@ -80,6 +86,7 @@ ccpair_scores <- compute_CC_pairs(
 # retrieve clinical response
 patient_ICBresponse <- dataset_mariathasan@colData$BOR
 names(patient_ICBresponse) <- dataset_mariathasan@colData$pat_id
+patient_ICBresponse <- patient_ICBresponse[subset]
 
 # Investigate possible biomarkers
 explore_biomarkers(

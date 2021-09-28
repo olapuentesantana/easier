@@ -36,6 +36,12 @@
 #' RNA_counts <- dataset_mariathasan@assays@data@listData[["counts"]]
 #' cancer_type <- dataset_mariathasan@metadata$cancertype
 #'
+#' # Select a subset of patients to reduce vignette building time.
+#' set.seed(1234)
+#' subset <- sample(colnames(RNA_tpm), size = 30)
+#' RNA_counts <- RNA_counts[, subset]
+#' RNA_tpm <- RNA_tpm[, subset]
+#'
 #' # Computation of cell fractions
 #' cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
 #'
@@ -65,6 +71,7 @@
 #' # retrieve clinical response
 #' patient_ICBresponse <- dataset_mariathasan@colData$BOR
 #' names(patient_ICBresponse) <- dataset_mariathasan@colData$pat_id
+#' patient_ICBresponse <- patient_ICBresponse[subset]
 #'
 #' # Investigate possible biomarkers
 #' explore_biomarkers(
@@ -117,7 +124,7 @@ explore_biomarkers <- function(pathways = NULL,
   get_biomarkers_features <- function(view, cancer_type, verbose = TRUE) {
     view_info <- view_combinations[[view]]
     view_name <- paste(names(view_info), collapse = "_")
-    if (verbose) message("Examining ", view_name, " biomarkers \n")
+    #if (verbose) message("Examining ", view_name, " biomarkers \n")
     # ---------- #
     # Features #
     # ---------- #
@@ -179,13 +186,6 @@ explore_biomarkers <- function(pathways = NULL,
     }
     colnames(biomarkers_weights) <- c("variable", "datatype", "weight")
 
-    biomarkers_weights_sort <- biomarkers_weights[order(abs(biomarkers_weights$weight), decreasing = TRUE), ]
-
-    if (nrow(biomarkers_weights_sort) > 15) {
-      biomarkers_weights_sort <- biomarkers_weights_sort[1:15, ]
-    }
-    biomarkers_weights_sort <- as.data.frame(biomarkers_weights_sort)
-
     features <- biomarkers_weights_features$features
     features <- features[!is.na(features$value), ]
     features$feature <- droplevels(features$feature)
@@ -199,6 +199,23 @@ explore_biomarkers <- function(pathways = NULL,
       }
       features$feature <- factor(tmp, levels = tmp_2)
     }
+
+    biomarkers_weights_sort <- biomarkers_weights[order(abs(biomarkers_weights$weight), decreasing = TRUE), ]
+    if (nrow(biomarkers_weights_sort) > 15) {
+      biomarkers_weights_sort <- biomarkers_weights_sort[1:15, ]
+    }
+    # Two TFs differ across dorothea versions (our model was built based on a previous version)
+    while (all(biomarkers_weights_sort$variable %in% features$feature) == FALSE){
+
+      missing_tfs <- as.character(biomarkers_weights_sort$variable[!biomarkers_weights_sort$variable %in% features$feature])
+      biomarkers_weights_sort <- biomarkers_weights[order(abs(biomarkers_weights$weight), decreasing = TRUE), ]
+      biomarkers_weights_sort <- biomarkers_weights_sort[!biomarkers_weights_sort$variable %in% missing_tfs, ]
+
+      if (nrow(biomarkers_weights_sort) > 15) {
+        biomarkers_weights_sort <- biomarkers_weights_sort[1:15, ]
+      }
+    }
+    biomarkers_weights_sort <- as.data.frame(biomarkers_weights_sort)
 
     # weights
     biomarkers_weights_sort$variable <- factor(biomarkers_weights_sort$variable, levels = unique(biomarkers_weights_sort$variable))

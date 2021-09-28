@@ -25,6 +25,11 @@ library("easierData")
 dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 TMB <- dataset_mariathasan@colData$TMB; names(TMB) <- dataset_mariathasan@colData$pat_id
 
+# Select a subset of patients to reduce vignette building time.
+set.seed(1234)
+subset <- sample(names(TMB), size = 30)
+TMB <- TMB[subset]
+
 # Convert TMB continous values into categories
 TMB_cat <- categorize_TMB(TMB = TMB)
 }
