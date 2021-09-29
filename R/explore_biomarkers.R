@@ -180,7 +180,7 @@ explore_biomarkers <- function(pathways = NULL,
       )
       tmp <- as.character(biomarkers_weights$feature)
       for (X in 1:length(new_variables_cc)) {
-        tmp <- gsub(old_variables_cc[X], new_variables_cc[X], tmp, fixed = T)
+        tmp <- gsub(old_variables_cc[X], new_variables_cc[X], tmp, fixed = TRUE)
       }
       biomarkers_weights$feature <- tmp
     }
@@ -194,8 +194,8 @@ explore_biomarkers <- function(pathways = NULL,
       tmp <- features$feature
       tmp_2 <- levels(features$feature)
       for (X in 1:length(new_variables_cc)) {
-        tmp <- gsub(old_variables_cc[X], new_variables_cc[X], tmp, fixed = T)
-        tmp_2 <- gsub(old_variables_cc[X], new_variables_cc[X], tmp_2, fixed = T)
+        tmp <- gsub(old_variables_cc[X], new_variables_cc[X], tmp, fixed = TRUE)
+        tmp_2 <- gsub(old_variables_cc[X], new_variables_cc[X], tmp_2, fixed = TRUE)
       }
       features$feature <- factor(tmp, levels = tmp_2)
     }
