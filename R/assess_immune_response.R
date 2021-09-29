@@ -30,9 +30,9 @@
 #' # Original processed data is available from IMvigor210CoreBiologies package.
 #' library("easierData")
 #' dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
-#' RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
-#' RNA_counts <- dataset_mariathasan@assays@data@listData[["counts"]]
-#' cancer_type <- dataset_mariathasan@metadata$cancertype
+#' RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
+#' RNA_counts <- assays(dataset_mariathasan)[["counts"]]
+#' cancer_type <- metadata(dataset_mariathasan)$cancertype
 #'
 #' # Select a subset of patients to reduce vignette building time.
 #' set.seed(1234)
@@ -78,12 +78,12 @@
 #' )
 #'
 #' # retrieve clinical response
-#' patient_ICBresponse <- dataset_mariathasan@colData$BOR
-#' names(patient_ICBresponse) <- dataset_mariathasan@colData$pat_id
+#' patient_ICBresponse <- colData(dataset_mariathasan)[["BOR"]]
+#' names(patient_ICBresponse) <- colData(dataset_mariathasan)[["pat_id"]]
 #'
 #' # retrieve TMB
-#' TMB <- dataset_mariathasan@colData$TMB
-#' names(TMB) <- dataset_mariathasan@colData$pat_id
+#' TMB <- colData(dataset_mariathasan)[["TMB"]]
+#' names(TMB) <- colData(dataset_mariathasan)[["pat_ide"]]
 #'
 #' patient_ICBresponse <- patient_ICBresponse[subset]
 #' TMB <- TMB[subset]
