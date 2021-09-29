@@ -7,29 +7,36 @@
 compute_cell_fractions(RNA_tpm, verbose = TRUE)
 }
 \arguments{
-\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in rows and samples in columns.}
+\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols
+in rows and samples in columns.}
 
-\item{verbose}{logical value indicating whether to display messages about the number of immune cell
+\item{verbose}{logical value indicating whether to display messages
+about the number of immune cell
 signature genes found in the gene expression data provided.}
 }
 \value{
-A numeric matrix of normalized enrichment scores with samples in rows and cell types in columns.
+A numeric matrix of normalized enrichment scores
+with samples in rows and cell types in columns.
 }
 \description{
 This function estimates cell fractions from TPM bulk gene expression
 using quanTIseq method from (Finotello et al., Genome Med, 2019).
 }
 \examples{
-# Load exemplary dataset (Mariathasan et al., Nature, 2018) from easierData.
-# Original processed data is available from IMvigor210CoreBiologies package.
+# using a SummarizedExperiment object
+library(SummarizedExperiment)
+# Using example exemplary dataset (Mariathasan et al., Nature, 2018)
+# from easierData. Original processed data is available from
+# IMvigor210CoreBiologies package.
 library("easierData")
+
 dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 
 # Select a subset of patients to reduce vignette building time.
 set.seed(1234)
-subset <- sample(colnames(RNA_tpm), size = 30)
-RNA_tpm <- RNA_tpm[, subset]
+pat_subset <- sample(colnames(RNA_tpm), size = 5)
+RNA_tpm <- RNA_tpm[, pat_subset]
 
 # Computation of cell fractions (Finotello et al., Genome Med, 2019)
 cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)

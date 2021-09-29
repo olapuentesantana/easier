@@ -1,35 +1,47 @@
-#' Compute overall expression (OE) of the immune resistance program derived in Jerby-Arnon et al., 2018.
+#' Compute overall expression (OE) of the immune resistance program derived
+#' in Jerby-Arnon et al., 2018.
 #'
-#' This function calculates the overall expression of the immune resistance program which is based on a set of
-#' gene signatures associated with T cell exclusion, post-treatment and functional resistance.
-#' The code was provided via Github https://github.com/livnatje/ImmuneResistance/blob/master/Code/ImmRes_OE.R.
+#' This function calculates the overall expression of the immune resistance
+#' program which is based on a set of gene signatures associated with T cell
+#' exclusion, post-treatment and functional resistance. The code was provided
+#' via Github https://github.com/livnatje/ImmuneResistance/blob/master/Code/ImmRes_OE.R.
 #'
-#' @references Jerby-Arnon, L., Shah, P., Cuoco, M.S., Rodman, C., Su, M.-J., Melms, J.C., Leeson, R., Kanodia, A., Mei, S., Lin, J.-R., et al. (2018).
-#' A Cancer Cell Program Promotes T Cell Exclusion and Resistance to Checkpoint Blockade. Cell 175, 984–997.e24. https://doi.org/10.1016/j.cell.2018.09.006
+#' @references Jerby-Arnon, L., Shah, P., Cuoco, M.S., Rodman, C., Su, M.-J., Melms, J.C.,
+#' Leeson, R., Kanodia, A., Mei, S., Lin, J.-R., et al. (2018). A Cancer Cell Program
+#' Promotes T Cell Exclusion and Resistance to Checkpoint Blockade. Cell 175, 984–997.e24.
+#' https://doi.org/10.1016/j.cell.2018.09.006
 #'
 #' @importFrom arules discretize
 #'
-#' @param r list containing a numeric matrix with bulk RNA-Seq data (tpm values) and a character string with the available gene names.
-#' @param gene_sign list containing different character strings associated with subsets of the resistance program.
-#' @param num_rounds integer value related to the number of random gene signatures samples to be computed for normalization.
-#' Jerby-Arnon et al. found that 1000 random signatures were sufficient to yield an estimate of the expected value.
+#' @param r list containing a numeric matrix with bulk RNA-Seq data (tpm values)
+#' and a character string with the available gene names.
+#' @param gene_sign list containing different character strings associated with
+#' subsets of the resistance program.
+#' @param num_rounds integer value related to the number of random gene signatures
+#' samples to be computed for normalization.
+#' Jerby-Arnon et al. found that 1000 random signatures were sufficient to yield an
+#' estimate of the expected value.
 #' @param full_flag logical flag indicating whether to return also random scores.
 #' @param verbose logical flag indicating whether to display messages about the process.
 #'
-#' @return A numeric matrix with computed scores for each sample and subset of signatures included in the immune resistance program
-#' (rows = samples; columns = gene signatures)
+#' @return A numeric matrix with computed scores for each sample and subset of signatures
+#' included in the immune resistance program (rows = samples; columns = gene signatures)
 #'
 #' @examples
-#' # Load exemplary dataset (Mariathasan et al., Nature, 2018) from easierData.
-#' # Original processed data is available from IMvigor210CoreBiologies package.
-#' # library("easierData")
-#' # dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
-#' # RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
+#' # using a SummarizedExperiment object
+#' library(SummarizedExperiment)
+#' # Using example exemplary dataset (Mariathasan et al., Nature, 2018)
+#' # from easierData. Original processed data is available from
+#' # IMvigor210CoreBiologies package.
+#' library("easierData")
+#'
+#' dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
+#' RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 #'
 #' # Select a subset of patients to reduce vignette building time.
-#' #set.seed(1234)
-#' #subset <- sample(colnames(RNA_tpm), size = 30)
-#' #RNA_tpm <- RNA_tpm[, subset]
+#' set.seed(1234)
+#' pat_subset <- sample(colnames(RNA_tpm), size = 5)
+#' RNA_tpm <- RNA_tpm[, pat_subset]
 #'
 #' # Log2 transformation:
 #' # log2_RNA_tpm <- log2(RNA_tpm + 1)
@@ -50,39 +62,43 @@ get_OE_bulk <- function(r,
                         num_rounds = 1000,
                         full_flag = FALSE,
                         verbose = TRUE) {
-  set.seed(1234)
-  r$genes_mean <- rowMeans(r$tpm)
-  r$zscores <- sweep(r$tpm, 1, r$genes_mean, FUN = "-")
-  r$genes_dist <- r$genes_mean
-  r$genes_dist_q <- arules::discretize(r$genes_dist, n.cat = 50)
-  r$sig_scores <- matrix(data = 0, nrow = ncol(r$tpm), ncol = length(gene_sign))
-  sig_names <- names(gene_sign)
-  colnames(r$sig_scores) <- sig_names
-  r$sig_scores_raw <- r$sig_scores
-  rand_flag <- is.null(r$rand_scores) | !all(is.element(names(gene_sign), colnames(r$rand_scores)))
-  if (rand_flag) {
-    # if (verbose) message("Computing also random scores...", "\n")
-    r$rand_scores <- r$sig_scores
-  }
-  for (i in sig_names) {
-    b_sign <- is.element(r$genes, gene_sign[[i]])
-    if (sum(b_sign) < 2) {
-      next()
-    }
+    r$genes_mean <- rowMeans(r$tpm)
+    r$zscores <- sweep(r$tpm, 1, r$genes_mean, FUN = "-")
+    r$genes_dist <- r$genes_mean
+    r$genes_dist_q <- arules::discretize(r$genes_dist, n.cat = 50)
+    r$sig_scores <- matrix(data = 0, nrow = ncol(r$tpm), ncol = length(gene_sign))
+    sig_names <- names(gene_sign)
+    colnames(r$sig_scores) <- sig_names
+    r$sig_scores_raw <- r$sig_scores
+    rand_flag <- is.null(r$rand_scores) | !all(is.element(
+        names(gene_sign),
+        colnames(r$rand_scores)
+    ))
     if (rand_flag) {
-      rand_scores <- get_semi_random_OE(r, r$genes_dist_q, b_sign, num_rounds = num_rounds)
-    } else {
-      rand_scores <- r$rand_scores[, i]
+        # if (verbose) message("Computing also random scores...", "\n")
+        r$rand_scores <- r$sig_scores
     }
-    raw_scores <- colMeans(r$zscores[b_sign, ])
-    final_scores <- raw_scores - rand_scores
-    r$sig_scores[, i] <- final_scores
-    r$sig_scores_raw[, i] <- raw_scores
-    r$rand_scores[, i] <- rand_scores
-  }
-  if (full_flag) {
-    return(r)
-  }
-  sig_scores <- r$sig_scores
-  return(sig_scores)
+    for (i in sig_names) {
+        b_sign <- is.element(r$genes, gene_sign[[i]])
+        if (sum(b_sign) < 2) {
+            next()
+        }
+        if (rand_flag) {
+            rand_scores <- get_semi_random_OE(r, r$genes_dist_q, b_sign,
+                num_rounds = num_rounds, random_seed = 1234
+            )
+        } else {
+            rand_scores <- r$rand_scores[, i]
+        }
+        raw_scores <- colMeans(r$zscores[b_sign, ])
+        final_scores <- raw_scores - rand_scores
+        r$sig_scores[, i] <- final_scores
+        r$sig_scores_raw[, i] <- raw_scores
+        r$rand_scores[, i] <- rand_scores
+    }
+    if (full_flag) {
+        return(r)
+    }
+    sig_scores <- r$sig_scores
+    return(sig_scores)
 }

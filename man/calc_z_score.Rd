@@ -18,20 +18,24 @@ A numeric matrix with values as z-scores.
 }
 \description{
 This function performs z-score normalization on a numeric matrix per column.
-Mean and standard deviation values to be used to calculate z-score values, otherwise they are
-calculated based on the input matrix.
+Mean and standard deviation values to be used to calculate z-score values,
+otherwise they are calculated based on the input matrix.
 }
 \examples{
-# Load exemplary dataset (Mariathasan et al., Nature, 2018) from easierData.
-# Original processed data is available from IMvigor210CoreBiologies package.
+# using a SummarizedExperiment object
+library(SummarizedExperiment)
+# Using example exemplary dataset (Mariathasan et al., Nature, 2018)
+# from easierData. Original processed data is available from
+# IMvigor210CoreBiologies package.
 library("easierData")
+
 dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 
 # Select a subset of patients to reduce vignette building time.
 set.seed(1234)
-subset <- sample(colnames(RNA_tpm), size = 30)
-RNA_tpm <- RNA_tpm[, subset]
+pat_subset <- sample(colnames(RNA_tpm), size = 5)
+RNA_tpm <- RNA_tpm[, pat_subset]
 
 # apply z-score normalization
 tpm_zscore <- calc_z_score(t(RNA_tpm))

@@ -2,7 +2,8 @@
 % Please edit documentation in R/get_OE_bulk.R
 \name{get_OE_bulk}
 \alias{get_OE_bulk}
-\title{Compute overall expression (OE) of the immune resistance program derived in Jerby-Arnon et al., 2018.}
+\title{Compute overall expression (OE) of the immune resistance program derived
+in Jerby-Arnon et al., 2018.}
 \usage{
 get_OE_bulk(
   r,
@@ -13,37 +14,46 @@ get_OE_bulk(
 )
 }
 \arguments{
-\item{r}{list containing a numeric matrix with bulk RNA-Seq data (tpm values) and a character string with the available gene names.}
+\item{r}{list containing a numeric matrix with bulk RNA-Seq data (tpm values)
+and a character string with the available gene names.}
 
-\item{gene_sign}{list containing different character strings associated with subsets of the resistance program.}
+\item{gene_sign}{list containing different character strings associated with
+subsets of the resistance program.}
 
-\item{num_rounds}{integer value related to the number of random gene signatures samples to be computed for normalization.
-Jerby-Arnon et al. found that 1000 random signatures were sufficient to yield an estimate of the expected value.}
+\item{num_rounds}{integer value related to the number of random gene signatures
+samples to be computed for normalization.
+Jerby-Arnon et al. found that 1000 random signatures were sufficient to yield an
+estimate of the expected value.}
 
 \item{full_flag}{logical flag indicating whether to return also random scores.}
 
 \item{verbose}{logical flag indicating whether to display messages about the process.}
 }
 \value{
-A numeric matrix with computed scores for each sample and subset of signatures included in the immune resistance program
-(rows = samples; columns = gene signatures)
+A numeric matrix with computed scores for each sample and subset of signatures
+included in the immune resistance program (rows = samples; columns = gene signatures)
 }
 \description{
-This function calculates the overall expression of the immune resistance program which is based on a set of
-gene signatures associated with T cell exclusion, post-treatment and functional resistance.
-The code was provided via Github https://github.com/livnatje/ImmuneResistance/blob/master/Code/ImmRes_OE.R.
+This function calculates the overall expression of the immune resistance
+program which is based on a set of gene signatures associated with T cell
+exclusion, post-treatment and functional resistance. The code was provided
+via Github https://github.com/livnatje/ImmuneResistance/blob/master/Code/ImmRes_OE.R.
 }
 \examples{
-# Load exemplary dataset (Mariathasan et al., Nature, 2018) from easierData.
-# Original processed data is available from IMvigor210CoreBiologies package.
-# library("easierData")
-# dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
-# RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
+# using a SummarizedExperiment object
+library(SummarizedExperiment)
+# Using example exemplary dataset (Mariathasan et al., Nature, 2018)
+# from easierData. Original processed data is available from
+# IMvigor210CoreBiologies package.
+library("easierData")
+
+dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
+RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 
 # Select a subset of patients to reduce vignette building time.
-#set.seed(1234)
-#subset <- sample(colnames(RNA_tpm), size = 30)
-#RNA_tpm <- RNA_tpm[, subset]
+set.seed(1234)
+pat_subset <- sample(colnames(RNA_tpm), size = 5)
+RNA_tpm <- RNA_tpm[, pat_subset]
 
 # Log2 transformation:
 # log2_RNA_tpm <- log2(RNA_tpm + 1)
@@ -61,6 +71,8 @@ The code was provided via Github https://github.com/livnatje/ImmuneResistance/bl
 # res_scores <- get_OE_bulk(r, gene_sign = RIR_gene_signature, verbose = TRUE)
 }
 \references{
-Jerby-Arnon, L., Shah, P., Cuoco, M.S., Rodman, C., Su, M.-J., Melms, J.C., Leeson, R., Kanodia, A., Mei, S., Lin, J.-R., et al. (2018).
-A Cancer Cell Program Promotes T Cell Exclusion and Resistance to Checkpoint Blockade. Cell 175, 984–997.e24. https://doi.org/10.1016/j.cell.2018.09.006
+Jerby-Arnon, L., Shah, P., Cuoco, M.S., Rodman, C., Su, M.-J., Melms, J.C.,
+Leeson, R., Kanodia, A., Mei, S., Lin, J.-R., et al. (2018). A Cancer Cell Program
+Promotes T Cell Exclusion and Resistance to Checkpoint Blockade. Cell 175, 984–997.e24.
+https://doi.org/10.1016/j.cell.2018.09.006
 }

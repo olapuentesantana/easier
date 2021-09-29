@@ -14,17 +14,23 @@ compute_CCpair_score(
 )
 }
 \arguments{
-\item{celltype1}{string character with first cell type involved in the interaction.}
+\item{celltype1}{string character with first cell type involved
+in the interaction.}
 
-\item{celltype2}{string character with second cell type involved in the interaction.}
+\item{celltype2}{string character with second cell type involved
+in the interaction.}
 
-\item{intercell_network}{matrix with data on cell types interaction network.}
+\item{intercell_network}{matrix with data on cell types interaction
+network.}
 
-\item{lrpairs_binary}{binary vector displaying LR pairs with non-zero frequency.}
+\item{lrpairs_binary}{binary vector displaying LR pairs with non-zero
+frequency.}
 
-\item{lr_frequency}{numeric vector with LR pairs frequency across the whole TCGA database.}
+\item{lr_frequency}{numeric vector with LR pairs frequency across the
+whole TCGA database.}
 
-\item{compute_log}{boolean variable in order to take the log of the weighted score.}
+\item{compute_log}{boolean variable in order to take the log of the
+weighted score.}
 }
 \value{
 A numeric vector with weighted scores.
@@ -33,26 +39,30 @@ A numeric vector with weighted scores.
 This function derives a score for each cell-cell pair feature.
 }
 \examples{
-# Load exemplary dataset (Mariathasan et al., Nature, 2018) from easierData.
-# Original processed data is available from IMvigor210CoreBiologies package.
+# using a SummarizedExperiment object
+library(SummarizedExperiment)
+# Using example exemplary dataset (Mariathasan et al., Nature, 2018)
+# from easierData. Original processed data is available from
+# IMvigor210CoreBiologies package.
 library("easierData")
-dataset_mariathasan <- suppressMessages(easierData::get_Mariathasan2018_PDL1_treatment())
-RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
+
+dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
+RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 
 # Select a subset of patients to reduce vignette building time.
 set.seed(1234)
-subset <- sample(colnames(RNA_tpm), size = 30)
-RNA_tpm <- RNA_tpm[, subset]
+pat_subset <- sample(colnames(RNA_tpm), size = 5)
+RNA_tpm <- RNA_tpm[, pat_subset]
 
 # Computation of ligand-receptor pair weights
 lrpair_weights <- compute_LR_pairs(
-  RNA_tpm = RNA_tpm,
-  cancer_type = "pancan"
+    RNA_tpm = RNA_tpm,
+    cancer_type = "pancan"
 )
 
 # remove ligand receptor pairs that are always NA
 na_lrpairs <- apply(lrpair_weights, 2, function(x) {
-  all(is.na(x))
+    all(is.na(x))
 })
 lrpair_weights <- lrpair_weights[, na_lrpairs == FALSE]
 
@@ -67,14 +77,17 @@ lrpairs_binary <- lrpairs_binary[, colnames(lrpairs_binary) \%in\% names(lr_freq
 # cancer type specific network
 intercell_networks <- suppressMessages(easierData::get_intercell_networks())
 intercell_network_pancan <- intercell_networks[["pancan"]]
-celltypes <- unique(c(as.character(intercell_network_pancan$cell1),
- as.character(intercell_network_pancan$cell2)))
+celltypes <- unique(c(
+    as.character(intercell_network_pancan$cell1),
+    as.character(intercell_network_pancan$cell2)
+))
 celltype1 <- celltypes[1]
 celltype2 <- celltypes[1]
 
 # compute the CC score for each patient
-CCpair_score <- compute_CCpair_score(celltype1, celltype2, intercell_network_pancan,
-  lrpairs_binary, lr_frequency,
-  compute_log = TRUE
+CCpair_score <- compute_CCpair_score(celltype1, celltype2,
+    intercell_network_pancan,
+    lrpairs_binary, lr_frequency,
+    compute_log = TRUE
 )
 }

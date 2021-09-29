@@ -2,37 +2,46 @@
 % Please edit documentation in R/compute_TF_activity.R
 \name{compute_TF_activity}
 \alias{compute_TF_activity}
-\title{Compute transcription factor activity from gene expression using DoRothEA}
+\title{Compute transcription factor activity from gene expression
+using DoRothEA}
 \usage{
 compute_TF_activity(RNA_tpm, verbose = TRUE)
 }
 \arguments{
-\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in rows and samples in columns.}
+\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in
+rows and samples in columns.}
 
-\item{verbose}{logical value indicating whether to display messages about the number of regulated
+\item{verbose}{logical value indicating whether to display messages about
+the number of regulated
 genes found in the gene expression data provided.}
 }
 \value{
-A numeric matrix of activity scores with samples in rows and transcription factors in columns.
+A numeric matrix of activity scores with samples in rows and
+TFs in columns.
 }
 \description{
-This function infers transcription factor activity from TPM bulk gene expression
-using DoRothEA method (Garcia-Alonso et al., Genome Res, 2019).
+This function infers transcription factor activity from TPM bulk
+gene expression using DoRothEA method
+(Garcia-Alonso et al., Genome Res, 2019).
 }
 \examples{
-# Load exemplary dataset (Mariathasan et al., Nature, 2018) from easierData.
-# Original processed data is available from IMvigor210CoreBiologies package.
+# using a SummarizedExperiment object
+library(SummarizedExperiment)
+# Using example exemplary dataset (Mariathasan et al., Nature, 2018)
+# from easierData. Original processed data is available from
+# IMvigor210CoreBiologies package.
 library("easierData")
+
 dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 
 # Select a subset of patients to reduce vignette building time.
 set.seed(1234)
-subset <- sample(colnames(RNA_tpm), size = 30)
-RNA_tpm <- RNA_tpm[, subset]
+pat_subset <- sample(colnames(RNA_tpm), size = 5)
+RNA_tpm <- RNA_tpm[, pat_subset]
 
 # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
 tf_activity <- compute_TF_activity(
-  RNA_tpm = RNA_tpm
+    RNA_tpm = RNA_tpm
 )
 }

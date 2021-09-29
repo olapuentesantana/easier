@@ -15,76 +15,91 @@ predict_immune_response(
 )
 }
 \arguments{
-\item{pathways}{numeric matrix with pathways activity (rows = samples; columns = pathways).}
+\item{pathways}{numeric matrix with pathways activity
+(rows = samples; columns = pathways).}
 
-\item{immunecells}{numeric matrix with immune cell quantification (rows = samples; columns = cell types).}
+\item{immunecells}{numeric matrix with immune cell quantification
+(rows = samples; columns = cell types).}
 
-\item{tfs}{numeric matrix with transcription factors activity (rows = samples; columns = transcription factors).}
+\item{tfs}{numeric matrix with transcription factors activity
+(rows = samples; columns = transcription factors).}
 
-\item{lrpairs}{numeric matrix with ligand-receptor weights (rows = samples; columns = ligand-receptor pairs).}
+\item{lrpairs}{numeric matrix with ligand-receptor weights
+(rows = samples; columns = ligand-receptor pairs).}
 
-\item{ccpairs}{numeric matrix with cell-cell scores (rows = samples; columns = cell-cell pairs).}
+\item{ccpairs}{numeric matrix with cell-cell scores
+(rows = samples; columns = cell-cell pairs).}
 
-\item{cancer_type}{character string indicating which cancer-specific model should be used to compute the predictions.}
+\item{cancer_type}{character string indicating which cancer-specific
+model should be used to compute the predictions.}
 
-\item{verbose}{logical flag indicating whether to display messages about the process.}
+\item{verbose}{logical flag indicating whether to display messages
+about the process.}
 }
 \value{
-A list containing the predictions for each quantitative descriptor and for each task.
-Given that the model training was repeated 100 times with randomized-cross validation, a set of 100 predictions is returned.
+A list containing the predictions for each quantitative descriptor
+and for each task.
+Given that the model training was repeated 100 times with randomized-cross
+validation, a set of 100 predictions is returned.
 }
 \description{
-This function calculates predictions of patients' immune response using the quantitative descriptors
-data as input features and the model parameters defined during training.
+This function calculates predictions of patients' immune response
+using the quantitative descriptors data as input features and the
+model parameters defined during training.
 }
 \examples{
-# Load exemplary dataset (Mariathasan et al., Nature, 2018) from easierData.
-# Original processed data is available from IMvigor210CoreBiologies package.
+# using a SummarizedExperiment object
+library(SummarizedExperiment)
+# Using example exemplary dataset (Mariathasan et al., Nature, 2018)
+# from easierData. Original processed data is available from
+# IMvigor210CoreBiologies package.
 library("easierData")
+
 dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
-RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
-RNA_counts <- dataset_mariathasan@assays@data@listData[["counts"]]
-cancer_type <- dataset_mariathasan@metadata$cancertype
+RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
+RNA_counts <- assays(dataset_mariathasan)[["counts"]]
+cancer_type <- metadata(dataset_mariathasan)[["cancertype"]]
 
 # Select a subset of patients to reduce vignette building time.
 set.seed(1234)
-subset <- sample(colnames(RNA_tpm), size = 30)
-RNA_counts <- RNA_counts[, subset]
-RNA_tpm <- RNA_tpm[, subset]
+pat_subset <- sample(colnames(RNA_tpm), size = 5)
+RNA_counts <- RNA_counts[, pat_subset]
+RNA_tpm <- RNA_tpm[, pat_subset]
 
 # Computation of cell fractions (Finotello et al., Genome Med, 2019)
 cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
 
-# Computation of pathway scores (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018)
+# Computation of pathway scores (Holland et al., BBAGRM, 2019;
+# Schubert et al., Nat Commun, 2018)
 pathway_activity <- compute_pathway_activity(
-  RNA_counts = RNA_counts,
-  remove_sig_genes_immune_response = TRUE
+    RNA_counts = RNA_counts,
+    remove_sig_genes_immune_response = TRUE
 )
 
 # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
 tf_activity <- compute_TF_activity(
-  RNA_tpm = RNA_tpm
+    RNA_tpm = RNA_tpm
 )
 
 # Computation of ligand-receptor pair weights
 lrpair_weights <- compute_LR_pairs(
-  RNA_tpm = RNA_tpm,
-  cancer_type = "pancan"
+    RNA_tpm = RNA_tpm,
+    cancer_type = "pancan"
 )
 
 # Computation of cell-cell interaction scores
 ccpair_scores <- compute_CC_pairs(
-  lrpairs = lrpair_weights,
-  cancer_type = "pancan"
+    lrpairs = lrpair_weights,
+    cancer_type = "pancan"
 )
 
 # Predict patients' immune response
 predictions_immune_response <- predict_immune_response(
-  pathways = pathway_activity,
-  immunecells = cell_fractions,
-  tfs = tf_activity,
-  lrpairs = lrpair_weights,
-  ccpairs = ccpair_scores,
-  cancer_type = cancer_type
+    pathways = pathway_activity,
+    immunecells = cell_fractions,
+    tfs = tf_activity,
+    lrpairs = lrpair_weights,
+    ccpairs = ccpair_scores,
+    cancer_type = cancer_type
 )
 }

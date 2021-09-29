@@ -14,80 +14,93 @@ assess_immune_response(
 )
 }
 \arguments{
-\item{predictions_immune_response}{list containing the predictions for each quantitative descriptor and for each task.}
+\item{predictions_immune_response}{list containing the predictions for each
+quantitative descriptor and for each task.}
 
-\item{patient_response}{character vector with two factors (Non-responders = NR, Responders = R).}
+\item{patient_response}{character vector with two factors
+(Non-responders = NR, Responders = R).}
 
-\item{RNA_tpm}{numeric matrix of patients' gene expression data as tpm values.}
+\item{RNA_tpm}{numeric matrix of patients' gene expression data as
+tpm values.}
 
-\item{TMB_values}{numeric vector containing patients' tumor mutational burden (TMB) values.}
+\item{TMB_values}{numeric vector containing patients' tumor mutational burden
+(TMB) values.}
 
-\item{easier_with_TMB}{logical flag indicating whether to combine both easier and TMB scores based on a weighted
-average or penalized score (a weight, penalty of 0.5 is used).}
+\item{easier_with_TMB}{logical flag indicating whether to combine both easier
+and TMB scores based on a weighted average or penalized score (a weight,
+penalty of 0.5 is used).}
 
-\item{verbose}{logical flag indicating whether to display messages about the process.}
+\item{verbose}{logical flag indicating whether to display messages about
+the process.}
 }
 \value{
-If easier_with_TMB is set to FALSE, two figures (roc curve and bar plots) are directly saved in the path specified
-in output_file_path. If easier_with_TMB is set to TRUE, an additional plot is returned displaying an integrated approach
-that uses both immune response and tumor mutational burden (TMB) to predict patients' response.
+If easier_with_TMB is set to FALSE, figures two figures evaluating the
+predictions are returned. If easier_with_TMB is set to TRUE, an scatterplot is
+returned displaying an integrated approach that uses both immune response and
+tumor mutational burden (TMB) to predict patients' response.
 }
 \description{
 This function generates a roc curve plot and a barplot showing the average
-(across tasks) area under the ROC curve (AUC) values for each quantitative descriptor on
-the patients' response provided. An ensemble model is built based on the average of the individual models.
+(across tasks) area under the ROC curve (AUC) values for each quantitative
+descriptor on the patients' response provided. An ensemble model is built
+based on the average of the individual models.
 Additionally, the average of the gold standard scores is used for comparison.
 }
 \examples{
-# Load exemplary dataset (Mariathasan et al., Nature, 2018) from easierData.
-# Original processed data is available from IMvigor210CoreBiologies package.
+# using a SummarizedExperiment object
+library(SummarizedExperiment)
+# Using example exemplary dataset (Mariathasan et al., Nature, 2018)
+# from easierData. Original processed data is available from
+# IMvigor210CoreBiologies package.
 library("easierData")
+
 dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 RNA_counts <- assays(dataset_mariathasan)[["counts"]]
-cancer_type <- metadata(dataset_mariathasan)$cancertype
+cancer_type <- metadata(dataset_mariathasan)[["cancertype"]]
 
 # Select a subset of patients to reduce vignette building time.
 set.seed(1234)
-subset <- sample(colnames(RNA_tpm), size = 30)
-RNA_counts <- RNA_counts[, subset]
-RNA_tpm <- RNA_tpm[, subset]
+pat_subset <- sample(colnames(RNA_tpm), size = 5)
+RNA_counts <- RNA_counts[, pat_subset]
+RNA_tpm <- RNA_tpm[, pat_subset]
 
 # Computation of cell fractions  (Finotello et al., Genome Med, 2019)
 cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
 
-# Computation of pathway scores (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018)
+# Computation of pathway scores (Holland et al., BBAGRM, 2019;
+# Schubert et al., Nat Commun, 2018)
 pathway_activities <- compute_pathway_activity(
-  RNA_counts = RNA_counts,
-  remove_sig_genes_immune_response = TRUE
+    RNA_counts = RNA_counts,
+    remove_sig_genes_immune_response = TRUE
 )
 
 # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
 tf_activities <- compute_TF_activity(
-  RNA_tpm = RNA_tpm
+    RNA_tpm = RNA_tpm
 )
 
 # Computation of ligand-receptor pair weights
 lrpair_weights <- compute_LR_pairs(
-  RNA_tpm = RNA_tpm,
-  cancer_type = "pancan"
+    RNA_tpm = RNA_tpm,
+    cancer_type = "pancan"
 )
 
 # Computation of cell-cell interaction scores
 ccpair_scores <- compute_CC_pairs(
-  lrpairs = lrpair_weights,
-  cancer_type = "pancan"
+    lrpairs = lrpair_weights,
+    cancer_type = "pancan"
 )
 
 # Predict patients' immune response
 predictions <- predict_immune_response(
-  pathways = pathway_activities,
-  immunecells = cell_fractions,
-  tfs = tf_activities,
-  lrpairs = lrpair_weights,
-  ccpairs = ccpair_scores,
-  cancer_type = cancer_type,
-  verbose = TRUE
+    pathways = pathway_activities,
+    immunecells = cell_fractions,
+    tfs = tf_activities,
+    lrpairs = lrpair_weights,
+    ccpairs = ccpair_scores,
+    cancer_type = cancer_type,
+    verbose = TRUE
 )
 
 # retrieve clinical response
@@ -96,17 +109,17 @@ names(patient_ICBresponse) <- colData(dataset_mariathasan)[["pat_id"]]
 
 # retrieve TMB
 TMB <- colData(dataset_mariathasan)[["TMB"]]
-names(TMB) <- colData(dataset_mariathasan)[["pat_ide"]]
+names(TMB) <- colData(dataset_mariathasan)[["pat_id"]]
 
-patient_ICBresponse <- patient_ICBresponse[subset]
-TMB <- TMB[subset]
+patient_ICBresponse <- patient_ICBresponse[pat_subset]
+TMB <- TMB[pat_subset]
 
 # Assess patient-specific likelihood of response to ICB therapy
 assess_immune_response(
-  predictions_immune_response = predictions,
-  patient_response = patient_ICBresponse,
-  RNA_tpm = RNA_tpm,
-  TMB_values = TMB,
-  easier_with_TMB = TRUE
+    predictions_immune_response = predictions,
+    patient_response = patient_ICBresponse,
+    RNA_tpm = RNA_tpm,
+    TMB_values = TMB,
+    easier_with_TMB = TRUE
 )
 }

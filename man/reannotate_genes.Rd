@@ -7,25 +7,36 @@
 reannotate_genes(cur_genes)
 }
 \arguments{
-\item{cur_genes}{character string containing gene HGNC symbols to be consider for re-annotation.}
+\item{cur_genes}{character string containing gene HGNC symbols to
+be consider for re-annotation.}
 }
 \value{
-A data.frame with the old gene HGNC symbol and the new corresponding gene HGNC symbol.
+A data.frame with the old gene HGNC symbol and the new
+corresponding gene HGNC symbol.
 }
 \description{
-This function performs gene re-annotation using curated data by the HGNC.
+This function performs gene re-annotation using curated data
+from the HGNC.
+}
+\details{
+Adapted from quanTIseq helper function mapGenes from
+quantiseqr package.
 }
 \examples{
-# Load exemplary dataset (Mariathasan et al., Nature, 2018) from easierData.
-# Original processed data is available from IMvigor210CoreBiologies package.
+# using a SummarizedExperiment object
+library(SummarizedExperiment)
+# Using example exemplary dataset (Mariathasan et al., Nature, 2018)
+# from easierData. Original processed data is available from
+# IMvigor210CoreBiologies package.
 library("easierData")
+
 dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
-RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
+RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 
 # Select a subset of patients to reduce vignette building time.
 set.seed(1234)
-subset <- sample(colnames(RNA_tpm), size = 30)
-RNA_tpm <- RNA_tpm[, subset]
+pat_subset <- sample(colnames(RNA_tpm), size = 5)
+RNA_tpm <- RNA_tpm[, pat_subset]
 
 genes_info <- reannotate_genes(cur_genes = rownames(RNA_tpm))
 }

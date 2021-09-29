@@ -135,14 +135,14 @@ In this section, we illustrate the main features of `easier` on a publicly avail
 
 We will be using a subset of this data as exemplary dataset, made available via `easierData`. This includes RNA-seq data (count and TPM expression values), information on tumor mutational burden (TMB) and response to ICB therapy from 192 patients. 25 patients with complete response (CR) were classified as responders (R) and 167 patients with progressive disease (PD) as non-responders. 
 
-We first install and load the required packages.
+In the following chunk, we load the additional packages that will be required throughout the vignette.
 
 ```{r, message=FALSE}
 suppressPackageStartupMessages({
-  library("easier")
   library("remotes")
   # remotes::install_github("olapuentesantana/easierData")
   library("easierData")
+  library("SummarizedExperiment")
 })
 ```
 
@@ -166,11 +166,11 @@ RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 
 # Select a subset of patients to reduce vignette building time.
 set.seed(1234)
-subset <- sample(names(patient_ICBresponse), size = 30)
-patient_ICBresponse <- patient_ICBresponse[subset]
-TMB <- TMB[subset]
-RNA_counts <- RNA_counts[, subset]
-RNA_tpm <- RNA_tpm[, subset]
+pat_subset <- sample(names(patient_ICBresponse), size = 30)
+patient_ICBresponse <- patient_ICBresponse[pat_subset]
+TMB <- TMB[pat_subset]
+RNA_counts <- RNA_counts[, pat_subset]
+RNA_tpm <- RNA_tpm[, pat_subset]
 ```
 
 ## Compute hallmarks of immune response

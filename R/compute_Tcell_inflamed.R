@@ -22,26 +22,26 @@
 #' # Example does not matter as function will no be exported
 compute_Tcell_inflamed <- function(housekeeping, predictors, weights, RNA_tpm) {
 
-  # Log2 transformation:
-  log2_RNA_tpm <- log2(RNA_tpm + 1)
+    # Log2 transformation:
+    log2_RNA_tpm <- log2(RNA_tpm + 1)
 
-  # Subset log2.RNA_tpm
-  ## housekeeping
-  log2_RNA_tpm_housekeeping <- log2_RNA_tpm[housekeeping, ]
-  ## predictors
-  log2_RNA_tpm_predictors <- log2_RNA_tpm[predictors, ]
-  weights <- weights[rownames(log2_RNA_tpm_predictors)]
+    # Subset log2.RNA_tpm
+    ## housekeeping
+    log2_RNA_tpm_housekeeping <- log2_RNA_tpm[housekeeping, ]
+    ## predictors
+    log2_RNA_tpm_predictors <- log2_RNA_tpm[predictors, ]
+    weights <- weights[rownames(log2_RNA_tpm_predictors)]
 
-  # Housekeeping normalization
-  average_log2_RNA_tpm_housekeeping <- apply(log2_RNA_tpm_housekeeping, 2, mean)
-  log2_RNA_tpm_predictors_norm <- sweep(log2_RNA_tpm_predictors, 2, average_log2_RNA_tpm_housekeeping, FUN = "-")
+    # Housekeeping normalization
+    average_log2_RNA_tpm_housekeeping <- apply(log2_RNA_tpm_housekeeping, 2, mean)
+    log2_RNA_tpm_predictors_norm <- sweep(log2_RNA_tpm_predictors, 2, average_log2_RNA_tpm_housekeeping, FUN = "-")
 
-  # Calculation: weighted sum of the normalized predictor gene values
-  tidy <- match(rownames(log2_RNA_tpm_predictors_norm), names(weights))
+    # Calculation: weighted sum of the normalized predictor gene values
+    tidy <- match(rownames(log2_RNA_tpm_predictors_norm), names(weights))
 
-  # Transform vector to matrix
-  weights <- matrix(weights, ncol = 1, dimnames = list(names(weights)))
-  score <- t(log2_RNA_tpm_predictors_norm[tidy, ]) %*% weights
+    # Transform vector to matrix
+    weights <- matrix(weights, ncol = 1, dimnames = list(names(weights)))
+    score <- t(log2_RNA_tpm_predictors_norm[tidy, ]) %*% weights
 
-  return(data.frame(Tcell_inflamed = score, check.names = FALSE))
+    return(data.frame(Tcell_inflamed = score, check.names = FALSE))
 }

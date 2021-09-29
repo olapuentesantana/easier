@@ -58,14 +58,14 @@ Imports:
     rstatix,
     ggrepel,
     remotes
+Suggests: 
+    knitr, rmarkdown, BiocStyle, testthat, SummarizedExperiment
 Remotes: 
     olapuentesantana/easierData
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
-Suggests: 
-    knitr, rmarkdown, BiocStyle, testthat
 VignetteBuilder: knitr
 biocViews:
     GeneExpression, Software, Transcription, SystemsBiology,Pathways, 

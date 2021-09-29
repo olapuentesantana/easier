@@ -9,27 +9,27 @@ categorize_TMB(TMB, thresholds = NULL)
 \arguments{
 \item{TMB}{numeric vector with tumor mutational burden values.}
 
-\item{thresholds}{numeric vector to specify thresholds to be used. Default thresholds are low (<100),
+\item{thresholds}{numeric vector to specify thresholds to be used. D
+Default thresholds are low (<100),
 moderate (100-400) and high TMB (>400).}
 }
 \value{
 A numeric vector assigning each sample a class from 1 to 3.
 }
 \description{
-This function encodes tumor mutational variable (TMB) numerical variable to categorical.
+This function encodes tumor mutational variable (TMB) numerical
+variable to categorical.
 }
 \examples{
-# Load exemplary dataset (Mariathasan et al., Nature, 2018) from easierData.
-# Original processed data is available from IMvigor210CoreBiologies package.
+# using a SummarizedExperiment object
+library(SummarizedExperiment)
+# Using example exemplary dataset (Mariathasan et al., Nature, 2018)
+# from easierData. Original processed data is available from
+# IMvigor210CoreBiologies package.
 library("easierData")
 dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 TMB <- colData(dataset_mariathasan)[["TMB"]]
 names(TMB) <- colData(dataset_mariathasan)[["pat_id"]]
-
-# Select a subset of patients to reduce vignette building time.
-set.seed(1234)
-subset <- sample(names(TMB), size = 30)
-TMB <- TMB[subset]
 
 # Convert TMB continous values into categories
 TMB_cat <- categorize_TMB(TMB = TMB)

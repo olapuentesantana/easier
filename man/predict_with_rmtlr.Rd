@@ -2,7 +2,8 @@
 % Please edit documentation in R/predict_with_rmtlr.R
 \name{predict_with_rmtlr}
 \alias{predict_with_rmtlr}
-\title{Collects Regularized Multi-Task Linear Regression (RMTLR) cancer-specfic model predictions}
+\title{Collects Regularized Multi-Task Linear Regression (RMTLR)
+cancer-specfic model predictions}
 \usage{
 predict_with_rmtlr(
   view_name,
@@ -20,31 +21,39 @@ predict_with_rmtlr(
 
 \item{view_data}{list containing the data for each input view.}
 
-\item{opt_model_cancer_view_spec}{cancer-view-specific model feature parameters learned during training.}
+\item{opt_model_cancer_view_spec}{cancer-view-specific model feature
+parameters learned during training.}
 
-\item{opt_xtrain_stats_cancer_view_spec}{cancer-view-specific features mean and standard deviation of the training set.}
+\item{opt_xtrain_stats_cancer_view_spec}{cancer-view-specific features mean
+and standard deviation of the training set.}
 
-\item{verbose}{logical flag indicating whether to display messages about the process.}
+\item{verbose}{logical flag indicating whether to display messages
+about the process.}
 }
 \value{
-A lList of predictions matrices, one for each tasks (rows = samples; columns = [runs).
+A lList of predictions matrices, one for each tasks
+(rows = samples; columns = [runs).
 }
 \description{
-This function puts together predicted immune response by using a cancer-specifc model learned
-from training with RMTLR algorithm.
+This function puts together predicted immune response by using a
+cancer-specifc model learned from training with RMTLR algorithm.
 }
 \examples{
-# Load exemplary dataset (Mariathasan et al., Nature, 2018) from easierData.
-# Original processed data is available from IMvigor210CoreBiologies package.
+# using a SummarizedExperiment object
+library(SummarizedExperiment)
+# Using example exemplary dataset (Mariathasan et al., Nature, 2018)
+# from easierData. Original processed data is available from
+# IMvigor210CoreBiologies package.
 library("easierData")
+
 dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
-RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
-cancer_type <- dataset_mariathasan@metadata$cancertype
+RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
+cancer_type <- metadata(dataset_mariathasan)[["cancertype"]]
 
 # Select a subset of patients to reduce vignette building time.
 set.seed(1234)
-subset <- sample(colnames(RNA_tpm), size = 30)
-RNA_tpm <- RNA_tpm[, subset]
+pat_subset <- sample(colnames(RNA_tpm), size = 5)
+RNA_tpm <- RNA_tpm[, pat_subset]
 
 # Computation of cell fractions
 cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
@@ -53,25 +62,25 @@ view_name <- "immunecells"
 view_info <- c(immunecells = "gaussian")
 view_data <- list(immunecells = as.data.frame(cell_fractions))
 
- # Retrieve internal data
- opt_models <- suppressMessages(easierData::get_opt_models())
- opt_xtrain_stats <- suppressMessages(easierData::get_opt_xtrain_stats())
+# Retrieve internal data
+opt_models <- suppressMessages(easierData::get_opt_models())
+opt_xtrain_stats <- suppressMessages(easierData::get_opt_xtrain_stats())
 
- opt_model_cancer_view_spec <- lapply(view_name, function(X) {
- return(opt_models[[cancer_type]][[X]])
- })
- names(opt_model_cancer_view_spec) <- view_name
- opt_xtrain_stats_cancer_view_spec <- lapply(view_name, function(X) {
- return(opt_xtrain_stats[[cancer_type]][[X]])
- })
- names(opt_xtrain_stats_cancer_view_spec) <- view_name
+opt_model_cancer_view_spec <- lapply(view_name, function(X) {
+    return(opt_models[[cancer_type]][[X]])
+})
+names(opt_model_cancer_view_spec) <- view_name
+opt_xtrain_stats_cancer_view_spec <- lapply(view_name, function(X) {
+    return(opt_xtrain_stats[[cancer_type]][[X]])
+})
+names(opt_xtrain_stats_cancer_view_spec) <- view_name
 
 # Predict using rmtlr
 prediction_view <- predict_with_rmtlr(
-  view_name = view_name,
-  view_info = view_info,
-  view_data = view_data,
-  opt_model_cancer_view_spec = opt_model_cancer_view_spec,
-  opt_xtrain_stats_cancer_view_spec = opt_xtrain_stats_cancer_view_spec
+    view_name = view_name,
+    view_info = view_info,
+    view_data = view_data,
+    opt_model_cancer_view_spec = opt_model_cancer_view_spec,
+    opt_xtrain_stats_cancer_view_spec = opt_xtrain_stats_cancer_view_spec
 )
 }

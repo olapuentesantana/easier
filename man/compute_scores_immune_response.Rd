@@ -2,7 +2,8 @@
 % Please edit documentation in R/compute_scores_immune_response.R
 \name{compute_scores_immune_response}
 \alias{compute_scores_immune_response}
-\title{Compute published transcriptomics-based scores of hallmarks of anti-cancer immune response}
+\title{Compute published transcriptomics-based scores of hallmarks of anti-cancer
+immune response}
 \usage{
 compute_scores_immune_response(
   RNA_tpm,
@@ -12,10 +13,12 @@ compute_scores_immune_response(
 )
 }
 \arguments{
-\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in rows and samples in columns.}
+\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in rows and
+samples in columns.}
 
-\item{selected_scores}{character string with names of scores of immune response to be computed.
-Default scores are computed for: "CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS".}
+\item{selected_scores}{character string with names of scores of immune response
+to be computed. Default scores are computed for: "CYT", "Roh_IS", "chemokines",
+"Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS".}
 
 \item{verbose}{logical variable indicating whether to display informative messages.}
 }
@@ -26,24 +29,29 @@ A numeric matrix with samples in rows and gold standard scores in columns.
 This function computes the scores of immune response as indicated by the user.
 }
 \examples{
-# Load exemplary dataset (Mariathasan et al., Nature, 2018) from easierData.
-# Original processed data is available from IMvigor210CoreBiologies package.
+# using a SummarizedExperiment object
+library(SummarizedExperiment)
+# Using example exemplary dataset (Mariathasan et al., Nature, 2018)
+# from easierData. Original processed data is available from
+# IMvigor210CoreBiologies package.
 library("easierData")
+
 dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
-RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
+RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
+cancer_type <- metadata(dataset_mariathasan)$cancertype
 
 # Select a subset of patients to reduce vignette building time.
 set.seed(1234)
-subset <- sample(colnames(RNA_tpm), size = 30)
-RNA_tpm <- RNA_tpm[, subset]
+pat_subset <- sample(colnames(RNA_tpm), size = 5)
+RNA_tpm <- RNA_tpm[, pat_subset]
 
 # Computation of different hallmarks of anti-cancer immune responses
 hallmarks_of_immune_response <- c(
-  "CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
-  "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS"
+    "CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
+    "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS"
 )
 scores_immune_response <- compute_scores_immune_response(
-  RNA_tpm = RNA_tpm,
-  selected_scores = hallmarks_of_immune_response
+    RNA_tpm = RNA_tpm,
+    selected_scores = hallmarks_of_immune_response
 )
 }

@@ -16,86 +16,102 @@ explore_biomarkers(
 )
 }
 \arguments{
-\item{pathways}{numeric matrix with pathways activity (rows = samples; columns = pathways).}
+\item{pathways}{numeric matrix with pathways activity
+(rows = samples; columns = pathways).}
 
-\item{immunecells}{numeric matrix with immune cell quantification (rows = samples; columns = cell types).}
+\item{immunecells}{numeric matrix with immune cell quantification
+(rows = samples; columns = cell types).}
 
-\item{tfs}{numeric matrix with transcription factors activity (rows = samples; columns = transcription factors).}
+\item{tfs}{numeric matrix with transcription factors activity
+(rows = samples; columns = transcription factors).}
 
-\item{lrpairs}{numeric matrix with ligand-receptor weights (rows = samples; columns = ligand-receptor pairs).}
+\item{lrpairs}{numeric matrix with ligand-receptor weights
+(rows = samples; columns = ligand-receptor pairs).}
 
-\item{ccpairs}{numeric matrix with cell-cell scores (rows = samples; columns = cell-cell pairs).}
+\item{ccpairs}{numeric matrix with cell-cell scores
+(rows = samples; columns = cell-cell pairs).}
 
-\item{cancer_type}{character string indicating which cancer-specific model should be used to compute the predictions.}
+\item{cancer_type}{character string indicating which cancer-specific
+model should be used to compute the predictions.}
 
-\item{patient_response}{character vector with two factors (Non-responders = NR, Responders = R).}
+\item{patient_response}{character vector with two factors
+(Non-responders = NR, Responders = R).}
 
-\item{verbose}{logical flag indicating whether to display messages about the process.}
+\item{verbose}{logical flag indicating whether to display messages
+about the process.}
 }
 \value{
 \itemize{
-\item{Volcano plot displaying relevant biomarkers differentiating responders vs non-responders patients.}
-\item{A combined plot for each type of quantitative descriptors, showing the original distribution of the features and the importance of these features for the trained models}
+\item{Volcano plot displaying relevant biomarkers differentiating
+responders vs non-responders patients.}
+\item{A combined plot for each type of quantitative descriptors,
+showing the original distribution of the features and the importance
+of these features for the trained models}
 }
 }
 \description{
-This function provides an overview of relevant computed features (biomarkers), comparing responders and non-responders if known.
-Information about the features contribution to the optimal models is also included.
+This function provides an overview of relevant computed features (biomarkers),
+comparing responders and non-responders if known. Information about the
+features contribution to the optimal models is also included.
 }
 \examples{
-# Load exemplary dataset (Mariathasan et al., Nature, 2018) from ExperimentHub easierData.
-# Original processed data is available from IMvigor210CoreBiologies package.
+# using a SummarizedExperiment object
+library(SummarizedExperiment)
+# Using example exemplary dataset (Mariathasan et al., Nature, 2018)
+# from easierData. Original processed data is available from
+# IMvigor210CoreBiologies package.
 library("easierData")
+
 dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 RNA_counts <- assays(dataset_mariathasan)[["counts"]]
-cancer_type <- dataset_mariathasan@metadata$cancertype
+cancer_type <- metadata(dataset_mariathasan)[["cancertype"]]
 
 # Select a subset of patients to reduce vignette building time.
 set.seed(1234)
-subset <- sample(colnames(RNA_tpm), size = 30)
-RNA_counts <- RNA_counts[, subset]
-RNA_tpm <- RNA_tpm[, subset]
+pat_subset <- sample(colnames(RNA_tpm), size = 5)
+RNA_counts <- RNA_counts[, pat_subset]
+RNA_tpm <- RNA_tpm[, pat_subset]
 
 # Computation of cell fractions
 cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
 
 # Computation of pathway scores
 pathway_activity <- compute_pathway_activity(
-  RNA_counts = RNA_counts,
-  remove_sig_genes_immune_response = TRUE
+    RNA_counts = RNA_counts,
+    remove_sig_genes_immune_response = TRUE
 )
 
 # Computation of TF activity
 tf_activity <- compute_TF_activity(
-  RNA_tpm = RNA_tpm
+    RNA_tpm = RNA_tpm
 )
 
 # Computation of ligand-receptor pair weights
 lrpair_weights <- compute_LR_pairs(
-  RNA_tpm = RNA_tpm,
-  cancer_type = "pancan"
+    RNA_tpm = RNA_tpm,
+    cancer_type = "pancan"
 )
 
 # Computation of cell-cell interaction scores
 ccpair_scores <- compute_CC_pairs(
-  lrpairs = lrpair_weights,
-  cancer_type = "pancan"
+    lrpairs = lrpair_weights,
+    cancer_type = "pancan"
 )
 
 # retrieve clinical response
-patient_ICBresponse <- dataset_mariathasan@colData$BOR
-names(patient_ICBresponse) <- dataset_mariathasan@colData$pat_id
-patient_ICBresponse <- patient_ICBresponse[subset]
+patient_ICBresponse <- colData(dataset_mariathasan)[["BOR"]]
+names(patient_ICBresponse) <- colData(dataset_mariathasan)[["pat_id"]]
+patient_ICBresponse <- patient_ICBresponse[pat_subset]
 
 # Investigate possible biomarkers
 explore_biomarkers(
-  pathways = pathway_activity,
-  immunecells = cell_fractions,
-  lrpairs = lrpair_weights,
-  tfs = tf_activity,
-  ccpairs = ccpair_scores,
-  cancer_type = cancer_type,
-  patient_response = patient_ICBresponse
+    pathways = pathway_activity,
+    immunecells = cell_fractions,
+    lrpairs = lrpair_weights,
+    tfs = tf_activity,
+    ccpairs = ccpair_scores,
+    cancer_type = cancer_type,
+    patient_response = patient_ICBresponse
 )
 }

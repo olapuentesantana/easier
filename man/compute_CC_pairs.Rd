@@ -2,48 +2,58 @@
 % Please edit documentation in R/compute_CC_pairs.R
 \name{compute_CC_pairs}
 \alias{compute_CC_pairs}
-\title{Compute cell-cell interactions scores using computed ligand-receptor weights}
+\title{Compute cell-cell interactions scores using computed
+ligand-receptor weights}
 \usage{
 compute_CC_pairs(lrpairs, cancer_type = "pancan", verbose = TRUE)
 }
 \arguments{
-\item{lrpairs}{output of the compute_LR_pairs function. A matrix of log2(TPM +1) weights with
-with samples in rows and ligand-receptor pairs in columns.}
+\item{lrpairs}{output of the compute_LR_pairs function.
+A matrix of log2(TPM +1) weights with samples in rows and
+ligand-receptor pairs in columns.}
 
-\item{cancer_type}{string detailing the cancer type whose cell-cell interaction network will be used.
-A pan-cancer network is selected by default, whose network represents the union of all
-ligand-receptor pairs present across the 18 cancer types studied in (Lapuente-Santana et al., bioRxiv, 2021).}
+\item{cancer_type}{string detailing the cancer type whose cell-cell
+interaction network will be used. A pan-cancer network is selected by
+default, whose network represents the union of all ligand-receptor
+pairs present across the 18 cancer types studied in
+(Lapuente-Santana et al., Patterns, 2021).}
 
-\item{verbose}{logical value indicating whether to display informative messages about the process.}
+\item{verbose}{logical value indicating whether to display
+informative messages about the process.}
 }
 \value{
-A matrix of scores with samples in rows and cell-cell pairs in columns.
+A matrix of scores with samples in rows and cell-cell
+pairs in columns.
 }
 \description{
-This function scores cell-cell interactions in the tumor microenvironment using
-ligand-receptor weights as input (Lapuente-Santana et al., bioRxiv, 2021).
+This function scores cell-cell interactions in the tumor
+microenvironment using ligand-receptor weights as input.
 }
 \examples{
-# Load exemplary dataset (Mariathasan et al., Nature, 2018) from easierData.
-# Original processed data is available from IMvigor210CoreBiologies package.
+# using a SummarizedExperiment object
+library(SummarizedExperiment)
+# Using example exemplary dataset (Mariathasan et al., Nature, 2018)
+# from easierData. Original processed data is available from
+# IMvigor210CoreBiologies package.
 library("easierData")
+
 dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 RNA_tpm <- assay(dataset_mariathasan)[["tpm"]]
 
 # Select a subset of patients to reduce vignette building time.
 set.seed(1234)
-subset <- sample(colnames(RNA_tpm), size = 30)
-RNA_tpm <- RNA_tpm[, subset]
+pat_subset <- sample(colnames(RNA_tpm), size = 5)
+RNA_tpm <- RNA_tpm[, pat_subset]
 
 # Computation of ligand-receptor pair weights
 lrpair_weights <- compute_LR_pairs(
-  RNA_tpm = RNA_tpm,
-  cancer_type = "pancan"
+    RNA_tpm = RNA_tpm,
+    cancer_type = "pancan"
 )
 
 # Computation of cell-cell interaction scores
 ccpair_scores <- compute_CC_pairs(
-  lrpairs = lrpair_weights,
-  cancer_type = "pancan"
+    lrpairs = lrpair_weights,
+    cancer_type = "pancan"
 )
 }

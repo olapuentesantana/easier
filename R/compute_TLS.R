@@ -17,11 +17,11 @@
 #'
 #' # Example does not matter as function will no be exported
 compute_TLS <- function(matches, RNA_tpm) {
-  # Subset RNA_tpm
-  sub_RNA_tpm <- RNA_tpm[matches, ]
+    # Subset RNA_tpm
+    sub_RNA_tpm <- RNA_tpm[matches, ]
 
-  # Calculation: geometric mean (so-called log-average) [TPM, 1 offset]
-  geom_mean <- apply(sub_RNA_tpm, 2, function(X) exp(mean(log2(X + 1))))
+    # Calculation: geometric mean (so-called log-average) [TPM, 1 offset]
+    geom_mean <- apply(sub_RNA_tpm, 2, function(X) exp(mean(log2(X + 1))))
 
-  return(data.frame(TLS = geom_mean, check.names = FALSE))
+    return(data.frame(TLS = geom_mean, check.names = FALSE))
 }

@@ -18,17 +18,17 @@
 #'
 #' # Example does not matter as function will no be exported
 compute_Roh_IS <- function(matches, RNA_tpm) {
-  # Subset RNA_tpm
-  sub_RNA_tpm <- RNA_tpm[matches, ]
+    # Subset RNA_tpm
+    sub_RNA_tpm <- RNA_tpm[matches, ]
 
-  # Pseudocount of 0.01 for all genes
-  sub_RNA_tpm <- sub_RNA_tpm + 0.01
+    # Pseudocount of 0.01 for all genes
+    sub_RNA_tpm <- sub_RNA_tpm + 0.01
 
-  # Pseudocount of 1 for genes with 0 expr
-  if (any(sub_RNA_tpm == 0)) sub_RNA_tpm[sub_RNA_tpm == 0] <- sub_RNA_tpm[sub_RNA_tpm == 0] + 1
+    # Pseudocount of 1 for genes with 0 expr
+    if (any(sub_RNA_tpm == 0)) sub_RNA_tpm[sub_RNA_tpm == 0] <- sub_RNA_tpm[sub_RNA_tpm == 0] + 1
 
-  # Calculation: geometric mean (so-called log-average) [TPM, 0.01 offset]
-  score <- apply(sub_RNA_tpm, 2, function(X) exp(mean(log(X))))
+    # Calculation: geometric mean (so-called log-average) [TPM, 0.01 offset]
+    score <- apply(sub_RNA_tpm, 2, function(X) exp(mean(log(X))))
 
-  return(data.frame(Roh_IS = score, check.names = FALSE))
+    return(data.frame(Roh_IS = score, check.names = FALSE))
 }
