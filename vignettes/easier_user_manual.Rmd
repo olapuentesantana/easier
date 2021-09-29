@@ -153,16 +153,16 @@ For this example we will use gene expression data (counts and tpm values). Other
 ```{r}
 dataset_mariathasan <- get_Mariathasan2018_PDL1_treatment()
 # patient response
-patient_ICBresponse <- dataset_mariathasan@colData$BOR
-names(patient_ICBresponse) <- dataset_mariathasan@colData$pat_id
+patient_ICBresponse <- colData(dataset_mariathasan)[["BOR"]]
+names(patient_ICBresponse) <- colData(dataset_mariathasan)[["pat_id"]]
 # tumor mutational burden
-TMB <- dataset_mariathasan@colData$TMB
-names(TMB) <- dataset_mariathasan@colData$pat_id
+TMB <- colData(dataset_mariathasan)[["TMB"]]
+names(TMB) <- colData(dataset_mariathasan)[["pat_id"]]
 # cohort cancer type 
-cancer_type <- dataset_mariathasan@metadata$cancertype
+cancer_type <- metadata(dataset_mariathasan)[["cancertype"]]
 # gene expression data
-RNA_counts <- dataset_mariathasan@assays@data@listData[["counts"]]
-RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
+RNA_counts <- assays(dataset_mariathasan)[["counts"]]
+RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 
 # Select a subset of patients to reduce vignette building time.
 set.seed(1234)

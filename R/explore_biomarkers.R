@@ -32,8 +32,8 @@
 #' # Original processed data is available from IMvigor210CoreBiologies package.
 #' library("easierData")
 #' dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
-#' RNA_tpm <- dataset_mariathasan@assays@data@listData[["tpm"]]
-#' RNA_counts <- dataset_mariathasan@assays@data@listData[["counts"]]
+#' RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
+#' RNA_counts <- assays(dataset_mariathasan)[["counts"]]
 #' cancer_type <- dataset_mariathasan@metadata$cancertype
 #'
 #' # Select a subset of patients to reduce vignette building time.

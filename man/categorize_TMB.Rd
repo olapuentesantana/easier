@@ -23,7 +23,8 @@ This function encodes tumor mutational variable (TMB) numerical variable to cate
 # Original processed data is available from IMvigor210CoreBiologies package.
 library("easierData")
 dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
-TMB <- dataset_mariathasan@colData$TMB; names(TMB) <- dataset_mariathasan@colData$pat_id
+TMB <- colData(dataset_mariathasan)[["TMB"]]
+names(TMB) <- colData(dataset_mariathasan)[["pat_id"]]
 
 # Select a subset of patients to reduce vignette building time.
 set.seed(1234)
