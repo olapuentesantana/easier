@@ -39,7 +39,7 @@ Depends:
 Imports: 
     progeny,
     easierData,
-    dorothea,
+    dorothea (>= 1.0.0),
     quantiseqr,
     ROCR,
     grDevices, 

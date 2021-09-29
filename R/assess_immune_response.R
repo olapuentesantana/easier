@@ -123,8 +123,8 @@ assess_immune_response <- function(predictions_immune_response = NULL,
         TMB_available <- FALSE
     } else {
         TMB_available <- TRUE
-        if (anyNA(TMB_values)) warning("NA values were found in TMB data, patients
-                                   with NA values are removed from the analysis")
+        if (anyNA(TMB_values)) warning("NA values were found in TMB data,
+        patients with NA values are removed from the analysis")
         message(
             "\nConsidering ", length(TMB_values[!is.na(TMB_values)]),
             " patients out of ", length(TMB_values), " with available TMB"
