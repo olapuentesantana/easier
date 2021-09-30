@@ -10,7 +10,8 @@
 #' Default thresholds are low (<100), moderate (100-400) and
 #' high TMB (>400).
 #'
-#' @return A numeric vector assigning each sample a class from 1 to 3.
+#' @return A numeric vector assigning each sample a class
+#' from 1 (low TMB) to 3 (high TMB).
 #'
 #' @export
 #'

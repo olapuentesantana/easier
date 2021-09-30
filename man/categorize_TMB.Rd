@@ -14,7 +14,8 @@ Default thresholds are low (<100), moderate (100-400) and
 high TMB (>400).}
 }
 \value{
-A numeric vector assigning each sample a class from 1 to 3.
+A numeric vector assigning each sample a class
+from 1 (low TMB) to 3 (high TMB).
 }
 \description{
 This function encodes tumor mutational variable (TMB) numerical

@@ -208,7 +208,7 @@ compute_scores_immune_response <- function(RNA_tpm,
                 }
             },
             error = function(cond) {
-                message("The following error occurred while computing sinature of ", sig, ": \n", cond)
+                cat("The following error occurred while computing sinature of ", sig, ": \n")
                 df <- data.frame(rep(NA, ncol(RNA_tpm)), row.names = colnames(RNA_tpm))
                 names(df)[1] <- sig
                 return(df)

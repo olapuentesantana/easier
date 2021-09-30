@@ -10,7 +10,7 @@ assess_immune_response(
   RNA_tpm,
   TMB_values,
   easier_with_TMB = c("none", "weighted_average", "penalized_score"),
-  weight_penalty,
+  weight_penalty = seq(0, 1, 0.1),
   verbose = TRUE
 )
 }

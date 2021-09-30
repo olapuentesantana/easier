@@ -117,7 +117,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
                                    RNA_tpm,
                                    TMB_values,
                                    easier_with_TMB = c("none", "weighted_average", "penalized_score"),
-                                   weight_penalty,
+                                   weight_penalty = seq(0, 1, 0.1),
                                    verbose = TRUE) {
     if (is.null(predictions_immune_response)) stop("None predictions found")
     if (missing(easier_with_TMB)) easier_with_TMB <- "weighted_average"
@@ -514,7 +514,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
             # compute the integrated score as weighted average #
             if(easier_with_TMB == "weighted_average"){
                 pred_lin <- linear_func(rp_df$prediction_easier)
-                TMB_lin <- linear_func(rp_df$TMB)
+                TMB_lin <- linear_func(rp_df$TMBcat)
                 AUC_averaged_v <- sapply(seq(from = 0, to = 1, by = 0.1), function(p) {
                     pred_averaged <- apply(cbind((1 - p) * pred_lin, (p) * TMB_lin), 1, mean)
                     pred <- ROCR::prediction(pred_averaged, rp_df$response)
@@ -656,7 +656,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
                 # Compute the integrated score as weighted average #
                 pred_lin <- linear_func(rp_df$prediction_easier)
                 names(pred_lin) <- rp_df$patient
-                TMB_lin <- linear_func(rp_df$TMB)
+                TMB_lin <- linear_func(rp_df$TMBcat)
                 names(TMB_lin) <- rp_df$patient
 
                 pred_averaged_rf <- sapply(seq(from = 0, to = 1, by = 0.1), function(p) {
