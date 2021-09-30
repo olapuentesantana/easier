@@ -109,7 +109,8 @@ explore_biomarkers <- function(pathways = NULL,
                                verbose = TRUE) {
     if (missing(cancer_type)) stop("cancer type needs to be specified")
     if (missing(patient_response)) stop("patient response needs to be specified")
-    if (all(is.null(pathways), is.null(immunecells), is.null(tfs), is.null(lrpairs), is.null(ccpairs))) stop("none signature specified")
+    if (all(is.null(pathways), is.null(immunecells), is.null(tfs), is.null(lrpairs),
+            is.null(ccpairs))) stop("none signature specified")
     # Retrieve internal data
     opt_models <- suppressMessages(easierData::get_opt_models())
     intercell_networks <- suppressMessages(easierData::get_intercell_networks())
@@ -169,10 +170,6 @@ explore_biomarkers <- function(pathways = NULL,
         my_coefs$datatype <- view_name
         # remove intercept
         my_coefs <- subset(my_coefs, !feature %in% "(Intercept)")
-        # calculate median across runs
-        # my_coefs_task_median <- stats::aggregate(estimate ~ feature + task,
-        #                                          FUN = "median", na.rm = TRUE, data = my_coefs
-        # )
         # calculate median across runs and tasks
         my_coefs_median <- stats::aggregate(estimate ~ feature + datatype,
             FUN = "median", na.rm = TRUE, data = my_coefs
@@ -189,10 +186,12 @@ explore_biomarkers <- function(pathways = NULL,
 
         # change names for cell-cell pairs
         if (unique(biomarkers_weights$datatype) == "ccpairs") {
-            new_variables_cc <- c("CD8", "M", "B", "DC", "Endo", "Mast", "Fib", "Adip", "CD4", "NK", "Neu", "Mono", "Cancer")
+            new_variables_cc <- c("CD8", "M", "B", "DC", "Endo", "Mast", "Fib", "Adip",
+                                  "CD4", "NK", "Neu", "Mono", "Cancer")
             old_variables_cc <- c(
-                "CD8+T-Cell", "Macrophages", "B-Cell", "DendriticCells", "Endothelialcells", "Mastcells", "Fibroblasts", "Adipocytes",
-                "CD4+T-Cell", "NKcells", "Neutrophils", "Monocytes", "Cancercell"
+                "CD8+T-Cell", "Macrophages", "B-Cell", "DendriticCells", "Endothelialcells",
+                "Mastcells", "Fibroblasts", "Adipocytes", "CD4+T-Cell", "NKcells",
+                "Neutrophils", "Monocytes", "Cancercell"
             )
             tmp <- as.character(biomarkers_weights$feature)
             for (X in seq_len(length(new_variables_cc))) {
@@ -217,7 +216,8 @@ explore_biomarkers <- function(pathways = NULL,
         }
 
         # Sort biomarkers by weight
-        biomarkers_weights_sort <- biomarkers_weights[order(abs(biomarkers_weights$weight), decreasing = TRUE), ]
+        biomarkers_weights_sort <- biomarkers_weights[order(abs(biomarkers_weights$weight),
+                                                            decreasing = TRUE), ]
         # Keep 15 top biomarkers for those descriptors with higher amount of features
         if (nrow(biomarkers_weights_sort) > 15) {
             biomarkers_weights_sort <- biomarkers_weights_sort[seq_len(15), ]

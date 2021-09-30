@@ -9,7 +9,8 @@ assess_immune_response(
   patient_response = NULL,
   RNA_tpm,
   TMB_values,
-  easier_with_TMB = FALSE,
+  easier_with_TMB = c("none", "weighted_average", "penalized_score"),
+  weight_penalty,
   verbose = TRUE
 )
 }
@@ -26,9 +27,13 @@ tpm values.}
 \item{TMB_values}{numeric vector containing patients' tumor mutational burden
 (TMB) values.}
 
-\item{easier_with_TMB}{logical flag indicating whether to combine both easier
-and TMB scores based on a weighted average or penalized score (a weight,
-penalty of 0.5 is used).}
+\item{easier_with_TMB}{character string indicating which approach should be
+used to integrate easier with TMB.}
+
+\item{weight_penalty}{integer value from 0 to 1, which is used to define the
+weight or penalty for combining easier and TMB scores based on a weighted
+average or penalized score, in order to derive a score of patient's likelihood
+of immune response. The default value is 0.5.}
 
 \item{verbose}{logical flag indicating whether to display messages about
 the process.}
@@ -120,6 +125,6 @@ assess_immune_response(
     patient_response = patient_ICBresponse,
     RNA_tpm = RNA_tpm,
     TMB_values = TMB,
-    easier_with_TMB = TRUE
+    easier_with_TMB = "weighted_average",
 )
 }

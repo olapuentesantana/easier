@@ -1,17 +1,31 @@
 ---
 title: easier User Manual
 author:
-- name: Óscar Lapuente-Santana^[o.lapuente.santana@tue.nl]
-  affiliation: Computational Biology group, Department of Biomedical Engineering, Eindhoven University of Technology ([BME, TU/e](https://www.tue.nl/en/research/research-groups/computational-biology/))
-- name: Federico Marini^[marinif@uni-mainz.de]
-  affiliation: Institute of Medical Biostatistics, Epidemiology and Informatics ([IMBEI, Mainz](https://www.unimedizin-mainz.de/imbei/imbei/welcome-page.html?L=1))
-- name: Arsenij Ustjanzew^[arsenij.ustjanzew@uni-mainz.de]
-  affiliation: Institute of Medical Biostatistics, Epidemiology and Informatics ([IMBEI, Mainz](https://www.unimedizin-mainz.de/imbei/imbei/welcome-page.html?L=1))
-- name: Francesca Finotello^[francesca.finotello@i-med.ac.at]
-  affiliation: Institute of Bioinformatics, Biocenter Medical University of Innsbruck (https://icbi.i-med.ac.at/index.html)
-- name: Federica Eduati^[f.eduati@tue.nl]
-  affiliation: Computational Biology group, Department of Biomedical Engineering, Eindhoven University of Technology ([BME, TU/e](https://www.tue.nl/en/research/research-groups/computational-biology/))<br/>
-               Institute for Complex Molecular Systems, Eindhoven University of Technology ([ICMS, TU/e](https://www.tue.nl/en/research/institutes/institute-for-complex-molecular-systems/))
+- name: Óscar Lapuente-Santana
+  affiliation: 
+  - &id Computational Biology group, Department of Biomedical Engineering,
+    Eindhoven University of Technology (BME, TU/e)
+  email: o.lapuente.santana@tue.nl
+- name: Federico Marini
+  affiliation:
+  - Institute of Medical Biostatistics, Epidemiology and Informatics 
+    (IMBEI, Mainz)
+  email: marinif@uni-mainz.de
+- name: Arsenij Ustjanzew
+  affiliation: 
+  - Institute of Medical Biostatistics, Epidemiology and Informatics 
+    (IMBEI, Mainz)
+  email: arsenij.ustjanzew@uni-mainz.de
+- name: Francesca Finotello
+  affiliation: 
+  - Institute of Bioinformatics, Biocenter Medical University of Innsbruck
+  email: francesca.finotello@i-med.ac.at
+- name: Federica Eduati
+  affiliation: 
+  - *id
+  - Institute for Complex Molecular Systems, Eindhoven University of 
+    Technology (ICMS, TU/e)
+  email: f.eduati@tue.nl
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_document:
@@ -268,7 +282,7 @@ output_eval_with_resp <- assess_immune_response(predictions_immune_response = pr
                                                 patient_response = patient_ICBresponse,
                                                 RNA_tpm = RNA_tpm,
                                                 TMB_values = TMB,
-                                                easier_with_TMB = TRUE)
+                                                easier_with_TMB = "weighted_average")
 ```
 
 Top figure. Area under the curve (AUC) values of patients' predictions based on quantitative descriptors of the TME, an ensemble descriptor based on average of individual descriptors, and the computed scores of immune response (gold standard). Bar plot represent the average AUC across tasks and error bars describe the corresponding standard deviation.
@@ -294,7 +308,9 @@ In this likely scenario, an score of likelihood of immune response can be assign
 output_eval_no_resp <- assess_immune_response(predictions_immune_response = predictions,
                                               RNA_tpm = RNA_tpm,
                                               TMB_values = TMB,
-                                              easier_with_TMB = TRUE)
+                                              easier_with_TMB = "weighted_average",
+                                              weight_penalty = 0.5
+                                              )
 ```
 
 Top figure. Boxplot of patients' easier score showing its distribution across the 10 different tasks.
@@ -335,12 +351,12 @@ Additionally, a volcano plot integrating systems biomarkers from all quantitativ
 
 ```{r, eval=FALSE}
 # inspect output
-#output_biomarkers[[1]]
-#output_biomarkers[[2]]
-#output_biomarkers[[3]]
-#output_biomarkers[[4]]
-#output_biomarkers[[5]]
-#output_biomarkers[[6]]
+output_biomarkers[[1]]
+output_biomarkers[[2]]
+output_biomarkers[[3]]
+output_biomarkers[[4]]
+output_biomarkers[[5]]
+output_biomarkers[[6]]
 ```
 
 # Session info {- .smaller}

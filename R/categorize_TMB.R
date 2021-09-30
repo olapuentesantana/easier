@@ -6,9 +6,9 @@
 #' @importFrom stats quantile
 #'
 #' @param TMB numeric vector with tumor mutational burden values.
-#' @param thresholds numeric vector to specify thresholds to be used. D
-#' Default thresholds are low (<100),
-#'  moderate (100-400) and high TMB (>400).
+#' @param thresholds numeric vector to specify thresholds to be used.
+#' Default thresholds are low (<100), moderate (100-400) and
+#' high TMB (>400).
 #'
 #' @return A numeric vector assigning each sample a class from 1 to 3.
 #'
