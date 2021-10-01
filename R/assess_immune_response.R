@@ -689,7 +689,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
             all_scores_df <- reshape2::melt(rp_df)
             names(all_scores_df) <- c("patient", "approach", "pred")
             # Keep only weighted average
-            all_scores_df <- subset(all_scores_df, approach == "weighted_average")
+            all_scores_df <- all_scores_df[all_scores_df$approach == "weighted_average", ]
             # sort patients
             all_scores_df$patient <- factor(all_scores_df$patient,
                 levels = all_scores_df$patient[match(levels(ordering),
