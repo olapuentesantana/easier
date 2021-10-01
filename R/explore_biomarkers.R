@@ -106,10 +106,14 @@ explore_biomarkers <- function(pathways = NULL,
                                lrpairs = NULL,
                                ccpairs = NULL,
                                cancer_type,
-                               patient_response,
+                               patient_response = NULL,
                                verbose = TRUE) {
     if (missing(cancer_type)) stop("cancer type needs to be specified")
-    if (missing(patient_response)) stop("patient response needs to be specified")
+    if (is.null(patient_response) == FALSE) {
+        if (all(levels(as.factor(patient_response)) %in% c("NR", "R")) == FALSE) {
+            stop("patient_response factor levels are not NR and R")
+        }
+    }
     if (all(is.null(pathways), is.null(immunecells), is.null(tfs), is.null(lrpairs),
             is.null(ccpairs))) stop("none signature specified")
     # Retrieve internal data
@@ -139,7 +143,7 @@ explore_biomarkers <- function(pathways = NULL,
     # All corresponding views
     view_combinations <- view_simples
 
-    get_biomarkers_features <- function(view, cancer_type, verbose = TRUE) {
+    get_biomarkers_features <- function(view, cancer_type, patient_response, verbose = TRUE) {
         view_info <- view_combinations[[view]]
         view_name <- paste(names(view_info), collapse = "_")
         # if (verbose) message("Examining ", view_name, " biomarkers \n")
@@ -148,18 +152,24 @@ explore_biomarkers <- function(pathways = NULL,
         # ---------- #
         features <- as.matrix(get(view_name))
         features_z <- calc_z_score(features)
-        patients <- intersect(names(patient_response), rownames(features))
-        # add response labels
-        response <- patient_response[patients]
-        response_df <- data.frame(sample = names(response), label = response)
+        if (is.null(patient_response)){
+            patients = rownames(features)
+        }else{
+            patients <- intersect(names(patient_response), rownames(features))
+            # add response labels
+            response <- patient_response[patients]
+            response_df <- data.frame(sample = names(response), label = response)
+        }
         features <- features[patients, ]
         features_z <- features_z[patients, ]
         features_df <- reshape2::melt(features)
         features_df_z <- reshape2::melt(features_z)
         features_df$value_z <- features_df_z$value
         names(features_df) <- c("sample", "feature", "value", "value_z")
-        # Merge
-        features_df <- merge(features_df, response_df)
+        if (is.null(patient_response) == FALSE) {
+            # Merge
+            features_df <- merge(features_df, response_df)
+        }
         features_df$datatype <- view_name
         # ---------- #
         # Weights #
@@ -181,7 +191,7 @@ explore_biomarkers <- function(pathways = NULL,
 
     plot_list <- list()
     comparison <- do.call(rbind, lapply(seq_len(length(view_combinations)), function(ii) {
-        biomarkers_weights_features <- get_biomarkers_features(ii, cancer_type)
+        biomarkers_weights_features <- get_biomarkers_features(ii, cancer_type, patient_response)
         biomarkers_weights <- biomarkers_weights_features$weights
         biomarkers_weights$feature <- droplevels(biomarkers_weights$feature)
 
@@ -283,7 +293,11 @@ explore_biomarkers <- function(pathways = NULL,
         features_boxplot <- subset(features, feature %in% unique(biomarkers_weights_sort$variable))
         features_boxplot$feature <- factor(as.character(features_boxplot$feature),
                                            levels = unique(biomarkers_weights_sort$variable))
-        features_boxplot$label <- factor(features_boxplot$label, levels = c("NR", "R"))
+        if (is.null(patient_response) == FALSE) {
+            features_boxplot$label <- factor(features_boxplot$label, levels = c("NR", "R"))
+        }else{
+            features_boxplot$label <- as.factor("UNK")
+        }
 
         # BOXPLOT #
         boxplot <- ggplot2::ggplot(features_boxplot,
@@ -340,117 +354,124 @@ explore_biomarkers <- function(pathways = NULL,
         suppressWarnings(grid::grid.draw(g))
         plot_list[[ii]] <- recordPlot()
 
-        features_names <- levels(features$feature)
-        datatype_comparison <- do.call(rbind, lapply(features_names, function(x) {
-            # consider only the data for that variable and separate R and NR
-            tmp <- subset(features, feature == x)
-            # compute average
-            tmp_mean <- tapply(tmp$value, tmp$label, mean)
-
-            if (length(unique(tmp$value)) != 1) {
-                # compute wilcoxon sum rank test, effect size and sign
-                stattest <- rstatix::wilcox_test(data = tmp, value ~ label)
-                effsize <- rstatix::wilcox_effsize(data = tmp, value ~ label)
-                sign <- sign(tmp_mean["R"] - tmp_mean["NR"])
-                p_val <- stattest$p
-                eff_size <- effsize$effsize
-            } else {
-                p_val <- 1
-                eff_size <- 0
-                sign <- 0
-            }
-            tmp_df <- data.frame(
-                datatype = unique(features$datatype),
-                variable = x,
-                p_val = p_val,
-                eff_size = eff_size,
-                sign = sign
-            )
-            return(tmp_df)
-        }))
-        datatype_comparison <- merge(datatype_comparison, biomarkers_weights)
-        datatype_comparison$istop <- FALSE
-        datatype_comparison$istop[datatype_comparison$variable %in% biomarkers_weights_sort$variable] <- TRUE
-        return(datatype_comparison)
+        if (length(levels(as.factor(patient_response))) == 2) {
+            features_names <- levels(features$feature)
+            datatype_comparison <- do.call(rbind, lapply(features_names, function(x) {
+                # consider only the data for that variable and separate R and NR
+                tmp <- subset(features, feature == x)
+                # compute average
+                tmp_mean <- tapply(tmp$value, tmp$label, mean)
+                if (length(unique(tmp$value)) != 1) {
+                    # compute wilcoxon sum rank test, effect size and sign
+                    stattest <- rstatix::wilcox_test(data = tmp, value ~ label)
+                    effsize <- rstatix::wilcox_effsize(data = tmp, value ~ label)
+                    sign <- sign(tmp_mean["R"] - tmp_mean["NR"])
+                    p_val <- stattest$p
+                    eff_size <- effsize$effsize
+                } else {
+                    p_val <- 1
+                    eff_size <- 0
+                    sign <- 0
+                }
+                tmp_df <- data.frame(
+                    datatype = unique(features$datatype),
+                    variable = x,
+                    p_val = p_val,
+                    eff_size = eff_size,
+                    sign = sign
+                )
+                return(tmp_df)
+            }))
+            datatype_comparison <- merge(datatype_comparison, biomarkers_weights)
+            datatype_comparison$istop <- FALSE
+            datatype_comparison$istop[datatype_comparison$variable %in% biomarkers_weights_sort$variable] <- TRUE
+            return(datatype_comparison)
+        }
     }))
 
-    comparison$signedEffect <- comparison$eff_size * comparison$sign
-    comparison$threshold <- as.numeric(as.factor(comparison$p_val <= 0.05))
-    comparison$threshold <- factor(comparison$threshold, levels = c(1, 2),
-                                   labels = c("notSign", "Sign"))
+    if (length(levels(as.factor(patient_response))) == 2) {
 
-    # Add arrow in lrpairs and ccpairs
-    if (any(comparison$datatype %in% c("lrpairs", "ccpairs"))) {
-        select_datatype <- which(comparison$datatype %in% c("lrpairs", "ccpairs"))
-        tmp <- vapply(strsplit(as.character(comparison$variable)[select_datatype],
-                               split = "_"), function(X) {
-            return(X[seq_len(8)])
-        }, FUN.VALUE = character(8))
+        comparison$signedEffect <- comparison$eff_size * comparison$sign
+        comparison$threshold <- as.numeric(as.factor(comparison$p_val <= 0.05))
+        comparison$threshold <- factor(comparison$threshold, levels = c(1, 2),
+                                       labels = c("notSign", "Sign"))
 
-        # LR pairs network
-        intercell_network <- intercell_networks[["pancan"]]
-        LR_pairs <- unique(paste0(intercell_network$ligands, "_",
-                                  intercell_network$receptors))
+        # Add arrow in lrpairs and ccpairs
+        if (any(comparison$datatype %in% c("lrpairs", "ccpairs"))) {
+            select_datatype <- which(comparison$datatype %in% c("lrpairs", "ccpairs"))
+            tmp <- vapply(strsplit(as.character(comparison$variable)[select_datatype],
+                                   split = "_"), function(X) {
+                return(X[seq_len(8)])
+            }, FUN.VALUE = character(8))
 
-        new_name <- do.call(c, lapply(seq_len(ncol(tmp)), function(X) {
-            tmp_2 <- tmp[!(is.na(tmp[, X])), X]
-            if (length(tmp_2) > 2) {
-                pos_comb <- combn(length(tmp_2), 2)
-                search <- vapply(seq_len(ncol(pos_comb)), function(X) {
-                    paste(tmp_2[pos_comb[, X]], collapse = "_")
-                }, FUN.VALUE = character(1))
-                keep <- search[search %in% LR_pairs]
-                maj <- names(which(table(unlist(strsplit(keep, split = "_"))) > 1))
-                other <- paste(tmp_2[!tmp_2 %in% maj])
+            # LR pairs network
+            intercell_network <- intercell_networks[["pancan"]]
+            LR_pairs <- unique(paste0(intercell_network$ligands, "_",
+                                      intercell_network$receptors))
 
-                if (match(maj, tmp_2) == length(tmp_2)) {
-                    new_name <- paste0(paste(other, collapse = "_"), "->", maj)
-                } else {
-                    new_name <- paste0(maj, "->", paste(other, collapse = "_"))
+            new_name <- do.call(c, lapply(seq_len(ncol(tmp)), function(X) {
+                tmp_2 <- tmp[!(is.na(tmp[, X])), X]
+                if (length(tmp_2) > 2) {
+                    pos_comb <- combn(length(tmp_2), 2)
+                    search <- vapply(seq_len(ncol(pos_comb)), function(X) {
+                        paste(tmp_2[pos_comb[, X]], collapse = "_")
+                    }, FUN.VALUE = character(1))
+                    keep <- search[search %in% LR_pairs]
+                    maj <- names(which(table(unlist(strsplit(keep, split = "_"))) > 1))
+                    other <- paste(tmp_2[!tmp_2 %in% maj])
+
+                    if (match(maj, tmp_2) == length(tmp_2)) {
+                        new_name <- paste0(paste(other, collapse = "_"), "->", maj)
+                    } else {
+                        new_name <- paste0(maj, "->", paste(other, collapse = "_"))
+                    }
+                } else if (length(tmp_2) <= 2) {
+                    new_name <- paste(tmp_2, collapse = "->")
                 }
-            } else if (length(tmp_2) <= 2) {
-                new_name <- paste(tmp_2, collapse = "->")
-            }
-            return(new_name)
-        }))
-        comparison$variable[select_datatype] <- new_name
+                return(new_name)
+            }))
+            comparison$variable[select_datatype] <- new_name
+        }
+
+        xminmax <- max(abs(comparison$signedEffect))
+        xminmax <- xminmax + xminmax * 0.01
+        ymax <- max(-log10(comparison$p_val))
+        ymax <- ymax + ymax * 0.01
+
+        volcano_plot <- ggplot2::ggplot(data = comparison,
+                                        ggplot2::aes(x = .data$signedEffect,
+                                                     y = -log10(.data$p_val),
+                                                     color = .data$threshold,
+                                                     size = abs(.data$weight))) +
+            ggplot2::geom_point(alpha = 1,
+                                ggplot2::aes(shape = as.factor(sign(weight)))) +
+            ggplot2::xlim(c(-xminmax, xminmax)) +
+            ggplot2::ylim(c(0, ymax)) +
+            ggplot2::xlab("higher in NR          effect size          higher in R") +
+            ggplot2::ylab("-log10 p-value") +
+            ggplot2::ggtitle("") +
+            ggplot2::scale_color_manual(labels = levels(comparison$threshold),
+                                        values = c( "#a6a6a6", "#4BA8D7"),
+                                        name = "R vs NR significance") +
+            ggplot2::scale_shape_manual(values = c(15, 16, 17), name = "Association sign") +
+            ggplot2::scale_size_continuous(name = "Estimated weight") +
+            ggplot2::theme_bw() +
+            ggplot2::geom_hline(yintercept = -log10(0.05), linetype = "longdash", colour = "#9e9e9e") +
+            ggplot2::geom_vline(xintercept = 0, linetype = "solid", colour = "#9e9e9e") +
+            ggplot2::theme(axis.text = ggplot2::element_text(color = "black"),
+                           axis.ticks = ggplot2::element_line(color = "black")) +
+            ggplot2::theme(legend.position = "right") +
+            ggplot2::labs(title = paste0(" All quantitative descriptor at once"))
+
+        if(unique(comparison$threshold) == 2){
+            volcano_plot <- volcano_plot + ggrepel::geom_text_repel(
+                data = subset(comparison, (threshold != "notSign")),
+                ggplot2::aes(x = .data$signedEffect, y = -log10(.data$p_val),
+                             label = .data$variable, size = .05),
+                show.legend = NA, inherit.aes = FALSE, max.overlaps = 20)
+        }
+
+        plot_list[[length(view_combinations) + 1]] <- suppressWarnings(print(volcano_plot))
     }
-
-    xminmax <- max(abs(comparison$signedEffect))
-    xminmax <- xminmax + xminmax * 0.01
-    ymax <- max(-log10(comparison$p_val))
-    ymax <- ymax + ymax * 0.01
-
-    volcano_plot <- ggplot2::ggplot(data = comparison,
-                                    ggplot2::aes(x = .data$signedEffect,
-                                                 y = -log10(.data$p_val),
-                                                 color = .data$threshold,
-                                                 size = abs(.data$weight))) +
-        ggplot2::geom_point(alpha = 1,
-                            ggplot2::aes(shape = as.factor(sign(weight)))) +
-        ggplot2::xlim(c(-xminmax, xminmax)) +
-        ggplot2::ylim(c(0, ymax)) +
-        ggplot2::xlab("higher in NR          effect size          higher in R") +
-        ggplot2::ylab("-log10 p-value") +
-        ggplot2::ggtitle("") +
-        ggplot2::scale_color_manual(values = c("notSign" = "#a6a6a6", "Sign" = "#4BA8D7"),
-                                    name = "R vs NR significance") +
-        ggplot2::scale_shape_manual(values = c(15, 16, 17), name = "Association sign") +
-        ggplot2::scale_size_continuous(name = "Estimated weight") +
-        ggplot2::theme_bw() +
-        ggplot2::geom_hline(yintercept = -log10(0.05), linetype = "longdash", colour = "#9e9e9e") +
-        ggplot2::geom_vline(xintercept = 0, linetype = "solid", colour = "#9e9e9e") +
-        ggplot2::theme(axis.text = ggplot2::element_text(color = "black"),
-                       axis.ticks = ggplot2::element_line(color = "black")) +
-        ggplot2::theme(legend.position = "right") +
-        ggrepel::geom_text_repel(
-            data = subset(comparison, (threshold != "notSign")),
-            ggplot2::aes(x = .data$signedEffect, y = -log10(.data$p_val),
-                         label = .data$variable, size = .05),
-            show.legend = NA, inherit.aes = FALSE, max.overlaps = 20
-        ) +
-        ggplot2::labs(title = paste0(" All quantitative descriptor at once"))
-
-    plot_list[[length(view_combinations) + 1]] <- suppressWarnings(print(volcano_plot))
     return(plot_list)
 }

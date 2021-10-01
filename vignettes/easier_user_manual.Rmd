@@ -270,10 +270,9 @@ Assessment of patients' response to immunotherapy treatment can be done via `ass
 
 The option `patient_response` should be provided with a character string containing patients' clinical response (where non-responders are labeled as NR and responders as R). Importantly, this aspect should be handled by the user.
 
-If patients' tumor mutational burden is available, this can also be provided via `TMB_values` and used as surrogate of patients' immunotherapy response for comparison.
+If patients' tumor mutational burden (TMB) is available, this can also be provided via `TMB_values` and used as surrogate of patients' immunotherapy response for comparison.
 
-Since both immune response and TMB are essential for an effective immunotherapy response, we decided to conceptualize this in our predictions by either penalizing or weighting differently our scores in high- and low-TMB patients. If `easier_with_TMB` is set to `TRUE`, a refined approach based on the integration of `easier` predictions with information on tumor mutational burden (TMB) is used for patient classification.
-
+Since both immune response and TMB are essential for an effective immunotherapy response, we decided to conceptualize this in our predictions by either penalizing or weighting differently our scores in high- and low-TMB patients. If `easier_with_TMB` is set to `weighted_average`, a weighted average of both easier and TMB score will be used, if instead `easier_with_TMB` is set to `penalized_score`, patient's easier scores will penalized depending on their TMB category. 
 
 ```{r, eval=TRUE}
 output_eval_with_resp <- assess_immune_response(predictions_immune_response = predictions,

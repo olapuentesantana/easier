@@ -23,7 +23,8 @@
 #' @param TMB_values numeric vector containing patients' tumor mutational burden
 #' (TMB) values.
 #' @param easier_with_TMB character string indicating which approach should be
-#' used to integrate easier with TMB.
+#' used to integrate easier with TMB. One of "weighted_average" (default) or
+#' "penalized_score".
 #' @param weight_penalty integer value from 0 to 1, which is used to define the
 #' weight or penalty for combining easier and TMB scores based on a weighted
 #' average or penalized score, in order to derive a score of patient's likelihood
@@ -116,19 +117,22 @@ assess_immune_response <- function(predictions_immune_response = NULL,
                                    patient_response = NULL,
                                    RNA_tpm,
                                    TMB_values,
-                                   easier_with_TMB = c("none", "weighted_average", "penalized_score"),
-                                   weight_penalty = NULL,
+                                   easier_with_TMB = c("weighted_average", "penalized_score"),
+                                   weight_penalty,
                                    verbose = TRUE) {
     if (is.null(predictions_immune_response)) stop("None predictions found")
     if (length(names(table(patient_response))) == 1) {
         stop("A binary class is required to evaluate patient's response")
     }
-    if (missing(easier_with_TMB)) easier_with_TMB <- "weighted_average"
+    if(length(easier_with_TMB) > 1) {
+        stop("Please provide only one approach to combine easier with TMB")
+    }
     if (missing(TMB_values)) {
         TMB_available <- FALSE
         easier_with_TMB <- "none"
     } else {
         TMB_available <- TRUE
+        if (missing(easier_with_TMB)) easier_with_TMB <- "weighted_average"
         if (anyNA(TMB_values)) warning("NA values were found in TMB data, ",
         "patients with NA values are removed from the analysis")
         message(

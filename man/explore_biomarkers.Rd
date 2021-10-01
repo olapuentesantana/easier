@@ -11,7 +11,7 @@ explore_biomarkers(
   lrpairs = NULL,
   ccpairs = NULL,
   cancer_type,
-  patient_response,
+  patient_response = NULL,
   verbose = TRUE
 )
 }

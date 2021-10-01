@@ -9,8 +9,8 @@ assess_immune_response(
   patient_response = NULL,
   RNA_tpm,
   TMB_values,
-  easier_with_TMB = c("none", "weighted_average", "penalized_score"),
-  weight_penalty = NULL,
+  easier_with_TMB = c("weighted_average", "penalized_score"),
+  weight_penalty,
   verbose = TRUE
 )
 }
@@ -28,7 +28,8 @@ tpm values.}
 (TMB) values.}
 
 \item{easier_with_TMB}{character string indicating which approach should be
-used to integrate easier with TMB.}
+used to integrate easier with TMB. One of "weighted_average" (default) or
+"penalized_score".}
 
 \item{weight_penalty}{integer value from 0 to 1, which is used to define the
 weight or penalty for combining easier and TMB scores based on a weighted
