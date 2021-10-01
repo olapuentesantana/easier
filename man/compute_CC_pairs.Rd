@@ -2,27 +2,58 @@
 % Please edit documentation in R/compute_CC_pairs.R
 \name{compute_CC_pairs}
 \alias{compute_CC_pairs}
-\title{compute_CC_pairs}
+\title{Compute cell-cell interactions scores using computed
+ligand-receptor weights}
 \usage{
-compute_CC_pairs(lrpairs, cancertype)
+compute_CC_pairs(lrpairs = NULL, cancer_type = "pancan", verbose = TRUE)
 }
 \arguments{
-\item{lrpairs}{Ligand-leceptor pairs weights matrix}
+\item{lrpairs}{output of the compute_LR_pairs function.
+A matrix of log2(TPM +1) weights with samples in rows and
+ligand-receptor pairs in columns.}
 
-\item{cancertype}{string character
-TODOTODO: this is not used in the function body?}
+\item{cancer_type}{string detailing the cancer type whose cell-cell
+interaction network will be used. A pan-cancer network is selected by
+default, whose network represents the union of all ligand-receptor
+pairs present across the 18 cancer types studied in
+(Lapuente-Santana et al., Patterns, 2021).}
+
+\item{verbose}{logical value indicating whether to display
+informative messages about the process.}
 }
 \value{
-A list with the following elements:
-\describe{
-\item{score}{cell-cell interaction scores matrix with rows=samples and columns=cells}
-\item{pval}{corresponding p-values for each cell-cell pair, comparing the score with
-the null hypothesis}
-}
+A matrix of scores with samples in rows and cell-cell
+pairs in columns.
 }
 \description{
-\code{compute_CC_pairs} compute CC pairs from tpm, using the null model for CC interaction computed on TCGA data
+This function scores cell-cell interactions in the tumor
+microenvironment using ligand-receptor weights as input.
 }
 \examples{
-# TODOTODO
+# using a SummarizedExperiment object
+library(SummarizedExperiment)
+# Using example exemplary dataset (Mariathasan et al., Nature, 2018)
+# from easierData. Original processed data is available from
+# IMvigor210CoreBiologies package.
+library("easierData")
+
+dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
+RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
+
+# Select a subset of patients to reduce vignette building time.
+pat_subset <- c("SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+"SAMba1a34b5a060", "SAM18a4dabbc557")
+RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
+
+# Computation of ligand-receptor pair weights
+lrpair_weights <- compute_LR_pairs(
+    RNA_tpm = RNA_tpm,
+    cancer_type = "pancan"
+)
+
+# Computation of cell-cell interaction scores
+ccpair_scores <- compute_CC_pairs(
+    lrpairs = lrpair_weights,
+    cancer_type = "pancan"
+)
 }

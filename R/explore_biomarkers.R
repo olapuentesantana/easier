@@ -1,278 +1,477 @@
-#' Examination of possible relevant biomarkers in cancer dataset
+#' Visualization of stunning biomarkers
 #'
-#' \code{explore_biomarkers} provides an overview of the mechanistic signatures features distribution in
-#' the dataset (separating responders and non-responders if known) together with information on the
-#' feature contribution to the model building.
+#' This function provides an overview of relevant computed
+#' features (biomarkers), comparing responders and non-responders
+#' if known. Information about the features contribution to the
+#' optimal models is also included.
 #'
-#' Plot original features distribution together with the
-#' feature importance in the model
-#'
-#' @importFrom grDevices pdf dev.off
 #' @importFrom stats aggregate
+#' @importFrom reshape2 melt
+#' @import rstatix
+#' @importFrom ggrepel geom_text_repel
 #' @import ggplot2
 #' @importFrom grid unit.pmax grid.newpage grid.draw
+#' @importFrom easierData get_opt_models get_intercell_networks
+#'
+#' @param pathways numeric matrix with pathways activity
+#' (rows = samples; columns = pathways).
+#' @param immunecells numeric matrix with immune cell quantification
+#' (rows = samples; columns = cell types).
+#' @param tfs numeric matrix with transcription factors activity
+#' (rows = samples; columns = transcription factors).
+#' @param lrpairs numeric matrix with ligand-receptor weights
+#' (rows = samples; columns = ligand-receptor pairs).
+#' @param ccpairs numeric matrix with cell-cell scores
+#' (rows = samples; columns = cell-cell pairs).
+#' @param cancer_type character string indicating which cancer-specific
+#' model should be used to compute the predictions.
+#' @param patient_response character vector with two factors
+#' (Non-responders = NR, Responders = R).
+#' @param verbose logical flag indicating whether to display messages
+#' about the process.
+#'
+#' @return \itemize{
+#' \item{Volcano plot displaying relevant biomarkers differentiating
+#' responders vs non-responders patients.}
+#' \item{A combined plot for each type of quantitative descriptors,
+#' showing the original distribution of the features and the importance
+#' of these features for the trained models}
+#' }
 #'
 #' @export
 #'
-#' @param pathways numeric matrix with data
-#' @param immunecells numeric matrix with data
-#' @param lrpairs numeric matrix with data
-#' @param cytokinepairs numeric matrix with data
-#' @param tfs numeric matrix with data
-#' @param ccpairsgroupedscores numeric matrix with data
-#' @param ccpairsgroupedpval numeric matrix with data
-#' @param cancertype string character
-#' @param real_patient_response vector with two factors (NR,R)
-#' @param output_file_path string with a file name
-#'
-#' @return boxplot with features distribution
-#'
 #' @examples
-#' # TODOTODO
-explore_biomarkers <- function(pathways,
-                               immunecells,
-                               lrpairs,
-                               cytokinepairs,
-                               tfs,
-                               ccpairsgroupedscores,
-                               ccpairsgroupedpval,
-                               cancertype,
-                               real_patient_response,
-                               output_file_path){
-
-  # Check that folder exists, create folder otherwise
-  if(dir.exists(output_file_path) == FALSE) {
-    dir.create(file.path(output_file_path), showWarnings = FALSE)
-    warning(paste0(sapply(strsplit(output_file_path, "/", fixed = TRUE), tail , 1),
-            " folder does not exist, creating ", sapply(strsplit(output_file_path, "/", fixed = TRUE), tail , 1), " folder"))
-  }
-
-  try(if(missing(cancertype)) stop("cancer type needs to be specified"))
-
-  # Initialize variables
-  views <- c(Pathways = 'gaussian',
-             ImmuneCells = 'gaussian',
-             LRpairs = 'gaussian',
-             CYTOKINEpairs = 'gaussian',
-             TFs = 'gaussian',
-             CCpairsGroupedScores = 'gaussian',
-             CCpairsGroupedPval = 'gaussian')
-
-  view_combinations <- NULL
-
-  algorithm <-  c("Multi_Task_EN") #"BEMKL"
-
-  # Check which views are missing
-  miss_views <- c(ifelse(missing(pathways), NA, 1),
-                  ifelse(missing(immunecells), NA, 2),
-                  ifelse(missing(lrpairs), NA, 3),
-                  ifelse(missing(cytokinepairs), NA, 4),
-                  ifelse(missing(tfs), NA, 5),
-                  ifelse(missing(ccpairsgroupedscores), NA, 6),
-                  ifelse(missing(ccpairsgroupedpval), NA, 7))
-
-  # Possible combinations
-  possible_combo <- combn(miss_views[1:2], 2)
-
-  # Remove combinations with are not feasible due to missing views
-  if(any(is.na(miss_views[1:2]))){
-    possible_combo <- possible_combo[!is.na(miss_views[1:2]),]
-  }
-
-  # Views single
-  view_simples <- lapply(miss_views[!is.na(miss_views)], function(X){
-    tmp <- views[X] ; return(tmp)
-  })
-
-  # Views combination
-  if(is.vector(possible_combo) & length(possible_combo) > 1) {
-    view_combinations <- list(do.call(c, lapply(possible_combo, function(X){
-      tmp <- views[X] ; return(tmp)
-    })))
-  }
-
-  # Views combination
-  if(is.matrix(possible_combo)) {
-    view_combinations <- lapply(1:ncol(possible_combo), function(X){
-      tmp <- views[possible_combo[,X]] ; return(tmp)
+#' # using a SummarizedExperiment object
+#' library(SummarizedExperiment)
+#' # Using example exemplary dataset (Mariathasan et al., Nature, 2018)
+#' # from easierData. Original processed data is available from
+#' # IMvigor210CoreBiologies package.
+#' library("easierData")
+#'
+#' dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
+#' RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
+#' RNA_counts <- assays(dataset_mariathasan)[["counts"]]
+#' cancer_type <- metadata(dataset_mariathasan)[["cancertype"]]
+#'
+#' # Select a subset of patients to reduce vignette building time.
+#' pat_subset <- c("SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+#' "SAMba1a34b5a060", "SAM18a4dabbc557")
+#' RNA_counts <- RNA_counts[, colnames(RNA_counts) %in% pat_subset]
+#' RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) %in% pat_subset]
+#'
+#' # Computation of cell fractions
+#' cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
+#'
+#' # Computation of pathway scores
+#' pathway_activity <- compute_pathway_activity(
+#'     RNA_counts = RNA_counts,
+#'     remove_sig_genes_immune_response = TRUE
+#' )
+#'
+#' # Computation of TF activity
+#' tf_activity <- compute_TF_activity(
+#'     RNA_tpm = RNA_tpm
+#' )
+#'
+#' # Computation of ligand-receptor pair weights
+#' lrpair_weights <- compute_LR_pairs(
+#'     RNA_tpm = RNA_tpm,
+#'     cancer_type = "pancan"
+#' )
+#'
+#' # Computation of cell-cell interaction scores
+#' ccpair_scores <- compute_CC_pairs(
+#'     lrpairs = lrpair_weights,
+#'     cancer_type = "pancan"
+#' )
+#'
+#' # retrieve clinical response
+#' patient_ICBresponse <- colData(dataset_mariathasan)[["BOR"]]
+#' names(patient_ICBresponse) <- colData(dataset_mariathasan)[["pat_id"]]
+#' patient_ICBresponse <- patient_ICBresponse[names(patient_ICBresponse) %in% pat_subset]
+#'
+#' # Investigate possible biomarkers
+#' output_biomarkers <- explore_biomarkers(
+#'     pathways = pathway_activity,
+#'     immunecells = cell_fractions,
+#'     lrpairs = lrpair_weights,
+#'     tfs = tf_activity,
+#'     ccpairs = ccpair_scores,
+#'     cancer_type = cancer_type,
+#'     patient_response = patient_ICBresponse
+#' )
+explore_biomarkers <- function(pathways = NULL,
+                               immunecells = NULL,
+                               tfs = NULL,
+                               lrpairs = NULL,
+                               ccpairs = NULL,
+                               cancer_type,
+                               patient_response = NULL,
+                               verbose = TRUE) {
+    if (missing(cancer_type)) stop("cancer type needs to be specified")
+    if (is.null(patient_response) == FALSE) {
+        if (all(levels(as.factor(patient_response)) %in% c("NR", "R")) == FALSE) {
+            stop("patient_response factor levels are not NR and R")
+        }
+    }
+    if (all(is.null(pathways), is.null(immunecells), is.null(tfs), is.null(lrpairs),
+            is.null(ccpairs))) stop("none signature specified")
+    # Retrieve internal data
+    opt_models <- suppressMessages(easierData::get_opt_models())
+    intercell_networks <- suppressMessages(easierData::get_intercell_networks())
+    # Initialize variables
+    views <- c(
+        pathways = "gaussian",
+        immunecells = "gaussian",
+        tfs = "gaussian",
+        lrpairs = "gaussian",
+        ccpairs = "gaussian"
+    )
+    # Check which views are missing
+    miss_views <- c(
+        ifelse(missing(pathways), NA, 1),
+        ifelse(missing(immunecells), NA, 2),
+        ifelse(missing(tfs), NA, 3),
+        ifelse(missing(lrpairs), NA, 4),
+        ifelse(missing(ccpairs), NA, 5)
+    )
+    # Single views
+    view_simples <- lapply(miss_views[!is.na(miss_views)], function(X) {
+        tmp <- views[X]
+        return(tmp)
     })
-  }
-  view_combinations <- c(view_simples, view_combinations)
+    # All corresponding views
+    view_combinations <- view_simples
 
-  # Remove unavailable combo
-  combo_names <- sapply(1:length(view_combinations), function(X) {
-    paste(names(view_combinations[[X]]), collapse = "_")
-  })
+    get_biomarkers_features <- function(view, cancer_type, patient_response, verbose = TRUE) {
+        view_info <- view_combinations[[view]]
+        view_name <- paste(names(view_info), collapse = "_")
+        # if (verbose) message("Examining ", view_name, " biomarkers \n")
+        # ---------- #
+        # Features #
+        # ---------- #
+        features <- as.matrix(get(view_name))
+        features_z <- calc_z_score(features)
+        if (is.null(patient_response)){
+            patients = rownames(features)
+        }else{
+            patients <- intersect(names(patient_response), rownames(features))
+            # add response labels
+            response <- patient_response[patients]
+            response_df <- data.frame(sample = names(response), label = response)
+        }
+        features <- features[patients, ]
+        features_z <- features_z[patients, ]
+        features_df <- reshape2::melt(features)
+        features_df_z <- reshape2::melt(features_z)
+        features_df$value_z <- features_df_z$value
+        names(features_df) <- c("sample", "feature", "value", "value_z")
+        if (is.null(patient_response) == FALSE) {
+            # Merge
+            features_df <- merge(features_df, response_df)
+        }
+        features_df$datatype <- view_name
+        # ---------- #
+        # Weights #
+        # ---------- #
+        opt_model_cancer_view_spec <- opt_models[[cancer_type]][[view_name]]
 
-  # Immune cells features curation:
-  if (missing(immunecells) == FALSE){
-    colnames(immunecells) <-  gsub(".","_", colnames(immunecells), fixed = TRUE)
-  }
+        my_coefs <- reshape2::melt(opt_model_cancer_view_spec)
+        names(my_coefs) <- c("feature", "run", "estimate", "task")
+        my_coefs$datatype <- view_name
+        # remove intercept
+        my_coefs <- subset(my_coefs, !feature %in% "(Intercept)")
+        # calculate median across runs and tasks
+        my_coefs_median <- stats::aggregate(estimate ~ feature + datatype,
+            FUN = "median", na.rm = TRUE, data = my_coefs
+        )
 
-  # We explore biomarkers for each input separately:
-  sapply(1:length(view_combinations), function(X){
+        return(list(weights = my_coefs_median, features = features_df))
+    }
 
-      view_info <- view_combinations[[X]]
-      view_name <- paste(names(view_info), collapse="_")
-      view_data <- do.call(cbind, lapply(tolower(names(view_info)), function(X) as.data.frame(get(X))))
+    plot_list <- list()
+    comparison <- do.call(rbind, lapply(seq_len(length(view_combinations)), function(ii) {
+        biomarkers_weights_features <- get_biomarkers_features(ii, cancer_type, patient_response)
+        biomarkers_weights <- biomarkers_weights_features$weights
+        biomarkers_weights$feature <- droplevels(biomarkers_weights$feature)
 
-      # To improve visualization, data needs to be normalized (z-score)
-      mas_mea_view_data <- apply(view_data, 2, FUN = "mean", na.rm = TRUE)
-      mas_std_view_data <- apply(view_data, 2, FUN = "sd", na.rm = TRUE)
-      view_data_z <- standardization(view_data, mas_mea_view_data, mas_std_view_data)
+        # change names for cell-cell pairs
+        if (unique(biomarkers_weights$datatype) == "ccpairs") {
+            new_variables_cc <- c("CD8", "M", "B", "DC", "Endo", "Mast", "Fib", "Adip",
+                                  "CD4", "NK", "Neu", "Mono", "Cancer")
+            old_variables_cc <- c(
+                "CD8+T-Cell", "Macrophages", "B-Cell", "DendriticCells", "Endothelialcells",
+                "Mastcells", "Fibroblasts", "Adipocytes", "CD4+T-Cell", "NKcells",
+                "Neutrophils", "Monocytes", "Cancercell"
+            )
+            tmp <- as.character(biomarkers_weights$feature)
+            for (X in seq_len(length(new_variables_cc))) {
+                tmp <- gsub(old_variables_cc[X], new_variables_cc[X], tmp, fixed = TRUE)
+            }
+            biomarkers_weights$feature <- tmp
+        }
+        colnames(biomarkers_weights) <- c("variable", "datatype", "weight")
 
-      learned_model <- trained_models[[cancertype]][[view_name]]
+        features <- biomarkers_weights_features$features
+        features <- features[!is.na(features$value), ]
+        features$feature <- droplevels(features$feature)
 
-        # 100 iterations
-        summary_iter <- do.call(rbind, lapply(1:length(learned_model), function(iteration){
-
-          tmp_iter_model <- learned_model[[iteration]]$model
-
-          # cv = 1se.mse
-          tmp_iter_model_cv <- tmp_iter_model$cv.glmnet.features[["1se.mse"]]
-
-          # # All tasks
-          summary_task <- do.call(rbind, lapply(colnames(tmp_iter_model_cv), function(task){
-
-            info <- data.frame(Iteration = iteration,
-                               Hyp_model = paste0(tmp_iter_model$cv.glmnet.hyperparameters[["1se.mse"]]$alpha,",",
-                                                  round(as.numeric(tmp_iter_model$cv.glmnet.hyperparameters[["1se.mse"]]$lambda),3)),
-                               Task = task,
-                               Feature = rownames(tmp_iter_model_cv)[2:nrow(tmp_iter_model_cv)],
-                               Estimate = tmp_iter_model_cv[2:nrow(tmp_iter_model_cv),task])
-
-            return(info)
-          }))
-
-          return(summary_task)
-        }))
-
-        len_summary <- nrow(summary_iter)
-        summary_iter$DataType <- rep(view_name, len = len_summary)
-        summary_iter$CancerType <- rep(cancertype, len =  len_summary)
-
-        # Save .RData
-        biomarkers_data <- summary_iter
-        save(biomarkers_data, file = paste0(output_file_path,"/biomarkers_data_",view_name,"_",cancertype,".RData"))
-
-        # Boxplots
-        #1. Calculate median across iteractions
-        median.features <- stats::aggregate(Estimate ~ Feature +  DataType + CancerType + Task,
-                                            FUN = "median", na.rm = TRUE, data = summary_iter)
-        #2. Calculate median across tasks
-        median.features <- stats::aggregate(Estimate ~ Feature + DataType + CancerType,
-                                     FUN = "median", na.rm = TRUE, data = median.features)
-        #3. Sort median values (not necessary)
-        median.features <- median.features[order(abs(median.features$Estimate), decreasing = TRUE),]
-        median.features$Feature <- factor(median.features$Feature, levels = rev(unique(median.features$Feature)))
-
-        # Original data (view_data)
-        df <- view_data_z
-        labels <- real_patient_response ; names(labels) <- rownames(df)
-
-        view_distribution <- do.call(rbind, lapply(colnames(df), function(feature){
-
-          df.feature <- df[,feature]
-
-          view_distribution <- data.frame(Feature = feature,
-                                          Patient = names(labels),
-                                          Label = labels,
-                                          Value = df.feature)
-          return(view_distribution)
-        }))
-
-        view_distribution$Feature <- factor(view_distribution$Feature, levels = rev(unique(median.features$Feature)))
-        view_distribution$Label <- factor(view_distribution$Label, levels = c("NR","R"))
-
-        # Due to interpretability:
-        # If a mechanistic signature contains a high number of features, we just keep those that the model is actually using.
-        if (length(unique(median.features$Feature)) > 150){
-          median.features <- subset(median.features, Estimate != 0)
-          view_distribution <- subset(view_distribution, Feature %in% unique(median.features$Feature))
+        if (unique(features$datatype) == "ccpairs") {
+            tmp <- features$feature
+            tmp_2 <- levels(features$feature)
+            for (X in seq_len(length(new_variables_cc))) {
+                tmp <- gsub(old_variables_cc[X], new_variables_cc[X], tmp, fixed = TRUE)
+                tmp_2 <- gsub(old_variables_cc[X], new_variables_cc[X], tmp_2, fixed = TRUE)
+            }
+            features$feature <- factor(tmp, levels = tmp_2)
         }
 
-        # barplot
-        median.features$Correlation <- sign(median.features$Estimate)
-        median.features$Correlation <- gsub("-1", "-", median.features$Correlation, fixed = TRUE)
-        median.features$Correlation <- gsub("1", "+", median.features$Correlation, fixed = TRUE)
-        median.features$Correlation <- factor(median.features$Correlation, levels = unique(median.features$Correlation))
+        # Sort biomarkers by weight
+        biomarkers_weights_sort <- biomarkers_weights[order(abs(biomarkers_weights$weight),
+                                                            decreasing = TRUE), ]
+        # Keep 15 top biomarkers for those descriptors with higher amount of features
+        if (nrow(biomarkers_weights_sort) > 15) {
+            biomarkers_weights_sort <- biomarkers_weights_sort[seq_len(15), ]
+        }
+        # Two TFs differ across dorothea versions (our model was built based on a previous version)
+        while (all(biomarkers_weights_sort$variable %in% features$feature) == FALSE) {
+            which_features_missing <- !biomarkers_weights_sort$variable %in% features$feature
+            missing_features <- as.character(biomarkers_weights_sort$variable[which_features_missing])
+            biomarkers_weights_sort <- biomarkers_weights[order(abs(biomarkers_weights$weight), decreasing = TRUE), ]
+            biomarkers_weights_sort <- biomarkers_weights_sort[!biomarkers_weights_sort$variable %in% missing_features, ]
 
-        barplot <- ggplot2::ggplot(median.features, aes(x =  abs(Estimate), y = Feature, fill = Correlation)) +
-          ggplot2::geom_bar(stat="identity", color="white") +
-          ggplot2::scale_fill_manual(name = "Correlation",
-                                     labels = levels(median.features$Correlation),
-                                     values = c("-" = "#BB4444", "+" = "#4477AA", "0" = "gray")) +
-          #ggplot2::theme_light() +
-          #ggplot2::coord_flip() +
-          ggplot2::coord_fixed(ratio = 0.04) +
-          ggplot2::theme(panel.grid = element_blank()) +
-          ggplot2::scale_y_discrete(labels = c("T_cells_CD8" = "CD8 T cells",
-                                               "Macrophages_M2"= "M2",
-                                               "B_cells" = "B cells",
-                                               "T_cells_regulatory_Tregs" = "Tregs",
-                                               "Macrophages_M1"= "M1",
-                                               "T_cells_CD4" = "CD4 T cells",
-                                               "NK_cells" = "NK cells",
-                                               "Dendritic_cells" = "DC cells")) +
-          ggplot2::theme(axis.text.x = element_text(size=12, color = "black"), axis.title.y = element_blank(), axis.text.y = element_blank(),
-                         axis.ticks.y = element_blank(), axis.ticks.x = element_line(size = 0.5, color = "black"),
-                         legend.position = "bottom", legend.direction = "horizontal",
-                         legend.box.background = element_rect(color="black", size=0.3),
-                         legend.box.margin = margin(0.5, 0.5, 0.5, 0.5),
-                         legend.text=element_text(size=12),
-                         legend.title = element_text(size=12, face="bold", vjust = 0.5),
-                         panel.border = element_blank(), panel.background = element_blank(),
-                         plot.margin=unit(c(1,1,1,1), "cm"), axis.line.x = element_line(colour ="black")) + # set negative value for the left margin)
-          ggplot2::labs(x = "Biomarker weight")
+            if (nrow(biomarkers_weights_sort) > 15) {
+                biomarkers_weights_sort <- biomarkers_weights_sort[seq_len(15), ]
+            }
+        }
+        biomarkers_weights_sort <- as.data.frame(biomarkers_weights_sort)
 
-        boxplot <- ggplot2::ggplot(view_distribution, aes(x = Feature, y = Value, fill = Label, color = Label)) +
-          ggplot2::geom_boxplot(alpha = 0.8) +
-          ggplot2::geom_point(position = position_jitterdodge()) +
-          ggplot2::scale_fill_manual(name = "Label",
-                                     labels = levels(view_distribution$Label),
-                                     values = c("darkgrey", "black")) +
-          ggplot2::scale_color_manual(name = "Label",
-                                      labels = levels(view_distribution$Label),
-                                      values = c("darkgrey", "black")) +
-          # ggplot2::ylim(c(-5, 5)) +
-          ggplot2::theme_minimal() +
-          ggplot2::coord_flip() +
-          ggplot2::theme(panel.grid = element_blank()) +
-          ggplot2::scale_x_discrete(labels = c("T_cells_CD8" = "CD8 T cells",
-                                               "Macrophages_M2"= "M2",
-                                               "B_cells" = "B cells",
-                                               "T_cells_regulatory_Tregs" = "Tregs",
-                                               "Macrophages_M1"= "M1",
-                                               "T_cells_CD4" = "CD4 T cells",
-                                               "NK_cells" = "NK cells",
-                                               "Dendritic_cells" = "DC cells")) +
-          ggplot2::theme(axis.text.x = element_text(size=12, color = "black"), axis.text.y = element_text(size=12),
-                         axis.title.y = element_blank(), axis.ticks.y = element_blank(),
-                         legend.position = "bottom", legend.direction = "horizontal", axis.ticks.x = element_line(size = 0.5, color = "black"),
-                         legend.box.background = element_rect(color="black", size=0.3),
-                         legend.box.margin = margin(0.5, 0.5, 0.5, 0.5),
-                         legend.text=element_text(size=12),
-                         legend.title = element_text(size=12, face="bold", vjust = 0.5),
-                         plot.margin=unit(c(1,1,1,1), "cm"), axis.line.x = element_line(colour ="black")) + # set negative value for the right margin
-          ggplot2::labs(y = "Z-score")
+        # weights
+        biomarkers_weights_sort$variable <- factor(biomarkers_weights_sort$variable,
+                                                   levels = unique(biomarkers_weights_sort$variable))
 
-        if (length(unique(median.features$Feature)) > 30){
-          boxplot <- boxplot + ggplot2::theme(axis.text.y = element_text(size = 10))
-        } else{
-          boxplot <- boxplot + ggplot2::theme(axis.text.y = element_text(size = 12))
+        biomarkers_weights_sort$cor <- sign(biomarkers_weights_sort$weight)
+        biomarkers_weights_sort$cor <- gsub("-1", "-", biomarkers_weights_sort$cor, fixed = TRUE)
+        biomarkers_weights_sort$cor <- gsub("1", "+", biomarkers_weights_sort$cor, fixed = TRUE)
+        biomarkers_weights_sort$cor <- factor(biomarkers_weights_sort$cor,
+                                              levels = unique(biomarkers_weights_sort$cor))
+
+        # BARPLOT #
+        barplot <- ggplot2::ggplot(biomarkers_weights_sort,
+                                   ggplot2::aes(x = .data$variable,
+                                                y = abs(.data$weight),
+                                                fill = .data$cor)) +
+            ggplot2::geom_bar(stat = "identity", color = "white") +
+            ggplot2::scale_fill_manual(
+                name = "Association sign",
+                labels = c("+", "-", "0"),
+                values = c("+" = "#4477AA", "-" = "#BB4444", "0" = "gray")
+            ) +
+            ggplot2::theme(panel.grid = ggplot2::element_blank()) +
+            ggplot2::theme(
+                axis.text.y = ggplot2::element_text(size = 12, color = "black"),
+                axis.title.x = ggplot2::element_blank(),
+                axis.title.y = ggplot2::element_text(size = 12),
+                axis.text.x = ggplot2::element_blank(),
+                axis.ticks.x = ggplot2::element_blank(),
+                axis.ticks.y = ggplot2::element_line(size = 0.5, color = "black"),
+                legend.position = "top", legend.direction = "horizontal",
+                legend.box.background = ggplot2::element_rect(color = "black", size = 0.3),
+                legend.box.margin = ggplot2::margin(0.5, 0.5, 0.5, 0.5),
+                legend.text = ggplot2::element_text(size = 12),
+                legend.title = ggplot2::element_text(size = 12, face = "bold", vjust = 0.5),
+                panel.border = ggplot2::element_blank(),
+                panel.background = ggplot2::element_blank(),
+                plot.margin = ggplot2::unit(c(0, 0, 0.2, 0.2), "cm"),
+                axis.line.y = ggplot2::element_line(colour = "black")
+            ) +
+            ggplot2::labs(y = "Biomarker weight") +
+            ggplot2::labs(title = paste0(" Quantitative descriptor: ",
+                                         unique(biomarkers_weights_sort$datatype)))
+
+
+        features_boxplot <- subset(features, feature %in% unique(biomarkers_weights_sort$variable))
+        features_boxplot$feature <- factor(as.character(features_boxplot$feature),
+                                           levels = unique(biomarkers_weights_sort$variable))
+        if (is.null(patient_response) == FALSE) {
+            features_boxplot$label <- factor(features_boxplot$label, levels = c("NR", "R"))
+        }else{
+            features_boxplot$label <- as.factor("UNK")
         }
 
+        # BOXPLOT #
+        boxplot <- ggplot2::ggplot(features_boxplot,
+                                   ggplot2::aes(x = .data$feature,
+                                                y = .data$value_z,
+                                                fill = .data$label,
+                                                color = .data$label)) +
+            ggplot2::geom_boxplot(alpha = 0.8, outlier.shape = NA) +
+            ggplot2::geom_point(position = ggplot2::position_jitterdodge(),
+                                size = 0.05) +
+            ggplot2::scale_fill_manual(
+                name = "Label",
+                labels = levels(features_boxplot$label),
+                values = c("darkgrey", "black")
+            ) +
+            ggplot2::scale_color_manual(
+                name = "Label",
+                labels = levels(features_boxplot$label),
+                values = c("darkgrey", "black")
+            ) +
+            ggplot2::ylim(c(-5, 5)) +
+            ggplot2::theme_minimal() +
+            ggplot2::theme(panel.grid = ggplot2::element_blank()) +
+            ggplot2::theme(
+                axis.text.x = ggplot2::element_text(size = 12, angle = 45,
+                                                    hjust = 1, color = "black"),
+                axis.text.y = ggplot2::element_text(size = 12, color = "black"),
+                axis.title.x = ggplot2::element_blank(),
+                axis.title.y = ggplot2::element_text(size = 12),
+                axis.ticks.x = ggplot2::element_blank(),
+                legend.position = "bottom", legend.direction = "horizontal",
+                axis.ticks.y = ggplot2::element_line(size = 0.5, color = "black"),
+                legend.box.background = ggplot2::element_rect(color = "black", size = 0.3),
+                legend.box.margin = ggplot2::margin(0.5, 0.5, 0.5, 0.5),
+                legend.text = ggplot2::element_text(size = 12),
+                legend.title = ggplot2::element_text(size = 12, face = "bold", vjust = 0.5),
+                plot.margin = ggplot2::unit(c(0.2, 0, 0, 0.2), "cm"),
+                axis.line.y = ggplot2::element_line(colour = "black")
+            ) +
+            ggplot2::labs(y = "Z-score")
+
+        if (length(unique(biomarkers_weights$feature)) > 30) {
+            boxplot <- boxplot + ggplot2::theme(axis.text.y = ggplot2::element_text(size = 10))
+        } else {
+            boxplot <- boxplot + ggplot2::theme(axis.text.y = ggplot2::element_text(size = 12))
+        }
         # Combine plots
         g1 <- ggplot2::ggplotGrob(boxplot)
         g2 <- ggplot2::ggplotGrob(barplot)
-        g <- cbind(g1, g2, size = "first")
-        g$heights <- grid::unit.pmax(g1$heights, g2$heights)
+        g <- rbind(g2, g1, size = "first")
+        g$widths <- grid::unit.pmax(g1$widths, g2$widths)
+
         grid::grid.newpage()
-        pdf(paste0(output_file_path,"/biomarkers_plot_",view_name,"_",cancertype,".pdf"), width = 8, height = 12)
-        grid::grid.draw(g)
-        dev.off()
+        suppressWarnings(grid::grid.draw(g))
+        plot_list[[ii]] <- recordPlot()
 
-      })
+        if (length(levels(as.factor(patient_response))) == 2) {
+            features_names <- levels(features$feature)
+            datatype_comparison <- do.call(rbind, lapply(features_names, function(x) {
+                # consider only the data for that variable and separate R and NR
+                tmp <- subset(features, feature == x)
+                # compute average
+                tmp_mean <- tapply(tmp$value, tmp$label, mean)
+                if (length(unique(tmp$value)) != 1) {
+                    # compute wilcoxon sum rank test, effect size and sign
+                    stattest <- rstatix::wilcox_test(data = tmp, value ~ label)
+                    effsize <- rstatix::wilcox_effsize(data = tmp, value ~ label)
+                    sign <- sign(tmp_mean["R"] - tmp_mean["NR"])
+                    p_val <- stattest$p
+                    eff_size <- effsize$effsize
+                } else {
+                    p_val <- 1
+                    eff_size <- 0
+                    sign <- 0
+                }
+                tmp_df <- data.frame(
+                    datatype = unique(features$datatype),
+                    variable = x,
+                    p_val = p_val,
+                    eff_size = eff_size,
+                    sign = sign
+                )
+                return(tmp_df)
+            }))
+            datatype_comparison <- merge(datatype_comparison, biomarkers_weights)
+            datatype_comparison$istop <- FALSE
+            datatype_comparison$istop[datatype_comparison$variable %in% biomarkers_weights_sort$variable] <- TRUE
+            return(datatype_comparison)
+        }
+    }))
 
+    if (length(levels(as.factor(patient_response))) == 2) {
 
-  }
+        comparison$signedEffect <- comparison$eff_size * comparison$sign
+        comparison$threshold <- as.numeric(as.factor(comparison$p_val <= 0.05))
+        comparison$threshold <- factor(comparison$threshold, levels = c(1, 2),
+                                       labels = c("notSign", "Sign"))
+
+        # Add arrow in lrpairs and ccpairs
+        if (any(comparison$datatype %in% c("lrpairs", "ccpairs"))) {
+            select_datatype <- which(comparison$datatype %in% c("lrpairs", "ccpairs"))
+            tmp <- vapply(strsplit(as.character(comparison$variable)[select_datatype],
+                                   split = "_"), function(X) {
+                return(X[seq_len(8)])
+            }, FUN.VALUE = character(8))
+
+            # LR pairs network
+            intercell_network <- intercell_networks[["pancan"]]
+            LR_pairs <- unique(paste0(intercell_network$ligands, "_",
+                                      intercell_network$receptors))
+
+            new_name <- do.call(c, lapply(seq_len(ncol(tmp)), function(X) {
+                tmp_2 <- tmp[!(is.na(tmp[, X])), X]
+                if (length(tmp_2) > 2) {
+                    pos_comb <- combn(length(tmp_2), 2)
+                    search <- vapply(seq_len(ncol(pos_comb)), function(X) {
+                        paste(tmp_2[pos_comb[, X]], collapse = "_")
+                    }, FUN.VALUE = character(1))
+                    keep <- search[search %in% LR_pairs]
+                    maj <- names(which(table(unlist(strsplit(keep, split = "_"))) > 1))
+                    other <- paste(tmp_2[!tmp_2 %in% maj])
+
+                    if (match(maj, tmp_2) == length(tmp_2)) {
+                        new_name <- paste0(paste(other, collapse = "_"), "->", maj)
+                    } else {
+                        new_name <- paste0(maj, "->", paste(other, collapse = "_"))
+                    }
+                } else if (length(tmp_2) <= 2) {
+                    new_name <- paste(tmp_2, collapse = "->")
+                }
+                return(new_name)
+            }))
+            comparison$variable[select_datatype] <- new_name
+        }
+
+        xminmax <- max(abs(comparison$signedEffect))
+        xminmax <- xminmax + xminmax * 0.01
+        ymax <- max(-log10(comparison$p_val))
+        ymax <- ymax + ymax * 0.01
+
+        volcano_plot <- ggplot2::ggplot(data = comparison,
+                                        ggplot2::aes(x = .data$signedEffect,
+                                                     y = -log10(.data$p_val),
+                                                     color = .data$threshold,
+                                                     size = abs(.data$weight))) +
+            ggplot2::geom_point(alpha = 1,
+                                ggplot2::aes(shape = as.factor(sign(weight)))) +
+            ggplot2::xlim(c(-xminmax, xminmax)) +
+            ggplot2::ylim(c(0, ymax)) +
+            ggplot2::xlab("higher in NR          effect size          higher in R") +
+            ggplot2::ylab("-log10 p-value") +
+            ggplot2::ggtitle("") +
+            ggplot2::scale_color_manual(labels = levels(comparison$threshold),
+                                        values = c( "#a6a6a6", "#4BA8D7"),
+                                        name = "R vs NR significance") +
+            ggplot2::scale_shape_manual(values = c(15, 16, 17), name = "Association sign") +
+            ggplot2::scale_size_continuous(name = "Estimated weight") +
+            ggplot2::theme_bw() +
+            ggplot2::geom_hline(yintercept = -log10(0.05), linetype = "longdash", colour = "#9e9e9e") +
+            ggplot2::geom_vline(xintercept = 0, linetype = "solid", colour = "#9e9e9e") +
+            ggplot2::theme(axis.text = ggplot2::element_text(color = "black"),
+                           axis.ticks = ggplot2::element_line(color = "black")) +
+            ggplot2::theme(legend.position = "right") +
+            ggplot2::labs(title = paste0(" All quantitative descriptor at once"))
+
+        if(length(unique(comparison$threshold)) == 2){
+            volcano_plot <- volcano_plot + ggrepel::geom_text_repel(
+                data = subset(comparison, (threshold != "notSign")),
+                ggplot2::aes(x = .data$signedEffect, y = -log10(.data$p_val),
+                             label = .data$variable, size = .05),
+                show.legend = NA, inherit.aes = FALSE, max.overlaps = 20)
+        }
+
+        plot_list[[length(view_combinations) + 1]] <- suppressWarnings(print(volcano_plot))
+    }
+    return(plot_list)
+}
