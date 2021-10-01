@@ -5,7 +5,7 @@
 \title{Compute cell-cell interactions scores using computed
 ligand-receptor weights}
 \usage{
-compute_CC_pairs(lrpairs, cancer_type = "pancan", verbose = TRUE)
+compute_CC_pairs(lrpairs = NULL, cancer_type = "pancan", verbose = TRUE)
 }
 \arguments{
 \item{lrpairs}{output of the compute_LR_pairs function.
@@ -38,7 +38,7 @@ library(SummarizedExperiment)
 library("easierData")
 
 dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
-RNA_tpm <- assay(dataset_mariathasan)[["tpm"]]
+RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 
 # Select a subset of patients to reduce vignette building time.
 pat_subset <- c("SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",

@@ -5,7 +5,7 @@
 \title{Compute pathway activity from gene expression using PROGENy}
 \usage{
 compute_pathway_activity(
-  RNA_counts,
+  RNA_counts = NULL,
   remove_sig_genes_immune_response = TRUE,
   verbose = TRUE
 )

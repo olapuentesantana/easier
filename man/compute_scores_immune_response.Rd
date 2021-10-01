@@ -6,7 +6,7 @@
 immune response}
 \usage{
 compute_scores_immune_response(
-  RNA_tpm,
+  RNA_tpm = NULL,
   selected_scores = c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
     "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS"),
   verbose = TRUE

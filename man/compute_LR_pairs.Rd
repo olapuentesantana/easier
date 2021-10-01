@@ -4,7 +4,7 @@
 \alias{compute_LR_pairs}
 \title{Compute ligand-receptor pair weights from TPM bulk gene expression}
 \usage{
-compute_LR_pairs(RNA_tpm, cancer_type = "pancan", verbose = TRUE)
+compute_LR_pairs(RNA_tpm = NULL, cancer_type = "pancan", verbose = TRUE)
 }
 \arguments{
 \item{RNA_tpm}{A data.frame containing TPM values with HGNC symbols

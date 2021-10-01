@@ -4,7 +4,7 @@
 \alias{compute_cell_fractions}
 \title{Compute immune cell fractions from gene expression using quanTIseq}
 \usage{
-compute_cell_fractions(RNA_tpm, verbose = TRUE)
+compute_cell_fractions(RNA_tpm = NULL, verbose = TRUE)
 }
 \arguments{
 \item{RNA_tpm}{data.frame containing TPM values with HGNC symbols

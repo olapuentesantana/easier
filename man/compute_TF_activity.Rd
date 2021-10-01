@@ -5,7 +5,7 @@
 \title{Compute transcription factor activity from gene expression
 using DoRothEA}
 \usage{
-compute_TF_activity(RNA_tpm, verbose = TRUE)
+compute_TF_activity(RNA_tpm = NULL, verbose = TRUE)
 }
 \arguments{
 \item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in
