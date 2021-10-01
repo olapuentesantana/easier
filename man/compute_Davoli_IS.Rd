@@ -7,22 +7,28 @@
 compute_Davoli_IS(matches, RNA_tpm)
 }
 \arguments{
-\item{matches}{numeric vector indicating the index of signature genes in \code{RNA_tpm}.}
+\item{matches}{numeric vector indicating the index of signature
+genes in \code{RNA_tpm}.}
 
-\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in rows and samples in columns.}
+\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols
+in rows and samples in columns.}
 }
 \value{
-A numeric matrix with samples in rows and Davoli_IS score in a column.
+A numeric matrix with samples in rows and Davoli_IS score
+in a column.
 }
 \description{
-The function calculates Davoli_IS score as the average of the expression of its signature genes after applying rank normalization
+The function calculates Davoli_IS score as the average
+of the expression of its signature genes after applying
+rank normalization
 }
 \examples{
 
 # Example does not matter as function will no be exported
 }
 \references{
-Davoli, T., Uno, H., Wooten, E.C., and Elledge, S.J. (2017). Tumor aneuploidy correlates
-with markers of immune evasion and with reduced response to immunotherapy. Science 355.
-https://doi.org/10.1126/science.aaf8399.
+Davoli, T., Uno, H., Wooten, E.C., and Elledge,
+S.J. (2017). Tumor aneuploidy correlates with markers of
+immune evasion and with reduced response to immunotherapy.
+Science 355. https://doi.org/10.1126/science.aaf8399.
 }

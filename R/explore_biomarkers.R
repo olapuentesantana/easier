@@ -1,8 +1,9 @@
 #' Visualization of stunning biomarkers
 #'
-#' This function provides an overview of relevant computed features (biomarkers),
-#' comparing responders and non-responders if known. Information about the
-#' features contribution to the optimal models is also included.
+#' This function provides an overview of relevant computed
+#' features (biomarkers), comparing responders and non-responders
+#' if known. Information about the features contribution to the
+#' optimal models is also included.
 #'
 #' @importFrom stats aggregate
 #' @importFrom reshape2 melt
@@ -90,7 +91,7 @@
 #' patient_ICBresponse <- patient_ICBresponse[pat_subset]
 #'
 #' # Investigate possible biomarkers
-#' explore_biomarkers(
+#' output_biomarkers <- explore_biomarkers(
 #'     pathways = pathway_activity,
 #'     immunecells = cell_fractions,
 #'     lrpairs = lrpair_weights,
@@ -224,9 +225,10 @@ explore_biomarkers <- function(pathways = NULL,
         }
         # Two TFs differ across dorothea versions (our model was built based on a previous version)
         while (all(biomarkers_weights_sort$variable %in% features$feature) == FALSE) {
-            missing_tfs <- as.character(biomarkers_weights_sort$variable[!biomarkers_weights_sort$variable %in% features$feature])
+            which_features_missing <- !biomarkers_weights_sort$variable %in% features$feature
+            missing_features <- as.character(biomarkers_weights_sort$variable[which_features_missing])
             biomarkers_weights_sort <- biomarkers_weights[order(abs(biomarkers_weights$weight), decreasing = TRUE), ]
-            biomarkers_weights_sort <- biomarkers_weights_sort[!biomarkers_weights_sort$variable %in% missing_tfs, ]
+            biomarkers_weights_sort <- biomarkers_weights_sort[!biomarkers_weights_sort$variable %in% missing_features, ]
 
             if (nrow(biomarkers_weights_sort) > 15) {
                 biomarkers_weights_sort <- biomarkers_weights_sort[seq_len(15), ]
@@ -235,15 +237,20 @@ explore_biomarkers <- function(pathways = NULL,
         biomarkers_weights_sort <- as.data.frame(biomarkers_weights_sort)
 
         # weights
-        biomarkers_weights_sort$variable <- factor(biomarkers_weights_sort$variable, levels = unique(biomarkers_weights_sort$variable))
+        biomarkers_weights_sort$variable <- factor(biomarkers_weights_sort$variable,
+                                                   levels = unique(biomarkers_weights_sort$variable))
 
         biomarkers_weights_sort$cor <- sign(biomarkers_weights_sort$weight)
         biomarkers_weights_sort$cor <- gsub("-1", "-", biomarkers_weights_sort$cor, fixed = TRUE)
         biomarkers_weights_sort$cor <- gsub("1", "+", biomarkers_weights_sort$cor, fixed = TRUE)
-        biomarkers_weights_sort$cor <- factor(biomarkers_weights_sort$cor, levels = unique(biomarkers_weights_sort$cor))
+        biomarkers_weights_sort$cor <- factor(biomarkers_weights_sort$cor,
+                                              levels = unique(biomarkers_weights_sort$cor))
 
         # BARPLOT #
-        barplot <- ggplot2::ggplot(biomarkers_weights_sort, ggplot2::aes(x = .data$variable, y = abs(.data$weight), fill = .data$cor)) +
+        barplot <- ggplot2::ggplot(biomarkers_weights_sort,
+                                   ggplot2::aes(x = .data$variable,
+                                                y = abs(.data$weight),
+                                                fill = .data$cor)) +
             ggplot2::geom_bar(stat = "identity", color = "white") +
             ggplot2::scale_fill_manual(
                 name = "Association sign",
@@ -252,28 +259,41 @@ explore_biomarkers <- function(pathways = NULL,
             ) +
             ggplot2::theme(panel.grid = ggplot2::element_blank()) +
             ggplot2::theme(
-                axis.text.y = ggplot2::element_text(size = 12, color = "black"), axis.title.x = ggplot2::element_blank(), axis.title.y = ggplot2::element_text(size = 12),
-                axis.text.x = ggplot2::element_blank(), axis.ticks.x = ggplot2::element_blank(), axis.ticks.y = ggplot2::element_line(size = 0.5, color = "black"),
+                axis.text.y = ggplot2::element_text(size = 12, color = "black"),
+                axis.title.x = ggplot2::element_blank(),
+                axis.title.y = ggplot2::element_text(size = 12),
+                axis.text.x = ggplot2::element_blank(),
+                axis.ticks.x = ggplot2::element_blank(),
+                axis.ticks.y = ggplot2::element_line(size = 0.5, color = "black"),
                 legend.position = "top", legend.direction = "horizontal",
                 legend.box.background = ggplot2::element_rect(color = "black", size = 0.3),
                 legend.box.margin = ggplot2::margin(0.5, 0.5, 0.5, 0.5),
                 legend.text = ggplot2::element_text(size = 12),
                 legend.title = ggplot2::element_text(size = 12, face = "bold", vjust = 0.5),
-                panel.border = ggplot2::element_blank(), panel.background = ggplot2::element_blank(),
-                plot.margin = ggplot2::unit(c(0, 0, 0.2, 0.2), "cm"), axis.line.y = ggplot2::element_line(colour = "black")
+                panel.border = ggplot2::element_blank(),
+                panel.background = ggplot2::element_blank(),
+                plot.margin = ggplot2::unit(c(0, 0, 0.2, 0.2), "cm"),
+                axis.line.y = ggplot2::element_line(colour = "black")
             ) +
             ggplot2::labs(y = "Biomarker weight") +
-            ggplot2::labs(title = paste0(" Quantitative descriptor: ", unique(biomarkers_weights_sort$datatype)))
+            ggplot2::labs(title = paste0(" Quantitative descriptor: ",
+                                         unique(biomarkers_weights_sort$datatype)))
 
 
         features_boxplot <- subset(features, feature %in% unique(biomarkers_weights_sort$variable))
-        features_boxplot$feature <- factor(as.character(features_boxplot$feature), levels = unique(biomarkers_weights_sort$variable))
+        features_boxplot$feature <- factor(as.character(features_boxplot$feature),
+                                           levels = unique(biomarkers_weights_sort$variable))
         features_boxplot$label <- factor(features_boxplot$label, levels = c("NR", "R"))
 
         # BOXPLOT #
-        boxplot <- ggplot2::ggplot(features_boxplot, ggplot2::aes(x = .data$feature, y = .data$value_z, fill = .data$label, color = .data$label)) +
+        boxplot <- ggplot2::ggplot(features_boxplot,
+                                   ggplot2::aes(x = .data$feature,
+                                                y = .data$value_z,
+                                                fill = .data$label,
+                                                color = .data$label)) +
             ggplot2::geom_boxplot(alpha = 0.8, outlier.shape = NA) +
-            ggplot2::geom_point(position = ggplot2::position_jitterdodge(), size = 0.05) +
+            ggplot2::geom_point(position = ggplot2::position_jitterdodge(),
+                                size = 0.05) +
             ggplot2::scale_fill_manual(
                 name = "Label",
                 labels = levels(features_boxplot$label),
@@ -288,14 +308,20 @@ explore_biomarkers <- function(pathways = NULL,
             ggplot2::theme_minimal() +
             ggplot2::theme(panel.grid = ggplot2::element_blank()) +
             ggplot2::theme(
-                axis.text.x = ggplot2::element_text(size = 12, angle = 45, hjust = 1, color = "black"), axis.text.y = ggplot2::element_text(size = 12, color = "black"),
-                axis.title.x = ggplot2::element_blank(), axis.title.y = ggplot2::element_text(size = 12), axis.ticks.x = ggplot2::element_blank(),
-                legend.position = "bottom", legend.direction = "horizontal", axis.ticks.y = ggplot2::element_line(size = 0.5, color = "black"),
+                axis.text.x = ggplot2::element_text(size = 12, angle = 45,
+                                                    hjust = 1, color = "black"),
+                axis.text.y = ggplot2::element_text(size = 12, color = "black"),
+                axis.title.x = ggplot2::element_blank(),
+                axis.title.y = ggplot2::element_text(size = 12),
+                axis.ticks.x = ggplot2::element_blank(),
+                legend.position = "bottom", legend.direction = "horizontal",
+                axis.ticks.y = ggplot2::element_line(size = 0.5, color = "black"),
                 legend.box.background = ggplot2::element_rect(color = "black", size = 0.3),
                 legend.box.margin = ggplot2::margin(0.5, 0.5, 0.5, 0.5),
                 legend.text = ggplot2::element_text(size = 12),
                 legend.title = ggplot2::element_text(size = 12, face = "bold", vjust = 0.5),
-                plot.margin = ggplot2::unit(c(0.2, 0, 0, 0.2), "cm"), axis.line.y = ggplot2::element_line(colour = "black")
+                plot.margin = ggplot2::unit(c(0.2, 0, 0, 0.2), "cm"),
+                axis.line.y = ggplot2::element_line(colour = "black")
             ) +
             ggplot2::labs(y = "Z-score")
 
@@ -350,25 +376,29 @@ explore_biomarkers <- function(pathways = NULL,
 
     comparison$signedEffect <- comparison$eff_size * comparison$sign
     comparison$threshold <- as.numeric(as.factor(comparison$p_val <= 0.05))
-    comparison$threshold <- factor(comparison$threshold, levels = c(1, 2), labels = c("notSign", "Sign"))
+    comparison$threshold <- factor(comparison$threshold, levels = c(1, 2),
+                                   labels = c("notSign", "Sign"))
 
     # Add arrow in lrpairs and ccpairs
     if (any(comparison$datatype %in% c("lrpairs", "ccpairs"))) {
-        tmp <- sapply(strsplit(as.character(comparison$variable)[which(comparison$datatype %in% c("lrpairs", "ccpairs"))], split = "_"), function(X) {
+        select_datatype <- which(comparison$datatype %in% c("lrpairs", "ccpairs"))
+        tmp <- vapply(strsplit(as.character(comparison$variable)[select_datatype],
+                               split = "_"), function(X) {
             return(X[seq_len(8)])
-        })
+        }, FUN.VALUE = character(8))
 
         # LR pairs network
         intercell_network <- intercell_networks[["pancan"]]
-        LR_pairs <- unique(paste0(intercell_network$ligands, "_", intercell_network$receptors))
+        LR_pairs <- unique(paste0(intercell_network$ligands, "_",
+                                  intercell_network$receptors))
 
         new_name <- do.call(c, lapply(seq_len(ncol(tmp)), function(X) {
             tmp_2 <- tmp[!(is.na(tmp[, X])), X]
             if (length(tmp_2) > 2) {
                 pos_comb <- combn(length(tmp_2), 2)
-                search <- sapply(seq_len(ncol(pos_comb)), function(X) {
+                search <- vapply(seq_len(ncol(pos_comb)), function(X) {
                     paste(tmp_2[pos_comb[, X]], collapse = "_")
-                })
+                }, FUN.VALUE = character(1))
                 keep <- search[search %in% LR_pairs]
                 maj <- names(which(table(unlist(strsplit(keep, split = "_"))) > 1))
                 other <- paste(tmp_2[!tmp_2 %in% maj])
@@ -383,7 +413,7 @@ explore_biomarkers <- function(pathways = NULL,
             }
             return(new_name)
         }))
-        comparison$variable[which(comparison$datatype %in% c("lrpairs", "ccpairs"))] <- new_name
+        comparison$variable[select_datatype] <- new_name
     }
 
     xminmax <- max(abs(comparison$signedEffect))
@@ -391,23 +421,32 @@ explore_biomarkers <- function(pathways = NULL,
     ymax <- max(-log10(comparison$p_val))
     ymax <- ymax + ymax * 0.01
 
-    volcano_plot <- ggplot2::ggplot(data = comparison, ggplot2::aes(x = .data$signedEffect, y = -log10(.data$p_val), color = .data$threshold, size = abs(.data$weight))) +
-        ggplot2::geom_point(alpha = 1, ggplot2::aes(shape = as.factor(sign(weight)))) +
+    volcano_plot <- ggplot2::ggplot(data = comparison,
+                                    ggplot2::aes(x = .data$signedEffect,
+                                                 y = -log10(.data$p_val),
+                                                 color = .data$threshold,
+                                                 size = abs(.data$weight))) +
+        ggplot2::geom_point(alpha = 1,
+                            ggplot2::aes(shape = as.factor(sign(weight)))) +
         ggplot2::xlim(c(-xminmax, xminmax)) +
         ggplot2::ylim(c(0, ymax)) +
         ggplot2::xlab("higher in NR          effect size          higher in R") +
         ggplot2::ylab("-log10 p-value") +
         ggplot2::ggtitle("") +
-        ggplot2::scale_color_manual(values = c("notSign" = "#a6a6a6", "Sign" = "#4BA8D7"), name = "R vs NR significance") +
+        ggplot2::scale_color_manual(values = c("notSign" = "#a6a6a6", "Sign" = "#4BA8D7"),
+                                    name = "R vs NR significance") +
         ggplot2::scale_shape_manual(values = c(15, 16, 17), name = "Association sign") +
         ggplot2::scale_size_continuous(name = "Estimated weight") +
         ggplot2::theme_bw() +
         ggplot2::geom_hline(yintercept = -log10(0.05), linetype = "longdash", colour = "#9e9e9e") +
         ggplot2::geom_vline(xintercept = 0, linetype = "solid", colour = "#9e9e9e") +
-        ggplot2::theme(axis.text = ggplot2::element_text(color = "black"), axis.ticks = ggplot2::element_line(color = "black")) +
+        ggplot2::theme(axis.text = ggplot2::element_text(color = "black"),
+                       axis.ticks = ggplot2::element_line(color = "black")) +
         ggplot2::theme(legend.position = "right") +
         ggrepel::geom_text_repel(
-            data = subset(comparison, (threshold != "notSign")), ggplot2::aes(x = .data$signedEffect, y = -log10(.data$p_val), label = .data$variable, size = .05),
+            data = subset(comparison, (threshold != "notSign")),
+            ggplot2::aes(x = .data$signedEffect, y = -log10(.data$p_val),
+                         label = .data$variable, size = .05),
             show.legend = NA, inherit.aes = FALSE, max.overlaps = 20
         ) +
         ggplot2::labs(title = paste0(" All quantitative descriptor at once"))

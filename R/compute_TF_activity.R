@@ -85,7 +85,6 @@ compute_TF_activity <- function(RNA_tpm,
             round(length(genes_kept) / length(all_regulated_transcripts), 3) * 100, "%)"
         )
     }
-
     # TF activity: run viper
     tf_activity <- dorothea::run_viper(
         input = E, regulons = regulons,

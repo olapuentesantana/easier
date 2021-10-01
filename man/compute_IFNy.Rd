@@ -7,22 +7,29 @@
 compute_IFNy(matches, RNA_tpm)
 }
 \arguments{
-\item{matches}{numeric vector indicating the index of signature genes in \code{RNA_tpm}.}
+\item{matches}{numeric vector indicating the index of signature
+genes in \code{RNA_tpm}.}
 
-\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in rows and samples in columns.}
+\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols
+in rows and samples in columns.}
 }
 \value{
-A numeric matrix with samples in rows and IFNy score in a column.
+A numeric matrix with samples in rows and IFNy score in
+a column.
 }
 \description{
-This function calculates IFNy signature score as the average expression of its signature genes.
+This function calculates IFNy signature score as
+the average expression of its signature genes.
 }
 \examples{
 
 # Example does not matter as function will no be exported
 }
 \references{
-Ayers, M., Lunceford, J., Nebozhyn, M., Murphy, E., Loboda, A., Kaufman, D.R., Albright,
-A., Cheng, J.D., Kang, S.P., Shankaran, V., et al. (2017). IFN-γ-related mRNA profile predicts clinical
-response to PD-1 blockade. J. Clin. Invest. 127, 2930–2940. https://doi.org/10.1172/JCI91190.
+Ayers, M., Lunceford, J., Nebozhyn, M., Murphy,
+E., Loboda, A., Kaufman, D.R., Albright, A., Cheng, J.D.,
+Kang, S.P., Shankaran, V., et al. (2017). IFN-γ-related mRN
+A profile predicts clinical response to PD-1 blockade.
+J. Clin. Invest. 127, 2930–2940.
+https://doi.org/10.1172/JCI91190.
 }

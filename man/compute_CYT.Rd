@@ -7,20 +7,26 @@
 compute_CYT(matches, RNA_tpm)
 }
 \arguments{
-\item{matches}{numeric vector indicating the index of signature genes in \code{RNA_tpm}.}
+\item{matches}{numeric vector indicating the index of signature
+genes in \code{RNA_tpm}.}
 
-\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in rows and samples in columns.}
+\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols
+in rows and samples in columns.}
 }
 \value{
-A numeric matrix with samples in rows and CTY score in a column.
+A numeric matrix with samples in rows and CTY score
+in a column.
 }
 \description{
-This function calculates the CYT score as the geometric mean of its signature genes.
+This function calculates the CYT score as the geometric
+mean of its signature genes.
 }
 \examples{
 # Example does not matter as function will no be exported
 }
 \references{
-Rooney, M.S., Shukla, S.A., Wu, C.J., Getz, G., and Hacohen, N. (2015). Molecular and genetic properties
-of tumors associated with local immune cytolytic activity. Cell 160, 48–61. https://doi.org/10.1016/j.cell.2014.12.033.
+Rooney, M.S., Shukla, S.A., Wu, C.J., Getz, G.,
+and Hacohen, N. (2015). Molecular and genetic properties
+of tumors associated with local immune cytolytic activity.
+Cell 160, 48–61. https://doi.org/10.1016/j.cell.2014.12.033.
 }

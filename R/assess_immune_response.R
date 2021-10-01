@@ -105,7 +105,7 @@
 #' TMB <- TMB[pat_subset]
 #'
 #' # Assess patient-specific likelihood of response to ICB therapy
-#' assess_immune_response(
+#' output_eval_with_resp <- assess_immune_response(
 #'     predictions_immune_response = predictions,
 #'     patient_response = patient_ICBresponse,
 #'     RNA_tpm = RNA_tpm,
@@ -120,6 +120,9 @@ assess_immune_response <- function(predictions_immune_response = NULL,
                                    weight_penalty = seq(0, 1, 0.1),
                                    verbose = TRUE) {
     if (is.null(predictions_immune_response)) stop("None predictions found")
+    if (length(names(table(patient_response))) == 1) {
+        stop("A binary class is required to evaluate patient's response")
+    }
     if (missing(easier_with_TMB)) easier_with_TMB <- "weighted_average"
     if (missing(TMB_values)) {
         TMB_available <- FALSE
@@ -133,7 +136,6 @@ assess_immune_response <- function(predictions_immune_response = NULL,
             " patients out of ", length(TMB_values), " with available TMB"
         )
         patients_to_keep <- names(TMB_values[!is.na(TMB_values)])
-        if (is.numeric(TMB_values)) warning("Converting TMB values into numeric")
         TMB_values <- as.numeric(TMB_values[patients_to_keep])
         names(TMB_values) <- patients_to_keep
         if (is.null(patient_response) == FALSE) {
@@ -166,15 +168,15 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     # ---------------------------#
     #  Collect views data, and compute ensemble
     ensemble_df <- lapply(views, function(spec_view) {
-        ensemble_df <- sapply(tasks, function(spec_task) {
+        ensemble_df <- vapply(tasks, function(spec_task) {
             df <- predictions_immune_response[[spec_view]][[spec_task]]
             if (TMB_available) df <- df[patients_to_keep, ]
             df_runs <- rowMeans(df)
-        })
+        }, FUN.VALUE = numeric(ncol(RNA_tpm)))
         return(ensemble_df)
     })
     names(ensemble_df) <- views
-    overall_df <- sapply(tasks, function(spec_task) {
+    overall_df <- vapply(tasks, function(spec_task) {
         overall_df <- apply(cbind(
             ensemble_df$pathways[, spec_task],
             ensemble_df$immunecells[, spec_task],
@@ -182,7 +184,8 @@ assess_immune_response <- function(predictions_immune_response = NULL,
             ensemble_df$lrpairs[, spec_task],
             ensemble_df$ccpairs[, spec_task]
         ), 1, mean)
-    })
+    }, FUN.VALUE = numeric(ncol(RNA_tpm))
+    )
     # AUC predictions (when response available)
     if (is.null(patient_response) == FALSE) {
         if (all(levels(as.factor(patient_response)) %in% c("NR", "R")) == FALSE) {
@@ -208,13 +211,13 @@ assess_immune_response <- function(predictions_immune_response = NULL,
         # Predictions single views #
         # ---------------------------#
         ROC_pred <- lapply(views, function(spec_view) {
-            ROC_pred <- sapply(tasks, function(spec_task) {
+            ROC_pred <- vapply(tasks, function(spec_task) {
                 df <- predictions_immune_response[[spec_view]][[spec_task]]
                 if (TMB_available) df <- df[patients_to_keep, ]
                 # check patients match
                 df <- df[match(rownames(labels), rownames(df)), ]
                 df_runs <- rowMeans(df)
-            })
+            }, FUN.VALUE = numeric(ncol(RNA_tpm)))
             pred <- ROCR::prediction(ROC_pred, labels, label.ordering = c("NR", "R"))
             perf <- ROCR::performance(pred, "tpr", "fpr")
             AUC <- unlist(ROCR::performance(pred, "auc")@y.values)
@@ -269,7 +272,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
         # check patients match
         tasks_values <- tasks_values[match(rownames(labels), rownames(tasks_values)), ]
         pred <- ROCR::prediction(tasks_values, labels[, colnames(tasks_values)],
-            label.ordering = c("NR", "R")
+                                 label.ordering = c("NR", "R")
         )
         perf <- ROCR::performance(pred, "tpr", "fpr")
         AUC <- unlist(ROCR::performance(pred, "auc")@y.values)
@@ -442,7 +445,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
             cex.lab = 1.3, ylab = "True Positive Rate", xlab = "False Positive Rate",
             bty = "L"
         )
-        sapply(setdiff(
+        lapply(setdiff(
             names(ROC_all_run_tasks)[2:length(names(ROC_all_run_tasks))],
             "TMB"
         ), function(descriptor) {
@@ -508,31 +511,32 @@ assess_immune_response <- function(predictions_immune_response = NULL,
             # Categorize TMB
             if (length(unique(rp_df$TMB)) > 3) {
                 rp_df$TMBcat <- categorize_TMB(rp_df$TMB)
+                rp_df$TMB <- rp_df$TMBcat
                 # if I want specify the thresholds
                 # rp.df$TMB <- categorize.TMB(rp.df$TMB, thresholds = c(100,400))
             }
             # compute the integrated score as weighted average #
             if(easier_with_TMB == "weighted_average"){
                 pred_lin <- linear_func(rp_df$prediction_easier)
-                TMB_lin <- linear_func(rp_df$TMBcat)
-                AUC_averaged_v <- sapply(seq(from = 0, to = 1, by = 0.1), function(p) {
+                TMB_lin <- linear_func(rp_df$TMB)
+                AUC_averaged_v <- vapply(seq(from = 0, to = 1, by = 0.1), function(p) {
                     pred_averaged <- apply(cbind((1 - p) * pred_lin, (p) * TMB_lin), 1, mean)
                     pred <- ROCR::prediction(pred_averaged, rp_df$response)
                     AUC_averaged <- ROCR::performance(pred, measure = "auc")
                     AUC_averaged_v <- AUC_averaged@y.values[[1]]
-                })
+                }, FUN.VALUE = numeric(1))
             }
             # compute the integrated score for different penalties #
             if(easier_with_TMB == "penalized_score"){
                 pred_combined <- rp_df$prediction_easier
-                AUC_combined_v <- sapply(seq(from = 0, to = 1, by = 0.1), function(p) {
+                AUC_combined_v <- vapply(seq(from = 0, to = 1, by = 0.1), function(p) {
                     pred_combined[rp_df$TMBcat == 1] <- pred_combined[rp_df$TMBcat == 1] - p
                     pred_combined[rp_df$TMBcat == 3] <- pred_combined[rp_df$TMBcat == 3] + p
 
                     pred <- ROCR::prediction(pred_combined, rp_df$response)
                     AUC_combined <- ROCR::performance(pred, measure = "auc")
                     AUC_combined_v <- AUC_combined@y.values[[1]]
-                })
+                }, FUN.VALUE = numeric(1))
             }
             pred <- ROCR::prediction(rp_df$prediction_easier, rp_df$response)
             AUC_easier <- ROCR::performance(pred, measure = "auc")
@@ -648,6 +652,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
             # Categorize TMB #
             if (length(unique(rp_df$TMB)) > 3) {
                 rp_df$TMBcat <- categorize_TMB(rp_df$TMB)
+                rp_df$TMB <- rp_df$TMBcat
                 # if I want specify the thresholds
                 # rp.df$TMB <- categorize_TMB(rp.df$TMB, thresholds = c(100,400))
             }
@@ -656,12 +661,11 @@ assess_immune_response <- function(predictions_immune_response = NULL,
                 # Compute the integrated score as weighted average #
                 pred_lin <- linear_func(rp_df$prediction_easier)
                 names(pred_lin) <- rp_df$patient
-                TMB_lin <- linear_func(rp_df$TMBcat)
+                TMB_lin <- linear_func(rp_df$TMB)
                 names(TMB_lin) <- rp_df$patient
-
-                pred_averaged_rf <- sapply(seq(from = 0, to = 1, by = 0.1), function(p) {
+                pred_averaged_rf <- vapply(seq(from = 0, to = 1, by = 0.1), function(p) {
                     pred_averaged <- apply(cbind((1 - p) * pred_lin, (p) * TMB_lin), 1, mean)
-                })
+                }, FUN.VALUE = numeric(length(pred_lin)))
                 # By default, weight or penalty of 0.5.
                 weight_penalty_pos <- match(weight_penalty, (seq_len(11)-1)/10)
                 rp_df$weighted_average <- pred_averaged_rf[, weight_penalty_pos]
@@ -670,11 +674,11 @@ assess_immune_response <- function(predictions_immune_response = NULL,
             if(easier_with_TMB == "penalized_score"){
                 pred_combined <- rp_df$prediction_easier
                 names(pred_combined) <- rp_df$patient
-                pred_combined_rf <- sapply(seq(from = 0, to = 1, by = 0.1), function(p) {
+                pred_combined_rf <- vapply(seq(from = 0, to = 1, by = 0.1), function(p) {
                     pred_combined[rp_df$TMBcat == 1] <- pred_combined[rp_df$TMBcat == 1] - p
                     pred_combined[rp_df$TMBcat == 3] <- pred_combined[rp_df$TMBcat == 3] + p
                     return(pred_combined)
-                })
+                }, FUN.VALUE = numeric(numeric(length(pred_combined))))
                 weight_penalty_pos <- match(weight_penalty, (seq_len(11)-1)/10)
                 rp_df$penalized_score <- NA
                 rp_df$penalized_score <- pred_combined_rf[, weight_penalty_pos]
@@ -684,12 +688,14 @@ assess_immune_response <- function(predictions_immune_response = NULL,
             rp_df$TMBcat <- NULL
             all_scores_df <- reshape2::melt(rp_df)
             names(all_scores_df) <- c("patient", "approach", "pred")
+            # Keep only weighted average
+            all_scores_df <- subset(all_scores_df, approach == "weighted_average")
             # sort patients
             all_scores_df$patient <- factor(all_scores_df$patient,
-                levels = all_scores_df$patient[match(
-                    levels(ordering),
-                    sapply(strsplit(all_scores_df$patient, split = " "), head, 1)
-                )]
+                levels = all_scores_df$patient[match(levels(ordering),
+                    vapply(strsplit(all_scores_df$patient, split = " "), head, 1,
+                    FUN.VALUE = character(1))
+                    )]
             )
             rf_score_plot <- ggplot2::ggplot(
                 all_scores_df,
@@ -718,6 +724,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
                     labels = as.character(unique(all_scores_df$approach)),
                     values = c("#cc8100", "#00bc93")
                 ) +
+                ggplot2::xlim(c(0,1)) +
                 ggplot2::theme(
                     panel.grid = ggplot2::element_blank(),
                     panel.background = ggplot2::element_rect(fill = NA)
@@ -738,7 +745,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
                     strip.background = ggplot2::element_rect(fill = "white", colour = "white"),
                     strip.text = ggplot2::element_text(size = 10),
                     legend.justification = c("right", "top"),
-                    legend.key = element_rect(fill = "white")
+                    legend.key = ggplot2::element_rect(fill = "white")
                 ) +
                 ggplot2::labs(x = "prediction", y = "patients")
 

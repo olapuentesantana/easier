@@ -91,8 +91,10 @@ compute_LR_pairs <- function(RNA_tpm,
     LR_pairs_computed <- do.call(rbind, lapply(
         seq_len(length(LR_pairs)),
         function(x) {
-            ligand <- sapply(strsplit(LR_pairs[x], split = "_", fixed = TRUE), head, 1)
-            receptor <- sapply(strsplit(LR_pairs[x], split = "_", fixed = TRUE), tail, 1)
+            ligand <- vapply(strsplit(LR_pairs[x], split = "_", fixed = TRUE), head, 1,
+                             FUN.VALUE = character(1))
+            receptor <- vapply(strsplit(LR_pairs[x], split = "_", fixed = TRUE), tail, 1,
+                               FUN.VALUE = character(1))
 
             pos_lr <- match(c(ligand, receptor), rownames(gene_expr))
             # When a ligand or receptor is not found, NA value should be returned.

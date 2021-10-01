@@ -120,7 +120,7 @@ patient_ICBresponse <- patient_ICBresponse[pat_subset]
 TMB <- TMB[pat_subset]
 
 # Assess patient-specific likelihood of response to ICB therapy
-assess_immune_response(
+output_eval_with_resp <- assess_immune_response(
     predictions_immune_response = predictions,
     patient_response = patient_ICBresponse,
     RNA_tpm = RNA_tpm,

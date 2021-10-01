@@ -171,11 +171,11 @@ predict_immune_response <- function(pathways = NULL,
         cancer_type
     )
 
-    names(all_predictions) <- sapply(
+    names(all_predictions) <- vapply(
         seq_len(length(view_combinations)),
         function(X) {
             paste(names(view_combinations[[X]]), collapse = "_")
         }
-    )
+    , FUN.VALUE = character(1))
     return(all_predictions)
 }

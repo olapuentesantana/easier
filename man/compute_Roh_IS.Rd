@@ -7,23 +7,29 @@
 compute_Roh_IS(matches, RNA_tpm)
 }
 \arguments{
-\item{matches}{numeric vector indicating the index of signature genes in \code{RNA_tpm}.}
+\item{matches}{numeric vector indicating the index of signature
+genes in \code{RNA_tpm}.}
 
-\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in rows and samples in columns.}
+\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols
+in rows and samples in columns.}
 }
 \value{
-A numeric matrix with samples in rows and Roh_IS score in a column.
+A numeric matrix with samples in rows and Roh_IS score
+in a column.
 }
 \description{
-This function computes Roh_IS score as the geometric-mean of its signature genes.
+This function computes Roh_IS score as the geometric-mean
+of its signature genes.
 }
 \examples{
 
 # Example does not matter as function will no be exported
 }
 \references{
-Roh, W., Chen, P.-L., Reuben, A., Spencer, C.N., Prieto, P.A., Miller, J.P., Gopalakrishnan, V.,
-Wang, F., Cooper, Z.A., Reddy, S.M., et al. (2017). Integrated molecular analysis of tumor biopsies on sequential
-CTLA-4 and PD-1 blockade reveals markers of response and resistance. Sci. Transl. Med. 9.
+Roh, W., Chen, P.-L., Reuben, A., Spencer, C.N.,
+Prieto, P.A., Miller, J.P., Gopalakrishnan, V., Wang, F.,
+Cooper, Z.A., Reddy, S.M., et al. (2017). Integrated molecular
+analysis of tumor biopsies on sequential CTLA-4 and PD-1 blockade
+reveals markers of response and resistance. Sci. Transl. Med. 9.
 https://doi.org/10.1126/scitranslmed.aah3560.
 }

@@ -7,17 +7,20 @@
 compute_RIR(RNA_tpm, RIR_program)
 }
 \arguments{
-\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in rows and samples in columns.}
+\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols
+in rows and samples in columns.}
 
-\item{RIR_program}{list with gene signatures included in the immune resistance program from Jerby-Arnon et al., 2018.}
+\item{RIR_program}{list with gene signatures included in the immune
+resistance program from Jerby-Arnon et al., 2018.}
 }
 \value{
 A numeric matrix with samples in rows and RIR score in a column.
 }
 \description{
-This function calculates RIR score defined by combining a set of gene signatures associated
-with downregulation of T cell exclusion, post-treatment and functional resistance. These gene
-signatures were obtained from:
+This function calculates RIR score defined by combining a
+set of gene signatures associated with downregulation of
+T cell exclusion, post-treatment and functional resistance.
+These gene signatures were obtained from:
 https://github.com/livnatje/ImmuneResistance/blob/master/Results/Signatures/resistance.program.RData.
 }
 \examples{
@@ -25,6 +28,9 @@ https://github.com/livnatje/ImmuneResistance/blob/master/Results/Signatures/resi
 # Example does not matter as function will no be exported
 }
 \references{
-Jerby-Arnon, L., Shah, P., Cuoco, M.S., Rodman, C., Su, M.-J., Melms, J.C., Leeson, R., Kanodia, A., Mei, S., Lin, J.-R., et al. (2018).
-A Cancer Cell Program Promotes T Cell Exclusion and Resistance to Checkpoint Blockade. Cell 175, 984–997.e24. https://doi.org/10.1016/j.cell.2018.09.006.
+Jerby-Arnon, L., Shah, P., Cuoco, M.S., Rodman, C.,
+Su, M.-J., Melms, J.C., Leeson, R., Kanodia, A., Mei, S., Lin,
+J.-R., et al. (2018). A Cancer Cell Program Promotes T Cell
+Exclusion and Resistance to Checkpoint Blockade. Cell 175, 984–997.e24.
+https://doi.org/10.1016/j.cell.2018.09.006.
 }

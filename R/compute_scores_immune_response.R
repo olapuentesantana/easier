@@ -184,7 +184,7 @@ compute_scores_immune_response <- function(RNA_tpm,
                     if (sig == "RIR") {
 
                         # Modify new RIR_sig
-                        tmp_RIR_sig <- sapply(names(easier_sigs[[sig]]), function(X) {
+                        tmp_RIR_sig <- lapply(names(easier_sigs[[sig]]), function(X) {
                             sub_RIR_sig <- easier_sigs[[sig]][[X]]
                             if (any(!is.na(match(out_annot$old_names, sub_RIR_sig)))) {
                                 which_genes_old <- stats::na.omit(match(out_annot$old_names, sub_RIR_sig))
@@ -193,6 +193,7 @@ compute_scores_immune_response <- function(RNA_tpm,
                             }
                             return(sub_RIR_sig)
                         })
+                        names(tmp_RIR_sig) <- names(easier_sigs[[sig]])
                         easier_sigs[[sig]] <- tmp_RIR_sig
 
                         do.call(paste0("compute_", sig), args = list(

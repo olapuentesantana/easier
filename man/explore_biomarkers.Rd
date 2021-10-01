@@ -50,9 +50,10 @@ of these features for the trained models}
 }
 }
 \description{
-This function provides an overview of relevant computed features (biomarkers),
-comparing responders and non-responders if known. Information about the
-features contribution to the optimal models is also included.
+This function provides an overview of relevant computed
+features (biomarkers), comparing responders and non-responders
+if known. Information about the features contribution to the
+optimal models is also included.
 }
 \examples{
 # using a SummarizedExperiment object
@@ -105,7 +106,7 @@ names(patient_ICBresponse) <- colData(dataset_mariathasan)[["pat_id"]]
 patient_ICBresponse <- patient_ICBresponse[pat_subset]
 
 # Investigate possible biomarkers
-explore_biomarkers(
+output_biomarkers <- explore_biomarkers(
     pathways = pathway_activity,
     immunecells = cell_fractions,
     lrpairs = lrpair_weights,

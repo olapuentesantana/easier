@@ -125,24 +125,18 @@ predict_with_rmtlr <- function(view_name,
 
     # perform prediction
     prediction_cv <- lapply(seq_len(K), function(k) {
-        coef_matrix <- sapply(tasks, function(task) {
+        coef_matrix <- vapply(tasks, function(task) {
             state[[view_name]][[task]][, k]
-        })
-        rmtlr_test(prediction_X_norm[[k]], coef_matrix)
-    })
-
-    # save predictions
-    prediction_cv <- lapply(seq_len(K), function(k) {
-        coef_matrix <- sapply(tasks, function(task) {
-            state[[view_name]][[task]][, k]
-        })
+        }, FUN.VALUE = numeric(nrow(state[[1]][[1]]))
+        )
         rmtlr_test(prediction_X_norm[[k]], coef_matrix)
     })
 
     predictions_all_tasks_cv <- lapply(tasks, function(task) {
-        prediction_task_cv <- sapply(seq_len(K), function(k) {
+        prediction_task_cv <- vapply(seq_len(K), function(k) {
             prediction_cv[[k]][, task]
-        })
+        }, FUN.VALUE = numeric(nrow(prediction_X[[1]]))
+        )
         return(prediction_task_cv)
     })
     names(predictions_all_tasks_cv) <- tasks
