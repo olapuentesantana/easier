@@ -10,7 +10,7 @@ assess_immune_response(
   RNA_tpm,
   TMB_values,
   easier_with_TMB = c("none", "weighted_average", "penalized_score"),
-  weight_penalty = seq(0, 1, 0.1),
+  weight_penalty = NULL,
   verbose = TRUE
 )
 }
@@ -65,10 +65,10 @@ RNA_counts <- assays(dataset_mariathasan)[["counts"]]
 cancer_type <- metadata(dataset_mariathasan)[["cancertype"]]
 
 # Select a subset of patients to reduce vignette building time.
-set.seed(1234)
-pat_subset <- sample(colnames(RNA_tpm), size = 5)
-RNA_counts <- RNA_counts[, pat_subset]
-RNA_tpm <- RNA_tpm[, pat_subset]
+pat_subset <- c("SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+"SAMba1a34b5a060", "SAM18a4dabbc557")
+RNA_counts <- RNA_counts[, colnames(RNA_counts) \%in\% pat_subset]
+RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 
 # Computation of cell fractions  (Finotello et al., Genome Med, 2019)
 cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
@@ -116,8 +116,8 @@ names(patient_ICBresponse) <- colData(dataset_mariathasan)[["pat_id"]]
 TMB <- colData(dataset_mariathasan)[["TMB"]]
 names(TMB) <- colData(dataset_mariathasan)[["pat_id"]]
 
-patient_ICBresponse <- patient_ICBresponse[pat_subset]
-TMB <- TMB[pat_subset]
+patient_ICBresponse <- patient_ICBresponse[names(patient_ICBresponse) \%in\% pat_subset]
+TMB <- TMB[names(TMB) \%in\% pat_subset]
 
 # Assess patient-specific likelihood of response to ICB therapy
 output_eval_with_resp <- assess_immune_response(

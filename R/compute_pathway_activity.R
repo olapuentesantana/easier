@@ -36,9 +36,9 @@
 #' RNA_counts <- assays(dataset_mariathasan)[["counts"]]
 #'
 #' # Select a subset of patients to reduce vignette building time.
-#' set.seed(1234)
-#' pat_subset <- sample(colnames(RNA_tpm), size = 5)
-#' RNA_counts <- RNA_counts[, pat_subset]
+#' pat_subset <- c("SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+#' "SAMba1a34b5a060", "SAM18a4dabbc557")
+#' RNA_counts <- RNA_counts[, colnames(RNA_counts) %in% pat_subset]
 #'
 #' # Computation of pathway activity
 #' # (Holland et al., BBAGRM, 2019; Schubert et al., Nat Commun, 2018)

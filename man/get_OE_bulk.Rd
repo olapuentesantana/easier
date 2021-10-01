@@ -51,9 +51,9 @@ dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 
 # Select a subset of patients to reduce vignette building time.
-set.seed(1234)
-pat_subset <- sample(colnames(RNA_tpm), size = 5)
-RNA_tpm <- RNA_tpm[, pat_subset]
+pat_subset <- c("SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+"SAMba1a34b5a060", "SAM18a4dabbc557")
+RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 
 # Log2 transformation:
 # log2_RNA_tpm <- log2(RNA_tpm + 1)
