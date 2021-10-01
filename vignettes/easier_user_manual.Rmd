@@ -153,8 +153,6 @@ In the following chunk, we load the additional packages that will be required th
 
 ```{r, message=FALSE}
 suppressPackageStartupMessages({
-  library("remotes")
-  # remotes::install_github("olapuentesantana/easierData")
   library("easierData")
   library("SummarizedExperiment")
 })

@@ -56,12 +56,9 @@ Imports:
     BiocParallel,
     reshape2,
     rstatix,
-    ggrepel,
-    remotes
+    ggrepel
 Suggests: 
     knitr, rmarkdown, BiocStyle, testthat, SummarizedExperiment
-Remotes: 
-    olapuentesantana/easierData
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
