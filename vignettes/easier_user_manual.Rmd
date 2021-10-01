@@ -160,7 +160,7 @@ suppressPackageStartupMessages({
 
 ## Load data from Mariathasan cohort
 
-For this example we will use gene expression data (counts and tpm values). Other variables include  patient best overall response (BOR) to anti-PD-L1 therapy, tumor mutational burden (TMB) and the cancer type the cohort belongs to.
+For this example we will use gene expression data (counts and tpm values). Other variables include patient best overall response (BOR) to anti-PD-L1 therapy, tumor mutational burden (TMB) and the cancer type the cohort belongs to.
 
 ```{r}
 dataset_mariathasan <- get_Mariathasan2018_PDL1_treatment()
