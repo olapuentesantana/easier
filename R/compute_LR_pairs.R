@@ -47,7 +47,7 @@
 #'     cancer_type = "pancan"
 #' )
 #' lrpair_weights[1:5, 1:5]
-compute_LR_pairs <- function(RNA_tpm,
+compute_LR_pairs <- function(RNA_tpm=NULL,
                              cancer_type = "pancan",
                              verbose = TRUE) {
     # Some checks

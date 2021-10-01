@@ -41,7 +41,7 @@
 #'     RNA_tpm = RNA_tpm,
 #'     selected_scores = hallmarks_of_immune_response
 #' )
-compute_scores_immune_response <- function(RNA_tpm,
+compute_scores_immune_response <- function(RNA_tpm = NULL,
                                            selected_scores = c(
                                                "CYT",
                                                "Roh_IS",

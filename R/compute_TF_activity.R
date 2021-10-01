@@ -41,7 +41,7 @@
 #' tf_activity <- compute_TF_activity(
 #'     RNA_tpm = RNA_tpm
 #' )
-compute_TF_activity <- function(RNA_tpm,
+compute_TF_activity <- function(RNA_tpm = NULL,
                                 verbose = TRUE) {
     # Some checks
     if (is.null(RNA_tpm)) stop("TPM gene expression data not found")

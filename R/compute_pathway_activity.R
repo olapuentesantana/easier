@@ -46,7 +46,7 @@
 #'     RNA_counts = RNA_counts,
 #'     remove_sig_genes_immune_response = TRUE
 #' )
-compute_pathway_activity <- function(RNA_counts,
+compute_pathway_activity <- function(RNA_counts = NULL,
                                      remove_sig_genes_immune_response = TRUE,
                                      verbose = TRUE) {
     # Some checks

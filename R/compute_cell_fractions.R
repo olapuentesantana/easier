@@ -34,7 +34,7 @@
 #'
 #' # Computation of cell fractions (Finotello et al., Genome Med, 2019)
 #' cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
-compute_cell_fractions <- function(RNA_tpm,
+compute_cell_fractions <- function(RNA_tpm = NULL,
                                    verbose = TRUE) {
     # Some checks
     if (is.null(RNA_tpm)) stop("TPM gene expression data not found")

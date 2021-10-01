@@ -49,7 +49,7 @@
 #'     lrpairs = lrpair_weights,
 #'     cancer_type = "pancan"
 #' )
-compute_CC_pairs <- function(lrpairs,
+compute_CC_pairs <- function(lrpairs = NULL,
                              cancer_type = "pancan",
                              verbose = TRUE) {
     # Some checks
