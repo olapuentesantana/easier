@@ -463,7 +463,7 @@ explore_biomarkers <- function(pathways = NULL,
             ggplot2::theme(legend.position = "right") +
             ggplot2::labs(title = paste0(" All quantitative descriptor at once"))
 
-        if(unique(comparison$threshold) == 2){
+        if(length(unique(comparison$threshold)) == 2){
             volcano_plot <- volcano_plot + ggrepel::geom_text_repel(
                 data = subset(comparison, (threshold != "notSign")),
                 ggplot2::aes(x = .data$signedEffect, y = -log10(.data$p_val),
