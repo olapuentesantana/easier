@@ -13,3 +13,5 @@
 # R development files
 .Rbuildignore
 
+# R project file
+easier.Rproj
