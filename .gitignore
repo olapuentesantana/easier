@@ -10,8 +10,5 @@
 # RStudio files
 .Rproj.user/
 
-# R development files
-.Rbuildignore
-
 # R project file
 easier.Rproj
