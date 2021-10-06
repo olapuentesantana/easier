@@ -2,27 +2,27 @@
 % Please edit documentation in R/compute_TF_activity.R
 \name{compute_TF_activity}
 \alias{compute_TF_activity}
-\title{Compute transcription factor activity from gene expression
-using DoRothEA}
+\title{Compute transcription factor activity from gene
+expression using DoRothEA}
 \usage{
 compute_TF_activity(RNA_tpm = NULL, verbose = TRUE)
 }
 \arguments{
-\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in
-rows and samples in columns.}
+\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols
+in rows and samples in columns.}
 
-\item{verbose}{logical value indicating whether to display messages about
-the number of regulated
+\item{verbose}{logical value indicating whether to display messages
+about the number of regulated
 genes found in the gene expression data provided.}
 }
 \value{
-A numeric matrix of activity scores with samples in rows and
-TFs in columns.
+A numeric matrix of activity scores with samples in rows
+and TFs in columns.
 }
 \description{
-This function infers transcription factor activity from TPM bulk
-gene expression using DoRothEA method
-(Garcia-Alonso et al., Genome Res, 2019).
+Infers transcription factor (TF) activity from TPM bulk
+gene expression using DoRothEA method (Garcia-Alonso et al.,
+Genome Res, 2019).
 }
 \examples{
 # using a SummarizedExperiment object
@@ -36,8 +36,10 @@ dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 
 # Select a subset of patients to reduce vignette building time.
-pat_subset <- c("SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-"SAMba1a34b5a060", "SAM18a4dabbc557")
+pat_subset <- c(
+    "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+    "SAMba1a34b5a060", "SAM18a4dabbc557"
+)
 RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 
 # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)

@@ -1,10 +1,10 @@
 #' Compute ligand-receptor pair weights from TPM bulk gene expression
 #'
-#' This function quantifies ligand-receptor interactions in the tumor
-#' microenvironment from TPM bulk gene expression by using prior knowledge
-#' coming from ligand-receptor pair annotations from the database of
-#' Ramilowski (Ramilowski et al., Nat Commun, 2015). Each ligand-receptor
-#' weight is defined as the minimum of the log2(TPM+1) expression of the
+#' Quantifies ligand-receptor interactions in the tumor microenvironment
+#' from TPM bulk gene expression by using prior knowledge coming from
+#' ligand-receptor pair annotations from the database of Ramilowski
+#' (Ramilowski et al., Nat Commun, 2015). Each ligand-receptor weight
+#' is defined as the minimum of the log2(TPM+1) expression of the
 #' ligand and the receptor.
 #'
 #' @importFrom stats na.exclude
@@ -13,15 +13,17 @@
 #'
 #' @param RNA_tpm A data.frame containing TPM values with HGNC symbols
 #' in rows and samples in columns.
-#' @param cancer_type A string detailing the cancer type whose ligand-receptor
-#' pairs network will be used.
-#' A pan-cancer network is selected by default, whose network represents the
-#' union of all ligand-receptor pairs present across the 18 cancer types
-#' studied in (Lapuente-Santana et al., Patterns, 2021).
-#' @param verbose A logical value indicating whether to display messages about the number of ligand-receptor
-#' genes found in the gene expression data provided.
+#' @param cancer_type A string detailing the cancer type whose
+#' ligand-receptor pairs network will be used.
+#' A pan-cancer network is selected by default, whose network represents
+#' the union of all ligand-receptor pairs present across the 18 cancer
+#' types studied in Lapuente-Santana et al., Patterns, 2021.
+#' @param verbose A logical value indicating whether to display messages
+#' about the number of ligand-receptor genes found in the gene expression
+#' data provided.
 #'
-#' @return A matrix of weights with samples in rows and ligand-receptor pairs in columns.
+#' @return A matrix of weights with samples in rows and ligand-receptor
+#' pairs in columns.
 #'
 #' @export
 #'
@@ -37,8 +39,10 @@
 #' RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 #'
 #' # Select a subset of patients to reduce vignette building time.
-#' pat_subset <- c("SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-#' "SAMba1a34b5a060", "SAM18a4dabbc557")
+#' pat_subset <- c(
+#'     "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+#'     "SAMba1a34b5a060", "SAM18a4dabbc557"
+#' )
 #' RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) %in% pat_subset]
 #'
 #' # Computation of ligand-receptor pair weights
@@ -47,7 +51,7 @@
 #'     cancer_type = "pancan"
 #' )
 #' lrpair_weights[1:5, 1:5]
-compute_LR_pairs <- function(RNA_tpm=NULL,
+compute_LR_pairs <- function(RNA_tpm = NULL,
                              cancer_type = "pancan",
                              verbose = TRUE) {
     # Some checks
@@ -92,9 +96,11 @@ compute_LR_pairs <- function(RNA_tpm=NULL,
         seq_len(length(LR_pairs)),
         function(x) {
             ligand <- vapply(strsplit(LR_pairs[x], split = "_", fixed = TRUE), head, 1,
-                             FUN.VALUE = character(1))
+                FUN.VALUE = character(1)
+            )
             receptor <- vapply(strsplit(LR_pairs[x], split = "_", fixed = TRUE), tail, 1,
-                               FUN.VALUE = character(1))
+                FUN.VALUE = character(1)
+            )
 
             pos_lr <- match(c(ligand, receptor), rownames(gene_expr))
             # When a ligand or receptor is not found, NA value should be returned.

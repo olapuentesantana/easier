@@ -1,15 +1,15 @@
 #' Compute immune cell fractions from gene expression using quanTIseq
 #'
-#' This function estimates cell fractions from TPM bulk gene expression
-#' using quanTIseq method from (Finotello et al., Genome Med, 2019).
+#' Estimates cell fractions from TPM bulk gene expression
+#' using quanTIseq method from Finotello et al., Genome Med, 2019.
 #'
 #' @importFrom quantiseqr run_quantiseq
 #'
 #' @param RNA_tpm data.frame containing TPM values with HGNC symbols
 #' in rows and samples in columns.
 #' @param verbose logical value indicating whether to display messages
-#' about the number of immune cell
-#' signature genes found in the gene expression data provided.
+#' about the number of immune cell signature genes found in the gene
+#' expression data provided.
 #'
 #' @return A numeric matrix of normalized enrichment scores
 #' with samples in rows and cell types in columns.
@@ -28,8 +28,10 @@
 #' RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 #'
 #' # Select a subset of patients to reduce vignette building time.
-#' pat_subset <- c("SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-#' "SAMba1a34b5a060", "SAM18a4dabbc557")
+#' pat_subset <- c(
+#'     "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+#'     "SAMba1a34b5a060", "SAM18a4dabbc557"
+#' )
 #' RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) %in% pat_subset]
 #'
 #' # Computation of cell fractions (Finotello et al., Genome Med, 2019)

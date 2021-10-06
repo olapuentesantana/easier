@@ -2,7 +2,7 @@
 % Please edit documentation in R/explore_biomarkers.R
 \name{explore_biomarkers}
 \alias{explore_biomarkers}
-\title{Visualization of stunning biomarkers}
+\title{Explore biomarkers of immune response}
 \usage{
 explore_biomarkers(
   pathways = NULL,
@@ -50,10 +50,11 @@ of these features for the trained models}
 }
 }
 \description{
-This function provides an overview of relevant computed
-features (biomarkers), comparing responders and non-responders
-if known. Information about the features contribution to the
-optimal models is also included.
+Provides a good overview of the computed features
+(biomarkers) including the corresponding weights from the
+trained model. Also, showing statistically significant
+biomarkers between responders and non-responders patients
+(if patients' response is available).
 }
 \examples{
 # using a SummarizedExperiment object
@@ -69,8 +70,10 @@ RNA_counts <- assays(dataset_mariathasan)[["counts"]]
 cancer_type <- metadata(dataset_mariathasan)[["cancertype"]]
 
 # Select a subset of patients to reduce vignette building time.
-pat_subset <- c("SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-"SAMba1a34b5a060", "SAM18a4dabbc557")
+pat_subset <- c(
+    "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+    "SAMba1a34b5a060", "SAM18a4dabbc557"
+)
 RNA_counts <- RNA_counts[, colnames(RNA_counts) \%in\% pat_subset]
 RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 

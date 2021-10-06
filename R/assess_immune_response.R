@@ -1,10 +1,20 @@
-#' Evaluate the predictive performance of the computed immune response score
+#' Assess easier score as predictor of patients'
+#' immune response
 #'
-#' This function generates a roc curve plot and a barplot showing the average
-#' (across tasks) area under the ROC curve (AUC) values for each quantitative
-#' descriptor on the patients' response provided. An ensemble model is built
-#' based on the average of the individual models.
-#' Additionally, the average of the gold standard scores is used for comparison.
+#' Evaluates the predictive performance of easier score as
+#' predictor of patients' immune response. Provided that patients'
+#' response is available, a roc curve plot and a barplot showing the
+#' average (across tasks) area under the ROC curve (AUC) values for each
+#' quantitative descriptor. An ensemble model is considered based on
+#' the average of the individual descriptors. Also, the average of the
+#' gold standard scores is shown. When available information on tumor
+#' mutational burden (TMB), this is also displayed.
+#'
+#' Since both immune response and TMB are essential for effective
+#' immunotherapy response, an integrated score is provided given
+#' two different approaches based on a applying either a weighted
+#' average or penalty to patients' easier score depending on their
+#' TMB category.
 #'
 #' @importFrom ROCR prediction performance plot
 #' @importFrom grDevices recordPlot
@@ -14,28 +24,34 @@
 #'
 #' @export
 #'
-#' @param predictions_immune_response list containing the predictions for each
-#' quantitative descriptor and for each task.
+#' @param predictions_immune_response list containing the predictions
+#' for each quantitative descriptor and for each task.
 #' @param patient_response character vector with two factors
 #' (Non-responders = NR, Responders = R).
 #' @param RNA_tpm numeric matrix of patients' gene expression data as
 #' tpm values.
-#' @param TMB_values numeric vector containing patients' tumor mutational burden
-#' (TMB) values.
-#' @param easier_with_TMB character string indicating which approach should be
-#' used to integrate easier with TMB. One of "weighted_average" (default) or
-#' "penalized_score".
-#' @param weight_penalty integer value from 0 to 1, which is used to define the
-#' weight or penalty for combining easier and TMB scores based on a weighted
-#' average or penalized score, in order to derive a score of patient's likelihood
-#' of immune response. The default value is 0.5.
-#' @param verbose logical flag indicating whether to display messages about
-#' the process.
+#' @param TMB_values numeric vector containing patients' tumor mutational
+#' burden (TMB) values.
+#' @param easier_with_TMB character string indicating which approach
+#' should be used to integrate easier with TMB. One of "weighted_average"
+#' (default) or "penalized_score".
+#' @param weight_penalty integer value from 0 to 1, which is used to
+#' define the weight or penalty for combining easier and TMB scores based
+#' on a weighted average or penalized score, in order to derive a score of
+#' patient's likelihood of immune response. The default value is 0.5.
+#' @param verbose logical flag indicating whether to display messages
+#' about the process.
 #'
-#' @return If easier_with_TMB is set to FALSE, figures two figures evaluating the
-#' predictions are returned. If easier_with_TMB is set to TRUE, an scatterplot is
-#' returned displaying an integrated approach that uses both immune response and
-#' tumor mutational burden (TMB) to predict patients' response.
+#' @return When patient_response is provided, a roc curve plot and a barplot
+#' displaying the average (across tasks) area under the ROC curve (AUC)
+#' values is provided. When patient_response is not provided, the easier
+#' score is represented as boxplots (10 tasks) for each patient.
+#'
+#' When patient_response is provided and easier_with_TMB = weighted_average
+#' or easier_with_TMB = penalized_score, an scatterplot displays the AUC
+#' values of the integrated approach, easier score and TMB. In this case,
+#' when patient_response is not provided, the integrated score is represented
+#' as a dotplot for each patient.
 #'
 #' @examples
 #' # using a SummarizedExperiment object
@@ -51,8 +67,10 @@
 #' cancer_type <- metadata(dataset_mariathasan)[["cancertype"]]
 #'
 #' # Select a subset of patients to reduce vignette building time.
-#' pat_subset <- c("SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-#' "SAMba1a34b5a060", "SAM18a4dabbc557")
+#' pat_subset <- c(
+#'     "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+#'     "SAMba1a34b5a060", "SAM18a4dabbc557"
+#' )
 #' RNA_counts <- RNA_counts[, colnames(RNA_counts) %in% pat_subset]
 #' RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) %in% pat_subset]
 #'
@@ -124,7 +142,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     if (length(names(table(patient_response))) == 1) {
         stop("A binary class is required to evaluate patient's response")
     }
-    if(length(easier_with_TMB) > 1) {
+    if (length(easier_with_TMB) > 1) {
         stop("Please provide only one approach to combine easier with TMB")
     }
     if (missing(TMB_values)) {
@@ -133,8 +151,12 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     } else {
         TMB_available <- TRUE
         if (missing(easier_with_TMB)) easier_with_TMB <- "weighted_average"
-        if (anyNA(TMB_values)) warning("NA values were found in TMB data, ",
-        "patients with NA values are removed from the analysis")
+        if (anyNA(TMB_values)) {
+            warning(
+                "NA values were found in TMB data, ",
+                "patients with NA values are removed from the analysis"
+            )
+        }
         message(
             "\nConsidering ", length(TMB_values[!is.na(TMB_values)]),
             " patients out of ", length(TMB_values), " with available TMB"
@@ -148,7 +170,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
         RNA_tpm <- RNA_tpm[, patients_to_keep]
     }
     # Initialize function
-    if (easier_with_TMB == "weighted_average"){
+    if (easier_with_TMB == "weighted_average") {
         linear_func <- function(x) {
             min_x <- min(x)
             max_x <- max(x)
@@ -188,8 +210,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
             ensemble_df$lrpairs[, spec_task],
             ensemble_df$ccpairs[, spec_task]
         ), 1, mean)
-    }, FUN.VALUE = numeric(ncol(RNA_tpm))
-    )
+    }, FUN.VALUE = numeric(ncol(RNA_tpm)))
     # AUC predictions (when response available)
     if (is.null(patient_response) == FALSE) {
         if (all(levels(as.factor(patient_response)) %in% c("NR", "R")) == FALSE) {
@@ -276,7 +297,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
         # check patients match
         tasks_values <- tasks_values[match(rownames(labels), rownames(tasks_values)), ]
         pred <- ROCR::prediction(tasks_values, labels[, colnames(tasks_values)],
-                                 label.ordering = c("NR", "R")
+            label.ordering = c("NR", "R")
         )
         perf <- ROCR::performance(pred, "tpr", "fpr")
         AUC <- unlist(ROCR::performance(pred, "auc")@y.values)
@@ -520,7 +541,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
                 # rp.df$TMB <- categorize.TMB(rp.df$TMB, thresholds = c(100,400))
             }
             # compute the integrated score as weighted average #
-            if(easier_with_TMB == "weighted_average"){
+            if (easier_with_TMB == "weighted_average") {
                 pred_lin <- linear_func(rp_df$prediction_easier)
                 TMB_lin <- linear_func(rp_df$TMB)
                 AUC_averaged_v <- vapply(seq(from = 0, to = 1, by = 0.1), function(p) {
@@ -531,7 +552,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
                 }, FUN.VALUE = numeric(1))
             }
             # compute the integrated score for different penalties #
-            if(easier_with_TMB == "penalized_score"){
+            if (easier_with_TMB == "penalized_score") {
                 pred_combined <- rp_df$prediction_easier
                 AUC_combined_v <- vapply(seq(from = 0, to = 1, by = 0.1), function(p) {
                     pred_combined[rp_df$TMBcat == 1] <- pred_combined[rp_df$TMBcat == 1] - p
@@ -550,13 +571,13 @@ assess_immune_response <- function(predictions_immune_response = NULL,
                 cex.axis = 1.3, mar = c(5, 4, 2, 8), col.lab = "black",
                 pty = "s", xpd = TRUE
             )
-            if(easier_with_TMB == "penalized_score"){
+            if (easier_with_TMB == "penalized_score") {
                 plot(seq(from = 0, to = 1, by = 0.1), AUC_combined_v,
-                     xlab = "Penalty or Relative weight",
-                     ylab = "Area under the curve (AUC)",
-                     type = "b", col = "#c15050", lty = 1,
-                     pch = 19, lwd = 2, ylim = c(0, 1),
-                     xlim = c(0, 1), cex.lab = 1.3
+                    xlab = "Penalty or Relative weight",
+                    ylab = "Area under the curve (AUC)",
+                    type = "b", col = "#c15050", lty = 1,
+                    pch = 19, lwd = 2, ylim = c(0, 1),
+                    xlim = c(0, 1), cex.lab = 1.3
                 )
                 graphics::legend(
                     x = "topright", inset = c(-0.5, 0),
@@ -566,13 +587,13 @@ assess_immune_response <- function(predictions_immune_response = NULL,
                     ), lty = 1, lwd = 2, cex = 0.8, bty = "n"
                 )
             }
-            if(easier_with_TMB == "weighted_average"){
+            if (easier_with_TMB == "weighted_average") {
                 plot(seq(from = 0, to = 1, by = 0.1), AUC_averaged_v,
-                     xlab = "Penalty or Relative weight",
-                     ylab = "Area under the curve (AUC)",
-                     type = "b", col = "#693c72", lty = 1,
-                     pch = 19, lwd = 2, ylim = c(0, 1),
-                     xlim = c(0, 1), cex.lab = 1.3
+                    xlab = "Penalty or Relative weight",
+                    ylab = "Area under the curve (AUC)",
+                    type = "b", col = "#693c72", lty = 1,
+                    pch = 19, lwd = 2, ylim = c(0, 1),
+                    xlim = c(0, 1), cex.lab = 1.3
                 )
                 graphics::legend(
                     x = "topright", inset = c(-0.5, 0),
@@ -661,7 +682,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
                 # rp.df$TMB <- categorize_TMB(rp.df$TMB, thresholds = c(100,400))
             }
             # Compute the integrated score as weighted average #
-            if(easier_with_TMB == "weighted_average"){
+            if (easier_with_TMB == "weighted_average") {
                 # Compute the integrated score as weighted average #
                 pred_lin <- linear_func(rp_df$prediction_easier)
                 names(pred_lin) <- rp_df$patient
@@ -671,11 +692,11 @@ assess_immune_response <- function(predictions_immune_response = NULL,
                     pred_averaged <- apply(cbind((1 - p) * pred_lin, (p) * TMB_lin), 1, mean)
                 }, FUN.VALUE = numeric(length(pred_lin)))
                 # By default, weight or penalty of 0.5.
-                weight_penalty_pos <- match(weight_penalty, (seq_len(11)-1)/10)
+                weight_penalty_pos <- match(weight_penalty, (seq_len(11) - 1) / 10)
                 rp_df$weighted_average <- pred_averaged_rf[, weight_penalty_pos]
             }
             # Compute the integrated score for different penalties #
-            if(easier_with_TMB == "penalized_score"){
+            if (easier_with_TMB == "penalized_score") {
                 pred_combined <- rp_df$prediction_easier
                 names(pred_combined) <- rp_df$patient
                 pred_combined_rf <- vapply(seq(from = 0, to = 1, by = 0.1), function(p) {
@@ -683,7 +704,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
                     pred_combined[rp_df$TMBcat == 3] <- pred_combined[rp_df$TMBcat == 3] + p
                     return(pred_combined)
                 }, FUN.VALUE = numeric(numeric(length(pred_combined))))
-                weight_penalty_pos <- match(weight_penalty, (seq_len(11)-1)/10)
+                weight_penalty_pos <- match(weight_penalty, (seq_len(11) - 1) / 10)
                 rp_df$penalized_score <- NA
                 rp_df$penalized_score <- pred_combined_rf[, weight_penalty_pos]
             }
@@ -696,10 +717,12 @@ assess_immune_response <- function(predictions_immune_response = NULL,
             all_scores_df <- all_scores_df[all_scores_df$approach == "weighted_average", ]
             # sort patients
             all_scores_df$patient <- factor(all_scores_df$patient,
-                levels = all_scores_df$patient[match(levels(ordering),
+                levels = all_scores_df$patient[match(
+                    levels(ordering),
                     vapply(strsplit(all_scores_df$patient, split = " "), head, 1,
-                    FUN.VALUE = character(1))
-                    )]
+                        FUN.VALUE = character(1)
+                    )
+                )]
             )
             rf_score_plot <- ggplot2::ggplot(
                 all_scores_df,
@@ -728,7 +751,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
                     labels = as.character(unique(all_scores_df$approach)),
                     values = c("#cc8100", "#00bc93")
                 ) +
-                ggplot2::xlim(c(0,1)) +
+                ggplot2::xlim(c(0, 1)) +
                 ggplot2::theme(
                     panel.grid = ggplot2::element_blank(),
                     panel.background = ggplot2::element_rect(fill = NA)

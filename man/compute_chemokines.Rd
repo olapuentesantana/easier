@@ -18,8 +18,9 @@ A numeric matrix with samples in rows and chemokines
 score in a column.
 }
 \description{
-Computes chemokines score as the PC1 score that results
-from applying PCA to z-score expression of its signature genes.
+Calculates chemokines score as the PC1 score that results
+from applying PCA to the expression of its signature genes,
+defined in Messina et al., Sci. Rep., 2012.
 }
 \examples{
 

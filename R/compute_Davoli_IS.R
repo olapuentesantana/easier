@@ -1,8 +1,8 @@
 #' Compute Davoli immune signature (Davoli_IS) score
 #'
-#' The function calculates Davoli_IS score as the average
-#' of the expression of its signature genes after applying
-#' rank normalization
+#' Calculates Davoli_IS score as the average of the expression
+#' of its signature genes after applying rank normalization, as
+#' defined in Davoli et al., Science, 2017.
 #'
 #' @references Davoli, T., Uno, H., Wooten, E.C., and Elledge,
 #' S.J. (2017). Tumor aneuploidy correlates with markers of

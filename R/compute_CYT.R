@@ -1,7 +1,7 @@
 #' Compute cytolytic activity (CYT) score
 #'
-#' This function calculates the CYT score as the geometric
-#' mean of its signature genes.
+#' Calculates the CYT score using the geometric mean of its
+#' signature genes, as defined in Rooney et al., Cell, 2015.
 #'
 #' @references Rooney, M.S., Shukla, S.A., Wu, C.J., Getz, G.,
 #' and Hacohen, N. (2015). Molecular and genetic properties
@@ -26,8 +26,10 @@ compute_CYT <- function(matches, RNA_tpm) {
 
     # Calculation: geometric mean (so-called log-average)
     #  [TPM, 0.01 offset]
-    score <- as.matrix(apply(subset_RNA_tpm + 0.01, 2,
-                             function(X) exp(mean(log(X)))))
+    score <- as.matrix(apply(
+        subset_RNA_tpm + 0.01, 2,
+        function(X) exp(mean(log(X)))
+    ))
 
     return(data.frame(CYT = score, check.names = FALSE))
 }

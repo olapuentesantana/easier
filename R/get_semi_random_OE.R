@@ -1,30 +1,41 @@
-#' Calculate random scores used within get_OE_bulk function to compute
-#' the immune resistance program derived in Jerby-Arnon et al., 2018.
+#' Compute random scores of the immune resistance
+#' program used in the computation of repressed
+#' immune resistance signature (RIR) score.
 #'
-#' This function calculates random scores to yield a robust estimate of
-#' the immune resistance program values. The code was provided via Github
-#' https://github.com/livnatje/ImmuneResistance/blob/master/Code/ImmRes_OE.R.
+#' Calculates random scores to yield a robust estimate of
+#' the immune resistance program values. This is used
+#' by get_OE_bulk function.
 #'
-#' @references Jerby-Arnon, L., Shah, P., Cuoco, M.S., Rodman, C., Su, M.-J., Melms,
-#' J.C., Leeson, R., Kanodia, A., Mei, S., Lin, J.-R., et al. (2018). A Cancer Cell
-#' Program Promotes T Cell Exclusion and Resistance to Checkpoint Blockade. Cell 175,
-#' 984–997.e24. https://doi.org/10.1016/j.cell.2018.09.006
+#' The source code was provided by original work:
+#' https://github.com/livnatje/ImmuneResistance
 #'
-#' @param r list containing a numeric matrix with bulk RNA-Seq data (tpm values)
-#' and a character string with the available gene names.
-#' @param genes_dist_q factor variable obtained as output from the function
-#' discretize. Jerby-Arnon et al. binned genes into 50 expression bins according
-#' their average gene expression across samples.
-#' @param b_sign logical vector representing whether signature genes were found in
-#' bulk tpm matrix.
-#' @param num_rounds integer value related to the number of random gene signatures
-#' samples to be computed for normalization. Jerby-Arnon et al. found that 1000
-#' random signatures were sufficient to yield an estimate of the expected value.
-#' @param full_flag logical flag indicating whether to return also random scores.
-#' @param random_seed integer value to set a seed for the selection of random
-#' genes used to generate a random score.
+#' @references Jerby-Arnon, L., Shah, P., Cuoco, M.S.,
+#' Rodman, C., Su, M.-J., Melms, J.C., Leeson, R., Kanodia,
+#' A., Mei, S., Lin, J.-R., et al. (2018). A Cancer Cell
+#' Program Promotes T Cell Exclusion and Resistance to
+#' Checkpoint Blockade. Cell 175, 984–997.e24.
+#' https://doi.org/10.1016/j.cell.2018.09.006.
 #'
-#' @return A numeric vector containing the estimated random score for each sample.
+#' @param r list containing a numeric matrix with bulk RNA-Seq
+#' data (tpm values) and a character string with the available
+#' gene names.
+#' @param genes_dist_q factor variable obtained as output from
+#' the function discretize. Original work binned genes into 50
+#' expression bins according their average gene expression
+#' across samples.
+#' @param b_sign logical vector representing whether signature
+#' genes were found in bulk tpm matrix.
+#' @param num_rounds integer value related to the number of random
+#' gene signatures samples to be computed for normalization. Original
+#' work indicates that 1000 random signatures were sufficient to yield
+#' an estimate of the expected value.
+#' @param full_flag logical flag indicating whether to return also
+#' random scores.
+#' @param random_seed integer value to set a seed for the selection
+#' of random genes used to generate a random score.
+#'
+#' @return A numeric vector containing the estimated random score
+#' for each sample.
 #'
 #' @examples
 #' # using a SummarizedExperiment object
@@ -38,8 +49,10 @@
 #' RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 #'
 #' # Select a subset of patients to reduce vignette building time.
-#' pat_subset <- c("SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-#' "SAMba1a34b5a060", "SAM18a4dabbc557")
+#' pat_subset <- c(
+#'     "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+#'     "SAMba1a34b5a060", "SAM18a4dabbc557"
+#' )
 #' RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) %in% pat_subset]
 #'
 #' # Log2 transformation:
@@ -78,8 +91,10 @@ get_semi_random_OE <- function(r,
     sign_q <- as.matrix(table(genes_dist_q[b_sign]))
     q <- rownames(sign_q)
     idx_all <- c()
-    B <- matrix(data = FALSE, nrow = length(genes_dist_q), ncol = num_rounds)
-    Q <- matrix(data = 0, nrow = length(genes_dist_q), ncol = num_rounds)
+    B <- matrix(data = FALSE, nrow = length(genes_dist_q),
+                ncol = num_rounds)
+    Q <- matrix(data = 0, nrow = length(genes_dist_q),
+                ncol = num_rounds)
     for (i in seq_len(nrow(sign_q))) {
         num_genes <- sign_q[i]
         if (num_genes > 0) {

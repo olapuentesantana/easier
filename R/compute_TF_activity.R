@@ -1,23 +1,23 @@
-#' Compute transcription factor activity from gene expression
-#' using DoRothEA
+#' Compute transcription factor activity from gene
+#' expression using DoRothEA
 #'
-#' This function infers transcription factor activity from TPM bulk
-#' gene expression using DoRothEA method
-#' (Garcia-Alonso et al., Genome Res, 2019).
+#' Infers transcription factor (TF) activity from TPM bulk
+#' gene expression using DoRothEA method (Garcia-Alonso et al.,
+#' Genome Res, 2019).
 #'
 #' @importFrom dorothea run_viper
 #' @importFrom stats na.exclude
 #' @importFrom dplyr filter
 #' @importFrom easierData get_TCGA_mean_pancancer get_TCGA_sd_pancancer
 #'
-#' @param RNA_tpm data.frame containing TPM values with HGNC symbols in
-#' rows and samples in columns.
-#' @param verbose logical value indicating whether to display messages about
-#' the number of regulated
+#' @param RNA_tpm data.frame containing TPM values with HGNC symbols
+#' in rows and samples in columns.
+#' @param verbose logical value indicating whether to display messages
+#' about the number of regulated
 #' genes found in the gene expression data provided.
 #'
-#' @return A numeric matrix of activity scores with samples in rows and
-#' TFs in columns.
+#' @return A numeric matrix of activity scores with samples in rows
+#' and TFs in columns.
 #'
 #' @export
 #'
@@ -33,8 +33,10 @@
 #' RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 #'
 #' # Select a subset of patients to reduce vignette building time.
-#' pat_subset <- c("SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-#' "SAMba1a34b5a060", "SAM18a4dabbc557")
+#' pat_subset <- c(
+#'     "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+#'     "SAMba1a34b5a060", "SAM18a4dabbc557"
+#' )
 #' RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) %in% pat_subset]
 #'
 #' # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
@@ -57,7 +59,8 @@ compute_TF_activity <- function(RNA_tpm = NULL,
     # HGNC symbols are required
     if (any(grep("ENSG00000", genes))) stop("hgnc gene symbols are required", call. = FALSE)
 
-    # Log transformed expression matrix (log2[tpm+1]): expression matrix scaled and recentered.
+    # Log transformed expression matrix (log2[tpm+1]):
+    # expression matrix scaled and recentered.
     gene_expr <- calc_z_score(t(tpm),
         mean = TCGA_mean_pancancer,
         sd = TCGA_sd_pancancer

@@ -7,19 +7,20 @@
 compute_IFNy(matches, RNA_tpm)
 }
 \arguments{
-\item{matches}{numeric vector indicating the index of signature
-genes in \code{RNA_tpm}.}
+\item{matches}{numeric vector indicating the index of
+signature genes in \code{RNA_tpm}.}
 
-\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols
-in rows and samples in columns.}
+\item{RNA_tpm}{data.frame containing TPM values with HGNC
+symbols in rows and samples in columns.}
 }
 \value{
-A numeric matrix with samples in rows and IFNy score in
-a column.
+A numeric matrix with samples in rows and IFNy
+score in a column.
 }
 \description{
-This function calculates IFNy signature score as
-the average expression of its signature genes.
+Calculates IFNy signature score as the average expression
+of its signature genes, as defined in Ayers et al., J.
+Clin. Invest, 2017.
 }
 \examples{
 

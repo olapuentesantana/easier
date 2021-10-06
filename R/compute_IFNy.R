@@ -1,7 +1,8 @@
 #' Compute IFNy signature (IFNy) score
 #'
-#' This function calculates IFNy signature score as
-#' the average expression of its signature genes.
+#' Calculates IFNy signature score as the average expression
+#' of its signature genes, as defined in Ayers et al., J.
+#' Clin. Invest, 2017.
 #'
 #' @references Ayers, M., Lunceford, J., Nebozhyn, M., Murphy,
 #' E., Loboda, A., Kaufman, D.R., Albright, A., Cheng, J.D.,
@@ -12,13 +13,13 @@
 #'
 #' @importFrom stats na.omit
 #'
-#' @param matches numeric vector indicating the index of signature
-#' genes in `RNA_tpm`.
-#' @param RNA_tpm data.frame containing TPM values with HGNC symbols
-#' in rows and samples in columns.
+#' @param matches numeric vector indicating the index of
+#' signature genes in `RNA_tpm`.
+#' @param RNA_tpm data.frame containing TPM values with HGNC
+#' symbols in rows and samples in columns.
 #'
-#' @return A numeric matrix with samples in rows and IFNy score in
-#' a column.
+#' @return A numeric matrix with samples in rows and IFNy
+#' score in a column.
 #'
 #' @examples
 #'

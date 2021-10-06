@@ -1,18 +1,24 @@
-#' Compute published transcriptomics-based scores of hallmarks of anti-cancer
-#' immune response
+#' Compute published transcriptomics-based scores
+#' of hallmarks of anti-cancer immune response
 #'
-#' This function computes the scores of immune response as indicated by the user.
+#' Calculates the scores of immune response as
+#' indicated by the user.
 #'
 #' @importFrom easierData get_scores_signature_genes
 #'
-#' @param RNA_tpm data.frame containing TPM values with HGNC symbols in rows and
-#' samples in columns.
-#' @param selected_scores character string with names of scores of immune response
-#' to be computed. Default scores are computed for: "CYT", "Roh_IS", "chemokines",
-#' "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS".
-#' @param verbose logical variable indicating whether to display informative messages.
+#' @param RNA_tpm data.frame containing TPM values with
+#' HGNC symbols in rows and samples in columns.
+#' @param selected_scores character string with names of
+#' scores of immune response to be computed. Default
+#' scores are computed for: "CYT", "Roh_IS", "chemokines",
+#' "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed",
+#' "RIR", "TLS".
+#' @param verbose logical variable indicating whether to
+#' display informative messages.
 #'
-#' @return A numeric matrix with samples in rows and gold standard scores in columns.
+#' @return A numeric matrix with samples in rows and gold
+#' standard scores in columns.
+#'
 #' @export
 #'
 #' @examples
@@ -28,8 +34,10 @@
 #' cancer_type <- metadata(dataset_mariathasan)$cancertype
 #'
 #' # Select a subset of patients to reduce vignette building time.
-#' pat_subset <- c("SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-#' "SAMba1a34b5a060", "SAM18a4dabbc557")
+#' pat_subset <- c(
+#'     "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+#'     "SAMba1a34b5a060", "SAM18a4dabbc557"
+#' )
 #' RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) %in% pat_subset]
 #'
 #' # Computation of different hallmarks of anti-cancer immune responses

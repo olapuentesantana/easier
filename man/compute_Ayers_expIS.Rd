@@ -17,8 +17,9 @@ A numeric matrix with rows=samples and
 columns=Expanded Immune signature score.
 }
 \description{
-This function calculates Ayers_expIS score as the
-average expression of its signature genes.
+Calculates Ayers_expIS score as the average expression
+of its signature genes, as defined in Ayers et al., J.
+Clin. Invest, 2017.
 }
 \examples{
 

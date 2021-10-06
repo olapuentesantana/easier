@@ -1,22 +1,24 @@
-#' Collects Regularized Multi-Task Linear Regression (RMTLR)
-#' cancer-specfic model predictions
+#' Predict single-view immune response
 #'
-#' This function puts together predicted immune response by using a
-#' cancer-specifc model learned from training with RMTLR algorithm.
+#' Obtains single-view predictions of immune response by using a
+#' cancer-specific model learned with Regularized
+#' Multi-Task Linear Regression algorithm (RMTLR).
 #'
 #' @importFrom stats na.omit
 #'
 #' @export
 #'
-#' @param view_name character string containing the name of the input view.
-#' @param view_info character string informing about the family of the input data.
+#' @param view_name character string containing the name of the
+#' input view.
+#' @param view_info character string informing about the family of
+#' the input data.
 #' @param view_data list containing the data for each input view.
-#' @param opt_model_cancer_view_spec cancer-view-specific model feature
-#' parameters learned during training.
-#' @param opt_xtrain_stats_cancer_view_spec cancer-view-specific features mean
-#' and standard deviation of the training set.
-#' @param verbose logical flag indicating whether to display messages
-#' about the process.
+#' @param opt_model_cancer_view_spec cancer-view-specific model
+#' feature parameters learned during training.
+#' @param opt_xtrain_stats_cancer_view_spec cancer-view-specific
+#' features mean and standard deviation of the training set.
+#' @param verbose logical flag indicating whether to display
+#' messages about the process.
 #'
 #' @return A lList of predictions matrices, one for each tasks
 #' (rows = samples; columns = [runs).
@@ -127,16 +129,14 @@ predict_with_rmtlr <- function(view_name,
     prediction_cv <- lapply(seq_len(K), function(k) {
         coef_matrix <- vapply(tasks, function(task) {
             state[[view_name]][[task]][, k]
-        }, FUN.VALUE = numeric(nrow(state[[1]][[1]]))
-        )
+        }, FUN.VALUE = numeric(nrow(state[[1]][[1]])))
         rmtlr_test(prediction_X_norm[[k]], coef_matrix)
     })
 
     predictions_all_tasks_cv <- lapply(tasks, function(task) {
         prediction_task_cv <- vapply(seq_len(K), function(k) {
             prediction_cv[[k]][, task]
-        }, FUN.VALUE = numeric(nrow(prediction_X[[1]]))
-        )
+        }, FUN.VALUE = numeric(nrow(prediction_X[[1]])))
         return(prediction_task_cv)
     })
     names(predictions_all_tasks_cv) <- tasks

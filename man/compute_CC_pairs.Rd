@@ -8,15 +8,15 @@ ligand-receptor weights}
 compute_CC_pairs(lrpairs = NULL, cancer_type = "pancan", verbose = TRUE)
 }
 \arguments{
-\item{lrpairs}{output of the compute_LR_pairs function.
-A matrix of log2(TPM +1) weights with samples in rows and
-ligand-receptor pairs in columns.}
+\item{lrpairs}{output of the compute_LR_pairs function. A matrix
+of log2(TPM +1) weights with samples in rows and ligand-receptor
+pairs in columns.}
 
 \item{cancer_type}{string detailing the cancer type whose cell-cell
-interaction network will be used. A pan-cancer network is selected by
-default, whose network represents the union of all ligand-receptor
+interaction network will be used. By default, a pan-cancer network
+is selected whose network represents the union of all ligand-receptor
 pairs present across the 18 cancer types studied in
-(Lapuente-Santana et al., Patterns, 2021).}
+Lapuente-Santana et al., Patterns, 2021.}
 
 \item{verbose}{logical value indicating whether to display
 informative messages about the process.}
@@ -26,8 +26,8 @@ A matrix of scores with samples in rows and cell-cell
 pairs in columns.
 }
 \description{
-This function scores cell-cell interactions in the tumor
-microenvironment using ligand-receptor weights as input.
+Scores cell-cell interactions in the tumor microenvironment
+(TME) using ligand-receptor weights as input.
 }
 \examples{
 # using a SummarizedExperiment object
@@ -41,8 +41,10 @@ dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 
 # Select a subset of patients to reduce vignette building time.
-pat_subset <- c("SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-"SAMba1a34b5a060", "SAM18a4dabbc557")
+pat_subset <- c(
+    "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+    "SAMba1a34b5a060", "SAM18a4dabbc557"
+)
 RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 
 # Computation of ligand-receptor pair weights

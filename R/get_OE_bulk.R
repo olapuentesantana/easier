@@ -1,31 +1,41 @@
-#' Compute overall expression (OE) of the immune resistance program derived
-#' in Jerby-Arnon et al., 2018.
+#' Compute overall expression (OE) of the immune
+#' resistance program used in the computation of
+#' repressed immune resistance signature (RIR) score.
 #'
-#' This function calculates the overall expression of the immune resistance
-#' program which is based on a set of gene signatures associated with T cell
-#' exclusion, post-treatment and functional resistance. The code was provided
-#' via Github https://github.com/livnatje/ImmuneResistance/blob/master/Code/ImmRes_OE.R.
+#' This function calculates the overall expression of
+#' the immune resistance program which is based on a set
+#' of gene signatures associated with T cell exclusion,
+#' post-treatment and functional resistance.
 #'
-#' @references Jerby-Arnon, L., Shah, P., Cuoco, M.S., Rodman, C., Su, M.-J., Melms, J.C.,
-#' Leeson, R., Kanodia, A., Mei, S., Lin, J.-R., et al. (2018). A Cancer Cell Program
-#' Promotes T Cell Exclusion and Resistance to Checkpoint Blockade. Cell 175, 984–997.e24.
-#' https://doi.org/10.1016/j.cell.2018.09.006
+#' The source code was provided by original work:
+#' https://github.com/livnatje/ImmuneResistance
+#'
+#' @references Jerby-Arnon, L., Shah, P., Cuoco, M.S.,
+#' Rodman, C., Su, M.-J., Melms, J.C., Leeson, R., Kanodia,
+#' A., Mei, S., Lin, J.-R., et al. (2018). A Cancer Cell
+#' Program Promotes T Cell Exclusion and Resistance to
+#' Checkpoint Blockade. Cell 175, 984–997.e24.
+#' https://doi.org/10.1016/j.cell.2018.09.006.
 #'
 #' @importFrom arules discretize
 #'
-#' @param r list containing a numeric matrix with bulk RNA-Seq data (tpm values)
-#' and a character string with the available gene names.
-#' @param gene_sign list containing different character strings associated with
-#' subsets of the resistance program.
-#' @param num_rounds integer value related to the number of random gene signatures
-#' samples to be computed for normalization.
-#' Jerby-Arnon et al. found that 1000 random signatures were sufficient to yield an
-#' estimate of the expected value.
-#' @param full_flag logical flag indicating whether to return also random scores.
-#' @param verbose logical flag indicating whether to display messages about the process.
+#' @param r list containing a numeric matrix with bulk RNA-Seq
+#' data (tpm values) and a character string with the available
+#' gene names.
+#' @param gene_sign list containing different character strings
+#' associated with subsets of the resistance program.
+#' @param num_rounds integer value related to the number of random
+#' gene signatures samples to be computed for normalization.
+#' Original work indicates that 1000 random signatures were sufficient
+#' to yield an estimate of the expected value.
+#' @param full_flag logical flag indicating whether to return also
+#' random scores.
+#' @param verbose logical flag indicating whether to display messages
+#' about the process.
 #'
-#' @return A numeric matrix with computed scores for each sample and subset of signatures
-#' included in the immune resistance program (rows = samples; columns = gene signatures)
+#' @return A numeric matrix with computed scores for each sample and
+#' subset of signatures included in the immune resistance program
+#' (rows = samples; columns = gene signatures)
 #'
 #' @examples
 #' # using a SummarizedExperiment object
@@ -39,8 +49,10 @@
 #' RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 #'
 #' # Select a subset of patients to reduce vignette building time.
-#' pat_subset <- c("SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-#' "SAMba1a34b5a060", "SAM18a4dabbc557")
+#' pat_subset <- c(
+#'     "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+#'     "SAMba1a34b5a060", "SAM18a4dabbc557"
+#' )
 #' RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) %in% pat_subset]
 #'
 #' # Log2 transformation:

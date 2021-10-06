@@ -2,7 +2,8 @@
 % Please edit documentation in R/compute_RIR.R
 \name{compute_RIR}
 \alias{compute_RIR}
-\title{Compute repressed immune resistance signature (RIR) score}
+\title{Compute repressed immune resistance signature (RIR)
+score}
 \usage{
 compute_RIR(RNA_tpm, RIR_program)
 }
@@ -17,20 +18,25 @@ resistance program from Jerby-Arnon et al., 2018.}
 A numeric matrix with samples in rows and RIR score in a column.
 }
 \description{
-This function calculates RIR score defined by combining a
-set of gene signatures associated with downregulation of
-T cell exclusion, post-treatment and functional resistance.
-These gene signatures were obtained from:
-https://github.com/livnatje/ImmuneResistance/blob/master/Results/Signatures/resistance.program.RData.
+Calculates RIR score by combining a set of gene
+signatures associated with downregulation of T cell
+exclusion, post-treatment and functional resistance.
+We used the original approach defined in Jerby-Arnon
+et al., Cell, 2018.
+}
+\details{
+The gene signatures were provided by original work:
+https://github.com/livnatje/ImmuneResistance
 }
 \examples{
 
 # Example does not matter as function will no be exported
 }
 \references{
-Jerby-Arnon, L., Shah, P., Cuoco, M.S., Rodman, C.,
-Su, M.-J., Melms, J.C., Leeson, R., Kanodia, A., Mei, S., Lin,
-J.-R., et al. (2018). A Cancer Cell Program Promotes T Cell
-Exclusion and Resistance to Checkpoint Blockade. Cell 175, 984–997.e24.
+Jerby-Arnon, L., Shah, P., Cuoco, M.S.,
+Rodman, C., Su, M.-J., Melms, J.C., Leeson, R., Kanodia,
+A., Mei, S., Lin, J.-R., et al. (2018). A Cancer Cell
+Program Promotes T Cell Exclusion and Resistance to
+Checkpoint Blockade. Cell 175, 984–997.e24.
 https://doi.org/10.1016/j.cell.2018.09.006.
 }

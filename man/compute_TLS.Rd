@@ -8,19 +8,20 @@ signature (TLS) score}
 compute_TLS(matches, RNA_tpm)
 }
 \arguments{
-\item{matches}{numeric vector indicating the index of signature
-genes in \code{RNA_tpm}.}
+\item{matches}{numeric vector indicating the index of
+signature genes in \code{RNA_tpm}.}
 
-\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols
-in rows and samples in columns.}
+\item{RNA_tpm}{data.frame containing TPM values with
+HGNC symbols in rows and samples in columns.}
 }
 \value{
-A numeric matrix with samples in rows and TLS score
-in a column.
+A numeric matrix with samples in rows and
+TLS score in a column.
 }
 \description{
-This function calculates TLS score as the geometric-mean
-of the expression of its signature genes.
+Calculates TLS score using the geometric-mean of the
+expression of its signature genes, as defined in
+Cabrita et al., Nature, 2020.
 }
 \examples{
 

@@ -2,7 +2,8 @@
 % Please edit documentation in R/rmtlr_test.R
 \name{rmtlr_test}
 \alias{rmtlr_test}
-\title{Regularized Multi-Task Linear Regression (RMTLR) model predictions}
+\title{Regularized Multi-Task Linear Regression (RMTLR)
+model predictions}
 \usage{
 rmtlr_test(x_test, coef_matrix)
 }
@@ -10,14 +11,18 @@ rmtlr_test(x_test, coef_matrix)
 \item{x_test}{numeric matrix containing features values
 (rows = samples; columns = features).}
 
-\item{coef_matrix}{numeric matrix containing the parameters values
-derived from model training (rows = features; columns = tasks).}
+\item{coef_matrix}{numeric matrix containing the parameters
+values derived from model training (rows = features;
+columns = tasks).}
 }
 \value{
-Numeric matrix of predicted values (rows = samples; columns = tasks).
+Numeric matrix of predicted values (rows = samples;
+columns = tasks).
 }
 \description{
-Computes the predictions from the results of RMTLR models optimization
+Computes the predictions as a matrix multiplication using
+both the features input data and the features estimated
+weights.
 }
 \examples{
 # using a SummarizedExperiment object
@@ -31,8 +36,10 @@ dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 
 # Select a subset of patients to reduce vignette building time.
-pat_subset <- c("SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-"SAMba1a34b5a060", "SAM18a4dabbc557")
+pat_subset <- c(
+    "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+    "SAMba1a34b5a060", "SAM18a4dabbc557"
+)
 RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 
 # Computation of cell fractions (Finotello et al., Genome Med, 2019)

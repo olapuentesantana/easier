@@ -10,24 +10,26 @@ compute_LR_pairs(RNA_tpm = NULL, cancer_type = "pancan", verbose = TRUE)
 \item{RNA_tpm}{A data.frame containing TPM values with HGNC symbols
 in rows and samples in columns.}
 
-\item{cancer_type}{A string detailing the cancer type whose ligand-receptor
-pairs network will be used.
-A pan-cancer network is selected by default, whose network represents the
-union of all ligand-receptor pairs present across the 18 cancer types
-studied in (Lapuente-Santana et al., Patterns, 2021).}
+\item{cancer_type}{A string detailing the cancer type whose
+ligand-receptor pairs network will be used.
+A pan-cancer network is selected by default, whose network represents
+the union of all ligand-receptor pairs present across the 18 cancer
+types studied in Lapuente-Santana et al., Patterns, 2021.}
 
-\item{verbose}{A logical value indicating whether to display messages about the number of ligand-receptor
-genes found in the gene expression data provided.}
+\item{verbose}{A logical value indicating whether to display messages
+about the number of ligand-receptor genes found in the gene expression
+data provided.}
 }
 \value{
-A matrix of weights with samples in rows and ligand-receptor pairs in columns.
+A matrix of weights with samples in rows and ligand-receptor
+pairs in columns.
 }
 \description{
-This function quantifies ligand-receptor interactions in the tumor
-microenvironment from TPM bulk gene expression by using prior knowledge
-coming from ligand-receptor pair annotations from the database of
-Ramilowski (Ramilowski et al., Nat Commun, 2015). Each ligand-receptor
-weight is defined as the minimum of the log2(TPM+1) expression of the
+Quantifies ligand-receptor interactions in the tumor microenvironment
+from TPM bulk gene expression by using prior knowledge coming from
+ligand-receptor pair annotations from the database of Ramilowski
+(Ramilowski et al., Nat Commun, 2015). Each ligand-receptor weight
+is defined as the minimum of the log2(TPM+1) expression of the
 ligand and the receptor.
 }
 \examples{
@@ -42,8 +44,10 @@ dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 
 # Select a subset of patients to reduce vignette building time.
-pat_subset <- c("SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-"SAMba1a34b5a060", "SAM18a4dabbc557")
+pat_subset <- c(
+    "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+    "SAMba1a34b5a060", "SAM18a4dabbc557"
+)
 RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 
 # Computation of ligand-receptor pair weights

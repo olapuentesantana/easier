@@ -1,6 +1,6 @@
 #' Compute pathway activity from gene expression using PROGENy
 #'
-#' This function infers pathway activity from counts bulk gene expression
+#' Infers pathway activity from counts bulk gene expression
 #' using PROGENy method from (Holland et al., BBAGRM, 2019;
 #' Schubert et al., Nat Commun, 2018).
 #'
@@ -16,8 +16,8 @@
 #' whether to remove signature genes involved in the derivation of
 #' hallmarks of immune response.
 #' @param verbose logical value indicating whether to display messages
-#' about the number of pathway signature genes found in the gene expression
-#' data provided.
+#' about the number of pathway signature genes found in the gene
+#' expression data provided.
 #'
 #' @return A matrix of activity scores with samples in rows and pathways
 #' in columns.
@@ -36,8 +36,10 @@
 #' RNA_counts <- assays(dataset_mariathasan)[["counts"]]
 #'
 #' # Select a subset of patients to reduce vignette building time.
-#' pat_subset <- c("SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-#' "SAMba1a34b5a060", "SAM18a4dabbc557")
+#' pat_subset <- c(
+#'     "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+#'     "SAMba1a34b5a060", "SAM18a4dabbc557"
+#' )
 #' RNA_counts <- RNA_counts[, colnames(RNA_counts) %in% pat_subset]
 #'
 #' # Computation of pathway activity

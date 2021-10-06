@@ -1,19 +1,19 @@
 #' Compute cell-cell interactions scores using computed
 #' ligand-receptor weights
 #'
-#' This function scores cell-cell interactions in the tumor
-#' microenvironment using ligand-receptor weights as input.
+#' Scores cell-cell interactions in the tumor microenvironment
+#' (TME) using ligand-receptor weights as input.
 #'
 #' @importFrom easierData get_lr_frequency_TCGA get_intercell_networks
 #'
-#' @param lrpairs output of the compute_LR_pairs function.
-#' A matrix of log2(TPM +1) weights with samples in rows and
-#' ligand-receptor pairs in columns.
+#' @param lrpairs output of the compute_LR_pairs function. A matrix
+#' of log2(TPM +1) weights with samples in rows and ligand-receptor
+#' pairs in columns.
 #' @param cancer_type string detailing the cancer type whose cell-cell
-#' interaction network will be used. A pan-cancer network is selected by
-#' default, whose network represents the union of all ligand-receptor
+#' interaction network will be used. By default, a pan-cancer network
+#' is selected whose network represents the union of all ligand-receptor
 #' pairs present across the 18 cancer types studied in
-#' (Lapuente-Santana et al., Patterns, 2021).
+#' Lapuente-Santana et al., Patterns, 2021.
 #' @param verbose logical value indicating whether to display
 #' informative messages about the process.
 #'
@@ -34,8 +34,10 @@
 #' RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 #'
 #' # Select a subset of patients to reduce vignette building time.
-#' pat_subset <- c("SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-#' "SAMba1a34b5a060", "SAM18a4dabbc557")
+#' pat_subset <- c(
+#'     "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+#'     "SAMba1a34b5a060", "SAM18a4dabbc557"
+#' )
 #' RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) %in% pat_subset]
 #'
 #' # Computation of ligand-receptor pair weights

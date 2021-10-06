@@ -43,9 +43,10 @@ Given that the model training was repeated 100 times with randomized-cross
 validation, a set of 100 predictions is returned.
 }
 \description{
-This function calculates predictions of patients' immune response
-using the quantitative descriptors data as input features and the
-model parameters defined during training.
+Calculates predictions of patients' immune response
+using the quantitative descriptors data as input
+features and the optimized model parameters derived
+from the trained models
 }
 \examples{
 # using a SummarizedExperiment object
@@ -61,8 +62,10 @@ RNA_counts <- assays(dataset_mariathasan)[["counts"]]
 cancer_type <- metadata(dataset_mariathasan)[["cancertype"]]
 
 # Select a subset of patients to reduce vignette building time.
-pat_subset <- c("SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-"SAMba1a34b5a060", "SAM18a4dabbc557")
+pat_subset <- c(
+    "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+    "SAMba1a34b5a060", "SAM18a4dabbc557"
+)
 RNA_counts <- RNA_counts[, colnames(RNA_counts) \%in\% pat_subset]
 RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 

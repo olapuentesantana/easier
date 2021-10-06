@@ -2,7 +2,7 @@
 % Please edit documentation in R/categorize_TMB.R
 \name{categorize_TMB}
 \alias{categorize_TMB}
-\title{Convert tumor mutational burden (TMB) to categorical.}
+\title{Define tumor mutational burden (TMB) categories.}
 \usage{
 categorize_TMB(TMB, thresholds = NULL)
 }
@@ -18,8 +18,8 @@ A numeric vector assigning each sample a class
 from 1 (low TMB) to 3 (high TMB).
 }
 \description{
-This function encodes tumor mutational variable (TMB) numerical
-variable to categorical.
+Encodes tumor mutational burden (TMB)
+from numerical variable into categorical.
 }
 \examples{
 # using a SummarizedExperiment object

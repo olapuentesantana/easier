@@ -3,12 +3,18 @@
 \docType{package}
 \name{easier-pkg}
 \alias{easier-pkg}
-\title{easier package}
+\title{easier: predicting immune response
+by using quantitative descriptors of the
+tumor microenvironment extracted from RNA-seq
+data.}
 \description{
-pkg description
+This package streamline the assessment of patients'
+likelihood of immune response using EaSIeR approach.
 }
 \references{
-Lapuente-Santana, Óscar, Maisa van Genderen, Peter A. J. Hilbers, Francesca Finotello, and Federica Eduati.
-2021. “Interpretable Systems Biomarkers Predict Response to Immune-Checkpoint Inhibitors.” Patterns, 100293.
+Lapuente-Santana, Óscar, Maisa van Genderen,
+Peter A. J. Hilbers, Francesca Finotello, and Federica Eduati.
+2021. “Interpretable Systems Biomarkers Predict Response to
+Immune-Checkpoint Inhibitors.” Patterns, 100293.
 https://doi.org/10.1016/j.patter.2021.100293.
 }

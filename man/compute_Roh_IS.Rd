@@ -18,8 +18,9 @@ A numeric matrix with samples in rows and Roh_IS score
 in a column.
 }
 \description{
-This function computes Roh_IS score as the geometric-mean
-of its signature genes.
+Calculates Roh_IS score as the geometric-mean
+of its signature genes, defined in Roh et al.,
+Sci. Transl. Med., 2017.
 }
 \examples{
 

@@ -18,9 +18,9 @@ A numeric matrix with samples in rows and Davoli_IS score
 in a column.
 }
 \description{
-The function calculates Davoli_IS score as the average
-of the expression of its signature genes after applying
-rank normalization
+Calculates Davoli_IS score as the average of the expression
+of its signature genes after applying rank normalization, as
+defined in Davoli et al., Science, 2017.
 }
 \examples{
 

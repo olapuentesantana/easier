@@ -2,7 +2,7 @@
 % Please edit documentation in R/calc_z_score.R
 \name{calc_z_score}
 \alias{calc_z_score}
-\title{Perform Z-score normalization}
+\title{Perform matrix Z-score normalization}
 \usage{
 calc_z_score(X, mean, sd)
 }
@@ -17,7 +17,7 @@ calc_z_score(X, mean, sd)
 A numeric matrix with values as z-scores.
 }
 \description{
-This function performs z-score normalization on a numeric matrix per column.
+Applies z-score normalization on a numeric matrix per column.
 Mean and standard deviation values to be used to calculate z-score values,
 otherwise they are calculated based on the input matrix.
 }
@@ -33,8 +33,10 @@ dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 
 # Select a subset of patients to reduce vignette building time.
-pat_subset <- c("SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-"SAMba1a34b5a060", "SAM18a4dabbc557")
+pat_subset <- c(
+    "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+    "SAMba1a34b5a060", "SAM18a4dabbc557"
+)
 RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 
 # apply z-score normalization

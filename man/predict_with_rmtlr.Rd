@@ -2,8 +2,7 @@
 % Please edit documentation in R/predict_with_rmtlr.R
 \name{predict_with_rmtlr}
 \alias{predict_with_rmtlr}
-\title{Collects Regularized Multi-Task Linear Regression (RMTLR)
-cancer-specfic model predictions}
+\title{Predict single-view immune response}
 \usage{
 predict_with_rmtlr(
   view_name,
@@ -15,28 +14,31 @@ predict_with_rmtlr(
 )
 }
 \arguments{
-\item{view_name}{character string containing the name of the input view.}
+\item{view_name}{character string containing the name of the
+input view.}
 
-\item{view_info}{character string informing about the family of the input data.}
+\item{view_info}{character string informing about the family of
+the input data.}
 
 \item{view_data}{list containing the data for each input view.}
 
-\item{opt_model_cancer_view_spec}{cancer-view-specific model feature
-parameters learned during training.}
+\item{opt_model_cancer_view_spec}{cancer-view-specific model
+feature parameters learned during training.}
 
-\item{opt_xtrain_stats_cancer_view_spec}{cancer-view-specific features mean
-and standard deviation of the training set.}
+\item{opt_xtrain_stats_cancer_view_spec}{cancer-view-specific
+features mean and standard deviation of the training set.}
 
-\item{verbose}{logical flag indicating whether to display messages
-about the process.}
+\item{verbose}{logical flag indicating whether to display
+messages about the process.}
 }
 \value{
 A lList of predictions matrices, one for each tasks
 (rows = samples; columns = [runs).
 }
 \description{
-This function puts together predicted immune response by using a
-cancer-specifc model learned from training with RMTLR algorithm.
+Obtains single-view predictions of immune response by using a
+cancer-specific model learned with Regularized
+Multi-Task Linear Regression algorithm (RMTLR).
 }
 \examples{
 # using a SummarizedExperiment object

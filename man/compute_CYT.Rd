@@ -18,8 +18,8 @@ A numeric matrix with samples in rows and CTY score
 in a column.
 }
 \description{
-This function calculates the CYT score as the geometric
-mean of its signature genes.
+Calculates the CYT score using the geometric mean of its
+signature genes, as defined in Rooney et al., Cell, 2015.
 }
 \examples{
 # Example does not matter as function will no be exported

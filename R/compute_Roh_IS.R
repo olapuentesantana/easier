@@ -1,7 +1,8 @@
 #' Compute Roh immune score (Roh_IS)
 #'
-#' This function computes Roh_IS score as the geometric-mean
-#' of its signature genes.
+#' Calculates Roh_IS score as the geometric-mean
+#' of its signature genes, defined in Roh et al.,
+#' Sci. Transl. Med., 2017.
 #'
 #' @references Roh, W., Chen, P.-L., Reuben, A., Spencer, C.N.,
 #' Prieto, P.A., Miller, J.P., Gopalakrishnan, V., Wang, F.,

@@ -1,7 +1,8 @@
 #' Compute chemokine signature (chemokines) score
 #'
-#' Computes chemokines score as the PC1 score that results
-#' from applying PCA to z-score expression of its signature genes.
+#' Calculates chemokines score as the PC1 score that results
+#' from applying PCA to the expression of its signature genes,
+#' defined in Messina et al., Sci. Rep., 2012.
 #'
 #' @references Messina, J.L., Fenstermacher, D.A., Eschrich, S.,
 #' Qu, X., Berglund, A.E., Lloyd, M.C., Schell, M.J., Sondak, V.K.,
@@ -32,7 +33,8 @@ compute_chemokines <- function(matches, RNA_tpm) {
 
     # calculation: using PCA (Z-score calculated within prcomp)
     chemokine_pca <- stats::prcomp(t(sub_log2_RNA_tpm),
-                                   center = TRUE, scale = TRUE)
+        center = TRUE, scale = TRUE
+    )
     score <- chemokine_pca$x[, 1]
 
     return(data.frame(chemokines = score, check.names = FALSE))

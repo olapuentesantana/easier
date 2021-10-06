@@ -2,8 +2,8 @@
 % Please edit documentation in R/compute_scores_immune_response.R
 \name{compute_scores_immune_response}
 \alias{compute_scores_immune_response}
-\title{Compute published transcriptomics-based scores of hallmarks of anti-cancer
-immune response}
+\title{Compute published transcriptomics-based scores
+of hallmarks of anti-cancer immune response}
 \usage{
 compute_scores_immune_response(
   RNA_tpm = NULL,
@@ -13,20 +13,25 @@ compute_scores_immune_response(
 )
 }
 \arguments{
-\item{RNA_tpm}{data.frame containing TPM values with HGNC symbols in rows and
-samples in columns.}
+\item{RNA_tpm}{data.frame containing TPM values with
+HGNC symbols in rows and samples in columns.}
 
-\item{selected_scores}{character string with names of scores of immune response
-to be computed. Default scores are computed for: "CYT", "Roh_IS", "chemokines",
-"Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS".}
+\item{selected_scores}{character string with names of
+scores of immune response to be computed. Default
+scores are computed for: "CYT", "Roh_IS", "chemokines",
+"Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed",
+"RIR", "TLS".}
 
-\item{verbose}{logical variable indicating whether to display informative messages.}
+\item{verbose}{logical variable indicating whether to
+display informative messages.}
 }
 \value{
-A numeric matrix with samples in rows and gold standard scores in columns.
+A numeric matrix with samples in rows and gold
+standard scores in columns.
 }
 \description{
-This function computes the scores of immune response as indicated by the user.
+Calculates the scores of immune response as
+indicated by the user.
 }
 \examples{
 # using a SummarizedExperiment object
@@ -41,8 +46,10 @@ RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 cancer_type <- metadata(dataset_mariathasan)$cancertype
 
 # Select a subset of patients to reduce vignette building time.
-pat_subset <- c("SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-"SAMba1a34b5a060", "SAM18a4dabbc557")
+pat_subset <- c(
+    "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+    "SAMba1a34b5a060", "SAM18a4dabbc557"
+)
 RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 
 # Computation of different hallmarks of anti-cancer immune responses

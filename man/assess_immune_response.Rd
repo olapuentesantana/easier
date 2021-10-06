@@ -2,7 +2,8 @@
 % Please edit documentation in R/assess_immune_response.R
 \name{assess_immune_response}
 \alias{assess_immune_response}
-\title{Evaluate the predictive performance of the computed immune response score}
+\title{Assess easier score as predictor of patients'
+immune response}
 \usage{
 assess_immune_response(
   predictions_immune_response = NULL,
@@ -15,8 +16,8 @@ assess_immune_response(
 )
 }
 \arguments{
-\item{predictions_immune_response}{list containing the predictions for each
-quantitative descriptor and for each task.}
+\item{predictions_immune_response}{list containing the predictions
+for each quantitative descriptor and for each task.}
 
 \item{patient_response}{character vector with two factors
 (Non-responders = NR, Responders = R).}
@@ -24,33 +25,49 @@ quantitative descriptor and for each task.}
 \item{RNA_tpm}{numeric matrix of patients' gene expression data as
 tpm values.}
 
-\item{TMB_values}{numeric vector containing patients' tumor mutational burden
-(TMB) values.}
+\item{TMB_values}{numeric vector containing patients' tumor mutational
+burden (TMB) values.}
 
-\item{easier_with_TMB}{character string indicating which approach should be
-used to integrate easier with TMB. One of "weighted_average" (default) or
-"penalized_score".}
+\item{easier_with_TMB}{character string indicating which approach
+should be used to integrate easier with TMB. One of "weighted_average"
+(default) or "penalized_score".}
 
-\item{weight_penalty}{integer value from 0 to 1, which is used to define the
-weight or penalty for combining easier and TMB scores based on a weighted
-average or penalized score, in order to derive a score of patient's likelihood
-of immune response. The default value is 0.5.}
+\item{weight_penalty}{integer value from 0 to 1, which is used to
+define the weight or penalty for combining easier and TMB scores based
+on a weighted average or penalized score, in order to derive a score of
+patient's likelihood of immune response. The default value is 0.5.}
 
-\item{verbose}{logical flag indicating whether to display messages about
-the process.}
+\item{verbose}{logical flag indicating whether to display messages
+about the process.}
 }
 \value{
-If easier_with_TMB is set to FALSE, figures two figures evaluating the
-predictions are returned. If easier_with_TMB is set to TRUE, an scatterplot is
-returned displaying an integrated approach that uses both immune response and
-tumor mutational burden (TMB) to predict patients' response.
+When patient_response is provided, a roc curve plot and a barplot
+displaying the average (across tasks) area under the ROC curve (AUC)
+values is provided. When patient_response is not provided, the easier
+score is represented as boxplots (10 tasks) for each patient.
+
+When patient_response is provided and easier_with_TMB = weighted_average
+or easier_with_TMB = penalized_score, an scatterplot displays the AUC
+values of the integrated approach, easier score and TMB. In this case,
+when patient_response is not provided, the integrated score is represented
+as a dotplot for each patient.
 }
 \description{
-This function generates a roc curve plot and a barplot showing the average
-(across tasks) area under the ROC curve (AUC) values for each quantitative
-descriptor on the patients' response provided. An ensemble model is built
-based on the average of the individual models.
-Additionally, the average of the gold standard scores is used for comparison.
+Evaluates the predictive performance of easier score as
+predictor of patients' immune response. Provided that patients'
+response is available, a roc curve plot and a barplot showing the
+average (across tasks) area under the ROC curve (AUC) values for each
+quantitative descriptor. An ensemble model is considered based on
+the average of the individual descriptors. Also, the average of the
+gold standard scores is shown. When available information on tumor
+mutational burden (TMB), this is also displayed.
+}
+\details{
+Since both immune response and TMB are essential for effective
+immunotherapy response, an integrated score is provided given
+two different approaches based on a applying either a weighted
+average or penalty to patients' easier score depending on their
+TMB category.
 }
 \examples{
 # using a SummarizedExperiment object
@@ -66,8 +83,10 @@ RNA_counts <- assays(dataset_mariathasan)[["counts"]]
 cancer_type <- metadata(dataset_mariathasan)[["cancertype"]]
 
 # Select a subset of patients to reduce vignette building time.
-pat_subset <- c("SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-"SAMba1a34b5a060", "SAM18a4dabbc557")
+pat_subset <- c(
+    "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+    "SAMba1a34b5a060", "SAM18a4dabbc557"
+)
 RNA_counts <- RNA_counts[, colnames(RNA_counts) \%in\% pat_subset]
 RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 

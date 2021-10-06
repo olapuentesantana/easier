@@ -1,6 +1,6 @@
 #' Compute cell-cell pair score
 #'
-#' This function derives a score for each cell-cell pair feature.
+#' Derives a score for each cell-cell pair feature.
 #'
 #' @param celltype1 string character with first cell type involved
 #' in the interaction.
@@ -12,7 +12,7 @@
 #' frequency.
 #' @param lr_frequency numeric vector with LR pairs frequency across the
 #' whole TCGA database.
-#' @param compute_log boolean variable in order to take the log of the
+#' @param compute_log boolean variable to indicate taking the log of the
 #' weighted score.
 #'
 #' @return A numeric vector with weighted scores.
@@ -31,8 +31,10 @@
 #' RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 #'
 #' # Select a subset of patients to reduce vignette building time.
-#' pat_subset <- c("SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-#' "SAMba1a34b5a060", "SAM18a4dabbc557")
+#' pat_subset <- c(
+#'     "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+#'     "SAMba1a34b5a060", "SAM18a4dabbc557"
+#' )
 #' RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) %in% pat_subset]
 #'
 #' # Computation of ligand-receptor pair weights
