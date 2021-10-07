@@ -526,7 +526,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
         " n=", length(patient_response),
         " (R=", n_R, "; ", "NR=", n_NR, ")"
       ))
-    plot_list[[1]] <- print(ggg)
+    plot_list[[1]] <- print(gg)
 
     ## ROC curves
     graphics::par(
