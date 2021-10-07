@@ -42,7 +42,6 @@
 #'
 #' dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 #' RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
-#' RNA_counts <- assays(dataset_mariathasan)[["counts"]]
 #' cancer_type <- metadata(dataset_mariathasan)[["cancertype"]]
 #'
 #' # Select a subset of patients to reduce vignette building time.
@@ -50,8 +49,23 @@
 #'     "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
 #'     "SAMba1a34b5a060", "SAM18a4dabbc557"
 #' )
-#' RNA_counts <- RNA_counts[, colnames(RNA_counts) %in% pat_subset]
 #' RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) %in% pat_subset]
+#'
+#' # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
+#' tf_activity <- compute_TF_activity(
+#'     RNA_tpm = RNA_tpm
+#' )
+#'
+#' # Predict patients' immune response
+#' predictions_immune_response <- predict_immune_response(
+#'     tfs = tf_activity,
+#'     cancer_type = cancer_type
+#' )
+#'
+#' \dontrun{
+#'
+#' RNA_counts <- assays(dataset_mariathasan)[["counts"]]
+#' RNA_counts <- RNA_counts[, colnames(RNA_counts) %in% pat_subset]
 #'
 #' # Computation of cell fractions (Finotello et al., Genome Med, 2019)
 #' cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
@@ -61,11 +75,6 @@
 #' pathway_activity <- compute_pathway_activity(
 #'     RNA_counts = RNA_counts,
 #'     remove_sig_genes_immune_response = TRUE
-#' )
-#'
-#' # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
-#' tf_activity <- compute_TF_activity(
-#'     RNA_tpm = RNA_tpm
 #' )
 #'
 #' # Computation of ligand-receptor pair weights
@@ -89,6 +98,7 @@
 #'     ccpairs = ccpair_scores,
 #'     cancer_type = cancer_type
 #' )
+#' }
 predict_immune_response <- function(pathways = NULL,
                                     immunecells = NULL,
                                     tfs = NULL,

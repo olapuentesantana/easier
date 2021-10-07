@@ -51,7 +51,6 @@
 #'
 #' dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 #' RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
-#' RNA_counts <- assays(dataset_mariathasan)[["counts"]]
 #' cancer_type <- metadata(dataset_mariathasan)[["cancertype"]]
 #'
 #' # Select a subset of patients to reduce vignette building time.
@@ -59,8 +58,29 @@
 #'     "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
 #'     "SAMba1a34b5a060", "SAM18a4dabbc557"
 #' )
-#' RNA_counts <- RNA_counts[, colnames(RNA_counts) %in% pat_subset]
 #' RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) %in% pat_subset]
+#'
+#' # Computation of TF activity
+#' tf_activity <- compute_TF_activity(
+#'     RNA_tpm = RNA_tpm
+#' )
+#'
+#' # retrieve clinical response
+#' patient_ICBresponse <- colData(dataset_mariathasan)[["BOR"]]
+#' names(patient_ICBresponse) <- colData(dataset_mariathasan)[["pat_id"]]
+#' patient_ICBresponse <- patient_ICBresponse[names(patient_ICBresponse) %in% pat_subset]
+#'
+#' # Investigate possible biomarkers
+#' output_biomarkers <- explore_biomarkers(
+#'     tfs = tf_activity,
+#'     cancer_type = cancer_type,
+#'     patient_response = patient_ICBresponse
+#' )
+#'
+#' \dontrun{
+#'
+#' RNA_counts <- assays(dataset_mariathasan)[["counts"]]
+#' RNA_counts <- RNA_counts[, colnames(RNA_counts) %in% pat_subset]
 #'
 #' # Computation of cell fractions
 #' cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
@@ -69,11 +89,6 @@
 #' pathway_activity <- compute_pathway_activity(
 #'     RNA_counts = RNA_counts,
 #'     remove_sig_genes_immune_response = TRUE
-#' )
-#'
-#' # Computation of TF activity
-#' tf_activity <- compute_TF_activity(
-#'     RNA_tpm = RNA_tpm
 #' )
 #'
 #' # Computation of ligand-receptor pair weights
@@ -88,11 +103,6 @@
 #'     cancer_type = "pancan"
 #' )
 #'
-#' # retrieve clinical response
-#' patient_ICBresponse <- colData(dataset_mariathasan)[["BOR"]]
-#' names(patient_ICBresponse) <- colData(dataset_mariathasan)[["pat_id"]]
-#' patient_ICBresponse <- patient_ICBresponse[names(patient_ICBresponse) %in% pat_subset]
-#'
 #' # Investigate possible biomarkers
 #' output_biomarkers <- explore_biomarkers(
 #'     pathways = pathway_activity,
@@ -103,6 +113,7 @@
 #'     cancer_type = cancer_type,
 #'     patient_response = patient_ICBresponse
 #' )
+#' }
 explore_biomarkers <- function(pathways = NULL,
                                immunecells = NULL,
                                tfs = NULL,

@@ -53,16 +53,20 @@ RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 cancer_type <- metadata(dataset_mariathasan)[["cancertype"]]
 
 # Select a subset of patients to reduce vignette building time.
-set.seed(1234)
-pat_subset <- sample(colnames(RNA_tpm), size = 5)
-RNA_tpm <- RNA_tpm[, pat_subset]
+pat_subset <- c(
+    "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+    "SAMba1a34b5a060", "SAM18a4dabbc557"
+)
+RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 
-# Computation of cell fractions
-cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
+# Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
+tf_activities <- compute_TF_activity(
+    RNA_tpm = RNA_tpm
+)
 
-view_name <- "immunecells"
-view_info <- c(immunecells = "gaussian")
-view_data <- list(immunecells = as.data.frame(cell_fractions))
+view_name <- "tfs"
+view_info <- c(tfs = "gaussian")
+view_data <- list(tfs = as.data.frame(tf_activities))
 
 # Retrieve internal data
 opt_models <- suppressMessages(easierData::get_opt_models())

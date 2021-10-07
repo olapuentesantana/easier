@@ -28,12 +28,15 @@ author:
   email: f.eduati@tue.nl
 date: "`r Sys.Date()`"
 output: 
-  rmarkdown::html_document:
+  html_document:
     toc: true
     toc_float: true
     number_sections: true
     code_folding: show
     theme: lumen
+  pdf_document:
+    toc: yes
+    number_sections: true
 bibliography: references_easier.bib
 vignette: >
   %\VignetteIndexEntry{easier User Manual}
@@ -256,13 +259,13 @@ predictions <- predict_immune_response(pathways = pathway_activities,
                                        verbose = TRUE)
 ```
 
-Once we obtained patients' predicted immune response, two different scenarios can be considered in which:
+Once we obtained patients' predicted immune response, two different scenarios should be considered in which:
 
 -`patient_response` is **known** and therefore the accuracy of `easier` predictions can be evaluated.
 
 -`patient_response` is **unknown** and no assessments can be carried out.
 
-In this use case, patients' clinical response to PD-L1 therapy is available from Mariathasan cohort and we can therefore move forward to assess the predictability of our predictions.
+In this use case, patients' clinical response to PD-L1 therapy is available from Mariathasan cohort, thus we can move forward to assess the performance of the predictions.
 
 ## Evaluate easier predictions using patients' immunotherapy response
 
@@ -270,16 +273,21 @@ Assessment of patients' response to immunotherapy treatment can be done via `ass
 
 The option `patient_response` should be provided with a character string containing patients' clinical response (where non-responders are labeled as NR and responders as R). Importantly, this aspect should be handled by the user.
 
+This function uses patients' TPM values (`RNA_tpm`) as input for `compute_scores_immune_response` in order to compare easier predictions with those from published scores of immune response. The user can choose the scores to be computed via `select_gold_standard`, by default all scores are computed.
+
 If patients' tumor mutational burden (TMB) is available, this can also be provided via `TMB_values` and used as surrogate of patients' immunotherapy response for comparison.
 
 Since both immune response and TMB are essential for an effective immunotherapy response, we decided to conceptualize this in our predictions by either penalizing or weighting differently our scores in high- and low-TMB patients. If `easier_with_TMB` is set to `weighted_average`, a weighted average of both easier and TMB score will be used, if instead `easier_with_TMB` is set to `penalized_score`, patient's easier scores will penalized depending on their TMB category. 
+
+These two strategies to combine immune response and TMB require the definition of a certain weight or penalty beforehand (`weight_penalty`). The default weight or penalty is 0.5.
 
 ```{r, eval=TRUE}
 output_eval_with_resp <- assess_immune_response(predictions_immune_response = predictions,
                                                 patient_response = patient_ICBresponse,
                                                 RNA_tpm = RNA_tpm,
                                                 TMB_values = TMB,
-                                                easier_with_TMB = "weighted_average")
+                                                easier_with_TMB = "weighted_average",
+                                                weight_penalty = 0.5)
 ```
 
 Top figure. Area under the curve (AUC) values of patients' predictions based on quantitative descriptors of the TME, an ensemble descriptor based on average of individual descriptors, and the computed scores of immune response (gold standard). Bar plot represent the average AUC across tasks and error bars describe the corresponding standard deviation.
@@ -306,8 +314,7 @@ output_eval_no_resp <- assess_immune_response(predictions_immune_response = pred
                                               RNA_tpm = RNA_tpm,
                                               TMB_values = TMB,
                                               easier_with_TMB = "weighted_average",
-                                              weight_penalty = 0.5
-                                              )
+                                              weight_penalty = 0.5)
 ```
 
 Top figure. Boxplot of patients' easier score showing its distribution across the 10 different tasks.
@@ -321,6 +328,20 @@ Bottom figure. Scatterplot of patients' prediction when combining easier score w
 output_eval_no_resp[[1]]
 output_eval_no_resp[[2]]
 ```
+
+### Retrieve easier scores of immune response
+
+We can further retrieve the easier score and also, the refined scores obtained by integrating easier score and TMB via `retrieve_easier_score`.
+
+```{r, eval=TRUE}
+easier_derived_scores <- retrieve_easier_score(predictions_immune_response = predictions,
+                                               TMB_values = TMB,
+                                               easier_with_TMB = c("weighted_average", "penalized_score"),
+                                               weight_penalty = 0.5)
+
+easier_derived_scores
+```
+
 
 ## Interpret response to immunotherapy through systems biomarkers {#biomarkers}
 

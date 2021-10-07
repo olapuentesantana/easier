@@ -54,9 +54,8 @@ RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 
 # Computation of different hallmarks of anti-cancer immune responses
 hallmarks_of_immune_response <- c(
-    "CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
-    "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS"
-)
+    "CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy")
+
 scores_immune_response <- compute_scores_immune_response(
     RNA_tpm = RNA_tpm,
     selected_scores = hallmarks_of_immune_response

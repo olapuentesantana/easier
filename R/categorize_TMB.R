@@ -23,6 +23,7 @@
 #' # IMvigor210CoreBiologies package.
 #' library("easierData")
 #' dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
+#'
 #' TMB <- colData(dataset_mariathasan)[["TMB"]]
 #' names(TMB) <- colData(dataset_mariathasan)[["pat_id"]]
 #'

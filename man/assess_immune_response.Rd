@@ -8,7 +8,8 @@ immune response}
 assess_immune_response(
   predictions_immune_response = NULL,
   patient_response = NULL,
-  RNA_tpm,
+  RNA_tpm = NULL,
+  select_gold_standard = NULL,
   TMB_values,
   easier_with_TMB = c("weighted_average", "penalized_score"),
   weight_penalty,
@@ -24,6 +25,11 @@ for each quantitative descriptor and for each task.}
 
 \item{RNA_tpm}{numeric matrix of patients' gene expression data as
 tpm values.}
+
+\item{select_gold_standard}{character string with names of scores
+of immune response to be computed. Default scores are computed for:
+"CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS",
+"Tcell_inflamed", "RIR", "TLS".}
 
 \item{TMB_values}{numeric vector containing patients' tumor mutational
 burden (TMB) values.}
@@ -79,53 +85,25 @@ library("easierData")
 
 dataset_mariathasan <- easierData::get_Mariathasan2018_PDL1_treatment()
 RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
-RNA_counts <- assays(dataset_mariathasan)[["counts"]]
 cancer_type <- metadata(dataset_mariathasan)[["cancertype"]]
 
 # Select a subset of patients to reduce vignette building time.
 pat_subset <- c(
-    "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-    "SAMba1a34b5a060", "SAM18a4dabbc557"
+  "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+  "SAMba1a34b5a060", "SAM18a4dabbc557"
 )
-RNA_counts <- RNA_counts[, colnames(RNA_counts) \%in\% pat_subset]
 RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
-
-# Computation of cell fractions  (Finotello et al., Genome Med, 2019)
-cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
-
-# Computation of pathway scores (Holland et al., BBAGRM, 2019;
-# Schubert et al., Nat Commun, 2018)
-pathway_activities <- compute_pathway_activity(
-    RNA_counts = RNA_counts,
-    remove_sig_genes_immune_response = TRUE
-)
 
 # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
 tf_activities <- compute_TF_activity(
-    RNA_tpm = RNA_tpm
-)
-
-# Computation of ligand-receptor pair weights
-lrpair_weights <- compute_LR_pairs(
-    RNA_tpm = RNA_tpm,
-    cancer_type = "pancan"
-)
-
-# Computation of cell-cell interaction scores
-ccpair_scores <- compute_CC_pairs(
-    lrpairs = lrpair_weights,
-    cancer_type = "pancan"
+  RNA_tpm = RNA_tpm
 )
 
 # Predict patients' immune response
 predictions <- predict_immune_response(
-    pathways = pathway_activities,
-    immunecells = cell_fractions,
-    tfs = tf_activities,
-    lrpairs = lrpair_weights,
-    ccpairs = ccpair_scores,
-    cancer_type = cancer_type,
-    verbose = TRUE
+  tfs = tf_activities,
+  cancer_type = cancer_type,
+  verbose = TRUE
 )
 
 # retrieve clinical response
@@ -141,10 +119,58 @@ TMB <- TMB[names(TMB) \%in\% pat_subset]
 
 # Assess patient-specific likelihood of response to ICB therapy
 output_eval_with_resp <- assess_immune_response(
-    predictions_immune_response = predictions,
-    patient_response = patient_ICBresponse,
-    RNA_tpm = RNA_tpm,
-    TMB_values = TMB,
-    easier_with_TMB = "weighted_average",
+  predictions_immune_response = predictions,
+  patient_response = patient_ICBresponse,
+  RNA_tpm = RNA_tpm,
+  select_gold_standard = "IFNy",
+  TMB_values = TMB,
+  easier_with_TMB = "weighted_average",
 )
+\dontrun{
+
+RNA_counts <- assays(dataset_mariathasan)[["counts"]]
+RNA_counts <- RNA_counts[, colnames(RNA_counts) \%in\% pat_subset]
+
+# Computation of cell fractions  (Finotello et al., Genome Med, 2019)
+cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
+
+# Computation of pathway scores (Holland et al., BBAGRM, 2019;
+# Schubert et al., Nat Commun, 2018)
+pathway_activities <- compute_pathway_activity(
+  RNA_counts = RNA_counts,
+  remove_sig_genes_immune_response = TRUE
+)
+
+# Computation of ligand-receptor pair weights
+lrpair_weights <- compute_LR_pairs(
+  RNA_tpm = RNA_tpm,
+  cancer_type = "pancan"
+)
+
+# Computation of cell-cell interaction scores
+ccpair_scores <- compute_CC_pairs(
+  lrpairs = lrpair_weights,
+  cancer_type = "pancan"
+)
+
+# Predict patients' immune response
+predictions <- predict_immune_response(
+  pathways = pathway_activities,
+  immunecells = cell_fractions,
+  tfs = tf_activities,
+  lrpairs = lrpair_weights,
+  ccpairs = ccpair_scores,
+  cancer_type = cancer_type,
+  verbose = TRUE
+)
+
+# Assess patient-specific likelihood of response to ICB therapy
+output_eval_with_resp <- assess_immune_response(
+  predictions_immune_response = predictions,
+  patient_response = patient_ICBresponse,
+  RNA_tpm = RNA_tpm,
+  TMB_values = TMB,
+  easier_with_TMB = "weighted_average",
+)
+}
 }

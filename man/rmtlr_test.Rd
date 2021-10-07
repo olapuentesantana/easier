@@ -42,14 +42,17 @@ pat_subset <- c(
 )
 RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 
-# Computation of cell fractions (Finotello et al., Genome Med, 2019)
-cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
-
-# Parameters values should be defined with features as rows and tasks as columns
-estimated_parameters <- matrix(rnorm(n = (ncol(cell_fractions) + 1) * 10),
-    nrow = ncol(cell_fractions) + 1, ncol = 10
+# Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
+tf_activities <- compute_TF_activity(
+    RNA_tpm = RNA_tpm
 )
-rownames(estimated_parameters) <- c("(Intercept)", colnames(cell_fractions))
+
+# Parameters values should be defined as a matrix
+# with features as rows and tasks as columns
+estimated_parameters <- matrix(rnorm(n = (ncol(tf_activities) + 1) * 10),
+    nrow = ncol(tf_activities) + 1, ncol = 10
+)
+rownames(estimated_parameters) <- c("(Intercept)", colnames(tf_activities))
 colnames(estimated_parameters) <- c(
     "CYT", "Ock_IS", "Roh_IS", "chemokines",
     "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS"
@@ -57,7 +60,7 @@ colnames(estimated_parameters) <- c(
 
 # Compute predictions using parameters values
 pred_test <- rmtlr_test(
-    x_test = cell_fractions,
+    x_test = tf_activities,
     coef_matrix = estimated_parameters
 )
 }

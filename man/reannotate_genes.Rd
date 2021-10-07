@@ -40,5 +40,7 @@ pat_subset <- c(
 )
 RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 
-genes_info <- reannotate_genes(cur_genes = rownames(RNA_tpm))
+# Select some genes to check possible updated gene names
+genes_to_check <- rownames(RNA_tpm)[400:450]
+genes_info <- reannotate_genes(cur_genes = genes_to_check)
 }
