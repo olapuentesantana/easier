@@ -336,10 +336,11 @@ We can further retrieve the easier score and also, the refined scores obtained b
 ```{r, eval=TRUE}
 easier_derived_scores <- retrieve_easier_score(predictions_immune_response = predictions,
                                                TMB_values = TMB,
-                                               easier_with_TMB = c("weighted_average", "penalized_score"),
+                                               easier_with_TMB = c("weighted_average", 
+                                                                   "penalized_score"),
                                                weight_penalty = 0.5)
 
-easier_derived_scores
+head(easier_derived_scores)
 ```
 
 

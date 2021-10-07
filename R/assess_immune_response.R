@@ -272,7 +272,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
       df <- predictions_immune_response[[spec_view]][[spec_task]]
       df <- df[patients_to_keep, ]
       df_runs <- rowMeans(df)
-    }, FUN.VALUE = numeric(ncol(RNA_tpm)))
+    }, FUN.VALUE = numeric(length(patients_to_keep)))
     return(ensemble_df)
   })
   names(ensemble_df) <- views
@@ -285,7 +285,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
       ensemble_df$lrpairs[, spec_task],
       ensemble_df$ccpairs[, spec_task]
     ), 1, mean)
-  }, FUN.VALUE = numeric(ncol(RNA_tpm)))
+  }, FUN.VALUE = numeric(length(patients_to_keep)))
 
   # AUC predictions, when patients' response available
   if (is.null(patient_response) == FALSE) {

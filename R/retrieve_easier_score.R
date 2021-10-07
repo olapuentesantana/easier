@@ -121,6 +121,7 @@ retrieve_easier_score <- function(predictions_immune_response = NULL,
   if (missing(TMB_values)) {
     TMB_available <- FALSE
     easier_with_TMB <- "none"
+    patients_to_keep <- rownames(predictions_immune_response[[1]][[1]])
   } else {
     TMB_available <- TRUE
     if (missing(easier_with_TMB)) {
@@ -158,9 +159,9 @@ retrieve_easier_score <- function(predictions_immune_response = NULL,
   ensemble_df <- lapply(views, function(spec_view) {
     ensemble_df <- vapply(tasks, function(spec_task) {
       df <- predictions_immune_response[[spec_view]][[spec_task]]
-      if (TMB_available) df <- df[patients_to_keep, ]
+      df <- df[patients_to_keep, ]
       df_runs <- rowMeans(df)
-    }, FUN.VALUE = numeric(ncol(RNA_tpm)))
+    }, FUN.VALUE = numeric(length(patients_to_keep)))
     return(ensemble_df)
   })
   names(ensemble_df) <- views
@@ -173,7 +174,7 @@ retrieve_easier_score <- function(predictions_immune_response = NULL,
       ensemble_df$lrpairs[, spec_task],
       ensemble_df$ccpairs[, spec_task]
     ), 1, mean)
-  }, FUN.VALUE = numeric(ncol(RNA_tpm)))
+  }, FUN.VALUE = numeric(length(patients_to_keep)))
   easier_score <- apply(overall_df, 1, mean)
 
   # save into data.frame
