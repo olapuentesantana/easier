@@ -2,13 +2,15 @@
 #' ligand-receptor weights
 #'
 #' Scores cell-cell interactions in the tumor microenvironment
-#' (TME) using ligand-receptor weights as input.
+#' ((Lapuente-Santana et al., Patterns, 2021)) using the
+#' ligand-receptor weights obtained from \code{compute_LR_pairs}
+#' as input.
 #'
 #' @importFrom easierData get_lr_frequency_TCGA get_intercell_networks
 #'
 #' @param lrpairs output of the compute_LR_pairs function. A matrix
 #' of log2(TPM +1) weights with samples in rows and ligand-receptor
-#' pairs in columns.
+#' pairs in columns. This is the output from \code{compute_LR_pairs}.
 #' @param cancer_type string detailing the cancer type whose cell-cell
 #' interaction network will be used. By default, a pan-cancer network
 #' is selected whose network represents the union of all ligand-receptor

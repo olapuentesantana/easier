@@ -21,8 +21,8 @@ and TFs in columns.
 }
 \description{
 Infers transcription factor (TF) activity from TPM bulk
-gene expression using DoRothEA method (Garcia-Alonso et al.,
-Genome Res, 2019).
+gene expression using DoRothEA method from Garcia-Alonso et al.,
+Genome Res, 2019.
 }
 \examples{
 # using a SummarizedExperiment object

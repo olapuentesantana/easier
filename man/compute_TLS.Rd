@@ -23,10 +23,6 @@ Calculates TLS score using the geometric-mean of the
 expression of its signature genes, as defined in
 Cabrita et al., Nature, 2020.
 }
-\examples{
-
-# Example does not matter as function will no be exported
-}
 \references{
 Cabrita, R., Lauss, M., Sanna, A., Donia, M.,
 Skaarup Larsen, M., Mitra, S., Johansson, I., Phung, B.,

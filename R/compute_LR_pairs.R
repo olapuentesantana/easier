@@ -1,11 +1,11 @@
 #' Compute ligand-receptor pair weights from TPM bulk gene expression
 #'
 #' Quantifies ligand-receptor interactions in the tumor microenvironment
-#' from TPM bulk gene expression by using prior knowledge coming from
-#' ligand-receptor pair annotations from the database of Ramilowski
-#' (Ramilowski et al., Nat Commun, 2015). Each ligand-receptor weight
-#' is defined as the minimum of the log2(TPM+1) expression of the
-#' ligand and the receptor.
+#' from TPM bulk gene expression (Lapuente-Santana et al., Patterns, 2021)
+#' by using prior knowledge coming from ligand-receptor pair annotations
+#' from the database of Ramilowski (Ramilowski et al., Nat Commun, 2015).
+#' Each ligand-receptor weight is defined as the minimum of the log2(TPM+1)
+#' expression of the ligand and the receptor.
 #'
 #' @importFrom stats na.exclude
 #' @importFrom utils head tail

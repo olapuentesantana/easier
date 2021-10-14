@@ -18,7 +18,8 @@ assess_immune_response(
 }
 \arguments{
 \item{predictions_immune_response}{list containing the predictions
-for each quantitative descriptor and for each task.}
+for each quantitative descriptor and for each task. This is the
+output from \code{predict_immune_response}.}
 
 \item{patient_response}{character vector with two factors
 (Non-responders = NR, Responders = R).}
@@ -47,33 +48,28 @@ patient's likelihood of immune response. The default value is 0.5.}
 about the process.}
 }
 \value{
-When patient_response is provided, a roc curve plot and a barplot
-displaying the average (across tasks) area under the ROC curve (AUC)
-values is provided. When patient_response is not provided, the easier
-score is represented as boxplots (10 tasks) for each patient.
+When \code{patient_response} is provided, a roc curve plot and
+a bar plot that displays the average (across tasks) area under the ROC
+curve (AUC) values is returned. If \code{patient_response} is not provided,
+the easier score is represented as box plots (10 tasks) for each patient.
 
-When patient_response is provided and easier_with_TMB = weighted_average
-or easier_with_TMB = penalized_score, an scatterplot displays the AUC
-values of the integrated approach, easier score and TMB. In this case,
-when patient_response is not provided, the integrated score is represented
-as a dotplot for each patient.
+When \code{patient_response} is provided and \code{easier_with_TMB = weighted_average}
+or \code{easier_with_TMB = penalized_score}, an scatter plot that shows the AUC
+values of the integrated approach, easier score and TMB is returned.
+If in this case, \code{patient_response} is not provided, the integrated score
+is represented as a dot plot for each patient.
 }
 \description{
 Evaluates the predictive performance of easier score as
-predictor of patients' immune response. Provided that patients'
-response is available, a roc curve plot and a barplot showing the
-average (across tasks) area under the ROC curve (AUC) values for each
-quantitative descriptor. An ensemble model is considered based on
-the average of the individual descriptors. Also, the average of the
-gold standard scores is shown. When available information on tumor
-mutational burden (TMB), this is also displayed.
-}
-\details{
-Since both immune response and TMB are essential for effective
-immunotherapy response, an integrated score is provided given
-two different approaches based on a applying either a weighted
-average or penalty to patients' easier score depending on their
-TMB category.
+predictor of patients' immune response. This is done for each
+quantitative descriptor, an ensemble descriptor based on
+the average of the individual ones, and the gold standard scores.
+If provided, tumor mutational burden (TMB) is also used as
+predictor for comparison. Since both immune response and TMB are
+essential for effective immunotherapy response, an integrated
+score is calculated given two different approaches based on a
+applying either a weighted average or penalty to patients' easier
+score depending on their TMB category.
 }
 \examples{
 # using a SummarizedExperiment object

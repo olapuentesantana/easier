@@ -22,10 +22,6 @@ Calculates IFNy signature score as the average expression
 of its signature genes, as defined in Ayers et al., J.
 Clin. Invest, 2017.
 }
-\examples{
-
-# Example does not matter as function will no be exported
-}
 \references{
 Ayers, M., Lunceford, J., Nebozhyn, M., Murphy,
 E., Loboda, A., Kaufman, D.R., Albright, A., Cheng, J.D.,

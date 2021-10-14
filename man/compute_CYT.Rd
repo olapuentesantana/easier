@@ -21,9 +21,6 @@ in a column.
 Calculates the CYT score using the geometric mean of its
 signature genes, as defined in Rooney et al., Cell, 2015.
 }
-\examples{
-# Example does not matter as function will no be exported
-}
 \references{
 Rooney, M.S., Shukla, S.A., Wu, C.J., Getz, G.,
 and Hacohen, N. (2015). Molecular and genetic properties

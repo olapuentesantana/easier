@@ -17,19 +17,24 @@ explore_biomarkers(
 }
 \arguments{
 \item{pathways}{numeric matrix with pathways activity
-(rows = samples; columns = pathways).}
+(rows = samples; columns = pathways). This is the
+output from \code{compute_pathway_activity}.}
 
 \item{immunecells}{numeric matrix with immune cell quantification
-(rows = samples; columns = cell types).}
+(rows = samples; columns = cell types). This is the
+output from \code{compute_cell_fractions}.}
 
 \item{tfs}{numeric matrix with transcription factors activity
-(rows = samples; columns = transcription factors).}
+(rows = samples; columns = transcription factors). This is the
+output from \code{compute_TF_activity}.}
 
 \item{lrpairs}{numeric matrix with ligand-receptor weights
-(rows = samples; columns = ligand-receptor pairs).}
+(rows = samples; columns = ligand-receptor pairs). This is the
+output from \code{compute_LR_pairs}.}
 
 \item{ccpairs}{numeric matrix with cell-cell scores
-(rows = samples; columns = cell-cell pairs).}
+(rows = samples; columns = cell-cell pairs). This is the
+output from \code{compute_CC_pairs}.}
 
 \item{cancer_type}{character string indicating which cancer-specific
 model should be used to compute the predictions.}
@@ -42,19 +47,19 @@ about the process.}
 }
 \value{
 \itemize{
-\item{Volcano plot displaying relevant biomarkers differentiating
-responders vs non-responders patients.}
 \item{A combined plot for each type of quantitative descriptors,
 showing the original distribution of the features and the importance
 of these features for the trained models}
+#' \item{Volcano plot displaying relevant biomarkers differentiating
+responders vs non-responders patients.}
 }
 }
 \description{
 Provides a good overview of the computed features
 (biomarkers) including the corresponding weights from the
-trained model. Also, showing statistically significant
-biomarkers between responders and non-responders patients
-(if patients' response is available).
+trained model. If \code{patient_response} is provided,
+this function shows statistically significant biomarkers
+between responders (R) and non-responders (NR) patients.
 }
 \examples{
 # using a SummarizedExperiment object

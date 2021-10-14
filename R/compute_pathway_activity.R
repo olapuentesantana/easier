@@ -1,8 +1,8 @@
 #' Compute pathway activity from gene expression using PROGENy
 #'
 #' Infers pathway activity from counts bulk gene expression
-#' using PROGENy method from (Holland et al., BBAGRM, 2019;
-#' Schubert et al., Nat Commun, 2018).
+#' using PROGENy method from Holland et al., BBAGRM, 2019 and
+#' Schubert et al., Nat Commun, 2018.
 #'
 #' @importFrom DESeq2 DESeqDataSetFromMatrix estimateSizeFactors estimateDispersions
 #' getVarianceStabilizedData
@@ -14,7 +14,8 @@
 #' gene symbols as row names and samples identifiers as column names.
 #' @param remove_sig_genes_immune_response logical value indicating
 #' whether to remove signature genes involved in the derivation of
-#' hallmarks of immune response.
+#' hallmarks of immune response. This list is available from easierData
+#' package through \code{easierData::get_cor_scores_genes()}.
 #' @param verbose logical value indicating whether to display messages
 #' about the number of pathway signature genes found in the gene
 #' expression data provided.

@@ -8,7 +8,7 @@ by using quantitative descriptors of the
 tumor microenvironment extracted from RNA-seq
 data.}
 \description{
-This package streamline the assessment of patients'
+This package streamlines the assessment of patients'
 likelihood of immune response using EaSIeR approach.
 }
 \references{

@@ -22,10 +22,6 @@ Calculates Davoli_IS score as the average of the expression
 of its signature genes after applying rank normalization, as
 defined in Davoli et al., Science, 2017.
 }
-\examples{
-
-# Example does not matter as function will no be exported
-}
 \references{
 Davoli, T., Uno, H., Wooten, E.C., and Elledge,
 S.J. (2017). Tumor aneuploidy correlates with markers of

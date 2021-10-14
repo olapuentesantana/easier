@@ -1,7 +1,7 @@
 #' Define tumor mutational burden (TMB) categories.
 #'
 #' Encodes tumor mutational burden (TMB)
-#' from numerical variable into categorical.
+#' from numerical into categorical variable.
 #'
 #' @importFrom stats quantile
 #'

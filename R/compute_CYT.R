@@ -18,8 +18,6 @@
 #' @return A numeric matrix with samples in rows and CTY score
 #' in a column.
 #'
-#' @examples
-#' # Example does not matter as function will no be exported
 compute_CYT <- function(matches, RNA_tpm) {
     # Subset RNA_tpm
     subset_RNA_tpm <- RNA_tpm[matches, ]

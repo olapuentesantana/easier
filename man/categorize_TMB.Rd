@@ -19,7 +19,7 @@ from 1 (low TMB) to 3 (high TMB).
 }
 \description{
 Encodes tumor mutational burden (TMB)
-from numerical variable into categorical.
+from numerical into categorical variable.
 }
 \examples{
 # using a SummarizedExperiment object

@@ -22,10 +22,6 @@ Calculates chemokines score as the PC1 score that results
 from applying PCA to the expression of its signature genes,
 defined in Messina et al., Sci. Rep., 2012.
 }
-\examples{
-
-# Example does not matter as function will no be exported
-}
 \references{
 Messina, J.L., Fenstermacher, D.A., Eschrich, S.,
 Qu, X., Berglund, A.E., Lloyd, M.C., Schell, M.J., Sondak, V.K.,

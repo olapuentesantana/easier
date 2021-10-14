@@ -21,9 +21,6 @@
 #' @return A numeric matrix with samples in rows and chemokines
 #' score in a column.
 #'
-#' @examples
-#'
-#' # Example does not matter as function will no be exported
 compute_chemokines <- function(matches, RNA_tpm) {
     # Log2 transformation:
     log2_RNA_tpm <- log2(RNA_tpm + 1)

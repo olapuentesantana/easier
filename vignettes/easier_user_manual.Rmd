@@ -28,20 +28,21 @@ author:
   email: f.eduati@tue.nl
 date: "`r Sys.Date()`"
 output: 
+  pdf_document:
+    latex_engine: xelatex
+    toc: yes
+    number_sections: true
   html_document:
     toc: true
     toc_float: true
     number_sections: true
     code_folding: show
     theme: lumen
-  pdf_document:
-    toc: yes
-    number_sections: true
 bibliography: references_easier.bib
 vignette: >
   %\VignetteIndexEntry{easier User Manual}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
 <style type="text/css">

@@ -23,22 +23,26 @@ the input data.}
 \item{view_data}{list containing the data for each input view.}
 
 \item{opt_model_cancer_view_spec}{cancer-view-specific model
-feature parameters learned during training.}
+feature parameters learned during training. These are available
+from easierData package through \code{easierData::get_opt_models()}.}
 
 \item{opt_xtrain_stats_cancer_view_spec}{cancer-view-specific
-features mean and standard deviation of the training set.}
+features mean and standard deviation of the training set. These
+are available from easierData package through
+\code{easierData::get_opt_xtrain_stats()}.}
 
 \item{verbose}{logical flag indicating whether to display
 messages about the process.}
 }
 \value{
-A lList of predictions matrices, one for each tasks
-(rows = samples; columns = [runs).
+A list of predictions, one for each task, in a matrix
+format (rows = samples; columns = [runs).
 }
 \description{
-Obtains single-view predictions of immune response by using a
-cancer-specific model learned with Regularized
-Multi-Task Linear Regression algorithm (RMTLR).
+Obtains predictions of immune response for individual
+quantitative descriptors by using a cancer-specific
+model learned with Regularized Multi-Task Linear
+Regression algorithm (RMTLR).
 }
 \examples{
 # using a SummarizedExperiment object

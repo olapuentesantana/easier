@@ -18,8 +18,9 @@ A numeric matrix with values as z-scores.
 }
 \description{
 Applies z-score normalization on a numeric matrix per column.
-Mean and standard deviation values to be used to calculate z-score values,
-otherwise they are calculated based on the input matrix.
+Z-score values are calculated based on the input matrix. If
+mean and standard deviation values are provided, these are used
+instead.
 }
 \examples{
 # using a SummarizedExperiment object

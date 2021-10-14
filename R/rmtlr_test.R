@@ -7,8 +7,6 @@
 #'
 #' @importFrom stats na.omit
 #'
-#' @export
-#'
 #' @param x_test numeric matrix containing features values
 #' (rows = samples; columns = features).
 #' @param coef_matrix numeric matrix containing the parameters

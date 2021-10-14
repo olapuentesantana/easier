@@ -19,9 +19,6 @@
 #' @return A numeric matrix with samples in rows and Davoli_IS score
 #' in a column.
 #'
-#' @examples
-#'
-#' # Example does not matter as function will no be exported
 compute_Davoli_IS <- function(matches, RNA_tpm) {
 
     # Log2 transformation:

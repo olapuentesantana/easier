@@ -1,12 +1,11 @@
 #' Predict single-view immune response
 #'
-#' Obtains single-view predictions of immune response by using a
-#' cancer-specific model learned with Regularized
-#' Multi-Task Linear Regression algorithm (RMTLR).
+#' Obtains predictions of immune response for individual
+#' quantitative descriptors by using a cancer-specific
+#' model learned with Regularized Multi-Task Linear
+#' Regression algorithm (RMTLR).
 #'
 #' @importFrom stats na.omit
-#'
-#' @export
 #'
 #' @param view_name character string containing the name of the
 #' input view.
@@ -14,14 +13,17 @@
 #' the input data.
 #' @param view_data list containing the data for each input view.
 #' @param opt_model_cancer_view_spec cancer-view-specific model
-#' feature parameters learned during training.
+#' feature parameters learned during training. These are available
+#' from easierData package through \code{easierData::get_opt_models()}.
 #' @param opt_xtrain_stats_cancer_view_spec cancer-view-specific
-#' features mean and standard deviation of the training set.
+#' features mean and standard deviation of the training set. These
+#' are available from easierData package through
+#' \code{easierData::get_opt_xtrain_stats()}.
 #' @param verbose logical flag indicating whether to display
 #' messages about the process.
 #'
-#' @return A lList of predictions matrices, one for each tasks
-#' (rows = samples; columns = [runs).
+#' @return A list of predictions, one for each task, in a matrix
+#' format (rows = samples; columns = [runs).
 #'
 #' @examples
 #' # using a SummarizedExperiment object

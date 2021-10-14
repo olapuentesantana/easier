@@ -4,16 +4,18 @@
 #' penalized score based on the combination of easier score and TMB.
 #'
 #' @param predictions_immune_response list containing the predictions
-#' for each quantitative descriptor and for each task.
-#' @param TMB_values numeric vector containing patients' tumor mutational
-#' burden (TMB) values.
+#' for each quantitative descriptor and for each task. This is the
+#' output from \code{predict_immune_response}.
+#' @param TMB_values numeric vector containing patients' tumor
+#' mutational burden (TMB) values.
 #' @param easier_with_TMB character string indicating which approach
 #' should be used to integrate easier with TMB: "weighted_average"
 #' (default) and "penalized_score".
 #' @param weight_penalty integer value from 0 to 1, which is used to
-#' define the weight or penalty for combining easier and TMB scores based
-#' on a weighted average or penalized score, in order to derive a score of
-#' patient's likelihood of immune response. The default value is 0.5.
+#' define the weight or penalty for combining easier and TMB scores
+#' based on a weighted average or penalized score, in order to derive
+#' a score of patient's likelihood of immune response. The default
+#' value is 0.5.
 #' @param verbose logical flag indicating whether to display messages
 #' about the process.
 #'

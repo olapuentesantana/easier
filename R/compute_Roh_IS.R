@@ -21,9 +21,6 @@
 #' @return A numeric matrix with samples in rows and Roh_IS score
 #' in a column.
 #'
-#' @examples
-#'
-#' # Example does not matter as function will no be exported
 compute_Roh_IS <- function(matches, RNA_tpm) {
     # Subset RNA_tpm
     sub_RNA_tpm <- RNA_tpm[matches, ]

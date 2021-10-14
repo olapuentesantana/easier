@@ -29,9 +29,6 @@
 #' @return A numeric matrix with samples in rows and Tcell_inflamed
 #' score in a column.
 #'
-#' @examples
-#'
-#' # Example does not matter as function will no be exported
 compute_Tcell_inflamed <- function(housekeeping, predictors,
                                    weights, RNA_tpm) {
 

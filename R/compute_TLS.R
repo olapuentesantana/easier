@@ -21,9 +21,6 @@
 #' @return A numeric matrix with samples in rows and
 #' TLS score in a column.
 #'
-#' @examples
-#'
-#' # Example does not matter as function will no be exported
 compute_TLS <- function(matches, RNA_tpm) {
     # Subset RNA_tpm
     sub_RNA_tpm <- RNA_tpm[matches, ]

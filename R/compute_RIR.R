@@ -26,9 +26,6 @@
 #'
 #' @return A numeric matrix with samples in rows and RIR score in a column.
 #'
-#' @examples
-#'
-#' # Example does not matter as function will no be exported
 compute_RIR <- function(RNA_tpm,
                         RIR_program) {
 

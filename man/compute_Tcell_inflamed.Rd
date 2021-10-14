@@ -34,10 +34,6 @@ Pan-tumor genomic biomarkers for PD-1 checkpoint blockade-based
 immunotherapy. Science. (2018) 362:eaar3593.
 doi: 10.1126/science.aar3593.
 }
-\examples{
-
-# Example does not matter as function will no be exported
-}
 \references{
 Ayers, M., Lunceford, J., Nebozhyn, M., Murphy,
 E., Loboda, A., Kaufman, D.R., Albright, A., Cheng, J.D., Kang,

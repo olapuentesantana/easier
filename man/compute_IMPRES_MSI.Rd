@@ -35,10 +35,6 @@ Calculates MSI status score by logical comparison
 of MSI-related gene pairs, as defined in Fu et al.,
 BMC Genomics, 2019.
 }
-\examples{
-
-# Example does not matter as function will no be exported
-}
 \references{
 Auslander,N., Zhang,G., Lee,J.S., Frederick, D.T., Miao,
 B., Moll,T.,Tian, T., Wei,Z., Madan, S., Sullivan, R.J.,

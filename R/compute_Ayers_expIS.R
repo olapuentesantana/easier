@@ -20,9 +20,6 @@
 #' @return A numeric matrix with rows=samples and
 #' columns=Expanded Immune signature score.
 #'
-#' @examples
-#'
-#' # Example does not matter as function will no be exported
 compute_Ayers_expIS <- function(matches, RNA_tpm) {
     # Log2 transformation:
     log2_RNA_tpm <- log2(RNA_tpm + 1)

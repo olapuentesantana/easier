@@ -1,12 +1,11 @@
 #' Perform matrix Z-score normalization
 #'
 #' Applies z-score normalization on a numeric matrix per column.
-#' Mean and standard deviation values to be used to calculate z-score values,
-#' otherwise they are calculated based on the input matrix.
+#' Z-score values are calculated based on the input matrix. If
+#' mean and standard deviation values are provided, these are used
+#' instead.
 #'
 #' @importFrom matrixStats colSds
-#'
-#' @export
 #'
 #' @param X numeric matrix.
 #' @param mean numeric vector with mean values.

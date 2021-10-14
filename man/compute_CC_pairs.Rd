@@ -10,7 +10,7 @@ compute_CC_pairs(lrpairs = NULL, cancer_type = "pancan", verbose = TRUE)
 \arguments{
 \item{lrpairs}{output of the compute_LR_pairs function. A matrix
 of log2(TPM +1) weights with samples in rows and ligand-receptor
-pairs in columns.}
+pairs in columns. This is the output from \code{compute_LR_pairs}.}
 
 \item{cancer_type}{string detailing the cancer type whose cell-cell
 interaction network will be used. By default, a pan-cancer network
@@ -27,7 +27,9 @@ pairs in columns.
 }
 \description{
 Scores cell-cell interactions in the tumor microenvironment
-(TME) using ligand-receptor weights as input.
+((Lapuente-Santana et al., Patterns, 2021)) using the
+ligand-receptor weights obtained from \code{compute_LR_pairs}
+as input.
 }
 \examples{
 # using a SummarizedExperiment object

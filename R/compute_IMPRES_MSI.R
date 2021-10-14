@@ -37,9 +37,6 @@
 #' @return A numeric matrix with samples in rows and IMPRES score in
 #' a column.
 #'
-#' @examples
-#'
-#' # Example does not matter as function will no be exported
 compute_IMPRES_MSI <- function(sig, len, match_F_1, match_F_2, RNA_tpm) {
 
     # Initialize variables

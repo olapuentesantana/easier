@@ -7,13 +7,15 @@
 #' @param celltype2 string character with second cell type involved
 #' in the interaction.
 #' @param intercell_network matrix with data on cell types interaction
-#' network.
+#' network. This is available from easierData package through
+#' \code{easierData::get_intercell_networks()}.
 #' @param lrpairs_binary binary vector displaying LR pairs with non-zero
 #' frequency.
 #' @param lr_frequency numeric vector with LR pairs frequency across the
-#' whole TCGA database.
-#' @param compute_log boolean variable to indicate taking the log of the
-#' weighted score.
+#' whole TCGA database. This is available from easierData package through
+#' \code{easierData::get_lr_frequency_TCGA()}.
+#' @param compute_log boolean variable indicating whether the log of the
+#' weighted score should be returned.
 #'
 #' @return A numeric vector with weighted scores.
 #'

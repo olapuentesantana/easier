@@ -14,8 +14,6 @@
 #' @return A data.frame with the old gene HGNC symbol and
 #' the new corresponding gene HGNC symbol.
 #'
-#' @export
-#'
 #' @examples
 #' # using a SummarizedExperiment object
 #' library(SummarizedExperiment)

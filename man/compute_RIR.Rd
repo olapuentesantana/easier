@@ -28,10 +28,6 @@ et al., Cell, 2018.
 The gene signatures were provided by original work:
 https://github.com/livnatje/ImmuneResistance
 }
-\examples{
-
-# Example does not matter as function will no be exported
-}
 \references{
 Jerby-Arnon, L., Shah, P., Cuoco, M.S.,
 Rodman, C., Su, M.-J., Melms, J.C., Leeson, R., Kanodia,

@@ -3,7 +3,8 @@
 #' Calculates predictions of patients' immune response
 #' using the quantitative descriptors data as input
 #' features and the optimized model parameters derived
-#' from the trained models
+#' from the trained models. These models are available from
+#' easierData package through \code{easierData::get_opt_models()}.
 #'
 #' @importFrom utils combn
 #' @importFrom stats na.omit

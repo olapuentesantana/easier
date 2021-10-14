@@ -2,8 +2,7 @@
 % Please edit documentation in R/compute_scores_immune_response.R
 \name{compute_scores_immune_response}
 \alias{compute_scores_immune_response}
-\title{Compute published transcriptomics-based scores
-of hallmarks of anti-cancer immune response}
+\title{Compute published scores of immune response}
 \usage{
 compute_scores_immune_response(
   RNA_tpm = NULL,
@@ -26,12 +25,12 @@ scores are computed for: "CYT", "Roh_IS", "chemokines",
 display informative messages.}
 }
 \value{
-A numeric matrix with samples in rows and gold
-standard scores in columns.
+A numeric matrix with samples in rows and published
+scores (gold standards) in columns.
 }
 \description{
-Calculates the scores of immune response as
-indicated by the user.
+Calculates the transcriptomics-based scores
+of hallmarks of anti-cancer immune response.
 }
 \examples{
 # using a SummarizedExperiment object
@@ -60,4 +59,59 @@ scores_immune_response <- compute_scores_immune_response(
     RNA_tpm = RNA_tpm,
     selected_scores = hallmarks_of_immune_response
 )
+}
+\references{
+Rooney, Michael S., Sachet A. Shukla, Catherine J. Wu, Gad Getz,
+and Nir Hacohen. 2015. “Molecular and Genetic Properties of Tumors Associated
+with Local Immune Cytolytic Activity.” Cell 160 (1): 48–61.
+https://doi.org/10.1016/j.cell.2014.12.033.
+
+Cabrita, Rita, Martin Lauss, Adriana Sanna, Marco Donia, Mathilde
+Skaarup Larsen, Shamik Mitra, Iva Johansson, et al. 2020. “Tertiary Lymphoid
+Structures Improve Immunotherapy and Survival in Melanoma.”
+Nature 577 (7791):561–65. https://doi.org/10.1038/s41586-019-1914-8.
+
+McClanahan, Mark Ayers AND Jared Lunceford AND Michael Nebozhyn
+AND Erin Murphy AND Andrey Loboda AND David R. Kaufman AND Andrew Albright
+AND Jonathan D. Cheng AND S. Peter Kang AND Veena Shankaran AND Sarina A.
+Piha-Paul AND Jennifer Yearley AND Tanguy Y. Seiwert AND Antoni Ribas AND
+Terrill K. 2017. “IFN-y–Related mRNA Profile Predicts Clinical Response
+to PD-1 Blockade.” The Journal of Clinical Investigation 127 (8): 2930–40.
+https://doi.org/10.1172/JCI91190.
+
+Roh, Whijae, Pei-Ling Chen, Alexandre Reuben, Christine N.
+Spencer, Peter A. Prieto, John P. Miller, Vancheswaran Gopalakrishnan,
+et al. 2017. “Integrated Molecular Analysis of Tumor Biopsies on Sequential
+CTLA-4 and PD-1 Blockade Reveals Markers of Response and Resistance.”
+Science Translational Medicine 9 (379).
+https://doi.org/10.1126/scitranslmed.aah3560.
+
+Davoli, Teresa, Hajime Uno, Eric C. Wooten, and Stephen
+J. Elledge. 2017. “Tumor Aneuploidy Correlates with Markers of Immune
+Evasion and with Reduced Response to Immunotherapy.” Science 355 (6322).
+https://doi.org/10.1126/science.aaf8399.
+
+Messina, Jane L., David A. Fenstermacher, Steven Eschrich,
+Xiaotao Qu, Anders E. Berglund, Mark C. Lloyd, Michael J. Schell,
+Vernon K. Sondak, Jeffrey S. Weber, and James J. Mulé. 2012. “12-Chemokine
+Gene Signature Identifies Lymph Node-Like Structures in Melanoma: Potential
+for Patient Selection for Immunotherapy?” Scientific Reports 2 (1): 765.
+https://doi.org/10.1038/srep00765.
+
+Auslander, Noam, Gao Zhang, Joo Sang Lee, Dennie T. Frederick,
+Benchun Miao, Tabea Moll, Tian Tian, et al. 2018. “Robust Prediction of
+Response to Immune Checkpoint Blockade Therapy in Metastatic Melanoma.”
+Nature Medicine 24(10): 1545–49. https://doi.org/10.1038/s41591-018-0157-9.
+
+Fu, Yelin, Lishuang Qi, Wenbing Guo, Liangliang Jin, Kai Song,
+Tianyi You, Shuobo Zhang, Yunyan Gu, Wenyuan Zha, and Zheng Guo. 2019. “A
+Qualitative Transcriptional Signature for Predicting Microsatellite
+Instability Status of Right-Sided Colon Cancer.”
+BMC Genomics 20 (1): 769. https://doi.org/10.1186/s12864-019-6129-8.
+
+Jerby-Arnon, Livnat, Parin Shah, Michael S. Cuoco, Christopher
+Rodman, Mei-Ju Su, Johannes C. Melms, Rachel Leeso, et al. 2018. “A Cancer
+Cell Program Promotes t Cell Exclusion and Resistance to Checkpoint
+Blockade.” Cell 175 (4): 984–997.e24.
+https://doi.org/10.1016/j.cell.2018.09.006.
 }
