@@ -24,7 +24,8 @@ You can install the development version of `easier` from GitHub with:
 
 ``` r
 library("remotes")
-remotes::install_github("olapuentesantana/easier", build_vignettes = TRUE)
+remotes::install_github("olapuentesantana/easier", 
+                        dependencies = TRUE, build_vignettes = TRUE)
 ```
 ## EXAMPLE
 
