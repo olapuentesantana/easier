@@ -14,6 +14,7 @@
 #' @return A numeric matrix with values as z-scores.
 #'
 #' @examples
+#' \dontrun{
 #' # using a SummarizedExperiment object
 #' library(SummarizedExperiment)
 #' # Using example exemplary dataset (Mariathasan et al., Nature, 2018)
@@ -33,6 +34,7 @@
 #'
 #' # apply z-score normalization
 #' tpm_zscore <- calc_z_score(t(RNA_tpm))
+#' }
 calc_z_score <- function(X,
                          mean,
                          sd) {

@@ -23,6 +23,7 @@ Source code adapted from quanTIseq helper function
 mapGenes from quantiseqr package.
 }
 \examples{
+\dontrun{
 # using a SummarizedExperiment object
 library(SummarizedExperiment)
 # Using example exemplary dataset (Mariathasan et al., Nature, 2018)
@@ -43,4 +44,5 @@ RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 # Select some genes to check possible updated gene names
 genes_to_check <- rownames(RNA_tpm)[400:450]
 genes_info <- reannotate_genes(cur_genes = genes_to_check)
+}
 }

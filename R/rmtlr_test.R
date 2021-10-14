@@ -17,6 +17,7 @@
 #' columns = tasks).
 #'
 #' @examples
+#' \dontrun{
 #' # using a SummarizedExperiment object
 #' library(SummarizedExperiment)
 #' # Using example exemplary dataset (Mariathasan et al., Nature, 2018)
@@ -55,6 +56,7 @@
 #'     x_test = tf_activities,
 #'     coef_matrix = estimated_parameters
 #' )
+#' }
 rmtlr_test <- function(x_test,
                        coef_matrix) {
 

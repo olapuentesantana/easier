@@ -53,6 +53,7 @@ The source code was provided by original work:
 https://github.com/livnatje/ImmuneResistance
 }
 \examples{
+\dontrun{
 # using a SummarizedExperiment object
 library(SummarizedExperiment)
 # Using example exemplary dataset (Mariathasan et al., Nature, 2018)
@@ -71,31 +72,32 @@ pat_subset <- c(
 RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 
 # Log2 transformation:
-# log2_RNA_tpm <- log2(RNA_tpm + 1)
+log2_RNA_tpm <- log2(RNA_tpm + 1)
 
 # Prepare input data
-# r <- list()
-# r$tpm <- log2_RNA_tpm
-# r$genes <- rownames(log2_RNA_tpm)
+r <- list()
+r$tpm <- log2_RNA_tpm
+r$genes <- rownames(log2_RNA_tpm)
 
 # Gene signature of immune resistance program
-# score_signature_genes <- suppressMessages(easierData::get_scores_signature_genes())
-# RIR_gene_signature <- score_signature_genes$RIR
+score_signature_genes <- suppressMessages(easierData::get_scores_signature_genes())
+RIR_gene_signature <- score_signature_genes$RIR
 
 # Compute gene average expression across samples
-# r$genes_dist <- r$genes_mean <- rowMeans(r$tpm)
+r$genes_dist <- r$genes_mean <- rowMeans(r$tpm)
 
 # Center gene expression matrix
-# r$zscores <- sweep(r$tpm, 1, r$genes_mean, FUN = "-")
+r$zscores <- sweep(r$tpm, 1, r$genes_mean, FUN = "-")
 
 # Bin genes into 50 expression bins according to their average
-# r$genes_dist_q <- arules::discretize(r$genes_dist, n.cat = 50)
+r$genes_dist_q <- arules::discretize(r$genes_dist, n.cat = 50)
 
 # Match genes from exc.down signature with genes from expression matrix
-# b_sign <- is.element(r$genes, RIR_gene_signature[["exc.down"]])
+b_sign <- is.element(r$genes, RIR_gene_signature[["exc.down"]])
 
 # Compute random score:
-# rand_scores <- get_semi_random_OE(r, r$genes_dist_q, b_sign)
+rand_scores <- get_semi_random_OE(r, r$genes_dist_q, b_sign)
+}
 }
 \references{
 Jerby-Arnon, L., Shah, P., Cuoco, M.S.,

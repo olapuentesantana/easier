@@ -15,6 +15,7 @@
 #' the new corresponding gene HGNC symbol.
 #'
 #' @examples
+#' \dontrun{
 #' # using a SummarizedExperiment object
 #' library(SummarizedExperiment)
 #' # Using example exemplary dataset (Mariathasan et al., Nature, 2018)
@@ -35,6 +36,7 @@
 #' # Select some genes to check possible updated gene names
 #' genes_to_check <- rownames(RNA_tpm)[400:450]
 #' genes_info <- reannotate_genes(cur_genes = genes_to_check)
+#' }
 reannotate_genes <- function(cur_genes) {
 
     # Some checks

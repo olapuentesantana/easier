@@ -26,6 +26,7 @@
 #' format (rows = samples; columns = [runs).
 #'
 #' @examples
+#' \dontrun{
 #' # using a SummarizedExperiment object
 #' library(SummarizedExperiment)
 #' # Using example exemplary dataset (Mariathasan et al., Nature, 2018)
@@ -74,6 +75,7 @@
 #'     opt_model_cancer_view_spec = opt_model_cancer_view_spec,
 #'     opt_xtrain_stats_cancer_view_spec = opt_xtrain_stats_cancer_view_spec
 #' )
+#' }
 predict_with_rmtlr <- function(view_name,
                                view_info,
                                view_data,

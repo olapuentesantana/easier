@@ -29,7 +29,6 @@ author:
 date: "`r Sys.Date()`"
 output: 
   pdf_document:
-    latex_engine: xelatex
     toc: yes
     number_sections: true
   html_document:

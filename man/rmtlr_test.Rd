@@ -25,6 +25,7 @@ both the features input data and the features estimated
 weights.
 }
 \examples{
+\dontrun{
 # using a SummarizedExperiment object
 library(SummarizedExperiment)
 # Using example exemplary dataset (Mariathasan et al., Nature, 2018)
@@ -63,4 +64,5 @@ pred_test <- rmtlr_test(
     x_test = tf_activities,
     coef_matrix = estimated_parameters
 )
+}
 }

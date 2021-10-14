@@ -45,6 +45,7 @@ model learned with Regularized Multi-Task Linear
 Regression algorithm (RMTLR).
 }
 \examples{
+\dontrun{
 # using a SummarizedExperiment object
 library(SummarizedExperiment)
 # Using example exemplary dataset (Mariathasan et al., Nature, 2018)
@@ -93,4 +94,5 @@ prediction_view <- predict_with_rmtlr(
     opt_model_cancer_view_spec = opt_model_cancer_view_spec,
     opt_xtrain_stats_cancer_view_spec = opt_xtrain_stats_cancer_view_spec
 )
+}
 }

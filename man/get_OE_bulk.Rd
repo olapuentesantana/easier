@@ -49,6 +49,7 @@ The source code was provided by original work:
 https://github.com/livnatje/ImmuneResistance
 }
 \examples{
+\dontrun{
 # using a SummarizedExperiment object
 library(SummarizedExperiment)
 # Using example exemplary dataset (Mariathasan et al., Nature, 2018)
@@ -67,19 +68,20 @@ pat_subset <- c(
 RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 
 # Log2 transformation:
-# log2_RNA_tpm <- log2(RNA_tpm + 1)
+log2_RNA_tpm <- log2(RNA_tpm + 1)
 
 # Prepare input data
-# r <- list()
-# r$tpm <- log2_RNA_tpm
-# r$genes <- rownames(log2_RNA_tpm)
+r <- list()
+r$tpm <- log2_RNA_tpm
+r$genes <- rownames(log2_RNA_tpm)
 
 # Gene signature of immune resistance program
-# score_signature_genes <- suppressMessages(easierData::get_scores_signature_genes())
-# RIR_gene_signature <- score_signature_genes$RIR
+score_signature_genes <- suppressMessages(easierData::get_scores_signature_genes())
+RIR_gene_signature <- score_signature_genes$RIR
 
 # Apply function to calculate OE:
-# res_scores <- get_OE_bulk(r, gene_sign = RIR_gene_signature, verbose = TRUE)
+res_scores <- get_OE_bulk(r, gene_sign = RIR_gene_signature, verbose = TRUE)
+}
 }
 \references{
 Jerby-Arnon, L., Shah, P., Cuoco, M.S.,

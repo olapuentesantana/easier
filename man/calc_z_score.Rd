@@ -23,6 +23,7 @@ mean and standard deviation values are provided, these are used
 instead.
 }
 \examples{
+\dontrun{
 # using a SummarizedExperiment object
 library(SummarizedExperiment)
 # Using example exemplary dataset (Mariathasan et al., Nature, 2018)
@@ -42,4 +43,5 @@ RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 
 # apply z-score normalization
 tpm_zscore <- calc_z_score(t(RNA_tpm))
+}
 }
