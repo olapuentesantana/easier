@@ -37,4 +37,4 @@ vignette("easier_user_manual", package = "easier")
 
 If you use this package in your work, please cite the original EaSIeR study:
 
-Lapuente-Santana, Óscar, Maisa van Genderen, Peter A. J. Hilbers, Francesca Finotello, and Federica Eduati. 2021. “Interpretable Systems Biomarkers Predict Response to Immune-Checkpoint Inhibitors.” Patterns, 100293. https://doi.org/10.1016/j.patter.2021.100293.
+Lapuente-Santana, Oscar, Maisa van Genderen, Peter A. J. Hilbers, Francesca Finotello, and Federica Eduati. 2021. “Interpretable Systems Biomarkers Predict Response to Immune-Checkpoint Inhibitors.” Patterns, 100293. https://doi.org/10.1016/j.patter.2021.100293.

@@ -13,7 +13,7 @@
 #'
 #' @name easier-pkg
 #' @docType package
-#' @references Lapuente-Santana, Óscar, Maisa van Genderen,
+#' @references Lapuente-Santana, Oscar, Maisa van Genderen,
 #' Peter A. J. Hilbers, Francesca Finotello, and Federica Eduati.
 #' 2021. “Interpretable Systems Biomarkers Predict Response to
 #' Immune-Checkpoint Inhibitors.” Patterns, 100293.

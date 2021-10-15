@@ -12,7 +12,7 @@ This package streamlines the assessment of patients'
 likelihood of immune response using EaSIeR approach.
 }
 \references{
-Lapuente-Santana, Óscar, Maisa van Genderen,
+Lapuente-Santana, Oscar, Maisa van Genderen,
 Peter A. J. Hilbers, Francesca Finotello, and Federica Eduati.
 2021. “Interpretable Systems Biomarkers Predict Response to
 Immune-Checkpoint Inhibitors.” Patterns, 100293.
