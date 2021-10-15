@@ -25,7 +25,7 @@ Clin. Invest, 2017.
 \references{
 Ayers, M., Lunceford, J., Nebozhyn, M., Murphy,
 E., Loboda, A., Kaufman, D.R., Albright, A., Cheng, J.D.,
-Kang, S.P., Shankaran, V., et al. (2017). IFN-γ-related mRN
+Kang, S.P., Shankaran, V., et al. (2017). IFN-y-related mRN
 A profile predicts clinical response to PD-1 blockade.
 J. Clin. Invest. 127, 2930–2940.
 https://doi.org/10.1172/JCI91190.

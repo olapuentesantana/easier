@@ -1,7 +1,7 @@
 ---
 title: easier User Manual
 author:
-- name: Óscar Lapuente-Santana
+- name: Oscar Lapuente-Santana
   affiliation: 
   - &id Computational Biology group, Department of Biomedical Engineering,
     Eindhoven University of Technology (BME, TU/e)
@@ -28,15 +28,15 @@ author:
   email: f.eduati@tue.nl
 date: "`r Sys.Date()`"
 output: 
+  html_document: 
+    toc: yes
+    toc_float: yes
+    number_sections: yes
+    code_folding: show
+    theme: lumen
   pdf_document:
     toc: yes
     number_sections: true
-  html_document:
-    toc: true
-    toc_float: true
-    number_sections: true
-    code_folding: show
-    theme: lumen
 bibliography: references_easier.bib
 vignette: >
   %\VignetteIndexEntry{easier User Manual}
