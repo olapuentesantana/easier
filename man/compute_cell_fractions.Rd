@@ -43,3 +43,13 @@ RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 # Computation of cell fractions (Finotello et al., Genome Med, 2019)
 cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
 }
+\references{
+Finotello F, Mayer C, Plattner C, Laschober G, Rieder D,
+Hackl H, Krogsdam A, Loncova Z, Posch W, Wilflingseder D, Sopper S,
+Ijsselsteijn M, Brouwer TP, Johnson D, Xu Y, Wang Y, Sanders ME,
+Estrada MV, Ericsson-Gonzalez P, Charoentong P, Balko J,
+de Miranda NFDCC, Trajanoski Z. Molecular and pharmacological
+modulators of the tumor immune contexture revealed by deconvolution
+of RNA-seq data. Genome Medicine, 2019. 11(1):34.
+https://doi.org/10.1186/s13073-019-0638-6
+}

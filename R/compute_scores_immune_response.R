@@ -35,7 +35,7 @@
 #'
 #' @references Messina, Jane L., David A. Fenstermacher, Steven Eschrich,
 #' Xiaotao Qu, Anders E. Berglund, Mark C. Lloyd, Michael J. Schell,
-#' Vernon K. Sondak, Jeffrey S. Weber, and James J. Mulé. 2012. “12-Chemokine
+#' Vernon K. Sondak, Jeffrey S. Weber, and James J. Mule. 2012. “12-Chemokine
 #' Gene Signature Identifies Lymph Node-Like Structures in Melanoma: Potential
 #' for Patient Selection for Immunotherapy?” Scientific Reports 2 (1): 765.
 #' https://doi.org/10.1038/srep00765.

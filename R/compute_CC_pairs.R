@@ -1,10 +1,16 @@
 #' Compute cell-cell interactions scores using computed
 #' ligand-receptor weights
 #'
-#' Scores cell-cell interactions in the tumor microenvironment
-#' ((Lapuente-Santana et al., Patterns, 2021)) using the
-#' ligand-receptor weights obtained from \code{compute_LR_pairs}
+#' Infers scores of cell-cell interactions in the tumor
+#' microenvironment (Lapuente-Santana et al., Patterns, 2021) using
+#' the ligand-receptor weights obtained from \code{compute_LR_pairs}
 #' as input.
+#'
+#' @references Oscar Lapuente-Santana, Maisa van Genderen,
+#' Peter A. J. Hilbers, Francesca Finotello, and Federica Eduati.
+#' 2021. Interpretable Systems Biomarkers Predict Response to
+#' Immune-Checkpoint Inhibitors. Patterns, 100293.
+#' https://doi.org/10.1016/j.patter.2021.100293.
 #'
 #' @importFrom easierData get_lr_frequency_TCGA get_intercell_networks
 #'

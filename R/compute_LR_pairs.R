@@ -7,6 +7,16 @@
 #' Each ligand-receptor weight is defined as the minimum of the log2(TPM+1)
 #' expression of the ligand and the receptor.
 #'
+#' @references Oscar Lapuente-Santana, Maisa van Genderen,
+#' Peter A. J. Hilbers, Francesca Finotello, and Federica Eduati.
+#' 2021. Interpretable Systems Biomarkers Predict Response to
+#' Immune-Checkpoint Inhibitors. Patterns, 100293.
+#' https://doi.org/10.1016/j.patter.2021.100293.
+#'
+#' @references Ramilowski, J., Goldberg, T., Harshbarger, J. et al.
+#' A draft network of ligand–receptor-mediated multicellular signalling
+#' in human. Nat Commun 6, 7866 (2015). https://doi.org/10.1038/ncomms8866
+#'
 #' @importFrom stats na.exclude
 #' @importFrom utils head tail
 #' @importFrom easierData get_intercell_networks get_group_lrpairs

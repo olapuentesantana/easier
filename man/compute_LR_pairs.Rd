@@ -57,3 +57,14 @@ lrpair_weights <- compute_LR_pairs(
 )
 lrpair_weights[1:5, 1:5]
 }
+\references{
+Oscar Lapuente-Santana, Maisa van Genderen,
+Peter A. J. Hilbers, Francesca Finotello, and Federica Eduati.
+2021. Interpretable Systems Biomarkers Predict Response to
+Immune-Checkpoint Inhibitors. Patterns, 100293.
+https://doi.org/10.1016/j.patter.2021.100293.
+
+Ramilowski, J., Goldberg, T., Harshbarger, J. et al.
+A draft network of ligand–receptor-mediated multicellular signalling
+in human. Nat Commun 6, 7866 (2015). https://doi.org/10.1038/ncomms8866
+}

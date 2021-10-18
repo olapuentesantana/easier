@@ -57,3 +57,14 @@ pathway_activity <- compute_pathway_activity(
     remove_sig_genes_immune_response = TRUE
 )
 }
+\references{
+Schubert M, Klinger B, Klunemann M, Sieber A, Uhlitz F, Sauer S,
+Garnett MJ, Bluthgen N, Saez-Rodriguez J. “Perturbation-response genes reveal
+signaling footprints in cancer gene expression.” Nature Communications:
+10.1038/s41467-017-02391-6
+
+Holland CH, Szalai B, Saez-Rodriguez J. "Transfer of regulatory
+knowledge from human to mouse for functional genomics analysis." Biochimica et
+Biophysica Acta (BBA) - Gene Regulatory Mechanisms. 2019.
+DOI: 10.1016/j.bbagrm.2019.194431.
+}

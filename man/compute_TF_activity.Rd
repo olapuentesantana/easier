@@ -47,3 +47,9 @@ tf_activity <- compute_TF_activity(
     RNA_tpm = RNA_tpm
 )
 }
+\references{
+Garcia-Alonso L, Holland CH, Ibrahim MM, Turei D,
+Saez-Rodriguez J. "Benchmark and integration of resources for
+the estimation of human transcription factor activities."
+Genome Research. 2019. DOI: 10.1101/gr.240663.118.
+}

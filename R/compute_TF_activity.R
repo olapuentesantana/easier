@@ -5,6 +5,11 @@
 #' gene expression using DoRothEA method from Garcia-Alonso et al.,
 #' Genome Res, 2019.
 #'
+#' @references Garcia-Alonso L, Holland CH, Ibrahim MM, Turei D,
+#' Saez-Rodriguez J. "Benchmark and integration of resources for
+#' the estimation of human transcription factor activities."
+#' Genome Research. 2019. DOI: 10.1101/gr.240663.118.
+#'
 #' @importFrom dorothea run_viper
 #' @importFrom stats na.exclude
 #' @importFrom dplyr filter
