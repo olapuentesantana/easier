@@ -1,6 +1,6 @@
 Package: easier
 Title: Estimate Systems Immune Response from RNA-seq data
-Version: 0.99.7
+Version: 0.99.8
 Authors@R: 
     c(
         person(
