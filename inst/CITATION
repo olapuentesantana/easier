@@ -15,7 +15,8 @@ citEntry(entry="article",
   issn = "2666-3899",
   doi = "10.1016/j.patter.2021.100293",
 
-  textVersion = "Lapuente-Santana, Óscar, Maisa van Genderen, Peter A. J. Hilbers,
-  Francesca Finotello, and Federica Eduati. 2021. 'Interpretable Systems Biomarkers Predict
-  Response to Immune-Checkpoint Inhibitors.' Patterns (New York, N.Y.) 2 (8): 100293."
+  textVersion = "Lapuente-Santana, Ó., van Genderen, M., Hilbers, P., Finotello, F., & Eduati, F. (2021).
+  'Interpretable systems biomarkers predict response to immune-checkpoint inhibitors.' Patterns (New York, N.Y.),
+  2(8), 100293. https://doi.org/10.1016/j.patter.2021.100293"
+
 )

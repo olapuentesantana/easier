@@ -14,7 +14,7 @@ EaSIeR is a tool to predict biomarker-based immunotherapy based on cancer-specif
 
 These models are available through `easierData` package and can be accessed using `get_opt_models()`.
 
-Please see [(Lapuente-Santana O et al., Patterns, 2021](https://doi.org/10.1016/j.patter.2021.100293) for additional details on EaSIeR.
+Please see [Lapuente-Santana O et al., Patterns, 2021,](https://doi.org/10.1016/j.patter.2021.100293) for additional details on EaSIeR.
 
 <img src="vignettes/easier_image.png" width="550" alt="EaSIeR approach">
 
@@ -47,4 +47,4 @@ vignette("easier_user_manual", package = "easier")
 
 If you use this package in your work, please cite the original EaSIeR study:
 
-Lapuente-Santana, Oscar, Maisa van Genderen, Peter A. J. Hilbers, Francesca Finotello, and Federica Eduati. 2021. “Interpretable Systems Biomarkers Predict Response to Immune-Checkpoint Inhibitors.” Patterns, 100293. https://doi.org/10.1016/j.patter.2021.100293.
+Lapuente-Santana, Ó., van Genderen, M., Hilbers, P., Finotello, F., & Eduati, F. (2021). 'Interpretable systems biomarkers predict response to immune-checkpoint inhibitors.' Patterns (New York, N.Y.), 2(8), 100293. https://doi.org/10.1016/j.patter.2021.100293
