@@ -1,6 +1,7 @@
 # MIT License
 
-Copyright (c) 2020 The Authors
+Copyright (c) 2020 Oscar Lapuente-Santana, Federico Marini, Arsenij Ustjanzew, 
+Francesca Finotello and Federica Eduati
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
