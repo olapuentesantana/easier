@@ -247,7 +247,11 @@ Again, `cancer_type` is set to `pancan` (default). The same `cancer_type` networ
 
 ## Obtain patients' predictions of immune response
 
-Now we use the quantitative descriptors computed previously as input features to predict anti-tumor immune responses based on the model parameters defined during training. The output of `predict_immune_response` returns predictions of patients' immune response for each quantitative descriptor. Because models were built in a cancer-type-specific fashion, the user is required to indicate which cancer-specific model should be used for predicting the immune response. This can be done via the `cancer_type` argument.
+Now we use the quantitative descriptors computed previously as input features to predict anti-tumor immune responses based on the model parameters defined during training. The output of `predict_immune_response` returns predictions of patients' immune response for each quantitative descriptor. Because models were built in a cancer-type-specific fashion, the user is required to indicate which cancer-specific model should be used for predicting patients' immune response, which can be done via the `cancer_type` argument.
+
+The `cancer_type` provided should match one of the cancer-specific models available. These are the following: bladder urothelial carcinoma (`BLCA`), brest invasive carcinoma (`BRCA`), cervical and endocervical cancer (`CESC`), colorectal adenocarcinoma (`CRC`), glioblastoma multiforme (`GBM`), head and neck squamous cell carcinoma (`HNSC`), kidney renal clear cell carcinoma (`KIRC`), kidney renal papillary cell carcinoma (`KIRP`), liver hepatocellular carcinoma (`LIHC`), lung adenocarcinoma (`LUAD`), lung squamous cell carcinoma (`LUSC`), non-small-cell lung carcinoma (`NSCLC` [`LUAD` + `LUSC`]), ovarian serous cystadenocarcionma (`OV`), pancreatic adenocarcionma (`PAAD`), prostate adenocarcinoma (`PRAD`), skin cutaneous melanoma (`SKCM`), stomach adenocarcinoma (`STAD`), thyroid carcinoma (`THCA`), uterine corpus endometrial carcinoma (`UCEC`). 
+
+The optimized models can be retrieved from `easierData` package using the function `get_opt_models()`.
 
 ```{r, eval=TRUE}
 predictions <- predict_immune_response(pathways = pathway_activities,
@@ -350,7 +354,7 @@ Identifying mechanisms used by patients' tumors to resist or succumb to ICB trea
 
 As before, the option `patient_response` should be provided with a character string containing patients' clinical response (where non-responders are labeled as NR and responders as R). 
 
-In order to leverage the cancer-specific biomarker weights inferred from model training, you need to specify again which `cancer_type` the bulk RNA-seq data belongs to.
+In order to leverage the cancer-specific biomarker weights inferred from model training, you need to specify again which `cancer_type` the bulk RNA-seq data belongs to. As before, the selected `cancer_type` should be included in the list described above.
 
 ```{r, eval=TRUE}
 output_biomarkers <- explore_biomarkers(pathways = pathway_activities,

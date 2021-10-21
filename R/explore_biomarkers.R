@@ -30,7 +30,11 @@
 #' (rows = samples; columns = cell-cell pairs). This is the
 #' output from \code{compute_CC_pairs}.
 #' @param cancer_type character string indicating which cancer-specific
-#' model should be used to compute the predictions.
+#' model should be used to compute the predictions. This should be
+#' available from the cancer-specific models. The following cancer types
+#' have a corresponding model available: "BLCA", "BRCA", "CESC", "CRC",
+#' "GBM", "HNSC", "KIRC", "KIRP", "LIHC", "LUAD", "LUSC", "NSCLC", "OV",
+#' "PAAD", "PRAD", "SKCM", "STAD", "THCA" and "UCEC".
 #' @param patient_response character vector with two factors
 #' (Non-responders = NR, Responders = R).
 #' @param verbose logical flag indicating whether to display messages
@@ -127,7 +131,17 @@ explore_biomarkers <- function(pathways = NULL,
                                cancer_type,
                                patient_response = NULL,
                                verbose = TRUE) {
+
     if (missing(cancer_type)) stop("cancer type needs to be specified")
+
+    available_cancer_types <- c("BLCA", "BRCA", "CESC", "CRC", "GBM", "HNSC",
+                                "KIRC", "KIRP", "LIHC", "LUAD", "LUSC", "NSCLC",
+                                "OV", "PAAD", "PRAD", "SKCM", "STAD", "THCA",
+                                "UCEC")
+
+    if (!cancer_type %in% available_cancer_types){
+        stop("cancer-type specific model not available for this cancer type")
+    }
     if (is.null(patient_response) == FALSE) {
         if (all(levels(as.factor(patient_response)) %in% c("NR", "R")) == FALSE) {
             stop("patient_response factor levels are not NR and R")

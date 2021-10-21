@@ -24,7 +24,11 @@
 #' @param ccpairs numeric matrix with cell-cell scores
 #' (rows = samples; columns = cell-cell pairs).
 #' @param cancer_type character string indicating which cancer-specific
-#' model should be used to compute the predictions.
+#' model should be used to compute the predictions. This should be available
+#' from the cancer-specific models. The following cancer types have a
+#' corresponding model available: "BLCA", "BRCA", "CESC", "CRC", "GBM",
+#' "HNSC", "KIRC", "KIRP", "LIHC", "LUAD", "LUSC", "NSCLC", "OV", "PAAD",
+#' "PRAD", "SKCM", "STAD", "THCA" and "UCEC".
 #' @param verbose logical flag indicating whether to display messages
 #' about the process.
 #'
@@ -108,6 +112,15 @@ predict_immune_response <- function(pathways = NULL,
                                     cancer_type,
                                     verbose = TRUE) {
     if (missing(cancer_type)) stop("cancer type needs to be specified")
+
+    available_cancer_types <- c("BLCA", "BRCA", "CESC", "CRC", "GBM", "HNSC",
+                                "KIRC", "KIRP", "LIHC", "LUAD", "LUSC", "NSCLC",
+                                "OV", "PAAD", "PRAD", "SKCM", "STAD", "THCA",
+                                "UCEC")
+
+    if (!cancer_type %in% available_cancer_types){
+        stop("cancer-type specific model not available for this cancer type")
+    }
     if (all(
         is.null(pathways), is.null(immunecells), is.null(tfs),
         is.null(lrpairs), is.null(ccpairs)

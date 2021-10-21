@@ -31,7 +31,11 @@ predict_immune_response(
 (rows = samples; columns = cell-cell pairs).}
 
 \item{cancer_type}{character string indicating which cancer-specific
-model should be used to compute the predictions.}
+model should be used to compute the predictions. This should be available
+from the cancer-specific models. The following cancer types have a
+corresponding model available: "BLCA", "BRCA", "CESC", "CRC", "GBM",
+"HNSC", "KIRC", "KIRP", "LIHC", "LUAD", "LUSC", "NSCLC", "OV", "PAAD",
+"PRAD", "SKCM", "STAD", "THCA" and "UCEC".}
 
 \item{verbose}{logical flag indicating whether to display messages
 about the process.}
