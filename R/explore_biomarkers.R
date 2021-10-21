@@ -9,6 +9,7 @@
 #' @importFrom stats aggregate
 #' @importFrom reshape2 melt
 #' @import rstatix
+#' @import coin
 #' @importFrom ggrepel geom_text_repel
 #' @import ggplot2
 #' @importFrom grid unit.pmax grid.newpage grid.draw
