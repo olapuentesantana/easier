@@ -1,5 +1,4 @@
 # easier run only for cancer types with an associated cancer-specific model...
-library(easier)
 library(easierData)
 library(SummarizedExperiment)
 

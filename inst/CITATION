@@ -1,5 +1,5 @@
 citEntry(entry="article",
-  author = c(person("Óscar", "Lapuente-Santana"),
+  author = c(person("Oscar", "Lapuente-Santana"),
              person("Maisa", "van Genderen"),
              person("Peter A.J.", "Hilbers"),
              person("Francesca", "Finotello"),
@@ -15,7 +15,7 @@ citEntry(entry="article",
   issn = "2666-3899",
   doi = "10.1016/j.patter.2021.100293",
 
-  textVersion = "Lapuente-Santana, Ó., van Genderen, M., Hilbers, P., Finotello, F., & Eduati, F. (2021).
+  textVersion = "Lapuente-Santana, O., van Genderen, M., Hilbers, P., Finotello, F., & Eduati, F. (2021).
   'Interpretable systems biomarkers predict response to immune-checkpoint inhibitors.' Patterns (New York, N.Y.),
   2(8), 100293. https://doi.org/10.1016/j.patter.2021.100293"
 
