@@ -37,7 +37,11 @@ output from \code{compute_LR_pairs}.}
 output from \code{compute_CC_pairs}.}
 
 \item{cancer_type}{character string indicating which cancer-specific
-model should be used to compute the predictions.}
+model should be used to compute the predictions. This should be
+available from the cancer-specific models. The following cancer types
+have a corresponding model available: "BLCA", "BRCA", "CESC", "CRC",
+"GBM", "HNSC", "KIRC", "KIRP", "LIHC", "LUAD", "LUSC", "NSCLC", "OV",
+"PAAD", "PRAD", "SKCM", "STAD", "THCA" and "UCEC".}
 
 \item{patient_response}{character vector with two factors
 (Non-responders = NR, Responders = R).}
