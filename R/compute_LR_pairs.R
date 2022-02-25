@@ -71,6 +71,37 @@ compute_LR_pairs <- function(RNA_tpm = NULL,
     intercell_networks <- suppressMessages(easierData::get_intercell_networks())
     group_lrpairs <- suppressMessages(easierData::get_group_lrpairs())
 
+    # Check cancer_type network is available if pancancer is not used
+    if(cancer_type %in% names(intercell_networks) == FALSE){
+        stop("The specified cancer type is not included in the list of
+             ligand-receptor networks")
+    }
+
+    # Adding NSCLC network (*to change in EasierData intercell network *)
+    if (cancer_type == "NSCLC"){
+        LUAD_intercell <- intercell_networks$LUAD
+        LUSC_intercell <- intercell_networks$LUSC
+        LUAD_array <- sapply(1:nrow(LUAD_intercell), function(X){
+            LUAD_intercell$cell1 <- as.character(LUAD_intercell$cell1)
+            LUAD_intercell$cell2 <- as.character(LUAD_intercell$cell2)
+            LUAD_array <- paste(LUAD_intercell[X,,drop=TRUE], collapse = "_")
+        })
+        LUSC_array <- sapply(1:nrow(LUSC_intercell), function(X){
+            LUSC_intercell$cell1 <- as.character(LUSC_intercell$cell1)
+            LUSC_intercell$cell2 <- as.character(LUSC_intercell$cell2)
+            LUSC_array <- paste(LUSC_intercell[X,,drop=TRUE], collapse = "_")
+        })
+        NSCLC_array <- union(LUAD_array, LUSC_array)
+        NSCLC_intercell <- as.data.frame(
+            do.call(rbind, lapply(1:length(NSCLC_array), function(X){
+                tmp <- unlist(strsplit(NSCLC_array[X], split = "_"))
+                names(tmp) <- colnames(LUAD_intercell)
+                return(tmp)
+            }))
+        )
+        intercell_networks[["NSCLC"]] <- NSCLC_intercell
+    }
+
     # Gene expression data (log2 transformed)
     gene_expr <- log2(RNA_tpm + 1)
     genes <- rownames(gene_expr)
