@@ -1,3 +1,3 @@
-# easier 0.9.0
+# easier 1.0.0 (20/05/2021)
 
-* Added a `NEWS.md` file to track changes to the package.
+- Official release in Bioconductor 3.13
