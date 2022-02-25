@@ -11,7 +11,7 @@ assess_immune_response(
   RNA_tpm = NULL,
   select_gold_standard = NULL,
   TMB_values,
-  easier_with_TMB = c("weighted_average", "penalized_score"),
+  easier_with_TMB = "none",
   weight_penalty,
   verbose = TRUE
 )
@@ -36,8 +36,9 @@ of immune response to be computed. Default scores are computed for:
 burden (TMB) values.}
 
 \item{easier_with_TMB}{character string indicating which approach
-should be used to integrate easier with TMB. One of "weighted_average"
-(default) or "penalized_score".}
+should be used to integrate easier with TMB. If \code{TMB_values}
+provided, one of "weighted_average" (default) or "penalized_score".
+If \code{TMB_values} not provided, default is "none".}
 
 \item{weight_penalty}{integer value from 0 to 1, which is used to
 define the weight or penalty for combining easier and TMB scores based

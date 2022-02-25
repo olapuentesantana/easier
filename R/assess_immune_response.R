@@ -34,8 +34,9 @@
 #' @param TMB_values numeric vector containing patients' tumor mutational
 #' burden (TMB) values.
 #' @param easier_with_TMB character string indicating which approach
-#' should be used to integrate easier with TMB. One of "weighted_average"
-#' (default) or "penalized_score".
+#' should be used to integrate easier with TMB. If \code{TMB_values}
+#' provided, one of "weighted_average" (default) or "penalized_score".
+#' If \code{TMB_values} not provided, default is "none".
 #' @param weight_penalty integer value from 0 to 1, which is used to
 #' define the weight or penalty for combining easier and TMB scores based
 #' on a weighted average or penalized score, in order to derive a score of
@@ -157,7 +158,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
                                    RNA_tpm = NULL,
                                    select_gold_standard = NULL,
                                    TMB_values,
-                                   easier_with_TMB = c("weighted_average", "penalized_score"),
+                                   easier_with_TMB = "none",
                                    weight_penalty,
                                    verbose = TRUE) {
   # Some checks
@@ -689,7 +690,10 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     ## dotplot (easier with TMB prediction)
     if (easier_with_TMB != "none") {
       ### default weight_penalty value = 0.5
-      if (missing(weight_penalty)) weight_penalty <- 0.5
+      if (missing(weight_penalty)) {
+        weight_penalty <- 0.5
+        if (verbose) message("By default, weight/penalty is set to 0.5")
+      }
       ### add TMB
       rp_df$TMB <- TMB_values
       ### categorize TMB
