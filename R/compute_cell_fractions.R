@@ -13,6 +13,7 @@
 #' https://doi.org/10.1186/s13073-019-0638-6
 #'
 #' @importFrom quantiseqr run_quantiseq
+#' @importFrom immunedeconv deconvolute_epic
 #'
 #' @param RNA_tpm data.frame containing TPM values with HGNC symbols
 #' in rows and samples in columns.
