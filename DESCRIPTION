@@ -42,6 +42,7 @@ Imports:
     easierData,
     dorothea (>= 1.0.0),
     quantiseqr,
+    immunedeconv,
     ROCR,
     grDevices, 
     stats,

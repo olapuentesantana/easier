@@ -55,20 +55,32 @@ compute_cell_fractions <- function(RNA_tpm = NULL,
         stop("Hgnc gene symbols are required", call. = FALSE)
     }
 
-    # Cell fractions: run deconvolute
+    # Compute cell fractions: quanTIseq
     cell_fractions <- quantiseqr::run_quantiseq(
         expression_data = RNA_tpm, signature_matrix = "TIL10",
         is_arraydata = FALSE, is_tumordata = TRUE, scale_mRNA = TRUE
     )
-
     cell_fractions$Sample <- NULL
-    # Samples as rows, immune cells as columns
+
+    # Change names to match opt models
     new_cellnames <- c(
         "B", "M1", "M2", "Monocyte", "Neutrophil",
         "NK", "CD4 T", "CD8+ T", "Treg", "DC", "Other"
     )
     colnames(cell_fractions) <- new_cellnames
+
+    # Fix estimation issue with Tregs and CD4 T
     cell_fractions[, "CD4 T"] <- cell_fractions[, "CD4 T"] + cell_fractions[, "Treg"]
+
+    # Cell fractions: EPIC (CAFs and endothelial cells)
+    epic_cellfrac <- immunedeconv::deconvolute_epic(gene_expression_matrix = RNA_tpm,
+                                                    tumor = TRUE, scale_mrna = TRUE
+    )
+
+    # Combine cell fractions: EPIC and quanTIseq
+    cell_fractions <- cbind(cell_fractions,
+                            t(epic_cellfrac[c("CAFs", "Endothelial"), rownames(cell_fractions)])
+    )
 
     if (verbose) message("Cell fractions computed! \n")
     return(cell_fractions)
