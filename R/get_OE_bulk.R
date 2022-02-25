@@ -17,8 +17,6 @@
 #' Checkpoint Blockade. Cell 175, 984–997.e24.
 #' https://doi.org/10.1016/j.cell.2018.09.006.
 #'
-#' @importFrom arules discretize
-#'
 #' @param r list containing a numeric matrix with bulk RNA-Seq
 #' data (tpm values) and a character string with the available
 #' gene names.
@@ -79,7 +77,8 @@ get_OE_bulk <- function(r,
     r$genes_mean <- rowMeans(r$tpm)
     r$zscores <- sweep(r$tpm, 1, r$genes_mean, FUN = "-")
     r$genes_dist <- r$genes_mean
-    r$genes_dist_q <- arules::discretize(r$genes_dist, n.cat = 50)
+    r$genes_dist_q <- discretize(r$genes_dist, n_cat = 50)
+
     r$sig_scores <- matrix(data = 0, nrow = ncol(r$tpm), ncol = length(gene_sign))
     sig_names <- names(gene_sign)
     colnames(r$sig_scores) <- sig_names

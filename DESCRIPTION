@@ -54,7 +54,6 @@ Imports:
     dplyr,
     matrixStats,
     rlang,
-    arules, 
     BiocParallel,
     reshape2,
     rstatix,

@@ -57,6 +57,7 @@
 #'
 #' # Bin genes into 50 expression bins according to their average
 #' r$genes_dist_q <- discretize(r$genes_dist, n_cat = 50)
+#' }
 discretize <- function(v, n_cat){
   q1 <- stats::quantile(v, seq(from = (1/n_cat),to = 1,by = (1/n_cat)))
   u <- matrix(nrow = length(v))
