@@ -2,8 +2,9 @@
 #' score
 #'
 #' Calculates RIR score by combining a set of gene
-#' signatures associated with downregulation of T cell
-#' exclusion, post-treatment and functional resistance.
+#' signatures associated with upregulation and
+#' downregulation of T cell exclusion, post-treatment
+#' and functional resistance.
 #' We used the original approach defined in Jerby-Arnon
 #' et al., Cell, 2018.
 #'
@@ -24,7 +25,9 @@
 #' @param RIR_program list with gene signatures included in the immune
 #' resistance program from Jerby-Arnon et al., 2018.
 #'
-#' @return A numeric matrix with samples in rows and RIR score in a column.
+#' @return A numeric matrix with samples in rows and three RIR scores as
+#' columns: "resF_up" (upregulated score), "resF_down" (downregulated score)
+#' and "resF" (upregulated score - downregulated score).
 #'
 compute_RIR <- function(RNA_tpm,
                         RIR_program) {
@@ -56,9 +59,11 @@ compute_RIR <- function(RNA_tpm,
     )
 
     # Keep that signature considered to be relevant
-    keep_sig <- c("resF.down")
-    score <- as.matrix(res[, colnames(res) %in% keep_sig])
+    keep_sig <- c("resF.down", "resF.up")
+    score <- as.data.frame(res[, colnames(res) %in% keep_sig])
+    score$resF <- score[,"resF.up"] - score[,"resF.down"]
     rownames(score) <- colnames(log2_RNA_tpm)
+    colnames(score) <- gsub(".", "_", colnames(score), fixed = TRUE)
 
     return(data.frame(RIR = score, check.names = FALSE))
 }
