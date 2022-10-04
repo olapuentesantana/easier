@@ -11,7 +11,7 @@ explore_biomarkers(
   lrpairs = NULL,
   ccpairs = NULL,
   cancer_type,
-  patient_response = NULL,
+  patient_label = NULL,
   verbose = TRUE
 )
 }
@@ -43,8 +43,8 @@ have a corresponding model available: "BLCA", "BRCA", "CESC", "CRC",
 "GBM", "HNSC", "KIRC", "KIRP", "LIHC", "LUAD", "LUSC", "NSCLC", "OV",
 "PAAD", "PRAD", "SKCM", "STAD", "THCA" and "UCEC".}
 
-\item{patient_response}{character vector with two factors
-(Non-responders = NR, Responders = R).}
+\item{patient_label}{character vector with two factor levels,
+e.g. NR (Non-responders) vs R (Responders), pre- vs on- treatment.}
 
 \item{verbose}{logical flag indicating whether to display messages
 about the process.}
@@ -79,14 +79,14 @@ cancer_type <- metadata(dataset_mariathasan)[["cancertype"]]
 
 # Select a subset of patients to reduce vignette building time.
 pat_subset <- c(
-    "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-    "SAMba1a34b5a060", "SAM18a4dabbc557"
+  "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+  "SAMba1a34b5a060", "SAM18a4dabbc557"
 )
 RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 
 # Computation of TF activity
 tf_activity <- compute_TF_activity(
-    RNA_tpm = RNA_tpm
+  RNA_tpm = RNA_tpm
 )
 
 # retrieve clinical response
@@ -96,12 +96,12 @@ patient_ICBresponse <- patient_ICBresponse[names(patient_ICBresponse) \%in\% pat
 
 # Investigate possible biomarkers
 output_biomarkers <- explore_biomarkers(
-    tfs = tf_activity,
-    cancer_type = cancer_type,
-    patient_response = patient_ICBresponse
+  tfs = tf_activity,
+  cancer_type = cancer_type,
+  patient_label = patient_ICBresponse
 )
 
-\dontrun{
+\donttest{
 
 RNA_counts <- assays(dataset_mariathasan)[["counts"]]
 RNA_counts <- RNA_counts[, colnames(RNA_counts) \%in\% pat_subset]
@@ -111,31 +111,31 @@ cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
 
 # Computation of pathway scores
 pathway_activity <- compute_pathway_activity(
-    RNA_counts = RNA_counts,
-    remove_sig_genes_immune_response = TRUE
+  RNA_counts = RNA_counts,
+  remove_sig_genes_immune_response = TRUE
 )
 
 # Computation of ligand-receptor pair weights
 lrpair_weights <- compute_LR_pairs(
-    RNA_tpm = RNA_tpm,
-    cancer_type = "pancan"
+  RNA_tpm = RNA_tpm,
+  cancer_type = "pancan"
 )
 
 # Computation of cell-cell interaction scores
 ccpair_scores <- compute_CC_pairs(
-    lrpairs = lrpair_weights,
-    cancer_type = "pancan"
+  lrpairs = lrpair_weights,
+  cancer_type = "pancan"
 )
 
 # Investigate possible biomarkers
 output_biomarkers <- explore_biomarkers(
-    pathways = pathway_activity,
-    immunecells = cell_fractions,
-    lrpairs = lrpair_weights,
-    tfs = tf_activity,
-    ccpairs = ccpair_scores,
-    cancer_type = cancer_type,
-    patient_response = patient_ICBresponse
+  pathways = pathway_activity,
+  immunecells = cell_fractions,
+  lrpairs = lrpair_weights,
+  tfs = tf_activity,
+  ccpairs = ccpair_scores,
+  cancer_type = cancer_type,
+  patient_label = patient_ICBresponse
 )
 }
 }

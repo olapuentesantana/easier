@@ -1,5 +1,5 @@
 ---
-title: easier User Manual
+title: easier User Manual <right>![](easier_logo.png){#id .class width=60 height=60}
 author:
 - name: Oscar Lapuente-Santana
   affiliation: 
@@ -165,16 +165,20 @@ suppressPackageStartupMessages({
 
 For this example we will use gene expression data (counts and tpm values). Other variables include patient best overall response (BOR) to anti-PD-L1 therapy, tumor mutational burden (TMB) and the cancer type the cohort belongs to.
 
-```{r}
+```{r, eval=TRUE}
 dataset_mariathasan <- get_Mariathasan2018_PDL1_treatment()
+
 # patient response
 patient_ICBresponse <- colData(dataset_mariathasan)[["BOR"]]
 names(patient_ICBresponse) <- colData(dataset_mariathasan)[["pat_id"]]
+
 # tumor mutational burden
 TMB <- colData(dataset_mariathasan)[["TMB"]]
 names(TMB) <- colData(dataset_mariathasan)[["pat_id"]]
+
 # cohort cancer type 
 cancer_type <- metadata(dataset_mariathasan)[["cancertype"]]
+
 # gene expression data
 RNA_counts <- assays(dataset_mariathasan)[["counts"]]
 RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
@@ -186,6 +190,35 @@ patient_ICBresponse <- patient_ICBresponse[pat_subset]
 TMB <- TMB[pat_subset]
 RNA_counts <- RNA_counts[, pat_subset]
 RNA_tpm <- RNA_tpm[, pat_subset]
+
+# Some genes are causing issues due to approved symbols matching more than one gene
+genes_info <- easier:::reannotate_genes(cur_genes = rownames(RNA_tpm))
+## Remove non-approved symbols
+non_na <- !is.na(genes_info$new_names)
+RNA_tpm <- RNA_tpm[non_na, ]
+genes_info <- genes_info[non_na, ]
+## Remove entries that are withdrawn
+RNA_tpm <- RNA_tpm[-which(genes_info$new_names == "entry withdrawn"), ]
+genes_info <- genes_info[-which(genes_info$new_names == "entry withdrawn"), ]
+## Identify duplicated new genes
+newnames_dup <- unique(genes_info$new_names[duplicated(genes_info$new_names)])
+newnames_dup_ind <- do.call(c, lapply(newnames_dup, function(X) which(genes_info$new_names == X)))
+newnames_dup <- genes_info$new_names[newnames_dup_ind]
+## Retrieve data for duplicated genes
+tmp <- RNA_tpm[genes_info$old_names[genes_info$new_names %in% newnames_dup],]
+## Remove data for duplicated genes
+RNA_tpm <- RNA_tpm[-which(rownames(RNA_tpm) %in% rownames(tmp)),]
+## Aggregate data of duplicated genes
+dup_genes <- genes_info$new_names[which(genes_info$new_names %in% newnames_dup)]
+names(dup_genes) <- rownames(tmp)
+if (anyDuplicated(newnames_dup)){
+  tmp2 <- stats::aggregate(tmp, by = list(dup_genes), FUN = "mean")
+  rownames(tmp2) <- tmp2$Group.1
+  tmp2$Group.1 <- NULL
+}
+# Put data together
+RNA_tpm <- rbind(RNA_tpm, tmp2)
+
 ```
 
 ## Compute hallmarks of immune response
@@ -315,7 +348,6 @@ In this likely scenario, an score of likelihood of immune response can be assign
 
 ```{r, eval=TRUE}
 output_eval_no_resp <- assess_immune_response(predictions_immune_response = predictions,
-                                              RNA_tpm = RNA_tpm,
                                               TMB_values = TMB,
                                               easier_with_TMB = "weighted_average",
                                               weight_penalty = 0.5)
@@ -347,23 +379,22 @@ easier_derived_scores <- retrieve_easier_score(predictions_immune_response = pre
 head(easier_derived_scores)
 ```
 
-
 ## Interpret response to immunotherapy through systems biomarkers {#biomarkers}
 
 Identifying mechanisms used by patients' tumors to resist or succumb to ICB treatment is of paramount importance. Via `explore_biomarkers`, we can visualize stunning biomarkers of immune response and shed light into possible mechanisms responsible for the patients' response to treatment. 
 
-As before, the option `patient_response` should be provided with a character string containing patients' clinical response (where non-responders are labeled as NR and responders as R). 
+The option `patient_label` allows to make a two-level comparison by providing a character string containing the label of each patient, for instance, patients' clinical response (where non-responders are labeled as NR and responders as R). 
 
 In order to leverage the cancer-specific biomarker weights inferred from model training, you need to specify again which `cancer_type` the bulk RNA-seq data belongs to. As before, the selected `cancer_type` should be included in the list described above.
 
 ```{r, eval=TRUE}
 output_biomarkers <- explore_biomarkers(pathways = pathway_activities,
                                         immunecells = cell_fractions,
-                                        lrpairs = lrpair_weights,
                                         tfs = tf_activities,
+                                        lrpairs = lrpair_weights,
                                         ccpairs = ccpair_scores,
                                         cancer_type = cancer_type,
-                                        patient_response = patient_ICBresponse)
+                                        patient_label = patient_ICBresponse)
 ```
 
 The output of `explore_biomarkers` returns, for each quantitative descriptor, feature's z-score values comparing responders (R) and non-responders (NR) patients with the corresponding feature's model weights (only top 15 biomarkers are shown for tfs, lrpairs and ccpairs descriptors). 
@@ -372,7 +403,7 @@ Additionally, a volcano plot integrating systems biomarkers from all quantitativ
 
 `output_biomarkers` stores the plots from above, and they can be inspected in R as follows:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 # inspect output
 output_biomarkers[[1]]
 output_biomarkers[[2]]

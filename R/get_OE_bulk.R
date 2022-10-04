@@ -17,8 +17,6 @@
 #' Checkpoint Blockade. Cell 175, 984–997.e24.
 #' https://doi.org/10.1016/j.cell.2018.09.006.
 #'
-#' @importFrom arules discretize
-#'
 #' @param r list containing a numeric matrix with bulk RNA-Seq
 #' data (tpm values) and a character string with the available
 #' gene names.
@@ -38,7 +36,7 @@
 #' (rows = samples; columns = gene signatures)
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # using a SummarizedExperiment object
 #' library(SummarizedExperiment)
 #' # Using example exemplary dataset (Mariathasan et al., Nature, 2018)
@@ -51,8 +49,8 @@
 #'
 #' # Select a subset of patients to reduce vignette building time.
 #' pat_subset <- c(
-#'     "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-#'     "SAMba1a34b5a060", "SAM18a4dabbc557"
+#'   "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+#'   "SAMba1a34b5a060", "SAM18a4dabbc557"
 #' )
 #' RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) %in% pat_subset]
 #'
@@ -76,43 +74,44 @@ get_OE_bulk <- function(r,
                         num_rounds = 1000,
                         full_flag = FALSE,
                         verbose = TRUE) {
-    r$genes_mean <- rowMeans(r$tpm)
-    r$zscores <- sweep(r$tpm, 1, r$genes_mean, FUN = "-")
-    r$genes_dist <- r$genes_mean
-    r$genes_dist_q <- arules::discretize(r$genes_dist, n.cat = 50)
-    r$sig_scores <- matrix(data = 0, nrow = ncol(r$tpm), ncol = length(gene_sign))
-    sig_names <- names(gene_sign)
-    colnames(r$sig_scores) <- sig_names
-    r$sig_scores_raw <- r$sig_scores
-    rand_flag <- is.null(r$rand_scores) | !all(is.element(
-        names(gene_sign),
-        colnames(r$rand_scores)
-    ))
+  r$genes_mean <- rowMeans(r$tpm)
+  r$zscores <- sweep(r$tpm, 1, r$genes_mean, FUN = "-")
+  r$genes_dist <- r$genes_mean
+  r$genes_dist_q <- discretize(r$genes_dist, n_cat = 50)
+
+  r$sig_scores <- matrix(data = 0, nrow = ncol(r$tpm), ncol = length(gene_sign))
+  sig_names <- names(gene_sign)
+  colnames(r$sig_scores) <- sig_names
+  r$sig_scores_raw <- r$sig_scores
+  rand_flag <- is.null(r$rand_scores) | !all(is.element(
+    names(gene_sign),
+    colnames(r$rand_scores)
+  ))
+  if (rand_flag) {
+    # if (verbose) message("Computing also random scores...", "\n")
+    r$rand_scores <- r$sig_scores
+  }
+  for (i in sig_names) {
+    b_sign <- is.element(r$genes, gene_sign[[i]])
+    if (sum(b_sign) < 2) {
+      next()
+    }
     if (rand_flag) {
-        # if (verbose) message("Computing also random scores...", "\n")
-        r$rand_scores <- r$sig_scores
+      rand_scores <- get_semi_random_OE(r, r$genes_dist_q, b_sign,
+        num_rounds = num_rounds, random_seed = 1234
+      )
+    } else {
+      rand_scores <- r$rand_scores[, i]
     }
-    for (i in sig_names) {
-        b_sign <- is.element(r$genes, gene_sign[[i]])
-        if (sum(b_sign) < 2) {
-            next()
-        }
-        if (rand_flag) {
-            rand_scores <- get_semi_random_OE(r, r$genes_dist_q, b_sign,
-                num_rounds = num_rounds, random_seed = 1234
-            )
-        } else {
-            rand_scores <- r$rand_scores[, i]
-        }
-        raw_scores <- colMeans(r$zscores[b_sign, ])
-        final_scores <- raw_scores - rand_scores
-        r$sig_scores[, i] <- final_scores
-        r$sig_scores_raw[, i] <- raw_scores
-        r$rand_scores[, i] <- rand_scores
-    }
-    if (full_flag) {
-        return(r)
-    }
-    sig_scores <- r$sig_scores
-    return(sig_scores)
+    raw_scores <- colMeans(r$zscores[b_sign, ])
+    final_scores <- raw_scores - rand_scores
+    r$sig_scores[, i] <- final_scores
+    r$sig_scores_raw[, i] <- raw_scores
+    r$rand_scores[, i] <- rand_scores
+  }
+  if (full_flag) {
+    return(r)
+  }
+  sig_scores <- r$sig_scores
+  return(sig_scores)
 }

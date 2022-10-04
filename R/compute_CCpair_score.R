@@ -34,20 +34,20 @@
 #'
 #' # Select a subset of patients to reduce vignette building time.
 #' pat_subset <- c(
-#'     "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-#'     "SAMba1a34b5a060", "SAM18a4dabbc557"
+#'   "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+#'   "SAMba1a34b5a060", "SAM18a4dabbc557"
 #' )
 #' RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) %in% pat_subset]
 #'
 #' # Computation of ligand-receptor pair weights
 #' lrpair_weights <- compute_LR_pairs(
-#'     RNA_tpm = RNA_tpm,
-#'     cancer_type = "pancan"
+#'   RNA_tpm = RNA_tpm,
+#'   cancer_type = "pancan"
 #' )
 #'
 #' # remove ligand receptor pairs that are always NA
 #' na_lrpairs <- apply(lrpair_weights, 2, function(x) {
-#'     all(is.na(x))
+#'   all(is.na(x))
 #' })
 #' lrpair_weights <- lrpair_weights[, na_lrpairs == FALSE]
 #'
@@ -63,17 +63,17 @@
 #' intercell_networks <- suppressMessages(easierData::get_intercell_networks())
 #' intercell_network_pancan <- intercell_networks[["pancan"]]
 #' celltypes <- unique(c(
-#'     as.character(intercell_network_pancan$cell1),
-#'     as.character(intercell_network_pancan$cell2)
+#'   as.character(intercell_network_pancan$cell1),
+#'   as.character(intercell_network_pancan$cell2)
 #' ))
 #' celltype1 <- celltypes[1]
 #' celltype2 <- celltypes[1]
 #'
 #' # compute the CC score for each patient
 #' CCpair_score <- compute_CCpair_score(celltype1, celltype2,
-#'     intercell_network_pancan,
-#'     lrpairs_binary, lr_frequency,
-#'     compute_log = TRUE
+#'   intercell_network_pancan,
+#'   lrpairs_binary, lr_frequency,
+#'   compute_log = TRUE
 #' )
 compute_CCpair_score <- function(celltype1,
                                  celltype2,
@@ -82,29 +82,29 @@ compute_CCpair_score <- function(celltype1,
                                  lr_frequency,
                                  compute_log = TRUE) {
 
-    # consider the LR interactions between the two cell types
-    CC_network <- intercell_network[intersect(
-        which(intercell_network$cell1 == celltype1),
-        which(intercell_network$cell2 == celltype2)
-    ), ]
-    CC_LRpairs <- paste(CC_network$ligands, CC_network$receptors, sep = "_")
+  # consider the LR interactions between the two cell types
+  CC_network <- intercell_network[intersect(
+    which(intercell_network$cell1 == celltype1),
+    which(intercell_network$cell2 == celltype2)
+  ), ]
+  CC_LRpairs <- paste(CC_network$ligands, CC_network$receptors, sep = "_")
 
-    # extract the corresponding data for all patients
-    ix <- match(CC_LRpairs, colnames(lrpairs_binary))
-    CC_LR_data <- lrpairs_binary[, ix[!is.na(ix)]]
+  # extract the corresponding data for all patients
+  ix <- match(CC_LRpairs, colnames(lrpairs_binary))
+  CC_LR_data <- lrpairs_binary[, ix[!is.na(ix)]]
 
-    # and the LR frequecies
-    CC_lr_frequency <- lr_frequency[colnames(CC_LR_data)]
+  # and the LR frequecies
+  CC_lr_frequency <- lr_frequency[colnames(CC_LR_data)]
 
-    # multiply each row of the matrix (i.e. each patient data)
-    # for the vector with the frequencies
-    CC_LR_data_weighted <- t(t(CC_LR_data) * 1 / CC_lr_frequency)
+  # multiply each row of the matrix (i.e. each patient data)
+  # for the vector with the frequencies
+  CC_LR_data_weighted <- t(t(CC_LR_data) * 1 / CC_lr_frequency)
 
-    # compute the cell cell interaction score as the sum of the LR weighted pairs
-    CC_score <- apply(CC_LR_data_weighted, 1, sum)
+  # compute the cell cell interaction score as the sum of the LR weighted pairs
+  CC_score <- apply(CC_LR_data_weighted, 1, sum)
 
-    # if we use the weighted score taking the log might be better
-    if (compute_log == TRUE) {
-        CC_score <- log2(CC_score + 1)
-    }
+  # if we use the weighted score taking the log might be better
+  if (compute_log == TRUE) {
+    CC_score <- log2(CC_score + 1)
+  }
 }

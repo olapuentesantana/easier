@@ -38,8 +38,8 @@
 #'
 #' # Select a subset of patients to reduce vignette building time.
 #' pat_subset <- c(
-#'     "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-#'     "SAMba1a34b5a060", "SAM18a4dabbc557"
+#'   "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+#'   "SAMba1a34b5a060", "SAM18a4dabbc557"
 #' )
 #' RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) %in% pat_subset]
 #'
@@ -47,29 +47,31 @@
 #' cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
 compute_cell_fractions <- function(RNA_tpm = NULL,
                                    verbose = TRUE) {
-    # Some checks
-    if (is.null(RNA_tpm)) stop("TPM gene expression data not found")
+  # Some checks
+  if (is.null(RNA_tpm)) stop("TPM gene expression data not found")
 
-    # HGNC symbols are required
-    if (any(grep("ENSG00000", rownames(RNA_tpm)))) {
-        stop("Hgnc gene symbols are required", call. = FALSE)
-    }
+  # HGNC symbols are required
+  if (any(grep("ENSG00000", rownames(RNA_tpm)))) {
+    stop("Hgnc gene symbols are required", call. = FALSE)
+  }
 
-    # Cell fractions: run deconvolute
-    cell_fractions <- quantiseqr::run_quantiseq(
-        expression_data = RNA_tpm, signature_matrix = "TIL10",
-        is_arraydata = FALSE, is_tumordata = TRUE, scale_mRNA = TRUE
-    )
+  # Compute cell fractions: quanTIseq
+  cell_fractions <- quantiseqr::run_quantiseq(
+    expression_data = RNA_tpm, signature_matrix = "TIL10",
+    is_arraydata = FALSE, is_tumordata = TRUE, scale_mRNA = TRUE
+  )
+  cell_fractions$Sample <- NULL
 
-    cell_fractions$Sample <- NULL
-    # Samples as rows, immune cells as columns
-    new_cellnames <- c(
-        "B", "M1", "M2", "Monocyte", "Neutrophil",
-        "NK", "CD4 T", "CD8+ T", "Treg", "DC", "Other"
-    )
-    colnames(cell_fractions) <- new_cellnames
-    cell_fractions[, "CD4 T"] <- cell_fractions[, "CD4 T"] + cell_fractions[, "Treg"]
+  # Change names to match opt models
+  new_cellnames <- c(
+    "B", "M1", "M2", "Monocyte", "Neutrophil",
+    "NK", "CD4 T", "CD8+ T", "Treg", "DC", "Other"
+  )
+  colnames(cell_fractions) <- new_cellnames
 
-    if (verbose) message("Cell fractions computed! \n")
-    return(cell_fractions)
+  # Fix estimation issue with Tregs and CD4 T
+  cell_fractions[, "CD4 T"] <- cell_fractions[, "CD4 T"] + cell_fractions[, "Treg"]
+
+  if (verbose) message("Cell fractions computed! \n")
+  return(cell_fractions)
 }

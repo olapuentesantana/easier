@@ -1,5 +1,4 @@
-# easier
-
+# easier <img src="vignettes/easier_logo.png" alt="EaSIeR logo" width="70" height="70" align="right">
 ---
  
 <!-- badges: start -->

@@ -23,8 +23,6 @@
 #' instability status of right-sided Colon Cancer. BMC Genomics
 #' 20, 769.
 #'
-#' @importFrom stats na.omit
-#'
 #' @param sig can be either 'IMPRES' or 'MSI'.
 #' @param len the length of gene_1 vector.
 #' @param match_F_1 numeric vector indicating the index of signature
@@ -39,33 +37,33 @@
 #'
 compute_IMPRES_MSI <- function(sig, len, match_F_1, match_F_2, RNA_tpm) {
 
-    # Initialize variables
-    F_pair_expr_A <- F_pair_expr_B <- SCORE_matrix <- matrix(0, len, ncol(RNA_tpm))
-    colnames(SCORE_matrix) <- colnames(RNA_tpm)
-    score <- vector("numeric", length = ncol(RNA_tpm))
-    names(score) <- colnames(RNA_tpm)
+  # Initialize variables
+  F_pair_expr_A <- F_pair_expr_B <- SCORE_matrix <- matrix(0, len, ncol(RNA_tpm))
+  colnames(SCORE_matrix) <- colnames(RNA_tpm)
+  score <- vector("numeric", length = ncol(RNA_tpm))
+  names(score) <- colnames(RNA_tpm)
 
-    # Log2 transformation:
-    log2_RNA_tpm <- as.data.frame(log2(RNA_tpm + 1))
+  # Log2 transformation:
+  log2_RNA_tpm <- as.data.frame(log2(RNA_tpm + 1))
 
-    # Calculation:
-    F_pair_expr_A <- log2_RNA_tpm[match_F_1, ]
-    F_pair_expr_B <- log2_RNA_tpm[match_F_2, ]
+  # Calculation:
+  F_pair_expr_A <- log2_RNA_tpm[match_F_1, ]
+  F_pair_expr_B <- log2_RNA_tpm[match_F_2, ]
 
-    if (anyNA(F_pair_expr_A + F_pair_expr_B)) {
-        remove_pairs <- as.vector(which(is.na(rowSums(F_pair_expr_A + F_pair_expr_B) == TRUE)))
-    }
+  if (anyNA(F_pair_expr_A + F_pair_expr_B)) {
+    remove_pairs <- as.vector(which(is.na(rowSums(F_pair_expr_A + F_pair_expr_B) == TRUE)))
+  }
 
-    SCORE_matrix <- F_pair_expr_A > F_pair_expr_B
-    if (anyNA(SCORE_matrix)) {
-        score <- colSums(SCORE_matrix, na.rm = TRUE)
-        score <- (score * nrow(SCORE_matrix)) / (nrow(SCORE_matrix) - length(remove_pairs))
-    } else {
-        score <- colSums(SCORE_matrix)
-    }
+  SCORE_matrix <- F_pair_expr_A > F_pair_expr_B
+  if (anyNA(SCORE_matrix)) {
+    score <- colSums(SCORE_matrix, na.rm = TRUE)
+    score <- (score * nrow(SCORE_matrix)) / (nrow(SCORE_matrix) - length(remove_pairs))
+  } else {
+    score <- colSums(SCORE_matrix)
+  }
 
-    df <- data.frame(score, check.names = FALSE)
-    names(df)[1] <- sig
+  df <- data.frame(score, check.names = FALSE)
+  names(df)[1] <- sig
 
-    return(df)
+  return(df)
 }

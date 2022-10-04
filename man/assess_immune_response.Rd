@@ -10,9 +10,9 @@ assess_immune_response(
   patient_response = NULL,
   RNA_tpm = NULL,
   select_gold_standard = NULL,
-  TMB_values,
-  easier_with_TMB = c("weighted_average", "penalized_score"),
-  weight_penalty,
+  TMB_values = NULL,
+  easier_with_TMB = "none",
+  weight_penalty = NULL,
   verbose = TRUE
 )
 }
@@ -36,8 +36,9 @@ of immune response to be computed. Default scores are computed for:
 burden (TMB) values.}
 
 \item{easier_with_TMB}{character string indicating which approach
-should be used to integrate easier with TMB. One of "weighted_average"
-(default) or "penalized_score".}
+should be used to integrate easier with TMB. If \code{TMB_values}
+provided, one of "weighted_average" (default) or "penalized_score".
+If \code{TMB_values} not provided, default is "none".}
 
 \item{weight_penalty}{integer value from 0 to 1, which is used to
 define the weight or penalty for combining easier and TMB scores based
@@ -122,7 +123,7 @@ output_eval_with_resp <- assess_immune_response(
   TMB_values = TMB,
   easier_with_TMB = "weighted_average",
 )
-\dontrun{
+\donttest{
 
 RNA_counts <- assays(dataset_mariathasan)[["counts"]]
 RNA_counts <- RNA_counts[, colnames(RNA_counts) \%in\% pat_subset]

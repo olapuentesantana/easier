@@ -6,8 +6,8 @@
 \usage{
 compute_scores_immune_response(
   RNA_tpm = NULL,
-  selected_scores = c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy",
-    "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS"),
+  selected_scores = c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS",
+    "Tcell_inflamed", "RIR", "TLS"),
   verbose = TRUE
 )
 }
@@ -46,18 +46,19 @@ cancer_type <- metadata(dataset_mariathasan)$cancertype
 
 # Select a subset of patients to reduce vignette building time.
 pat_subset <- c(
-    "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-    "SAMba1a34b5a060", "SAM18a4dabbc557"
+  "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+  "SAMba1a34b5a060", "SAM18a4dabbc557"
 )
 RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 
 # Computation of different hallmarks of anti-cancer immune responses
 hallmarks_of_immune_response <- c(
-    "CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy")
+  "CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy"
+)
 
 scores_immune_response <- compute_scores_immune_response(
-    RNA_tpm = RNA_tpm,
-    selected_scores = hallmarks_of_immune_response
+  RNA_tpm = RNA_tpm,
+  selected_scores = hallmarks_of_immune_response
 )
 }
 \references{

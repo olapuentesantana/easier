@@ -17,7 +17,7 @@
 #' columns = tasks).
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # using a SummarizedExperiment object
 #' library(SummarizedExperiment)
 #' # Using example exemplary dataset (Mariathasan et al., Nature, 2018)
@@ -30,59 +30,59 @@
 #'
 #' # Select a subset of patients to reduce vignette building time.
 #' pat_subset <- c(
-#'     "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-#'     "SAMba1a34b5a060", "SAM18a4dabbc557"
+#'   "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+#'   "SAMba1a34b5a060", "SAM18a4dabbc557"
 #' )
 #' RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) %in% pat_subset]
 #'
 #' # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
 #' tf_activities <- compute_TF_activity(
-#'     RNA_tpm = RNA_tpm
+#'   RNA_tpm = RNA_tpm
 #' )
 #'
 #' # Parameters values should be defined as a matrix
 #' # with features as rows and tasks as columns
 #' estimated_parameters <- matrix(rnorm(n = (ncol(tf_activities) + 1) * 10),
-#'     nrow = ncol(tf_activities) + 1, ncol = 10
+#'   nrow = ncol(tf_activities) + 1, ncol = 10
 #' )
 #' rownames(estimated_parameters) <- c("(Intercept)", colnames(tf_activities))
 #' colnames(estimated_parameters) <- c(
-#'     "CYT", "Ock_IS", "Roh_IS", "chemokines",
-#'     "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS"
+#'   "CYT", "Ock_IS", "Roh_IS", "chemokines",
+#'   "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS"
 #' )
 #'
 #' # Compute predictions using parameters values
 #' pred_test <- rmtlr_test(
-#'     x_test = tf_activities,
-#'     coef_matrix = estimated_parameters
+#'   x_test = tf_activities,
+#'   coef_matrix = estimated_parameters
 #' )
 #' }
 rmtlr_test <- function(x_test,
                        coef_matrix) {
 
-    # Keep intercept
-    intercept <- as.matrix(coef_matrix)[1, ]
+  # Keep intercept
+  intercept <- as.matrix(coef_matrix)[1, ]
 
-    # Remove intercept from coef matrix
-    coef <- as.matrix(coef_matrix)[-1, , drop = FALSE]
+  # Remove intercept from coef matrix
+  coef <- as.matrix(coef_matrix)[-1, , drop = FALSE]
 
-    # match features properly
-    pos <- stats::na.omit(match(colnames(x_test), rownames(coef)))
-    coef <- coef[pos, , drop = FALSE]
+  # match features properly
+  pos <- stats::na.omit(match(colnames(x_test), rownames(coef)))
+  coef <- coef[pos, , drop = FALSE]
 
-    if (length(coef) > 1) {
-        slope <- coef
-        fit_pred <- t(matrix(as.matrix(intercept),
-            nrow = ncol(slope),
-            ncol = nrow(x_test)
-        )
-        + t(slope) %*% t(as.matrix(x_test[, rownames(slope)])))
-    } else {
-        slope <- 0
-        fit_pred <- matrix(as.matrix(intercept),
-            nrow = ncol(slope),
-            ncol = nrow(x_test[[1]])
-        )
-    }
-    return(fit_pred)
+  if (length(coef) > 1) {
+    slope <- coef
+    fit_pred <- t(matrix(as.matrix(intercept),
+      nrow = ncol(slope),
+      ncol = nrow(x_test)
+    )
+    + t(slope) %*% t(as.matrix(x_test[, rownames(slope)])))
+  } else {
+    slope <- 0
+    fit_pred <- matrix(as.matrix(intercept),
+      nrow = ncol(slope),
+      ncol = nrow(x_test[[1]])
+    )
+  }
+  return(fit_pred)
 }
