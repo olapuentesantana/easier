@@ -13,7 +13,6 @@
 #' https://doi.org/10.1186/s13073-019-0638-6
 #'
 #' @importFrom quantiseqr run_quantiseq
-#' @importFrom immunedeconv deconvolute_epic
 #'
 #' @param RNA_tpm data.frame containing TPM values with HGNC symbols
 #' in rows and samples in columns.
@@ -72,16 +71,6 @@ compute_cell_fractions <- function(RNA_tpm = NULL,
 
     # Fix estimation issue with Tregs and CD4 T
     cell_fractions[, "CD4 T"] <- cell_fractions[, "CD4 T"] + cell_fractions[, "Treg"]
-
-    # Cell fractions: EPIC (CAFs and endothelial cells)
-    epic_cellfrac <- immunedeconv::deconvolute_epic(gene_expression_matrix = RNA_tpm,
-                                                    tumor = TRUE, scale_mrna = TRUE
-    )
-
-    # Combine cell fractions: EPIC and quanTIseq
-    cell_fractions <- cbind(cell_fractions,
-                            t(epic_cellfrac[c("CAFs", "Endothelial"), rownames(cell_fractions)])
-    )
 
     if (verbose) message("Cell fractions computed! \n")
     return(cell_fractions)

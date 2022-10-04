@@ -40,9 +40,8 @@ Depends:
 Imports: 
     progeny,
     easierData,
-    dorothea (>= 1.0.0),
+    dorothea (>= 1.6.0),
     quantiseqr,
-    immunedeconv,
     ROCR,
     grDevices, 
     stats,
