@@ -11,7 +11,7 @@ explore_biomarkers(
   lrpairs = NULL,
   ccpairs = NULL,
   cancer_type,
-  patient_response = NULL,
+  patient_label = NULL,
   verbose = TRUE
 )
 }
@@ -43,8 +43,8 @@ have a corresponding model available: "BLCA", "BRCA", "CESC", "CRC",
 "GBM", "HNSC", "KIRC", "KIRP", "LIHC", "LUAD", "LUSC", "NSCLC", "OV",
 "PAAD", "PRAD", "SKCM", "STAD", "THCA" and "UCEC".}
 
-\item{patient_response}{character vector with two factors
-(Non-responders = NR, Responders = R).}
+\item{patient_label}{character vector with two factor levels,
+e.g. NR (Non-responders) vs R (Responders), pre- vs on- treatment.}
 
 \item{verbose}{logical flag indicating whether to display messages
 about the process.}
@@ -98,7 +98,7 @@ patient_ICBresponse <- patient_ICBresponse[names(patient_ICBresponse) \%in\% pat
 output_biomarkers <- explore_biomarkers(
     tfs = tf_activity,
     cancer_type = cancer_type,
-    patient_response = patient_ICBresponse
+    patient_label = patient_ICBresponse
 )
 
 \dontrun{
@@ -135,7 +135,7 @@ output_biomarkers <- explore_biomarkers(
     tfs = tf_activity,
     ccpairs = ccpair_scores,
     cancer_type = cancer_type,
-    patient_response = patient_ICBresponse
+    patient_label = patient_ICBresponse
 )
 }
 }

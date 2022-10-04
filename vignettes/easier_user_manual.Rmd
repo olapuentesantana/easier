@@ -212,15 +212,12 @@ RNA_tpm <- RNA_tpm[-which(rownames(RNA_tpm) %in% rownames(tmp)),]
 dup_genes <- genes_info$new_names[which(genes_info$new_names %in% newnames_dup)]
 names(dup_genes) <- rownames(tmp)
 if (anyDuplicated(newnames_dup)){
-  
   tmp2 <- aggregate(tmp, by = list(dup_genes), FUN = "mean")
   rownames(tmp2) <- tmp2$Group.1
   tmp2$Group.1 <- NULL
-  
 }
 # Put data together
 RNA_tpm <- rbind(RNA_tpm, tmp2)
-
 
 ```
 
@@ -228,7 +225,7 @@ RNA_tpm <- rbind(RNA_tpm, tmp2)
 
 Multiple hallmarks (i.e. published transcriptome-based predictors) of the immune response can also be computed using TPM data from RNA-seq. By default, the following scores of the immune response will be computed: cytolytic activity (CYT) [@ROONEY201548], Roh immune score (Roh_IS) [@Roheaah3560], chemokine signature (chemokines) [@Messina2012], Davoli immune signature (Davoli_IS) [@Davolieaaf8399], IFNy signature (IFNy) [@Ayers2017], Expanded immune signature (Ayers_expIS) [@Ayers2017], T-cell inflamed signature (Tcell_inflamed) [@Ayers2017], Repressed immune resistance (RIR) [@JERBYARNON2018984] and Tertiary lymphoid structures signature (TLS) [@Cabrita2020]. This selection can be customized by editing the `selected_scores` option.
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 hallmarks_of_immune_response <- c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
 immune_response_scores <- compute_scores_immune_response(RNA_tpm = RNA_tpm, 
                                                          selected_scores = hallmarks_of_immune_response)
@@ -240,13 +237,13 @@ head(immune_response_scores)
 We are going to use the bulk RNA-seq data to derive, for each patient, the five quantitative descriptors of the TME described above.
 
 By applying quanTIseq [@Finotello2019] method to TPM data from RNA-seq, the quantification of different cell fractions can be done as follows:
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
 head(cell_fractions)
 ```
 
 By applying PROGENy [@HOLLAND2020194431; @Schubert2018] method to count data from RNA-seq, the activity of 14 signaling pathways can be inferred as in the chunk below. 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 pathway_activities <- compute_pathway_activity(RNA_counts = RNA_counts,
                                                remove_sig_genes_immune_response = TRUE)
 head(pathway_activities)
@@ -254,7 +251,7 @@ head(pathway_activities)
 The call above infers pathway activity as a linear transformation of gene expression data. Since some pathway signature genes were also used to compute scores of immune response (output variable in EaSIeR model). With `remove_sig_genes_immune_response` set to `TRUE` (default), the overlapping genes are removed from the pathway signature genes used to infer pathway activities.  
 
 By applying DoRothEA [@Garcia-Alonso01082019] method to TPM data from RNA-seq, the activity of 118 TFs can be inferred as follows:
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 tf_activities <- compute_TF_activity(RNA_tpm = RNA_tpm)
 head(tf_activities[,1:5])
 ```
@@ -263,7 +260,7 @@ Using derived cancer-specific inter-cellular networks, the quantification of 867
 
 More detailed information on how these networks were obtained can be found in the experimental procedures section from our original work [@LAPUENTESANTANA2021100293].
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 lrpair_weights <- compute_LR_pairs(RNA_tpm = RNA_tpm,
                                    cancer_type = "pancan")
 head(lrpair_weights[,1:5])
@@ -273,7 +270,7 @@ Via `cancer_type`, a cancer-specific ligand-receptor pairs network can be chosen
 
 Using the ligand-receptor weights as input, 169 cell-cell interaction scores can be derived as in the chunk below. 
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 ccpair_scores <- compute_CC_pairs(lrpairs = lrpair_weights, 
                                   cancer_type = "pancan")
 head(ccpair_scores[,1:5])
@@ -289,7 +286,7 @@ The `cancer_type` provided should match one of the cancer-specific models availa
 
 The optimized models can be retrieved from `easierData` package using the function `get_opt_models()`.
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 predictions <- predict_immune_response(pathways = pathway_activities,
                                        immunecells = cell_fractions,
                                        tfs = tf_activities,
@@ -321,7 +318,7 @@ Since both immune response and TMB are essential for an effective immunotherapy 
 
 These two strategies to combine immune response and TMB require the definition of a certain weight or penalty beforehand (`weight_penalty`). The default weight or penalty is 0.5.
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 output_eval_with_resp <- assess_immune_response(predictions_immune_response = predictions,
                                                 patient_response = patient_ICBresponse,
                                                 RNA_tpm = RNA_tpm,
@@ -349,9 +346,8 @@ This is a usual case where we might have a cancer dataset with bulk RNA-seq data
 
 In this likely scenario, an score of likelihood of immune response can be assigned to each patient by omitting the argument `patient_response` within the function `assess_immune_response`.
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 output_eval_no_resp <- assess_immune_response(predictions_immune_response = predictions,
-                                              RNA_tpm = RNA_tpm,
                                               TMB_values = TMB,
                                               easier_with_TMB = "weighted_average",
                                               weight_penalty = 0.5)
@@ -373,7 +369,7 @@ output_eval_no_resp[[2]]
 
 We can further retrieve the easier score and also, the refined scores obtained by integrating easier score and TMB via `retrieve_easier_score`.
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 easier_derived_scores <- retrieve_easier_score(predictions_immune_response = predictions,
                                                TMB_values = TMB,
                                                easier_with_TMB = c("weighted_average", 
@@ -383,20 +379,19 @@ easier_derived_scores <- retrieve_easier_score(predictions_immune_response = pre
 head(easier_derived_scores)
 ```
 
-
 ## Interpret response to immunotherapy through systems biomarkers {#biomarkers}
 
 Identifying mechanisms used by patients' tumors to resist or succumb to ICB treatment is of paramount importance. Via `explore_biomarkers`, we can visualize stunning biomarkers of immune response and shed light into possible mechanisms responsible for the patients' response to treatment. 
 
-The option `patient_label` allows to compare two different conditions by providing a character string involing two factor levels, for instance, patients' clinical response (where non-responders are labeled as NR and responders as R). 
+The option `patient_label` allows to make a two-level comparison by providing a character string containing the label of each patient, for instance, patients' clinical response (where non-responders are labeled as NR and responders as R). 
 
 In order to leverage the cancer-specific biomarker weights inferred from model training, you need to specify again which `cancer_type` the bulk RNA-seq data belongs to. As before, the selected `cancer_type` should be included in the list described above.
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 output_biomarkers <- explore_biomarkers(pathways = pathway_activities,
                                         immunecells = cell_fractions,
-                                        lrpairs = lrpair_weights,
                                         tfs = tf_activities,
+                                        lrpairs = lrpair_weights,
                                         ccpairs = ccpair_scores,
                                         cancer_type = cancer_type,
                                         patient_label = patient_ICBresponse)
@@ -408,7 +403,7 @@ Additionally, a volcano plot integrating systems biomarkers from all quantitativ
 
 `output_biomarkers` stores the plots from above, and they can be inspected in R as follows:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 # inspect output
 output_biomarkers[[1]]
 output_biomarkers[[2]]

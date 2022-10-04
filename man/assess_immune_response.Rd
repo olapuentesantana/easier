@@ -10,9 +10,9 @@ assess_immune_response(
   patient_response = NULL,
   RNA_tpm = NULL,
   select_gold_standard = NULL,
-  TMB_values,
+  TMB_values = NULL,
   easier_with_TMB = "none",
-  weight_penalty,
+  weight_penalty = NULL,
   verbose = TRUE
 )
 }

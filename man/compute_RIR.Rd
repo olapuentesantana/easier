@@ -15,12 +15,15 @@ in rows and samples in columns.}
 resistance program from Jerby-Arnon et al., 2018.}
 }
 \value{
-A numeric matrix with samples in rows and RIR score in a column.
+A numeric matrix with samples in rows and three RIR scores as
+columns: "resF_up" (upregulated score), "resF_down" (downregulated score)
+and "resF" (upregulated score - downregulated score).
 }
 \description{
 Calculates RIR score by combining a set of gene
-signatures associated with downregulation of T cell
-exclusion, post-treatment and functional resistance.
+signatures associated with upregulation and
+downregulation of T cell exclusion, post-treatment
+and functional resistance.
 We used the original approach defined in Jerby-Arnon
 et al., Cell, 2018.
 }
