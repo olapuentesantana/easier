@@ -45,7 +45,7 @@ model learned with Regularized Multi-Task Linear
 Regression algorithm (RMTLR).
 }
 \examples{
-\dontrun{
+\donttest{
 # using a SummarizedExperiment object
 library(SummarizedExperiment)
 # Using example exemplary dataset (Mariathasan et al., Nature, 2018)
@@ -59,14 +59,14 @@ cancer_type <- metadata(dataset_mariathasan)[["cancertype"]]
 
 # Select a subset of patients to reduce vignette building time.
 pat_subset <- c(
-    "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-    "SAMba1a34b5a060", "SAM18a4dabbc557"
+  "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+  "SAMba1a34b5a060", "SAM18a4dabbc557"
 )
 RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 
 # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
 tf_activities <- compute_TF_activity(
-    RNA_tpm = RNA_tpm
+  RNA_tpm = RNA_tpm
 )
 
 view_name <- "tfs"
@@ -78,21 +78,21 @@ opt_models <- suppressMessages(easierData::get_opt_models())
 opt_xtrain_stats <- suppressMessages(easierData::get_opt_xtrain_stats())
 
 opt_model_cancer_view_spec <- lapply(view_name, function(X) {
-    return(opt_models[[cancer_type]][[X]])
+  return(opt_models[[cancer_type]][[X]])
 })
 names(opt_model_cancer_view_spec) <- view_name
 opt_xtrain_stats_cancer_view_spec <- lapply(view_name, function(X) {
-    return(opt_xtrain_stats[[cancer_type]][[X]])
+  return(opt_xtrain_stats[[cancer_type]][[X]])
 })
 names(opt_xtrain_stats_cancer_view_spec) <- view_name
 
 # Predict using rmtlr
 prediction_view <- predict_with_rmtlr(
-    view_name = view_name,
-    view_info = view_info,
-    view_data = view_data,
-    opt_model_cancer_view_spec = opt_model_cancer_view_spec,
-    opt_xtrain_stats_cancer_view_spec = opt_xtrain_stats_cancer_view_spec
+  view_name = view_name,
+  view_info = view_info,
+  view_data = view_data,
+  opt_model_cancer_view_spec = opt_model_cancer_view_spec,
+  opt_xtrain_stats_cancer_view_spec = opt_xtrain_stats_cancer_view_spec
 )
 }
 }

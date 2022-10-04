@@ -45,15 +45,15 @@ RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 
 # Select a subset of patients to reduce vignette building time.
 pat_subset <- c(
-    "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-    "SAMba1a34b5a060", "SAM18a4dabbc557"
+  "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+  "SAMba1a34b5a060", "SAM18a4dabbc557"
 )
 RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 
 # Computation of ligand-receptor pair weights
 lrpair_weights <- compute_LR_pairs(
-    RNA_tpm = RNA_tpm,
-    cancer_type = "pancan"
+  RNA_tpm = RNA_tpm,
+  cancer_type = "pancan"
 )
 lrpair_weights[1:5, 1:5]
 }

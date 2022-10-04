@@ -123,7 +123,7 @@ output_eval_with_resp <- assess_immune_response(
   TMB_values = TMB,
   easier_with_TMB = "weighted_average",
 )
-\dontrun{
+\donttest{
 
 RNA_counts <- assays(dataset_mariathasan)[["counts"]]
 RNA_counts <- RNA_counts[, colnames(RNA_counts) \%in\% pat_subset]

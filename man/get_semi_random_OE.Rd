@@ -53,7 +53,7 @@ The source code was provided by original work:
 https://github.com/livnatje/ImmuneResistance
 }
 \examples{
-\dontrun{
+\donttest{
 # using a SummarizedExperiment object
 library(SummarizedExperiment)
 # Using example exemplary dataset (Mariathasan et al., Nature, 2018)
@@ -66,8 +66,8 @@ RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 
 # Select a subset of patients to reduce vignette building time.
 pat_subset <- c(
-    "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-    "SAMba1a34b5a060", "SAM18a4dabbc557"
+  "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+  "SAMba1a34b5a060", "SAM18a4dabbc557"
 )
 RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 
@@ -90,7 +90,7 @@ r$genes_dist <- r$genes_mean <- rowMeans(r$tpm)
 r$zscores <- sweep(r$tpm, 1, r$genes_mean, FUN = "-")
 
 # Bin genes into 50 expression bins according to their average
-r$genes_dist_q <- arules::discretize(r$genes_dist, n.cat = 50)
+r$genes_dist_q <- discretize(r$genes_dist, n.cat = 50)
 
 # Match genes from exc.down signature with genes from expression matrix
 b_sign <- is.element(r$genes, RIR_gene_signature[["exc.down"]])

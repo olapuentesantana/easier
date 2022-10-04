@@ -14,8 +14,10 @@
 #'
 #' @importFrom ROCR prediction performance plot
 #' @importFrom grDevices recordPlot
-#' @importFrom stats aggregate median sd
+#' @importFrom stats aggregate median sd var
 #' @importFrom graphics legend par title segments lines
+#' @importFrom reshape2 melt
+#' @importFrom utils head
 #' @import ggplot2
 #'
 #' @export
@@ -106,7 +108,7 @@
 #'   TMB_values = TMB,
 #'   easier_with_TMB = "weighted_average",
 #' )
-#' \dontrun{
+#' \donttest{
 #'
 #' RNA_counts <- assays(dataset_mariathasan)[["counts"]]
 #' RNA_counts <- RNA_counts[, colnames(RNA_counts) %in% pat_subset]
@@ -207,45 +209,49 @@ assess_immune_response <- function(predictions_immune_response = NULL,
   }
 
   # Different conditions to keep patients
-  if (is.null(RNA_tpm) & is.null(TMB_values) & is.null(patient_response)){
+  if (is.null(RNA_tpm) & is.null(TMB_values) & is.null(patient_response)) {
     patients_to_keep <- rownames(predictions_immune_response[[1]][[1]])
-  }else if (is.null(RNA_tpm) & is.null(TMB_values)){
+  } else if (is.null(RNA_tpm) & is.null(TMB_values)) {
     patients_pred <- rownames(predictions_immune_response[[1]][[1]])
     patients_R <- names(patient_response)
     patients_to_keep <- intersect(patients_pred, patients_R)
     patient_response <- patient_response[patients_to_keep]
-  }else if (is.null(RNA_tpm) & is.null(patient_response)){
+  } else if (is.null(RNA_tpm) & is.null(patient_response)) {
     patients_pred <- rownames(predictions_immune_response[[1]][[1]])
     patients_to_keep <- intersect(patients_pred, patients_TMB)
     TMB_values <- TMB_values[patients_to_keep]
-  }else if (is.null(RNA_tpm)){
+  } else if (is.null(RNA_tpm)) {
     patients_pred <- rownames(predictions_immune_response[[1]][[1]])
     patients_R <- names(patient_response)
-    patients_to_keep <- intersect(patients_R,
-                                  intersect(patients_pred, patients_TMB)
+    patients_to_keep <- intersect(
+      patients_R,
+      intersect(patients_pred, patients_TMB)
     )
     TMB_values <- TMB_values[patients_to_keep]
     patient_response <- patient_response[patients_to_keep]
-  }else if (is.null(TMB_values)){
+  } else if (is.null(TMB_values)) {
     patients_pred <- rownames(predictions_immune_response[[1]][[1]])
     patients_R <- names(patient_response)
-    patients_to_keep <- intersect(patients_R,
-                                  intersect(patients_pred, colnames(RNA_tpm))
+    patients_to_keep <- intersect(
+      patients_R,
+      intersect(patients_pred, colnames(RNA_tpm))
     )
     patient_response <- patient_response[patients_to_keep]
     RNA_tpm <- RNA_tpm[, patients_to_keep]
-  }else if (is.null(patient_response)){
+  } else if (is.null(patient_response)) {
     patients_pred <- rownames(predictions_immune_response[[1]][[1]])
-    patients_to_keep <- intersect(patients_TMB,
-                                  intersect(patients_pred, colnames(RNA_tpm))
+    patients_to_keep <- intersect(
+      patients_TMB,
+      intersect(patients_pred, colnames(RNA_tpm))
     )
     TMB_values <- TMB_values[patients_to_keep]
     RNA_tpm <- RNA_tpm[, patients_to_keep]
-  }else{
+  } else {
     patients_pred <- rownames(predictions_immune_response[[1]][[1]])
     patients_R <- names(patient_response)
-    patients_to_keep <- intersect(intersect(patients_TMB, patients_R),
-                                  intersect(patients_pred, colnames(RNA_tpm))
+    patients_to_keep <- intersect(
+      intersect(patients_TMB, patients_R),
+      intersect(patients_pred, colnames(RNA_tpm))
     )
     TMB_values <- TMB_values[patients_to_keep]
     RNA_tpm <- RNA_tpm[, patients_to_keep]
@@ -269,7 +275,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
   # view colors
   all_color_views <- vector("character", length = length(views))
   all_color_views <- c(
-    "#52ac68", "#6a70d7", "#bbb442","#5b3788", "#72a646"
+    "#52ac68", "#6a70d7", "#bbb442", "#5b3788", "#72a646"
   )
   names(all_color_views) <- views
   # colors selected view
@@ -287,7 +293,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     all_color_views, color_gold_standard,
     color_ensemble, color_TMB
   )
-  ## colors easier_with_TMB approaches
+  ##  colors easier_with_TMB approaches
   colors_comb_score <- c("#c15050", "#693c72")
   names(colors_comb_score) <- c("penalized_score", "weighted_average")
 
@@ -346,6 +352,10 @@ assess_immune_response <- function(predictions_immune_response = NULL,
         }
       }
       tasks_values <- as.data.frame(tasks_values)
+      tasks_values <- tasks_values[, c("CYT", "Roh_IS", "chemokines",
+                                       "Davoli_IS", "IFNy", "Ayers_expIS",
+                                       "Tcell_inflamed", "RIR.resF_down", "TLS")]
+      colnames(tasks_values)[8] <- "RIR"
     }
 
     # Predictions single views #
@@ -381,7 +391,8 @@ assess_immune_response <- function(predictions_immune_response = NULL,
       )
     )
     AUC_mean_sd_run_tasks$View <- factor(AUC_mean_sd_run_tasks$View,
-                                         levels = c("pathways", "immunecells", "tfs", "lrpairs", "ccpairs"))
+      levels = c("pathways", "immunecells", "tfs", "lrpairs", "ccpairs")
+    )
     # Predictions ensemble view #
     overall_df <- overall_df[match(rownames(labels), rownames(overall_df)), ]
     pred <- ROCR::prediction(overall_df, labels, label.ordering = c("NR", "R"))
@@ -456,7 +467,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     if (TMB_available == TRUE) {
       TMB_values <- TMB_values[match(rownames(labels), names(TMB_values))]
       TMB_cat <-
-      pred <- ROCR::prediction(TMB_values, labels[, 1], label.ordering = c("NR", "R"))
+        pred <- ROCR::prediction(TMB_values, labels[, 1], label.ordering = c("NR", "R"))
       perf <- ROCR::performance(pred, "tpr", "fpr")
       AUC <- unlist(ROCR::performance(pred, "auc")@y.values)
       TMB_ROC_pred <- list(TMB = list(Curve = list(perf), Barplot = list(AUC)))
@@ -484,25 +495,26 @@ assess_immune_response <- function(predictions_immune_response = NULL,
       )
     }
 
-    # Confidence intervals
-    tmp   <- vapply(ROC_all_run_tasks, function(X) X$Barplot,
-                    FUN.VALUE = list(length(names(ROC_all_run_tasks)))
+    #  Confidence intervals
+    tmp <- vapply(ROC_all_run_tasks, function(X) X$Barplot,
+      FUN.VALUE = list(length(names(ROC_all_run_tasks)))
     )
-    mean  <- vapply(tmp, function(X) mean(X),
-                    FUN.VALUE = numeric(length(1))
+    mean <- vapply(tmp, function(X) mean(X),
+      FUN.VALUE = numeric(length(1))
     )
-    stdev <- vapply(tmp, function(X) sqrt(var(X)),
-                    FUN.VALUE = numeric(length(1))
+    stdev <- vapply(tmp, function(X) sqrt(stats::var(X)),
+      FUN.VALUE = numeric(length(1))
     )
-    n     <- 10
-    ciw   <- qt(0.975, n) * stdev / sqrt(n) # 95% CI
+    n <- 10
+    ciw <- stats::qt(0.975, n) * stdev / sqrt(n) # 95% CI
 
-    legend_text <- vapply(names(mean), function(xx){
-      paste0(xx,"\nAUC=", round(mean[xx], 2),
-             "\n[", round(mean[xx]-ciw[xx], 2), "-",
-             round(mean[xx]+ciw[xx],2), "]")
-    }, FUN.VALUE = character(length(1))
-    )
+    legend_text <- vapply(names(mean), function(xx) {
+      paste0(
+        xx, "\nAUC=", round(mean[xx], 2),
+        "\n[", round(mean[xx] - ciw[xx], 2), "-",
+        round(mean[xx] + ciw[xx], 2), "]"
+      )
+    }, FUN.VALUE = character(length(1)))
 
     legend_text <- gsub("ensemble", "Ensemble", legend_text)
     legend_text <- gsub("immunecells", "Cell fractions", legend_text)
@@ -513,31 +525,42 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     legend_text <- gsub("gold_standard", "Tasks (gold standard)", legend_text)
     legend_text <- gsub("\n[NA-NA]", "", legend_text, fixed = TRUE)
 
-    # Set levels views
-    if (TMB_available == FALSE & compute_GS == FALSE){
+    #  Set levels views
+    if (TMB_available == FALSE & compute_GS == FALSE) {
       AUC_mean_sd_all_run_tasks$View <- factor(AUC_mean_sd_all_run_tasks$View,
-                                         levels = c("pathways", "immunecells",
-                                                    "tfs", "lrpairs",
-                                                    "ccpairs", "ensemble"))
-
-    }else if (TMB_available & compute_GS){
+        levels = c(
+          "pathways", "immunecells",
+          "tfs", "lrpairs",
+          "ccpairs", "ensemble"
+        )
+      )
+    } else if (TMB_available & compute_GS) {
       AUC_mean_sd_all_run_tasks$View <- factor(AUC_mean_sd_all_run_tasks$View,
-                                           levels = c("pathways", "immunecells",
-                                                      "tfs", "lrpairs",
-                                                      "ccpairs", "ensemble",
-                                                      "gold_standard", "TMB"))
-    }else if (compute_GS){
+        levels = c(
+          "pathways", "immunecells",
+          "tfs", "lrpairs",
+          "ccpairs", "ensemble",
+          "gold_standard", "TMB"
+        )
+      )
+    } else if (compute_GS) {
       AUC_mean_sd_all_run_tasks$View <- factor(AUC_mean_sd_all_run_tasks$View,
-                                           levels = c("pathways", "immunecells",
-                                                      "tfs", "lrpairs",
-                                                      "ccpairs", "ensemble",
-                                                      "gold_standard"))
-    }else if (TMB_available){
+        levels = c(
+          "pathways", "immunecells",
+          "tfs", "lrpairs",
+          "ccpairs", "ensemble",
+          "gold_standard"
+        )
+      )
+    } else if (TMB_available) {
       AUC_mean_sd_all_run_tasks$View <- factor(AUC_mean_sd_all_run_tasks$View,
-                                           levels = c("pathways", "immunecells",
-                                                      "tfs", "lrpairs",
-                                                      "ccpairs", "ensemble",
-                                                      "TMB"))
+        levels = c(
+          "pathways", "immunecells",
+          "tfs", "lrpairs",
+          "ccpairs", "ensemble",
+          "TMB"
+        )
+      )
     }
 
     colors_available <- all_colors[levels(AUC_mean_sd_all_run_tasks$View)]
@@ -602,7 +625,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     ## ROC curves
     graphics::par(
       cex.axis = 1.3,
-      #mar = c(5, 4, 2, 12),
+      # mar = c(5, 4, 2, 12),
       col.lab = "black",
       pty = "s", xpd = TRUE
     )
@@ -612,22 +635,25 @@ assess_immune_response <- function(predictions_immune_response = NULL,
       lwd = 3, type = "S", cex.lab = 1.3, ylab = "True Positive Rate",
       xlab = "False Positive Rate", bty = "L"
     )
-    lapply(names(ROC_all_run_tasks)[2:length(names(ROC_all_run_tasks))],
-           function(descriptor) {
-               ROCR::plot(ROC_all_run_tasks[[descriptor]]$Curve[[1]],
-                          avg = "threshold", col = colors_available[descriptor],
-                          lwd = 3, type = "S", cex.lab = 1.3,
-                          ylab = "True Positive Rate", xlab = "False Positive Rate",
-                          add = TRUE
-               )
-    })
-
-    legend_text <- vapply(names(mean), function(xx){
-      paste0(xx,", AUC=", round(mean[xx], 2),
-             " [", round(mean[xx]-ciw[xx], 2), "-",
-             round(mean[xx]+ciw[xx],2), "]")
-    }, FUN.VALUE = character(length(1))
+    lapply(
+      names(ROC_all_run_tasks)[2:length(names(ROC_all_run_tasks))],
+      function(descriptor) {
+        ROCR::plot(ROC_all_run_tasks[[descriptor]]$Curve[[1]],
+          avg = "threshold", col = colors_available[descriptor],
+          lwd = 3, type = "S", cex.lab = 1.3,
+          ylab = "True Positive Rate", xlab = "False Positive Rate",
+          add = TRUE
+        )
+      }
     )
+
+    legend_text <- vapply(names(mean), function(xx) {
+      paste0(
+        xx, ", AUC=", round(mean[xx], 2),
+        " [", round(mean[xx] - ciw[xx], 2), "-",
+        round(mean[xx] + ciw[xx], 2), "]"
+      )
+    }, FUN.VALUE = character(length(1)))
 
     legend_text <- gsub("ensemble", "Ensemble", legend_text)
     legend_text <- gsub("immunecells", "Cell fractions", legend_text)
@@ -639,7 +665,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     legend_text <- gsub(" [NA-NA]", "", legend_text, fixed = TRUE)
 
     graphics::legend(
-      x = 0.63, y=0.4,
+      x = 0.63, y = 0.4,
       legend = legend_text, fill = colors_available,
       border = colors_available,
       cex = 0.7, bty = "n"
@@ -696,16 +722,16 @@ assess_immune_response <- function(predictions_immune_response = NULL,
         pty = "s", xpd = TRUE
       )
       if (easier_with_TMB == "penalized_score") {
-          integrated_score <- AUC_combined_v
-      }else if (easier_with_TMB == "weighted_average"){
-          integrated_score <- AUC_averaged_v
+        integrated_score <- AUC_combined_v
+      } else if (easier_with_TMB == "weighted_average") {
+        integrated_score <- AUC_averaged_v
       }
       plot(seq(from = 0, to = 1, by = 0.1), integrated_score,
-           xlab = "Penalty or Relative weight",
-           ylab = "Area under the curve (AUC)",
-           type = "b", col = colors_comb_score[easier_with_TMB],
-           lty = 1, pch = 19, lwd = 3, ylim = c(0, 1),
-           xlim = c(0, 1), cex.lab = 1.3
+        xlab = "Penalty or Relative weight",
+        ylab = "Area under the curve (AUC)",
+        type = "b", col = colors_comb_score[easier_with_TMB],
+        lty = 1, pch = 19, lwd = 3, ylim = c(0, 1),
+        xlim = c(0, 1), cex.lab = 1.3
       )
       ### TMB plot
       graphics::segments(
@@ -730,8 +756,8 @@ assess_immune_response <- function(predictions_immune_response = NULL,
         border = c(
           colors_comb_score[easier_with_TMB],
           as.vector(color_ensemble), color_TMB
-        )
-        , cex = 0.8, bty = "n"
+        ),
+        cex = 0.8, bty = "n"
       )
       plot_list[[3]] <- grDevices::recordPlot()
     }
@@ -835,7 +861,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
       all_scores_df$patient <- factor(all_scores_df$patient,
         levels = all_scores_df$patient[match(
           levels(ordering),
-          vapply(strsplit(all_scores_df$patient, split = " "), head, 1,
+          vapply(strsplit(all_scores_df$patient, split = " "), utils::head, 1,
             FUN.VALUE = character(1)
           )
         )]

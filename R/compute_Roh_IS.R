@@ -11,8 +11,6 @@
 #' reveals markers of response and resistance. Sci. Transl. Med. 9.
 #' https://doi.org/10.1126/scitranslmed.aah3560.
 #'
-#' @importFrom stats na.omit
-#'
 #' @param matches numeric vector indicating the index of signature
 #' genes in `RNA_tpm`.
 #' @param RNA_tpm data.frame containing TPM values with HGNC symbols
@@ -22,19 +20,19 @@
 #' in a column.
 #'
 compute_Roh_IS <- function(matches, RNA_tpm) {
-    # Subset RNA_tpm
-    sub_RNA_tpm <- RNA_tpm[matches, ]
+  # Subset RNA_tpm
+  sub_RNA_tpm <- RNA_tpm[matches, ]
 
-    # Pseudocount of 0.01 for all genes
-    sub_RNA_tpm <- sub_RNA_tpm + 0.01
+  # Pseudocount of 0.01 for all genes
+  sub_RNA_tpm <- sub_RNA_tpm + 0.01
 
-    # Pseudocount of 1 for genes with 0 expr
-    if (any(sub_RNA_tpm == 0)) {
-        sub_RNA_tpm[sub_RNA_tpm == 0] <- sub_RNA_tpm[sub_RNA_tpm == 0] + 1
-    }
-    # Calculation: geometric mean (so-called log-average)
-    # [TPM, 0.01 offset]
-    score <- apply(sub_RNA_tpm, 2, function(X) exp(mean(log(X))))
+  # Pseudocount of 1 for genes with 0 expr
+  if (any(sub_RNA_tpm == 0)) {
+    sub_RNA_tpm[sub_RNA_tpm == 0] <- sub_RNA_tpm[sub_RNA_tpm == 0] + 1
+  }
+  # Calculation: geometric mean (so-called log-average)
+  # [TPM, 0.01 offset]
+  score <- apply(sub_RNA_tpm, 2, function(X) exp(mean(log(X))))
 
-    return(data.frame(Roh_IS = score, check.names = FALSE))
+  return(data.frame(Roh_IS = score, check.names = FALSE))
 }

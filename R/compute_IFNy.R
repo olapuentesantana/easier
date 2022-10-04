@@ -11,8 +11,6 @@
 #' J. Clin. Invest. 127, 2930–2940.
 #' https://doi.org/10.1172/JCI91190.
 #'
-#' @importFrom stats na.omit
-#'
 #' @param matches numeric vector indicating the index of
 #' signature genes in `RNA_tpm`.
 #' @param RNA_tpm data.frame containing TPM values with HGNC
@@ -22,14 +20,14 @@
 #' score in a column.
 #'
 compute_IFNy <- function(matches, RNA_tpm) {
-    # Log2 transformation:
-    log2_RNA_tpm <- log2(RNA_tpm + 1)
+  # Log2 transformation:
+  log2_RNA_tpm <- log2(RNA_tpm + 1)
 
-    # Subset log2.RNA_tpm
-    sub_log2_RNA_tpm <- log2_RNA_tpm[matches, ]
+  # Subset log2.RNA_tpm
+  sub_log2_RNA_tpm <- log2_RNA_tpm[matches, ]
 
-    # Calculation: average of the included genes
-    score <- apply(sub_log2_RNA_tpm, 2, mean)
+  # Calculation: average of the included genes
+  score <- apply(sub_log2_RNA_tpm, 2, mean)
 
-    return(data.frame(IFNy = score, check.names = FALSE))
+  return(data.frame(IFNy = score, check.names = FALSE))
 }

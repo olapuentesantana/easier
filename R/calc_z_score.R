@@ -14,7 +14,7 @@
 #' @return A numeric matrix with values as z-scores.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # using a SummarizedExperiment object
 #' library(SummarizedExperiment)
 #' # Using example exemplary dataset (Mariathasan et al., Nature, 2018)
@@ -27,8 +27,8 @@
 #'
 #' # Select a subset of patients to reduce vignette building time.
 #' pat_subset <- c(
-#'     "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-#'     "SAMba1a34b5a060", "SAM18a4dabbc557"
+#'   "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+#'   "SAMba1a34b5a060", "SAM18a4dabbc557"
 #' )
 #' RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) %in% pat_subset]
 #'
@@ -38,22 +38,22 @@
 calc_z_score <- function(X,
                          mean,
                          sd) {
-    X_scale <- matrix(0, nrow(X), ncol(X),
-        dimnames = list(rownames(X), colnames(X))
-    )
+  X_scale <- matrix(0, nrow(X), ncol(X),
+    dimnames = list(rownames(X), colnames(X))
+  )
 
-    if (missing(mean) & missing(sd)) {
-        mean_X <- colMeans(X, na.rm = TRUE)
-        sd_X <- matrixStats::colSds(as.matrix(X), na.rm = TRUE)
-        X_scale <- sweep(X, 2, mean_X, FUN = "-")
-        X_scale <- sweep(X_scale, 2, sd_X, FUN = "/")
-    } else {
-        mean <- mean[na.omit(match(colnames(X), names(mean)))]
-        sd <- sd[na.omit(match(colnames(X), names(sd)))]
+  if (missing(mean) & missing(sd)) {
+    mean_X <- colMeans(X, na.rm = TRUE)
+    sd_X <- matrixStats::colSds(as.matrix(X), na.rm = TRUE)
+    X_scale <- sweep(X, 2, mean_X, FUN = "-")
+    X_scale <- sweep(X_scale, 2, sd_X, FUN = "/")
+  } else {
+    mean <- mean[na.omit(match(colnames(X), names(mean)))]
+    sd <- sd[na.omit(match(colnames(X), names(sd)))]
 
-        X <- X[, na.omit(match(names(sd), colnames(X)))]
-        X_scale <- sweep(X, 2, mean, FUN = "-")
-        X_scale <- sweep(X_scale, 2, sd, FUN = "/")
-    }
-    return(as.matrix(X_scale))
+    X <- X[, na.omit(match(names(sd), colnames(X)))]
+    X_scale <- sweep(X, 2, mean, FUN = "-")
+    X_scale <- sweep(X_scale, 2, sd, FUN = "/")
+  }
+  return(as.matrix(X_scale))
 }

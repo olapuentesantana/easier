@@ -38,7 +38,7 @@
 #' for each sample.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # using a SummarizedExperiment object
 #' library(SummarizedExperiment)
 #' # Using example exemplary dataset (Mariathasan et al., Nature, 2018)
@@ -51,8 +51,8 @@
 #'
 #' # Select a subset of patients to reduce vignette building time.
 #' pat_subset <- c(
-#'     "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-#'     "SAMba1a34b5a060", "SAM18a4dabbc557"
+#'   "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+#'   "SAMba1a34b5a060", "SAM18a4dabbc557"
 #' )
 #' RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) %in% pat_subset]
 #'
@@ -75,7 +75,7 @@
 #' r$zscores <- sweep(r$tpm, 1, r$genes_mean, FUN = "-")
 #'
 #' # Bin genes into 50 expression bins according to their average
-#' r$genes_dist_q <- arules::discretize(r$genes_dist, n.cat = 50)
+#' r$genes_dist_q <- discretize(r$genes_dist, n.cat = 50)
 #'
 #' # Match genes from exc.down signature with genes from expression matrix
 #' b_sign <- is.element(r$genes, RIR_gene_signature[["exc.down"]])
@@ -89,29 +89,33 @@ get_semi_random_OE <- function(r,
                                num_rounds = 1000,
                                full_flag = FALSE,
                                random_seed = 1234) {
-    # Previous name: get.random.sig.scores
-    sign_q <- as.matrix(table(genes_dist_q[b_sign]))
-    q <- rownames(sign_q)
-    idx_all <- c()
-    B <- matrix(data = FALSE, nrow = length(genes_dist_q),
-                ncol = num_rounds)
-    Q <- matrix(data = 0, nrow = length(genes_dist_q),
-                ncol = num_rounds)
-    for (i in seq_len(nrow(sign_q))) {
-        num_genes <- sign_q[i]
-        if (num_genes > 0) {
-            idx <- which(is.element(genes_dist_q, q[i]))
-            for (j in seq_len(num_rounds)) {
-                idxj <- sample(idx, num_genes)
-                Q[i, j] <- sum(B[idxj, j] == TRUE)
-                B[idxj, j] <- TRUE
-            }
-        }
+  # Previous name: get.random.sig.scores
+  sign_q <- as.matrix(table(genes_dist_q[b_sign]))
+  q <- rownames(sign_q)
+  idx_all <- c()
+  B <- matrix(
+    data = FALSE, nrow = length(genes_dist_q),
+    ncol = num_rounds
+  )
+  Q <- matrix(
+    data = 0, nrow = length(genes_dist_q),
+    ncol = num_rounds
+  )
+  for (i in seq_len(nrow(sign_q))) {
+    num_genes <- sign_q[i]
+    if (num_genes > 0) {
+      idx <- which(is.element(genes_dist_q, q[i]))
+      for (j in seq_len(num_rounds)) {
+        idxj <- sample(idx, num_genes)
+        Q[i, j] <- sum(B[idxj, j] == TRUE)
+        B[idxj, j] <- TRUE
+      }
     }
-    rand_scores <- apply(B, 2, function(x) colMeans(r$zscores[x, ]))
-    if (full_flag) {
-        return(rand_scores)
-    }
-    rand_scores <- rowMeans(rand_scores)
+  }
+  rand_scores <- apply(B, 2, function(x) colMeans(r$zscores[x, ]))
+  if (full_flag) {
     return(rand_scores)
+  }
+  rand_scores <- rowMeans(rand_scores)
+  return(rand_scores)
 }

@@ -23,7 +23,7 @@ Source code adapted from quanTIseq helper function
 mapGenes from quantiseqr package.
 }
 \examples{
-\dontrun{
+\donttest{
 # using a SummarizedExperiment object
 library(SummarizedExperiment)
 # Using example exemplary dataset (Mariathasan et al., Nature, 2018)
@@ -36,8 +36,8 @@ RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 
 # Select a subset of patients to reduce vignette building time.
 pat_subset <- c(
-    "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-    "SAMba1a34b5a060", "SAM18a4dabbc557"
+  "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+  "SAMba1a34b5a060", "SAM18a4dabbc557"
 )
 RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 

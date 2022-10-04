@@ -37,21 +37,21 @@
 #'
 #' # Select a subset of patients to reduce vignette building time.
 #' pat_subset <- c(
-#'     "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-#'     "SAMba1a34b5a060", "SAM18a4dabbc557"
+#'   "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+#'   "SAMba1a34b5a060", "SAM18a4dabbc557"
 #' )
 #' RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) %in% pat_subset]
 #'
 #' # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
 #' tf_activities <- compute_TF_activity(
-#'     RNA_tpm = RNA_tpm
+#'   RNA_tpm = RNA_tpm
 #' )
 #'
 #' # Predict patients' immune response
 #' predictions <- predict_immune_response(
-#'     tfs = tf_activities,
-#'     cancer_type = cancer_type,
-#'     verbose = TRUE
+#'   tfs = tf_activities,
+#'   cancer_type = cancer_type,
+#'   verbose = TRUE
 #' )
 #'
 #' # retrieve clinical response
@@ -65,11 +65,13 @@
 #' patient_ICBresponse <- patient_ICBresponse[names(patient_ICBresponse) %in% pat_subset]
 #' TMB <- TMB[names(TMB) %in% pat_subset]
 #'
-#' easier_derived_scores <- retrieve_easier_score(predictions_immune_response = predictions,
-#'                            TMB_values = TMB,
-#'                            easier_with_TMB = c("weighted_average", "penalized_score"),
-#'                            weight_penalty = 0.5)
-#' \dontrun{
+#' easier_derived_scores <- retrieve_easier_score(
+#'   predictions_immune_response = predictions,
+#'   TMB_values = TMB,
+#'   easier_with_TMB = c("weighted_average", "penalized_score"),
+#'   weight_penalty = 0.5
+#' )
+#' \donttest{
 #'
 #' RNA_counts <- assays(dataset_mariathasan)[["counts"]]
 #' RNA_counts <- RNA_counts[, colnames(RNA_counts) %in% pat_subset]
@@ -107,20 +109,22 @@
 #'   verbose = TRUE
 #' )
 #'
-#' easier_derived_scores <- retrieve_easier_score(predictions_immune_response = predictions,
-#'                            TMB_values = TMB,
-#'                            easier_with_TMB = c("weighted_average", "penalized_score"),
-#'                            weight_penalty = 0.5)
+#' easier_derived_scores <- retrieve_easier_score(
+#'   predictions_immune_response = predictions,
+#'   TMB_values = TMB,
+#'   easier_with_TMB = c("weighted_average", "penalized_score"),
+#'   weight_penalty = 0.5
+#' )
 #' }
 retrieve_easier_score <- function(predictions_immune_response = NULL,
-                                  TMB_values,
+                                  TMB_values = NULL,
                                   easier_with_TMB = c("weighted_average", "penalized_score"),
                                   weight_penalty,
-                                  verbose = TRUE){
+                                  verbose = TRUE) {
 
   # Some checks
   if (is.null(predictions_immune_response)) stop("None predictions found")
-  if (missing(TMB_values)) {
+  if (is.null(TMB_values)) {
     TMB_available <- FALSE
     easier_with_TMB <- "none"
     patients_to_keep <- rownames(predictions_immune_response[[1]][[1]])

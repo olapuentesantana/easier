@@ -67,23 +67,23 @@ cancer_type <- metadata(dataset_mariathasan)[["cancertype"]]
 
 # Select a subset of patients to reduce vignette building time.
 pat_subset <- c(
-    "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-    "SAMba1a34b5a060", "SAM18a4dabbc557"
+  "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+  "SAMba1a34b5a060", "SAM18a4dabbc557"
 )
 RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 
 # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
 tf_activity <- compute_TF_activity(
-    RNA_tpm = RNA_tpm
+  RNA_tpm = RNA_tpm
 )
 
 # Predict patients' immune response
 predictions_immune_response <- predict_immune_response(
-    tfs = tf_activity,
-    cancer_type = cancer_type
+  tfs = tf_activity,
+  cancer_type = cancer_type
 )
 
-\dontrun{
+\donttest{
 
 RNA_counts <- assays(dataset_mariathasan)[["counts"]]
 RNA_counts <- RNA_counts[, colnames(RNA_counts) \%in\% pat_subset]
@@ -94,30 +94,30 @@ cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
 # Computation of pathway scores (Holland et al., BBAGRM, 2019;
 # Schubert et al., Nat Commun, 2018)
 pathway_activity <- compute_pathway_activity(
-    RNA_counts = RNA_counts,
-    remove_sig_genes_immune_response = TRUE
+  RNA_counts = RNA_counts,
+  remove_sig_genes_immune_response = TRUE
 )
 
 # Computation of ligand-receptor pair weights
 lrpair_weights <- compute_LR_pairs(
-    RNA_tpm = RNA_tpm,
-    cancer_type = "pancan"
+  RNA_tpm = RNA_tpm,
+  cancer_type = "pancan"
 )
 
 # Computation of cell-cell interaction scores
 ccpair_scores <- compute_CC_pairs(
-    lrpairs = lrpair_weights,
-    cancer_type = "pancan"
+  lrpairs = lrpair_weights,
+  cancer_type = "pancan"
 )
 
 # Predict patients' immune response
 predictions_immune_response <- predict_immune_response(
-    pathways = pathway_activity,
-    immunecells = cell_fractions,
-    tfs = tf_activity,
-    lrpairs = lrpair_weights,
-    ccpairs = ccpair_scores,
-    cancer_type = cancer_type
+  pathways = pathway_activity,
+  immunecells = cell_fractions,
+  tfs = tf_activity,
+  lrpairs = lrpair_weights,
+  ccpairs = ccpair_scores,
+  cancer_type = cancer_type
 )
 }
 }

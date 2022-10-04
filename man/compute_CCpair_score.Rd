@@ -53,20 +53,20 @@ RNA_tpm <- assays(dataset_mariathasan)[["tpm"]]
 
 # Select a subset of patients to reduce vignette building time.
 pat_subset <- c(
-    "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
-    "SAMba1a34b5a060", "SAM18a4dabbc557"
+  "SAM76a431ba6ce1", "SAMd3bd67996035", "SAMd3601288319e",
+  "SAMba1a34b5a060", "SAM18a4dabbc557"
 )
 RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 
 # Computation of ligand-receptor pair weights
 lrpair_weights <- compute_LR_pairs(
-    RNA_tpm = RNA_tpm,
-    cancer_type = "pancan"
+  RNA_tpm = RNA_tpm,
+  cancer_type = "pancan"
 )
 
 # remove ligand receptor pairs that are always NA
 na_lrpairs <- apply(lrpair_weights, 2, function(x) {
-    all(is.na(x))
+  all(is.na(x))
 })
 lrpair_weights <- lrpair_weights[, na_lrpairs == FALSE]
 
@@ -82,16 +82,16 @@ lrpairs_binary <- lrpairs_binary[, colnames(lrpairs_binary) \%in\% names(lr_freq
 intercell_networks <- suppressMessages(easierData::get_intercell_networks())
 intercell_network_pancan <- intercell_networks[["pancan"]]
 celltypes <- unique(c(
-    as.character(intercell_network_pancan$cell1),
-    as.character(intercell_network_pancan$cell2)
+  as.character(intercell_network_pancan$cell1),
+  as.character(intercell_network_pancan$cell2)
 ))
 celltype1 <- celltypes[1]
 celltype2 <- celltypes[1]
 
 # compute the CC score for each patient
 CCpair_score <- compute_CCpair_score(celltype1, celltype2,
-    intercell_network_pancan,
-    lrpairs_binary, lr_frequency,
-    compute_log = TRUE
+  intercell_network_pancan,
+  lrpairs_binary, lr_frequency,
+  compute_log = TRUE
 )
 }

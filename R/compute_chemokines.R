@@ -11,7 +11,7 @@
 #' patient selection for immunotherapy? Sci. Rep. 2, 765.
 #' https://doi.org/10.1038/srep00765.
 #'
-#' @importFrom stats na.omit prcomp
+#' @importFrom stats prcomp
 #'
 #' @param matches numeric vector indicating the index of signature
 #' genes in `RNA_tpm`.
@@ -22,17 +22,17 @@
 #' score in a column.
 #'
 compute_chemokines <- function(matches, RNA_tpm) {
-    # Log2 transformation:
-    log2_RNA_tpm <- log2(RNA_tpm + 1)
+  # Log2 transformation:
+  log2_RNA_tpm <- log2(RNA_tpm + 1)
 
-    # Subset gene_expr
-    sub_log2_RNA_tpm <- log2_RNA_tpm[matches, ]
+  # Subset gene_expr
+  sub_log2_RNA_tpm <- log2_RNA_tpm[matches, ]
 
-    # calculation: using PCA (Z-score calculated within prcomp)
-    chemokine_pca <- stats::prcomp(t(sub_log2_RNA_tpm),
-        center = TRUE, scale = TRUE
-    )
-    score <- chemokine_pca$x[, 1]
+  # calculation: using PCA (Z-score calculated within prcomp)
+  chemokine_pca <- stats::prcomp(t(sub_log2_RNA_tpm),
+    center = TRUE, scale = TRUE
+  )
+  score <- chemokine_pca$x[, 1]
 
-    return(data.frame(chemokines = score, check.names = FALSE))
+  return(data.frame(chemokines = score, check.names = FALSE))
 }

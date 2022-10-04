@@ -36,7 +36,7 @@ Description: This package provides a workflow for the use of EaSIeR tool, develo
              form four different cancer types with patients treated with anti-PD1 or anti-PDL1 therapy.
 License: MIT + file LICENSE
 Depends:
-    R (>= 4.1.0)
+    R (>= 4.2.0)
 Imports: 
     progeny,
     easierData,
@@ -56,8 +56,7 @@ Imports:
     BiocParallel,
     reshape2,
     rstatix,
-    ggrepel,
-    coin
+    ggrepel
 Suggests: 
     knitr, rmarkdown, BiocStyle, testthat, SummarizedExperiment
 biocViews: GeneExpression, Software, Transcription, SystemsBiology, Pathways, GeneSetEnrichment, ImmunoOncology, Epigenetics, Classification, BiomedicalInformatics, Regression, ExperimentHubSoftware
