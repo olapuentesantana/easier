@@ -7,12 +7,13 @@
 #' between responders (R) and non-responders (NR) patients.
 #'
 #' @importFrom stats aggregate
+#' @importFrom grDevices recordPlot
 #' @importFrom reshape2 melt
 #' @import rstatix
 #' @import coin
 #' @importFrom ggrepel geom_text_repel
 #' @import ggplot2
-#' @importFrom grid unit.pmax grid.newpage grid.draw
+#' @importFrom ggpubr ggarrange annotate_figure
 #' @importFrom easierData get_opt_models get_intercell_networks
 #'
 #' @param pathways numeric matrix with pathways activity
@@ -227,7 +228,197 @@ explore_biomarkers <- function(pathways = NULL,
         return(list(weights = my_coefs_median, features = features_df))
     }
 
-    plot_list <- list()
+    plot_list <- lapply(seq_len(length(view_combinations)), function(ii) {
+      biomarkers_weights_features <- get_biomarkers_features(ii, cancer_type, patient_label)
+      biomarkers_weights <- biomarkers_weights_features$weights
+      biomarkers_weights$feature <- droplevels(biomarkers_weights$feature)
+
+      # change names for cell-cell pairs
+      if (unique(biomarkers_weights$datatype) == "ccpairs") {
+        new_variables_cc <- c(
+          "CD8", "M", "B", "DC", "Endo", "Mast", "Fib", "Adip",
+          "CD4", "NK", "Neu", "Mono", "Cancer"
+        )
+        old_variables_cc <- c(
+          "CD8+T-Cell", "Macrophages", "B-Cell", "DendriticCells", "Endothelialcells",
+          "Mastcells", "Fibroblasts", "Adipocytes", "CD4+T-Cell", "NKcells",
+          "Neutrophils", "Monocytes", "Cancercell"
+        )
+        tmp <- as.character(biomarkers_weights$feature)
+        for (X in seq_len(length(new_variables_cc))) {
+          tmp <- gsub(old_variables_cc[X], new_variables_cc[X], tmp, fixed = TRUE)
+        }
+        biomarkers_weights$feature <- tmp
+      }
+      colnames(biomarkers_weights) <- c("variable", "datatype", "weight")
+
+      features <- biomarkers_weights_features$features
+      features <- features[!is.na(features$value), ]
+      features$feature <- droplevels(features$feature)
+
+      if (unique(features$datatype) == "ccpairs") {
+        tmp <- features$feature
+        tmp_2 <- levels(features$feature)
+        for (X in seq_len(length(new_variables_cc))) {
+          tmp <- gsub(old_variables_cc[X], new_variables_cc[X], tmp, fixed = TRUE)
+          tmp_2 <- gsub(old_variables_cc[X], new_variables_cc[X], tmp_2, fixed = TRUE)
+        }
+        features$feature <- factor(tmp, levels = tmp_2)
+      }
+
+      # Sort biomarkers by weight
+      biomarkers_weights_sort <- biomarkers_weights[order(abs(biomarkers_weights$weight),
+                                                          decreasing = TRUE
+      ), ]
+      # Keep 15 top biomarkers for those descriptors with higher amount of features
+      if (nrow(biomarkers_weights_sort) > 15) {
+        biomarkers_weights_sort <- biomarkers_weights_sort[seq_len(15), ]
+      }
+      # Two TFs differ across dorothea versions (our model was built based on a previous version)
+      while (all(biomarkers_weights_sort$variable %in% features$feature) == FALSE) {
+        which_features_missing <- !biomarkers_weights_sort$variable %in% features$feature
+        missing_features <- as.character(biomarkers_weights_sort$variable[which_features_missing])
+        biomarkers_weights_sort <- biomarkers_weights[order(abs(biomarkers_weights$weight), decreasing = TRUE), ]
+        biomarkers_weights_sort <- biomarkers_weights_sort[!biomarkers_weights_sort$variable %in% missing_features, ]
+
+        if (nrow(biomarkers_weights_sort) > 15) {
+          biomarkers_weights_sort <- biomarkers_weights_sort[seq_len(15), ]
+        }
+      }
+      biomarkers_weights_sort <- as.data.frame(biomarkers_weights_sort)
+
+      # weights
+      biomarkers_weights_sort$variable <- factor(biomarkers_weights_sort$variable,
+                                                 levels = unique(biomarkers_weights_sort$variable)
+      )
+
+      biomarkers_weights_sort$cor <- sign(biomarkers_weights_sort$weight)
+      biomarkers_weights_sort$cor <- gsub("-1", "-", biomarkers_weights_sort$cor, fixed = TRUE)
+      biomarkers_weights_sort$cor <- gsub("1", "+", biomarkers_weights_sort$cor, fixed = TRUE)
+      biomarkers_weights_sort$cor <- factor(biomarkers_weights_sort$cor,
+                                            levels = unique(biomarkers_weights_sort$cor)
+      )
+
+      # BARPLOT #
+      barplot <- ggplot2::ggplot(
+        biomarkers_weights_sort,
+        ggplot2::aes(
+          x = .data$variable,
+          y = abs(.data$weight),
+          fill = .data$cor
+        )
+      ) +
+        ggplot2::geom_bar(stat = "identity", color = "white") +
+        ggplot2::scale_fill_manual(
+          name = "Association sign",
+          labels = c("+", "-", "0"),
+          values = c("+" = "#4477AA", "-" = "#BB4444", "0" = "gray")
+        ) +
+        ggplot2::theme(panel.grid = ggplot2::element_blank()) +
+        ggplot2::theme(
+          axis.text.x = ggplot2::element_text(size = 12, color = "black"),
+          axis.title.y = ggplot2::element_blank(),
+          axis.title.x = ggplot2::element_text(size = 12, color = "black", face = "bold"),
+          axis.text.y = ggplot2::element_text(size = 12, color = "black"),
+          axis.ticks.x = ggplot2::element_line(size = 0.5, color = "black"),
+          axis.ticks.y = ggplot2::element_line(size = 0.5, color = "black"),
+          legend.position = "top", legend.direction = "horizontal",
+          legend.box.background = ggplot2::element_rect(color = "black", size = 0.3),
+          legend.box.margin = ggplot2::margin(0.5, 0.5, 0.5, 0.5),
+          legend.text = ggplot2::element_text(size = 12),
+          legend.title = ggplot2::element_text(size = 12, face = "bold", vjust = 0.5),
+          panel.border = ggplot2::element_blank(),
+          panel.background = ggplot2::element_blank(),
+          plot.margin = ggplot2::unit(c(0, 0, 0.2, 0.2), "cm"),
+          axis.line.y = ggplot2::element_line(colour = "black"),
+          axis.line.x = ggplot2::element_line(colour = "black")
+        ) +
+        ggplot2::labs(y = "Biomarker weight") +
+        ggplot2::coord_flip()
+
+      if (length(unique(biomarkers_weights$feature)) > 30) {
+        barplot <- barplot + ggplot2::theme(
+          axis.text.y = ggplot2::element_text(size = 10, color = "black"))
+      } else {
+        barplot <- barplot + ggplot2::theme(
+          axis.text.y = ggplot2::element_text(size = 12, color = "black"))
+      }
+
+      features_boxplot <- subset(features, feature %in% unique(biomarkers_weights_sort$variable))
+      features_boxplot$feature <- factor(as.character(features_boxplot$feature),
+                                         levels = unique(biomarkers_weights_sort$variable)
+      )
+      if (is.null(patient_label) == FALSE) {
+        features_boxplot$label <- factor(features_boxplot$label)
+      } else {
+        features_boxplot$label <- as.factor("UNK")
+      }
+
+      # BOXPLOT #
+      boxplot <- ggplot2::ggplot(
+        features_boxplot,
+        ggplot2::aes(
+          x = .data$feature,
+          y = .data$value_z,
+          fill = .data$label,
+          color = .data$label
+        )
+      ) +
+        ggplot2::geom_boxplot(alpha = 0.8, outlier.shape = NA) +
+        ggplot2::geom_point(
+          position = ggplot2::position_jitterdodge(),
+          size = 0.05
+        ) +
+        ggplot2::scale_fill_manual(
+          name = "Label",
+          labels = levels(features_boxplot$label),
+          values = c("darkgrey", "black")
+        ) +
+        ggplot2::scale_color_manual(
+          name = "Label",
+          labels = levels(features_boxplot$label),
+          values = c("darkgrey", "black")
+        ) +
+        ggplot2::ylim(c(-5, 5)) +
+        ggplot2::theme_minimal() +
+        ggplot2::theme(panel.grid = ggplot2::element_blank()) +
+        ggplot2::theme(
+          axis.text.x = ggplot2::element_text(
+            size = 12, angle = 45,
+            hjust = 1, color = "black"
+          ),
+          axis.text.y = ggplot2::element_blank(),
+          axis.title.y = ggplot2::element_blank(),
+          axis.title.x = ggplot2::element_text(size = 12, color = "black", face = "bold"),
+          axis.ticks.x = ggplot2::element_line(size = 0.5, color = "black"),
+          axis.ticks.y = ggplot2::element_blank(),
+          legend.position = "top", legend.direction = "horizontal",
+          legend.box.background = ggplot2::element_rect(color = "black", size = 0.3),
+          legend.box.margin = ggplot2::margin(0.5, 0.5, 0.5, 0.5),
+          legend.text = ggplot2::element_text(size = 12),
+          legend.title = ggplot2::element_text(size = 12, face = "bold", vjust = 0.5),
+          plot.margin = ggplot2::unit(c(0.2, 0, 0, 0.2), "cm"),
+          axis.line.x = ggplot2::element_line(colour = "black"),
+          axis.line.y = ggplot2::element_blank()
+        ) +
+        ggplot2::labs(y = "Z-score") +
+        ggplot2::coord_flip()
+
+      # Combine plots
+      figure <- ggpubr::ggarrange(barplot, boxplot, common.legend = FALSE,
+                                  ncol=2, nrow=1, heights = c(1, 1), align = "h")
+
+      figure <- ggpubr::annotate_figure(figure, top = text_grob(
+        paste0(
+          " Quantitative descriptor: ",
+          unique(biomarkers_weights_sort$datatype)),
+        color = "black", face = "bold", size = 14)
+      )
+
+      plot_list <- print(figure)
+      return(plot_list)
+    })
+
     comparison <- do.call(rbind, lapply(seq_len(length(view_combinations)), function(ii) {
         biomarkers_weights_features <- get_biomarkers_features(ii, cancer_type, patient_label)
         biomarkers_weights <- biomarkers_weights_features$weights
@@ -265,152 +456,6 @@ explore_biomarkers <- function(pathways = NULL,
             }
             features$feature <- factor(tmp, levels = tmp_2)
         }
-
-        # Sort biomarkers by weight
-        biomarkers_weights_sort <- biomarkers_weights[order(abs(biomarkers_weights$weight),
-            decreasing = TRUE
-        ), ]
-        # Keep 15 top biomarkers for those descriptors with higher amount of features
-        if (nrow(biomarkers_weights_sort) > 15) {
-            biomarkers_weights_sort <- biomarkers_weights_sort[seq_len(15), ]
-        }
-        # Two TFs differ across dorothea versions (our model was built based on a previous version)
-        while (all(biomarkers_weights_sort$variable %in% features$feature) == FALSE) {
-            which_features_missing <- !biomarkers_weights_sort$variable %in% features$feature
-            missing_features <- as.character(biomarkers_weights_sort$variable[which_features_missing])
-            biomarkers_weights_sort <- biomarkers_weights[order(abs(biomarkers_weights$weight), decreasing = TRUE), ]
-            biomarkers_weights_sort <- biomarkers_weights_sort[!biomarkers_weights_sort$variable %in% missing_features, ]
-
-            if (nrow(biomarkers_weights_sort) > 15) {
-                biomarkers_weights_sort <- biomarkers_weights_sort[seq_len(15), ]
-            }
-        }
-        biomarkers_weights_sort <- as.data.frame(biomarkers_weights_sort)
-
-        # weights
-        biomarkers_weights_sort$variable <- factor(biomarkers_weights_sort$variable,
-            levels = unique(biomarkers_weights_sort$variable)
-        )
-
-        biomarkers_weights_sort$cor <- sign(biomarkers_weights_sort$weight)
-        biomarkers_weights_sort$cor <- gsub("-1", "-", biomarkers_weights_sort$cor, fixed = TRUE)
-        biomarkers_weights_sort$cor <- gsub("1", "+", biomarkers_weights_sort$cor, fixed = TRUE)
-        biomarkers_weights_sort$cor <- factor(biomarkers_weights_sort$cor,
-            levels = unique(biomarkers_weights_sort$cor)
-        )
-
-        # BARPLOT #
-        barplot <- ggplot2::ggplot(
-            biomarkers_weights_sort,
-            ggplot2::aes(
-                x = .data$variable,
-                y = abs(.data$weight),
-                fill = .data$cor
-            )
-        ) +
-            ggplot2::geom_bar(stat = "identity", color = "white") +
-            ggplot2::scale_fill_manual(
-                name = "Association sign",
-                labels = c("+", "-", "0"),
-                values = c("+" = "#4477AA", "-" = "#BB4444", "0" = "gray")
-            ) +
-            ggplot2::theme(panel.grid = ggplot2::element_blank()) +
-            ggplot2::theme(
-                axis.text.y = ggplot2::element_text(size = 12, color = "black"),
-                axis.title.x = ggplot2::element_blank(),
-                axis.title.y = ggplot2::element_text(size = 12),
-                axis.text.x = ggplot2::element_blank(),
-                axis.ticks.x = ggplot2::element_blank(),
-                axis.ticks.y = ggplot2::element_line(size = 0.5, color = "black"),
-                legend.position = "top", legend.direction = "horizontal",
-                legend.box.background = ggplot2::element_rect(color = "black", size = 0.3),
-                legend.box.margin = ggplot2::margin(0.5, 0.5, 0.5, 0.5),
-                legend.text = ggplot2::element_text(size = 12),
-                legend.title = ggplot2::element_text(size = 12, face = "bold", vjust = 0.5),
-                panel.border = ggplot2::element_blank(),
-                panel.background = ggplot2::element_blank(),
-                plot.margin = ggplot2::unit(c(0, 0, 0.2, 0.2), "cm"),
-                axis.line.y = ggplot2::element_line(colour = "black")
-            ) +
-            ggplot2::labs(y = "Biomarker weight") +
-            ggplot2::labs(title = paste0(
-                " Quantitative descriptor: ",
-                unique(biomarkers_weights_sort$datatype)
-            ))
-
-
-        features_boxplot <- subset(features, feature %in% unique(biomarkers_weights_sort$variable))
-        features_boxplot$feature <- factor(as.character(features_boxplot$feature),
-            levels = unique(biomarkers_weights_sort$variable)
-        )
-        if (is.null(patient_label) == FALSE) {
-            features_boxplot$label <- factor(features_boxplot$label)
-        } else {
-            features_boxplot$label <- as.factor("UNK")
-        }
-
-        # BOXPLOT #
-        boxplot <- ggplot2::ggplot(
-            features_boxplot,
-            ggplot2::aes(
-                x = .data$feature,
-                y = .data$value_z,
-                fill = .data$label,
-                color = .data$label
-            )
-        ) +
-            ggplot2::geom_boxplot(alpha = 0.8, outlier.shape = NA) +
-            ggplot2::geom_point(
-                position = ggplot2::position_jitterdodge(),
-                size = 0.05
-            ) +
-            ggplot2::scale_fill_manual(
-                name = "Label",
-                labels = levels(features_boxplot$label),
-                values = c("darkgrey", "black")
-            ) +
-            ggplot2::scale_color_manual(
-                name = "Label",
-                labels = levels(features_boxplot$label),
-                values = c("darkgrey", "black")
-            ) +
-            ggplot2::ylim(c(-5, 5)) +
-            ggplot2::theme_minimal() +
-            ggplot2::theme(panel.grid = ggplot2::element_blank()) +
-            ggplot2::theme(
-                axis.text.x = ggplot2::element_text(
-                    size = 12, angle = 45,
-                    hjust = 1, color = "black"
-                ),
-                axis.text.y = ggplot2::element_text(size = 12, color = "black"),
-                axis.title.x = ggplot2::element_blank(),
-                axis.title.y = ggplot2::element_text(size = 12),
-                axis.ticks.x = ggplot2::element_blank(),
-                legend.position = "bottom", legend.direction = "horizontal",
-                axis.ticks.y = ggplot2::element_line(size = 0.5, color = "black"),
-                legend.box.background = ggplot2::element_rect(color = "black", size = 0.3),
-                legend.box.margin = ggplot2::margin(0.5, 0.5, 0.5, 0.5),
-                legend.text = ggplot2::element_text(size = 12),
-                legend.title = ggplot2::element_text(size = 12, face = "bold", vjust = 0.5),
-                plot.margin = ggplot2::unit(c(0.2, 0, 0, 0.2), "cm"),
-                axis.line.y = ggplot2::element_line(colour = "black")
-            ) +
-            ggplot2::labs(y = "Z-score")
-
-        if (length(unique(biomarkers_weights$feature)) > 30) {
-            boxplot <- boxplot + ggplot2::theme(axis.text.y = ggplot2::element_text(size = 10))
-        } else {
-            boxplot <- boxplot + ggplot2::theme(axis.text.y = ggplot2::element_text(size = 12))
-        }
-        # Combine plots
-        g1 <- ggplot2::ggplotGrob(boxplot)
-        g2 <- ggplot2::ggplotGrob(barplot)
-        g <- rbind(g2, g1, size = "first")
-        g$widths <- grid::unit.pmax(g1$widths, g2$widths)
-
-        grid::grid.newpage()
-        suppressWarnings(grid::grid.draw(g))
-        plot_list[[ii]] <- recordPlot()
 
         features_names <- levels(features$feature)
         datatype_comparison <- do.call(rbind, lapply(features_names, function(x) {
