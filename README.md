@@ -1,4 +1,5 @@
 # easier
+<img src="vignettes/easier_logo.png" alt="EaSIeR logo" style="vertical-align:top">
 
 ---
  
