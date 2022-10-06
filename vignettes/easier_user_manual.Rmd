@@ -409,7 +409,7 @@ Additionally, a volcano plot integrating systems biomarkers from all quantitativ
 
 `output_biomarkers` stores the plots from above, and they can be inspected in R as follows:
 
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 # inspect output
 output_biomarkers[[1]]
 output_biomarkers[[2]]
