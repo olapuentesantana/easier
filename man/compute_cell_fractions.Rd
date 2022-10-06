@@ -40,6 +40,33 @@ pat_subset <- c(
 )
 RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 
+# Some genes are causing issues due to approved symbols matching more than one gene
+genes_info <- easier:::reannotate_genes(cur_genes = rownames(RNA_tpm))
+## Remove non-approved symbols
+non_na <- !is.na(genes_info$new_names)
+RNA_tpm <- RNA_tpm[non_na, ]
+genes_info <- genes_info[non_na, ]## Remove entries that are withdrawn
+RNA_tpm <- RNA_tpm[-which(genes_info$new_names == "entry withdrawn"), ]
+genes_info <- genes_info[-which(genes_info$new_names == "entry withdrawn"), ]
+## Identify duplicated new genes
+newnames_dup <- unique(genes_info$new_names[duplicated(genes_info$new_names)])
+newnames_dup_ind <- do.call(c, lapply(newnames_dup, function(X) which(genes_info$new_names == X)))
+newnames_dup <- genes_info$new_names[newnames_dup_ind]
+## Retrieve data for duplicated genes
+tmp <- RNA_tpm[genes_info$old_names[genes_info$new_names \%in\% newnames_dup],]
+## Remove data for duplicated genes
+RNA_tpm <- RNA_tpm[-which(rownames(RNA_tpm) \%in\% rownames(tmp)),]
+## Aggregate data of duplicated genes
+dup_genes <- genes_info$new_names[which(genes_info$new_names \%in\% newnames_dup)]
+names(dup_genes) <- rownames(tmp)
+if (anyDuplicated(newnames_dup)){
+tmp2 <- stats::aggregate(tmp, by = list(dup_genes), FUN = "mean")
+rownames(tmp2) <- tmp2$Group.1
+tmp2$Group.1 <- NULL
+}
+# Put data together
+RNA_tpm <- rbind(RNA_tpm, tmp2)
+
 # Computation of cell fractions (Finotello et al., Genome Med, 2019)
 cell_fractions <- compute_cell_fractions(RNA_tpm = RNA_tpm)
 }
