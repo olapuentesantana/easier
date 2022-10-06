@@ -453,6 +453,16 @@ explore_biomarkers <- function(pathways = NULL,
     features <- features[!is.na(features$value), ]
     features$feature <- droplevels(features$feature)
 
+    if (unique(features$datatype) == "ccpairs") {
+      tmp <- features$feature
+      tmp_2 <- levels(features$feature)
+      for (X in seq_len(length(new_variables_cc))) {
+        tmp <- gsub(old_variables_cc[X], new_variables_cc[X], tmp, fixed = TRUE)
+        tmp_2 <- gsub(old_variables_cc[X], new_variables_cc[X], tmp_2, fixed = TRUE)
+      }
+      features$feature <- factor(tmp, levels = tmp_2)
+    }
+
     # Sort biomarkers by weight
     biomarkers_weights_sort <- biomarkers_weights[order(abs(biomarkers_weights$weight),
                                                         decreasing = TRUE
