@@ -10,6 +10,7 @@
 #' @importFrom utils combn
 #' @importFrom reshape2 melt
 #' @importFrom rstatix wilcox_test wilcox_effsize
+#' @import coin
 #' @importFrom ggrepel geom_text_repel
 #' @import ggplot2
 #' @importFrom ggpubr ggarrange annotate_figure text_grob

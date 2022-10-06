@@ -56,7 +56,8 @@ Imports:
     BiocParallel,
     reshape2,
     rstatix,
-    ggrepel
+    ggrepel,
+    coin
 Suggests: 
     knitr, rmarkdown, BiocStyle, testthat, SummarizedExperiment
 biocViews: GeneExpression, Software, Transcription, SystemsBiology, Pathways, GeneSetEnrichment, ImmunoOncology, Epigenetics, Classification, BiomedicalInformatics, Regression, ExperimentHubSoftware
