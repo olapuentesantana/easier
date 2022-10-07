@@ -134,12 +134,62 @@ compute_scores_immune_response <- function(RNA_tpm = NULL,
   result <- lapply(names(easier_sigs)[sigs], function(sig) {
     tryCatch(
       {
-        if (sig == "Tcell_inflamed") {
-          if (any(rownames(RNA_tpm) %in% "C14orf102")) {
-            message("Gene name changed: NRDE2 is approved symbol,
-                    not C14orf102", "\n")
-            rownames(RNA_tpm)[rownames(RNA_tpm) %in% "C14orf102"] <- "NRDE2"
+        message(sig, " score: \n")
+
+        # Start gene re-annotation #
+
+        ## get signature genes
+        easier_spec_sig <- unique(unlist(easier_sigs[[sig]]))
+
+        ## check for T cell inflamed
+        if (sig == "Tcell_inflamed") easier_spec_sig <- easier_spec_sig[-grep("0", easier_spec_sig)]
+
+        ## match
+        literature_matches <- match(easier_spec_sig, rownames(RNA_tpm))
+
+        if (anyNA(literature_matches)) {
+
+          message(c(
+            "Differenty named or missing signature genes : \n",
+            paste(easier_spec_sig[is.na(literature_matches)], collapse = "\n")
+          ))
+
+          genes_to_annot <- easier_spec_sig[!easier_spec_sig %in% rownames(RNA_tpm)]
+          out_annot <- easier:::reannotate_genes(cur_genes = genes_to_annot)
+
+          # re-annotate gene signatures
+          if (is.null(out_annot) == FALSE){
+
+            if (length(names(easier_sigs[[sig]])) == 0){
+
+              tmp <- easier_sigs[[sig]]
+              if (any(!is.na(match(out_annot$old_names, tmp)))) {
+                which_genes_old <- stats::na.omit(match(out_annot$old_names, tmp))
+                which_genes_new <- !is.na(match(out_annot$old_names, tmp))
+                tmp[which_genes_old] <- out_annot$new_names[which_genes_new]
+                easier_sigs[[sig]] <- tmp
+              }
+
+            }else{ # sublist
+
+              tmp <- lapply(names(easier_sigs[[sig]]), function(X) {
+                tmp <- easier_sigs[[sig]][[X]]
+                if (any(!is.na(match(out_annot$old_names, tmp)))) {
+                  which_genes_old <- stats::na.omit(match(out_annot$old_names, tmp))
+                  which_genes_new <- !is.na(match(out_annot$old_names, tmp))
+                  tmp[which_genes_old] <- out_annot$new_names[which_genes_new]
+                }
+                return(tmp)
+              })
+              names(tmp) <- names(easier_sigs[[sig]])
+              easier_sigs[[sig]] <- tmp
+
+            }
           }
+          message("Perfomed gene re-annotation to match signature genes  \n")
+        }
+
+        if (sig == "Tcell_inflamed") {
 
           # Subset RNA_tpm
           match_genes_housekeeping <- match(
@@ -151,18 +201,7 @@ compute_scores_immune_response <- function(RNA_tpm = NULL,
             rownames(RNA_tpm)
           )
 
-          if (anyNA(c(match_genes_housekeeping, match_genes_predictors))) {
-            tmp <- c(
-              easier_sigs$Tcell_inflamed$Housekeeping.read,
-              easier_sigs$Tcell_inflamed$Tcell_inflamed.read
-            )
-            message(c(
-              "Differenty named or missing signature genes for ", sig, ": \n",
-              paste(tmp[!tmp %in% rownames(RNA_tpm)], collapse = "\n")
-            ), "\n")
-            match_genes_housekeeping <- match_genes_housekeeping[!is.na(match_genes_housekeeping)]
-            match_genes_predictors <- match_genes_predictors[!is.na(match_genes_predictors)]
-          }
+          # Compute score
           do.call(
             paste0("compute_", sig),
             args = list(
@@ -170,103 +209,42 @@ compute_scores_immune_response <- function(RNA_tpm = NULL,
               predictors = match_genes_predictors,
               weights = easier_sigs$Tcell_inflamed$weights,
               RNA_tpm = RNA_tpm
-            )
-          )
+            ))
+
         } else if (sig == "IMPRES" | sig == "MSI") {
-          read <- unique(unlist(easier_sigs[[sig]])) # 15 genes
-
-          # EQUIVALENT : "VISTA" = "C10orf54", "PDL-1" = "CD274", "TIM-3" = "HAVCR2",
-          # "PD-1" = "PDCD1", "HVEM" = "TNFRSF14", "OX40L" = "TNFSF4", "CD137L" = "TNFSF9"
-
-          # Some genes might have other name: case for "C10orf54", it's called "VSIR", be careful
-          if (any(rownames(RNA_tpm) %in% "VSIR") & sig == "IMPRES") {
-            message("Gene name changed: C10orf54 instead of VSIR", "\n")
-            rownames(RNA_tpm)[rownames(RNA_tpm) %in% "VSIR"] <- "C10orf54"
-          }
-
-          # Some genes might have other name: case for "CCRN4L", it's called "NOCT", be careful
-          if (any(rownames(RNA_tpm) %in% "CCRN4L") & sig == "MSI") {
-            message("Gene name changed: NOCT is approved symbol, not CCRN4L", "\n")
-            rownames(RNA_tpm)[rownames(RNA_tpm) %in% "CCRN4L"] <- "NOCT"
-          }
 
           # Subset RNA_tpm
           match_F_1 <- match(easier_sigs[[sig]]$Gene_1, rownames(RNA_tpm))
           match_F_2 <- match(easier_sigs[[sig]]$Gene_2, rownames(RNA_tpm))
 
-          if (anyNA(c(match_F_1, match_F_2))) {
-            message(c(
-              "Differenty named or missing signature genes : \n",
-              paste(read[!read %in% rownames(RNA_tpm)], collapse = "\n")
-            ))
-          }
+          do.call("compute_IMPRES_MSI",
+                  args = list(
+                    sig = sig,
+                    len = length(easier_sigs[sig]$Gene_1),
+                    match_F_1 = match_F_1,
+                    match_F_2 = match_F_2,
+                    RNA_tpm = RNA_tpm
+                  ))
 
-          do.call(
-            "compute_IMPRES_MSI",
-            args = list(
-              sig = sig,
-              len = length(easier_sigs[sig]$Gene_1),
-              match_F_1 = match_F_1,
-              match_F_2 = match_F_2,
-              RNA_tpm = RNA_tpm,
-              verbose = verbose
-            )
-          )
-        } else {
+        } else if (sig == "RIR") {
+
+          do.call(paste0("compute_", sig), args = list(
+            RNA_tpm = RNA_tpm,
+            RIR_program = easier_sigs[[sig]]
+          ))
+
+        }else {
+
           easier_spec_sig <- unlist(easier_sigs[[sig]])
-
-          # Literature genes
           literature_matches <- match(easier_spec_sig, rownames(RNA_tpm))
+          literature_matches <- literature_matches[!is.na(literature_matches)]
 
-          if (anyNA(literature_matches)) {
-            message(c(
-              "Differenty named or missing signature genes for ", sig, ": \n",
-              paste(easier_spec_sig[!easier_spec_sig %in% rownames(RNA_tpm)], collapse = ", ")
-            ), "\n")
+          do.call(paste0("compute_", sig),
+                  args = list(
+                    matches = literature_matches,
+                    RNA_tpm = RNA_tpm
+                  ))
 
-            # Re-annotate genes not found
-            genes_to_annot <- easier_spec_sig[!easier_spec_sig %in% rownames(RNA_tpm)]
-            out_annot <- reannotate_genes(cur_genes = genes_to_annot)
-            which_genes <- match(
-              out_annot$old_names[!is.na(out_annot$new_names)],
-              easier_spec_sig
-            )
-            easier_spec_sig[which_genes] <- out_annot$new_names[!is.na(out_annot$new_names)]
-            message(
-              "After gene re-annotation, differently named or missing signature genes for ",
-              sig, ": \n", paste(easier_spec_sig[!easier_spec_sig %in% rownames(RNA_tpm)],
-                collapse = ", "
-              ), "\n"
-            )
-            literature_matches <- match(easier_spec_sig, rownames(RNA_tpm))
-            literature_matches <- literature_matches[!is.na(literature_matches)]
-          }
-
-          if (sig == "RIR") {
-
-            # Modify new RIR_sig
-            tmp_RIR_sig <- lapply(names(easier_sigs[[sig]]), function(X) {
-              sub_RIR_sig <- easier_sigs[[sig]][[X]]
-              if (any(!is.na(match(out_annot$old_names, sub_RIR_sig)))) {
-                which_genes_old <- stats::na.omit(match(out_annot$old_names, sub_RIR_sig))
-                which_genes_new <- !is.na(match(out_annot$old_names, sub_RIR_sig))
-                sub_RIR_sig[which_genes_old] <- out_annot$new_names[which_genes_new]
-              }
-              return(sub_RIR_sig)
-            })
-            names(tmp_RIR_sig) <- names(easier_sigs[[sig]])
-            easier_sigs[[sig]] <- tmp_RIR_sig
-
-            do.call(paste0("compute_", sig), args = list(
-              RNA_tpm = RNA_tpm,
-              RIR_program = easier_sigs[[sig]]
-            ))
-          } else {
-            do.call(paste0("compute_", sig), args = list(
-              matches = literature_matches,
-              RNA_tpm = RNA_tpm
-            ))
-          }
         }
       },
       error = function(cond) {

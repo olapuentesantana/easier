@@ -338,9 +338,19 @@ assess_immune_response <- function(predictions_immune_response = NULL,
         tasks_values <- compute_scores_immune_response(RNA_tpm)
       } else {
         tasks_values <- compute_scores_immune_response(RNA_tpm,
-          selected_scores = select_gold_standard
+                                                       selected_scores = select_gold_standard
         )
       }
+
+      if ("resF_down" %in% colnames(tasks_values)){
+        colnames(tasks_values) <- gsub("resF_down", "RIR", colnames(tasks_values))
+      }
+
+      if (any(c("resF_up", "resF") %in% colnames(tasks_values))){
+        idx <- match(c("resF_up", "resF"), colnames(tasks_values))
+        tasks_values <- tasks_values[, -idx]
+      }
+
       if (verbose) message("Scores of immune response computed!")
       if ("chemokines" %in% colnames(tasks_values)) {
         # Assess correlation between chemokines and the other correlated tasks
@@ -352,12 +362,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
         }
       }
       tasks_values <- as.data.frame(tasks_values)
-      tasks_values <- tasks_values[, c("CYT", "Roh_IS", "chemokines",
-                                       "Davoli_IS", "IFNy", "Ayers_expIS",
-                                       "Tcell_inflamed", "RIR.resF_down", "TLS")]
-      colnames(tasks_values)[8] <- "RIR"
     }
-
     # Predictions single views #
     ROC_pred <- lapply(views, function(spec_view) {
       ROC_pred <- vapply(tasks, function(spec_task) {
@@ -625,7 +630,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     ## ROC curves
     graphics::par(
       cex.axis = 1.3,
-      # mar = c(5, 4, 2, 12),
+      mar = c(5, 4, 2, 8),
       col.lab = "black",
       pty = "s", xpd = TRUE
     )
@@ -665,7 +670,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
     legend_text <- gsub(" [NA-NA]", "", legend_text, fixed = TRUE)
 
     graphics::legend(
-      x = 0.63, y = 0.4,
+      x = "topright", inset = c(-0.85, 0),
       legend = legend_text, fill = colors_available,
       border = colors_available,
       cex = 0.7, bty = "n"
@@ -718,7 +723,8 @@ assess_immune_response <- function(predictions_immune_response = NULL,
       AUC_TMB_v <- AUC_TMB@y.values[[1]]
 
       graphics::par(
-        cex.axis = 1.3, mar = c(5, 4, 2, 8), col.lab = "black",
+        cex.axis = 1.3,
+        mar = c(5, 4, 2, 8), col.lab = "black",
         pty = "s", xpd = TRUE
       )
       if (easier_with_TMB == "penalized_score") {
@@ -747,7 +753,7 @@ assess_immune_response <- function(predictions_immune_response = NULL,
       )
       ### legend
       graphics::legend(
-        x = 0.65, y = 0.25,
+        x = 0.5, y = 0.20,
         legend = c(easier_with_TMB, "EaSIeR", "TMB"),
         fill = c(
           colors_comb_score[easier_with_TMB],
