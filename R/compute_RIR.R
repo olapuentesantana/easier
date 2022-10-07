@@ -1,5 +1,5 @@
-#' Compute repressed immune resistance signature (RIR)
-#' score
+#' Compute three scores from the immune resistance program:
+#' resF_down (RIR), resF_up, resF (resF_up - resF_down)
 #'
 #' Calculates RIR score by combining a set of gene
 #' signatures associated with upregulation and
@@ -62,6 +62,5 @@ compute_RIR <- function(RNA_tpm,
   score$resF <- score[, "resF.up"] - score[, "resF.down"]
   rownames(score) <- colnames(log2_RNA_tpm)
   colnames(score) <- gsub(".", "_", colnames(score), fixed = TRUE)
-
-  return(data.frame(RIR = score, check.names = FALSE))
+  return(data.frame(score, check.names = FALSE))
 }

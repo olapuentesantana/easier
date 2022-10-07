@@ -229,7 +229,7 @@ RNA_tpm <- rbind(RNA_tpm, tmp2)
 
 ## Compute hallmarks of immune response
 
-Multiple hallmarks (i.e. published transcriptome-based predictors) of the immune response can also be computed using TPM data from RNA-seq. By default, the following scores of the immune response will be computed: cytolytic activity (CYT) [@ROONEY201548], Roh immune score (Roh_IS) [@Roheaah3560], chemokine signature (chemokines) [@Messina2012], Davoli immune signature (Davoli_IS) [@Davolieaaf8399], IFNy signature (IFNy) [@Ayers2017], Expanded immune signature (Ayers_expIS) [@Ayers2017], T-cell inflamed signature (Tcell_inflamed) [@Ayers2017], Repressed immune resistance (RIR) [@JERBYARNON2018984] and Tertiary lymphoid structures signature (TLS) [@Cabrita2020]. This selection can be customized by editing the `selected_scores` option.
+Multiple hallmarks (i.e. published transcriptome-based predictors) of the immune response can also be computed using TPM data from RNA-seq. By default, the following scores of the immune response will be computed: cytolytic activity (CYT) [@ROONEY201548], Roh immune score (Roh_IS) [@Roheaah3560], chemokine signature (chemokines) [@Messina2012], Davoli immune signature (Davoli_IS) [@Davolieaaf8399], IFNy signature (IFNy) [@Ayers2017], expanded immune signature (Ayers_expIS) [@Ayers2017], T-cell inflamed signature (Tcell_inflamed) [@Ayers2017], immune resistance program (RIR: resF_down, resF_up, resF) [@JERBYARNON2018984] and tertiary lymphoid structures signature (TLS) [@Cabrita2020]. This selection can be customized by editing the `selected_scores` option.
 
 ```{r, eval=TRUE}
 hallmarks_of_immune_response <- c("CYT", "Roh_IS", "chemokines", "Davoli_IS", "IFNy", "Ayers_expIS", "Tcell_inflamed", "RIR", "TLS")
@@ -409,7 +409,7 @@ Additionally, a volcano plot integrating systems biomarkers from all quantitativ
 
 `output_biomarkers` stores the plots from above, and they can be inspected in R as follows:
 
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 # inspect output
 output_biomarkers[[1]]
 output_biomarkers[[2]]

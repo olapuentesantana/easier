@@ -2,8 +2,8 @@
 % Please edit documentation in R/compute_RIR.R
 \name{compute_RIR}
 \alias{compute_RIR}
-\title{Compute repressed immune resistance signature (RIR)
-score}
+\title{Compute three scores from the immune resistance program:
+resF_down (RIR), resF_up, resF (resF_up - resF_down)}
 \usage{
 compute_RIR(RNA_tpm, RIR_program)
 }
