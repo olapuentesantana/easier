@@ -269,6 +269,9 @@ More detailed information on how these networks were obtained can be found in th
 ```{r, eval=TRUE}
 lrpair_weights <- compute_LR_pairs(RNA_tpm = RNA_tpm,
                                    cancer_type = "pancan")
+# Remove LR which are not found (NA's)
+na_lrpairs <- names(lrpair_weights)[is.na(apply(lrpair_weights, 2, sum))]
+lrpair_weights <- lrpair_weights[, -which(colnames(lrpair_weights) %in% na_lrpairs)]
 head(lrpair_weights[,1:5])
 ```
 
