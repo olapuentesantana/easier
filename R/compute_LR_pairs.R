@@ -166,6 +166,8 @@ compute_LR_pairs <- function(RNA_tpm = NULL,
     colnames(LR_pairs_computed)[pos_keep] <- combo_name
     LR_pairs_computed <- LR_pairs_computed[, -pos_remove]
   }
+  # Remove LR pairs with all NA values
+  LR_pairs_computed <- LR_pairs_computed[, !is.na(apply(LR_pairs_computed, 2, sum))]
 
   if (verbose) message("Ligand-Receptor pair weights computed \n")
   return(as.data.frame(LR_pairs_computed))

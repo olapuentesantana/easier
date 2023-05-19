@@ -269,12 +269,7 @@ More detailed information on how these networks were obtained can be found in th
 ```{r, eval=TRUE}
 lrpair_weights <- compute_LR_pairs(RNA_tpm = RNA_tpm,
                                    cancer_type = "pancan")
-
-# Remove LR which are not found (NA's)
-na_lrpairs <- names(lrpair_weights)[is.na(apply(lrpair_weights, 2, sum))]
-lrpair_weights <- lrpair_weights[, -which(colnames(lrpair_weights) %in% na_lrpairs)]
 head(lrpair_weights[,1:5])
-
 ```
 
 Via `cancer_type`, a cancer-specific ligand-receptor pairs network can be chosen. With `cancer_type` set to `pancan`, a pan-cancer network will be used and this is based on the union of all ligand-receptor pairs present across the 18 cancer-specific networks. 
