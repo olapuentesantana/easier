@@ -10,9 +10,12 @@
 #' the estimation of human transcription factor activities."
 #' Genome Research. 2019. DOI: 10.1101/gr.240663.118.
 #'
-#' @importFrom dorothea run_viper
+#' @import magrittr
 #' @importFrom stats na.exclude
 #' @importFrom dplyr filter
+#' @importFrom decoupleR run_viper
+#' @importFrom tidyr pivot_wider
+#' @importFrom tibble column_to_rownames
 #' @importFrom easierData get_TCGA_mean_pancancer get_TCGA_sd_pancancer
 #'
 #' @param RNA_tpm data.frame containing TPM values with HGNC symbols
@@ -93,17 +96,25 @@ compute_TF_activity <- function(RNA_tpm = NULL,
       round(length(genes_kept) / length(all_regulated_transcripts), 3) * 100, "%)"
     )
   }
-  # TF activity: run viper
-  tf_activity <- dorothea::run_viper(
-    input = E, regulons = regulons,
-    options = list(
-      method = "none", minsize = 4, eset.filter = FALSE,
-      cores = 1, verbose = FALSE
-    )
-  )
 
-  # Samples as rows, TFs as columns
-  tf_activity <- t(tf_activity)
+  # Remove genes with all NA/Inf values
+  E <- E[!is.na(apply(E, 1, sum)), ]
+  E <- E[!is.infinite(apply(E, 1, sum)), ]
+
+  # TF activity: run viper
+  tf_activity_df <- decoupleR::run_viper(mat = E,
+                                         network = regulons,
+                                         .source = "tf",
+                                         minsize = 4,
+                                         eset.filter = FALSE,
+                                         method = "none",
+                                         verbose = FALSE)
+  # To matrix
+  tf_activity <- tf_activity_df %>%
+    tidyr::pivot_wider(id_cols = condition,
+                       names_from = source,
+                       values_from = score) %>%
+    tibble::column_to_rownames("condition")
 
   if (verbose) message("TF activity computed! \n")
 
