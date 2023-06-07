@@ -63,7 +63,7 @@ Imports:
     magrittr,
     coin
 Suggests: 
-    knitr, rmarkdown, BiocStyle, testthat, SummarizedExperiment
+    knitr, rmarkdown, BiocStyle, testthat, SummarizedExperiment, viper
 biocViews: GeneExpression, Software, Transcription, SystemsBiology, Pathways, GeneSetEnrichment, ImmunoOncology, Epigenetics, Classification, BiomedicalInformatics, Regression, ExperimentHubSoftware
 VignetteBuilder: knitr
 Encoding: UTF-8
