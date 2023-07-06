@@ -41,6 +41,7 @@ Imports:
     progeny,
     easierData,
     dorothea (>= 1.6.0),
+    decoupleR,
     quantiseqr,
     ROCR,
     grDevices, 
@@ -51,12 +52,15 @@ Imports:
     DESeq2,
     utils,
     dplyr,
+    tidyr,
+    tibble,
     matrixStats,
     rlang,
     BiocParallel,
     reshape2,
     rstatix,
     ggrepel,
+    magrittr,
     coin
 Suggests: 
     knitr, rmarkdown, BiocStyle, testthat, SummarizedExperiment
@@ -64,5 +68,5 @@ biocViews: GeneExpression, Software, Transcription, SystemsBiology, Pathways, Ge
 VignetteBuilder: knitr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Config/testthat/edition: 3
