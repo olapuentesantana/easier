@@ -1,6 +1,6 @@
 Package: easier
 Title: Estimate Systems Immune Response from RNA-seq data
-Version: 1.7.0
+Version: 1.7.1
 Authors@R: 
     c(
         person(
@@ -41,6 +41,7 @@ Imports:
     progeny,
     easierData,
     dorothea (>= 1.6.0),
+    decoupleR,
     quantiseqr,
     ROCR,
     grDevices, 
@@ -51,18 +52,21 @@ Imports:
     DESeq2,
     utils,
     dplyr,
+    tidyr,
+    tibble,
     matrixStats,
     rlang,
     BiocParallel,
     reshape2,
     rstatix,
     ggrepel,
+    magrittr,
     coin
 Suggests: 
-    knitr, rmarkdown, BiocStyle, testthat, SummarizedExperiment
+    knitr, rmarkdown, BiocStyle, testthat, SummarizedExperiment, viper
 biocViews: GeneExpression, Software, Transcription, SystemsBiology, Pathways, GeneSetEnrichment, ImmunoOncology, Epigenetics, Classification, BiomedicalInformatics, Regression, ExperimentHubSoftware
 VignetteBuilder: knitr
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Config/testthat/edition: 3
