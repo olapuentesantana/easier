@@ -12,8 +12,7 @@
 #'
 #' @import magrittr
 #' @importFrom stats na.exclude
-#' @importFrom dplyr filter
-#' @importFrom decoupleR run_viper
+#' @importFrom decoupleR get_collectri run_wmean
 #' @importFrom tidyr pivot_wider
 #' @importFrom tibble column_to_rownames
 #' @importFrom easierData get_TCGA_mean_pancancer get_TCGA_sd_pancancer
@@ -74,15 +73,15 @@ compute_TF_activity <- function(RNA_tpm = NULL,
     sd = TCGA_sd_pancancer
   )
 
-  # redefine gene names to match transcripts for viper
+  # redefine gene names to match TF-target network
   E <- t(gene_expr)
   newNames <- gsub(".", "-", rownames(E), fixed = TRUE)
   rownames(E) <- newNames
 
-  # data extracted from publication
-  regulons <- dplyr::filter(dorothea::dorothea_hs, .data$confidence %in% c("A", "B"))
-  all_regulated_transcripts <- unique(regulons$target)
-  all_tfs <- unique(regulons$tf)
+  # collectTRI network
+  net <- decoupleR::get_collectri(organism='human', split_complexes=FALSE)
+  all_regulated_transcripts <- unique(net$target)
+  all_tfs <- unique(net$tf)
 
   # check what is the percentage of genes we have in our data
   genes_kept <- intersect(rownames(E), all_regulated_transcripts)
@@ -102,13 +101,12 @@ compute_TF_activity <- function(RNA_tpm = NULL,
   E <- E[!is.infinite(apply(E, 1, sum)), ]
 
   # TF activity: run viper
-  tf_activity_df <- decoupleR::run_viper(mat = E,
-                                         network = regulons,
-                                         .source = "tf",
-                                         minsize = 4,
-                                         eset.filter = FALSE,
-                                         method = "none",
-                                         verbose = FALSE)
+  tf_activity_df <- decoupleR::run_wmean(mat = E,
+                                         net = net,
+                                         .source='tf',
+                                         .target='target',
+                                         .mor='mor', 
+                                         minsize = 5)
   # To matrix
   tf_activity <- tf_activity_df %>%
     tidyr::pivot_wider(id_cols = condition,
