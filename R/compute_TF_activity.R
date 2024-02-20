@@ -12,6 +12,7 @@
 #'
 #' @import magrittr
 #' @importFrom stats na.exclude
+#' @importFrom dplyr filter
 #' @importFrom decoupleR get_collectri run_wmean
 #' @importFrom tidyr pivot_wider
 #' @importFrom tibble column_to_rownames
@@ -81,7 +82,7 @@ compute_TF_activity <- function(RNA_tpm = NULL,
   # collectTRI network
   net <- decoupleR::get_collectri(organism='human', split_complexes=FALSE)
   all_regulated_transcripts <- unique(net$target)
-  all_tfs <- unique(net$tf)
+  all_tfs <- unique(net$source)
 
   # check what is the percentage of genes we have in our data
   genes_kept <- intersect(rownames(E), all_regulated_transcripts)
@@ -103,12 +104,13 @@ compute_TF_activity <- function(RNA_tpm = NULL,
   # TF activity: run viper
   tf_activity_df <- decoupleR::run_wmean(mat = E,
                                          net = net,
-                                         .source='tf',
+                                         .source='source',
                                          .target='target',
                                          .mor='mor', 
                                          minsize = 5)
   # To matrix
   tf_activity <- tf_activity_df %>%
+    dplyr::filter(statistic == "wmean") %>%
     tidyr::pivot_wider(id_cols = condition,
                        names_from = source,
                        values_from = score) %>%
