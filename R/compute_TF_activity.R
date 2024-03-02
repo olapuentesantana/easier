@@ -69,11 +69,12 @@ compute_TF_activity <- function(RNA_tpm = NULL,
 
   # Log transformed expression matrix (log2[tpm+1]):
   # expression matrix scaled and recentered.
-  gene_expr <- calc_z_score(t(tpm),
-    mean = TCGA_mean_pancancer,
-    sd = TCGA_sd_pancancer
-  )
+  #gene_expr <- calc_z_score(t(tpm),
+  #  mean = TCGA_mean_pancancer,
+  #  sd = TCGA_sd_pancancer
+  #)
 
+  gene_expr <- t(tpm)
   # redefine gene names to match TF-target network
   E <- t(gene_expr)
   newNames <- gsub(".", "-", rownames(E), fixed = TRUE)
