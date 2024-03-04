@@ -5,11 +5,17 @@
 \title{Compute transcription factor activity from gene
 expression using DoRothEA}
 \usage{
-compute_TF_activity(RNA_tpm = NULL, verbose = TRUE)
+compute_TF_activity(
+  RNA_tpm = NULL,
+  regulon_net = c("collectri", "dorothea"),
+  verbose = TRUE
+)
 }
 \arguments{
 \item{RNA_tpm}{data.frame containing TPM values with HGNC symbols
 in rows and samples in columns.}
+
+\item{regulon_net}{string indicating the regulon network to be used.}
 
 \item{verbose}{logical value indicating whether to display messages
 about the number of regulated
@@ -44,7 +50,8 @@ RNA_tpm <- RNA_tpm[, colnames(RNA_tpm) \%in\% pat_subset]
 
 # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
 tf_activity <- compute_TF_activity(
-  RNA_tpm = RNA_tpm
+  RNA_tpm = RNA_tpm,
+  regulon_net = "collectri"
 )
 }
 \references{

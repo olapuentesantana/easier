@@ -251,15 +251,15 @@ head(cell_fractions)
 
 By applying PROGENy [@HOLLAND2020194431; @Schubert2018] method to count data from RNA-seq, the activity of 14 signaling pathways can be inferred as in the chunk below. 
 ```{r, eval=TRUE}
-pathway_activities <- compute_pathway_activity(RNA_counts = RNA_counts,
-                                               remove_sig_genes_immune_response = TRUE)
+pathway_activities <- compute_pathway_activity(RNA_tpm = RNA_tpm,
+                                               remove_sig_genes_immune_response = FALSE)
 head(pathway_activities)
 ```
 The call above infers pathway activity as a linear transformation of gene expression data. Since some pathway signature genes were also used to compute scores of immune response (output variable in EaSIeR model). With `remove_sig_genes_immune_response` set to `TRUE` (default), the overlapping genes are removed from the pathway signature genes used to infer pathway activities.  
 
 By applying DoRothEA [@Garcia-Alonso01082019] method to TPM data from RNA-seq, the activity of 118 TFs can be inferred as follows:
 ```{r, eval=TRUE}
-tf_activities <- compute_TF_activity(RNA_tpm = RNA_tpm)
+tf_activities <- compute_TF_activity(RNA_tpm = RNA_tpm, regulon_net = "dorothea")
 head(tf_activities[,1:5])
 ```
 
@@ -293,13 +293,13 @@ The `cancer_type` provided should match one of the cancer-specific models availa
 
 The optimized models can be retrieved from `easierData` package using the function `get_opt_models()`.
 
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 predictions <- predict_immune_response(pathways = pathway_activities,
                                        immunecells = cell_fractions,
                                        tfs = tf_activities,
                                        lrpairs = lrpair_weights,
                                        ccpairs = ccpair_scores,
-                                       cancer_type = cancer_type, 
+                                       cancer_type = cancer_type,
                                        verbose = TRUE)
 ```
 
@@ -325,7 +325,7 @@ Since both immune response and TMB are essential for an effective immunotherapy 
 
 These two strategies to combine immune response and TMB require the definition of a certain weight or penalty beforehand (`weight_penalty`). The default weight or penalty is 0.5.
 
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 output_eval_with_resp <- assess_immune_response(predictions_immune_response = predictions,
                                                 patient_response = patient_ICBresponse,
                                                 RNA_tpm = RNA_tpm,
@@ -353,7 +353,7 @@ This is a usual case where we might have a cancer dataset with bulk RNA-seq data
 
 In this likely scenario, an score of likelihood of immune response can be assigned to each patient by omitting the argument `patient_response` within the function `assess_immune_response`.
 
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 output_eval_no_resp <- assess_immune_response(predictions_immune_response = predictions,
                                               TMB_values = TMB,
                                               easier_with_TMB = "weighted_average",
@@ -376,7 +376,7 @@ output_eval_no_resp[[2]]
 
 We can further retrieve the easier score and also, the refined scores obtained by integrating easier score and TMB via `retrieve_easier_score`.
 
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 easier_derived_scores <- retrieve_easier_score(predictions_immune_response = predictions,
                                                TMB_values = TMB,
                                                easier_with_TMB = c("weighted_average", 
@@ -394,7 +394,7 @@ The option `patient_label` allows to make a two-level comparison by providing a 
 
 In order to leverage the cancer-specific biomarker weights inferred from model training, you need to specify again which `cancer_type` the bulk RNA-seq data belongs to. As before, the selected `cancer_type` should be included in the list described above.
 
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 output_biomarkers <- explore_biomarkers(pathways = pathway_activities,
                                         immunecells = cell_fractions,
                                         tfs = tf_activities,

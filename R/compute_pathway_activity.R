@@ -14,13 +14,15 @@
 #' Biophysica Acta (BBA) - Gene Regulatory Mechanisms. 2019.
 #' DOI: 10.1016/j.bbagrm.2019.194431.
 #'
-#' @importFrom DESeq2 DESeqDataSetFromMatrix estimateSizeFactors estimateDispersions
-#' getVarianceStabilizedData
 #' @importFrom stats na.exclude
+#' @importFrom dplyr filter
 #' @importFrom progeny progeny getModel
+#' @importFrom decoupleR get_progeny run_wmean
+#' @importFrom tidyr pivot_wider
+#' @importFrom tibble column_to_rownames
 #' @importFrom easierData get_cor_scores_genes
 #'
-#' @param RNA_counts data.frame containing raw counts values with HGNC
+#' @param RNA_tpm data.frame containing TPM values with HGNC
 #' gene symbols as row names and samples identifiers as column names.
 #' @param remove_sig_genes_immune_response logical value indicating
 #' whether to remove signature genes involved in the derivation of
@@ -59,92 +61,71 @@
 #'   RNA_counts = RNA_counts,
 #'   remove_sig_genes_immune_response = TRUE
 #' )
-compute_pathway_activity <- function(RNA_counts = NULL,
+compute_pathway_activity <- function(RNA_tpm = NULL,
                                      remove_sig_genes_immune_response = TRUE,
                                      verbose = TRUE) {
   # Some checks
-  if (is.null(RNA_counts)) stop("Counts gene expression data not found")
-
+  if (is.null(RNA_tpm)) stop("TPM gene expression data not found")
+  
   # Retrieve internal data
   cor_scores_genes <- suppressMessages(easierData::get_cor_scores_genes())
 
   # Gene expression data
-  raw_counts <- RNA_counts
-  genes <- rownames(raw_counts)
-
+  tpm <- RNA_tpm
+  genes <- rownames(tpm)
+  
   # HGNC symbols are required
-  if (any(grep("ENSG00000", genes))) {
-    stop("Hgnc gene symbols are required",
-      call. = FALSE
+  if (any(grep("ENSG00000", genes))) stop("hgnc gene symbols are required", call. = FALSE)
+  
+  gene_expr <- t(tpm)
+  # redefine gene names to match TF-target network
+  E <- t(gene_expr)
+  newNames <- gsub(".", "-", rownames(E), fixed = TRUE)
+  rownames(E) <- newNames
+  
+  ## progeny network
+  net <- decoupleR::get_progeny(organism = 'human', top = 100)
+
+  all_regulated_transcripts <- unique(net$target)
+
+  # check what is the percentage of genes we have in our data
+  genes_kept <- intersect(rownames(E), all_regulated_transcripts)
+  genes_left <- setdiff(all_regulated_transcripts, rownames(E))
+  
+  # check what is the percentage of regulated transcripts that we have in our data
+  if (verbose) {
+    message(
+      "Regulated transcripts found in data set: ", length(genes_kept), "/",
+      length(all_regulated_transcripts), " (",
+      round(length(genes_kept) / length(all_regulated_transcripts), 3) * 100, "%)"
     )
   }
-
+  
   # Remove list of genes used to build proxy's of ICB response
   if (remove_sig_genes_immune_response) {
     if (verbose) message("Removing signature genes of hallmarks of immune response \n")
-    idy <- stats::na.exclude(match(cor_scores_genes, rownames(raw_counts)))
-    raw_counts <- raw_counts[-idy, ]
+    idy <- stats::na.exclude(match(cor_scores_genes, rownames(E)))
+    E <- E[-idy, ]
   }
 
-  # Integers are required for "DESeq2"
-  if (is.integer(raw_counts) == FALSE) {
-    raw_counts_integer <- apply(raw_counts, 2, as.integer)
-    rownames(raw_counts_integer) <- rownames(raw_counts)
-  } else {
-    raw_counts_integer <- raw_counts
-  }
-
-  # Variance stabilizing transformation (DESeq2 package)
-  # Integer count matrix, a data frame with the sample info,
-  # design =~1 to consider all samples as part of the same group.
-
-  # Column data:
-  colData <- data.frame(id = colnames(raw_counts_integer))
-
-  if (verbose) message("Gene counts normalization with DESeq2:")
-  # Construction a DESeqDataSet: (Forced all to be data.frames($ operator))
-  dset <- DESeq2::DESeqDataSetFromMatrix(
-    countData = raw_counts_integer,
-    colData = colData,
-    design = ~1
-  )
-
-  # Variance stabilization transformation
-  dset <- DESeq2::estimateSizeFactors(dset)
-  dset <- DESeq2::estimateDispersions(dset)
-  gene_expr <- DESeq2::getVarianceStabilizedData(dset)
-  rownames(gene_expr) <- rownames(raw_counts_integer)
-
-  # Pathways activity
-  pathway_activity <- progeny::progeny(gene_expr,
-    scale = FALSE,
-    organism = "Human", verbose = verbose
-  )
-
-  # check what is the percentage of genes we have in our data
-  model_pathways <- progeny::getModel(organism = "Human", top = 100)
-  full_pathway_sig <- unique(unlist(lapply(
-    colnames(model_pathways),
-    function(pathway) {
-      top_genes_pathway <- rownames(model_pathways)[apply(
-        model_pathways, 2,
-        function(X) X != 0
-      )[, pathway]]
-      return(top_genes_pathway)
-    }
-  )))
-  genes_kept <- intersect(rownames(gene_expr), full_pathway_sig)
-  genes_left <- setdiff(full_pathway_sig, rownames(gene_expr))
-  total_genes <- length(genes_left) + length(genes_kept)
-  if (verbose) {
-    message(
-      "Pathway signature genes found in data set: ",
-      length(genes_kept), "/",
-      total_genes, " (",
-      round(length(genes_kept) / total_genes, 3) * 100,
-      "%)"
-    )
-  }
+  # Remove genes with all NA/Inf values
+  E <- E[!is.na(apply(E, 1, sum)), ]
+  E <- E[!is.infinite(apply(E, 1, sum)), ]
+  
+  # Pathway activity: run wmean
+  pathway_activity_df <- decoupleR::run_wmean(mat = E,
+                                              net = net,
+                                              .source='source',
+                                              .target='target',
+                                              .mor='weight', 
+                                              minsize = 5)
+  # To matrix
+  pathway_activity <- pathway_activity_df %>%
+    dplyr::filter(statistic == "wmean") %>%
+    tidyr::pivot_wider(id_cols = condition,
+                       names_from = source,
+                       values_from = score) %>%
+    tibble::column_to_rownames("condition")
 
   if (verbose) message("\nPathway activity scores computed! \n")
   return(as.data.frame(pathway_activity))

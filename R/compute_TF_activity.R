@@ -13,13 +13,13 @@
 #' @import magrittr
 #' @importFrom stats na.exclude
 #' @importFrom dplyr filter
-#' @importFrom decoupleR get_collectri run_wmean
+#' @importFrom decoupleR get_collectri get_dorothea run_wmean
 #' @importFrom tidyr pivot_wider
 #' @importFrom tibble column_to_rownames
-#' @importFrom easierData get_TCGA_mean_pancancer get_TCGA_sd_pancancer
 #'
 #' @param RNA_tpm data.frame containing TPM values with HGNC symbols
 #' in rows and samples in columns.
+#' @param regulon_net string indicating the regulon network to be used.
 #' @param verbose logical value indicating whether to display messages
 #' about the number of regulated
 #' genes found in the gene expression data provided.
@@ -49,16 +49,15 @@
 #'
 #' # Computation of TF activity (Garcia-Alonso et al., Genome Res, 2019)
 #' tf_activity <- compute_TF_activity(
-#'   RNA_tpm = RNA_tpm
+#'   RNA_tpm = RNA_tpm,
+#'   regulon_net = "collectri"
 #' )
 compute_TF_activity <- function(RNA_tpm = NULL,
+                                regulon_net = c("collectri", "dorothea"),
                                 verbose = TRUE) {
   # Some checks
   if (is.null(RNA_tpm)) stop("TPM gene expression data not found")
-
-  # Retrieve internal data
-  TCGA_mean_pancancer <- suppressMessages(easierData::get_TCGA_mean_pancancer())
-  TCGA_sd_pancancer <- suppressMessages(easierData::get_TCGA_sd_pancancer())
+  if (length(regulon_net) > 1) stop("Please select just one regulon network")
 
   # Gene expression data
   tpm <- RNA_tpm
@@ -67,13 +66,6 @@ compute_TF_activity <- function(RNA_tpm = NULL,
   # HGNC symbols are required
   if (any(grep("ENSG00000", genes))) stop("hgnc gene symbols are required", call. = FALSE)
 
-  # Log transformed expression matrix (log2[tpm+1]):
-  # expression matrix scaled and recentered.
-  #gene_expr <- calc_z_score(t(tpm),
-  #  mean = TCGA_mean_pancancer,
-  #  sd = TCGA_sd_pancancer
-  #)
-
   gene_expr <- t(tpm)
   # redefine gene names to match TF-target network
   E <- t(gene_expr)
@@ -81,9 +73,20 @@ compute_TF_activity <- function(RNA_tpm = NULL,
   rownames(E) <- newNames
 
   # collectTRI network
-  net <- decoupleR::get_collectri(organism='human', split_complexes=FALSE)
+  if(regulon_net == "collectri"){
+    
+    net <- decoupleR::get_collectri(organism='human', split_complexes=FALSE)
+  
+  # dorothea network
+  }else if(regulon_net == "dorothea"){
+    
+    net <- decoupleR::get_dorothea(organism='human', 
+                                   levels = c("A", "B", "C"),
+                                   weight_dict = list(A = 1, B = 1, C = 1, D = 1))
+    
+  }
+
   all_regulated_transcripts <- unique(net$target)
-  all_tfs <- unique(net$source)
 
   # check what is the percentage of genes we have in our data
   genes_kept <- intersect(rownames(E), all_regulated_transcripts)
@@ -102,7 +105,7 @@ compute_TF_activity <- function(RNA_tpm = NULL,
   E <- E[!is.na(apply(E, 1, sum)), ]
   E <- E[!is.infinite(apply(E, 1, sum)), ]
 
-  # TF activity: run viper
+  # TF activity: run wmean
   tf_activity_df <- decoupleR::run_wmean(mat = E,
                                          net = net,
                                          .source='source',
